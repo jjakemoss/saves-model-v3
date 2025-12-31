@@ -85,6 +85,9 @@ class RollingFeatureCalculator:
 
         result_df = player_games.copy()
 
+        # Collect all new columns in a dict to add at once (more efficient)
+        new_columns = {}
+
         for stat in stat_columns:
             if stat not in player_games.columns:
                 logger.warning(f"Column {stat} not found in player games")
@@ -97,7 +100,7 @@ class RollingFeatureCalculator:
 
                 # Exponential weighted average
                 ewa_col = f'{stat}_ewa_{window}'
-                result_df[ewa_col] = shifted_values.ewm(
+                new_columns[ewa_col] = shifted_values.ewm(
                     span=window,
                     adjust=False,
                     min_periods=min(self.min_games, window)
@@ -105,17 +108,22 @@ class RollingFeatureCalculator:
 
                 # Arithmetic rolling average (for comparison)
                 rolling_col = f'{stat}_rolling_{window}'
-                result_df[rolling_col] = shifted_values.rolling(
+                new_columns[rolling_col] = shifted_values.rolling(
                     window=window,
                     min_periods=min(self.min_games, window)
                 ).mean()
 
                 # Rolling standard deviation (for volatility)
                 std_col = f'{stat}_rolling_std_{window}'
-                result_df[std_col] = shifted_values.rolling(
+                new_columns[std_col] = shifted_values.rolling(
                     window=window,
                     min_periods=min(self.min_games, window)
                 ).std()
+
+        # Add all new columns at once using concat (much more efficient)
+        if new_columns:
+            new_cols_df = pd.DataFrame(new_columns, index=result_df.index)
+            result_df = pd.concat([result_df, new_cols_df], axis=1)
 
         return result_df
 
