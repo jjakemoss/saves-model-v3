@@ -106,12 +106,9 @@ def main():
     logger.info(f"Loaded {len(df)} samples with {len(df.columns)} columns")
 
     # Check for target column
-    if 'over_line' not in df.columns:
-        logger.error("Target column 'over_line' not found in training data")
+    if 'saves' not in df.columns:
+        logger.error("Target column 'saves' not found in training data")
         sys.exit(1)
-
-    # Check if betting_line column exists (for analysis)
-    has_betting_line = 'betting_line' in df.columns
 
     # Initialize trainer
     logger.info("Initializing model trainer")
@@ -125,7 +122,7 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = trainer.prepare_data(
         df,
-        target_col='over_line',
+        target_col='saves',
         test_size=test_size,
         val_size=val_size,
         random_state=config['model'].get('random_state', 42)
@@ -154,14 +151,15 @@ def main():
     test_metrics = trainer.evaluate(X_test, y_test, "Test")
 
     # Check if model meets targets
-    target_log_loss = config['model'].get('target_log_loss', 0.58)
-    target_roc_auc = config['model'].get('target_roc_auc', 0.62)
+    target_rmse = config['model'].get('target_rmse', 5.0)  # Target: predict within 5 saves
+    target_mae = config['model'].get('target_mae', 3.5)   # Target: average error under 3.5 saves
 
     logger.info("\n" + "="*60)
     logger.info("Performance vs Targets")
     logger.info("="*60)
-    logger.info(f"Test Log Loss: {test_metrics['log_loss']:.4f} (target: <{target_log_loss:.4f}) {'✓' if test_metrics['log_loss'] < target_log_loss else '✗'}")
-    logger.info(f"Test ROC-AUC: {test_metrics['roc_auc']:.4f} (target: >{target_roc_auc:.4f}) {'✓' if test_metrics['roc_auc'] > target_roc_auc else '✗'}")
+    logger.info(f"Test RMSE: {test_metrics['rmse']:.3f} saves (target: <{target_rmse:.1f}) {'✓' if test_metrics['rmse'] < target_rmse else '✗'}")
+    logger.info(f"Test MAE: {test_metrics['mae']:.3f} saves (target: <{target_mae:.1f}) {'✓' if test_metrics['mae'] < target_mae else '✗'}")
+    logger.info(f"Test R²: {test_metrics['r2']:.4f} (higher is better)")
 
     # Detailed evaluation (optional)
     if not args.skip_evaluation:
@@ -181,18 +179,6 @@ def main():
         # Feature importance
         logger.info("\nFeature Importance:")
         evaluator.get_feature_importance(importance_type='gain', top_n=20)
-
-        # Performance by betting line (if available)
-        if has_betting_line:
-            # Get betting lines for test set
-            test_indices = X_test.index
-            betting_lines_test = df.loc[test_indices, 'betting_line']
-
-            logger.info("\nPerformance by Betting Line:")
-            evaluator.analyze_predictions_by_line(
-                X_test, y_test, betting_lines_test,
-                line_bins=[0, 25, 30, 35, 100]
-            )
 
         # Save evaluation plots
         if args.save_plots:
@@ -242,9 +228,9 @@ def main():
     logger.info("="*60)
     logger.info(f"Model saved to: {model_dir / f'{args.model_name}.pkl'}")
     logger.info(f"Features: {len(trainer.feature_names)}")
-    logger.info(f"Test Log Loss: {test_metrics['log_loss']:.4f}")
-    logger.info(f"Test ROC-AUC: {test_metrics['roc_auc']:.4f}")
-    logger.info(f"Test Accuracy: {test_metrics['accuracy']:.4f}")
+    logger.info(f"Test RMSE: {test_metrics['rmse']:.3f} saves")
+    logger.info(f"Test MAE: {test_metrics['mae']:.3f} saves")
+    logger.info(f"Test R²: {test_metrics['r2']:.4f}")
     logger.info("\nNext steps:")
     logger.info("  1. Review evaluation results in models/metadata/")
     logger.info("  2. Test predictions: python scripts/predict_games.py")

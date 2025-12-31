@@ -1,6 +1,7 @@
-"""Model training module for XGBoost classifier
+"""Model training module for XGBoost regressor
 
-Trains a binary classification model to predict whether a goalie will go over their saves line.
+Trains a regression model to predict the number of saves a goalie will make.
+At prediction time, compare predicted saves to betting line to determine over/under.
 """
 
 import pandas as pd
@@ -12,19 +13,20 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any, Optional
 from datetime import datetime
 
-from xgboost import XGBClassifier
+from xgboost import XGBRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import log_loss, roc_auc_score, brier_score_loss
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 logger = logging.getLogger(__name__)
 
 
 class GoalieModelTrainer:
     """
-    Train XGBoost model to predict goalie over/under on saves line
+    Train XGBoost regression model to predict goalie saves
 
     Uses time-based train/validation/test split to prevent data leakage.
+    Predicts actual number of saves (not over/under classification).
     """
 
     def __init__(self, config: Dict[str, Any]):
@@ -45,7 +47,7 @@ class GoalieModelTrainer:
     def prepare_data(
         self,
         df: pd.DataFrame,
-        target_col: str = 'over_line',
+        target_col: str = 'saves',
         test_size: float = 0.15,
         val_size: float = 0.15,
         random_state: int = 42
@@ -73,8 +75,7 @@ class GoalieModelTrainer:
         # Identify feature columns (exclude metadata and target)
         exclude_cols = [
             'goalie_id', 'game_id', 'game_date', 'season', 'team_abbrev',
-            'opponent_team', 'toi', 'decision', target_col, 'saves_margin',
-            'betting_line'  # If it exists
+            'opponent_team', 'toi', 'decision', target_col
         ]
 
         feature_cols = [col for col in df.columns if col not in exclude_cols]
@@ -124,26 +125,26 @@ class GoalieModelTrainer:
         X_val: Optional[pd.DataFrame] = None,
         y_val: Optional[pd.Series] = None,
         **xgb_params
-    ) -> XGBClassifier:
+    ) -> XGBRegressor:
         """
-        Train XGBoost classifier
+        Train XGBoost regressor
 
         Args:
             X_train: Training features
-            y_train: Training labels
+            y_train: Training targets (saves)
             X_val: Validation features (optional)
-            y_val: Validation labels (optional)
+            y_val: Validation targets (optional)
             **xgb_params: Additional XGBoost parameters
 
         Returns:
             Trained XGBoost model
         """
-        logger.info("Training XGBoost model...")
+        logger.info("Training XGBoost regression model...")
 
-        # Default XGBoost parameters
+        # Default XGBoost parameters for regression
         default_params = {
-            'objective': 'binary:logistic',
-            'eval_metric': 'logloss',
+            'objective': 'reg:squarederror',
+            'eval_metric': 'rmse',
             'n_estimators': 500,
             'max_depth': 6,
             'learning_rate': 0.05,
@@ -164,7 +165,7 @@ class GoalieModelTrainer:
         logger.info(f"XGBoost parameters: {default_params}")
 
         # Initialize model
-        self.model = XGBClassifier(**default_params)
+        self.model = XGBRegressor(**default_params)
 
         # Prepare evaluation set if validation data provided
         eval_set = None
@@ -203,7 +204,7 @@ class GoalieModelTrainer:
 
         Args:
             X: Features
-            y: True labels
+            y: True targets (actual saves)
             dataset_name: Name of dataset (for logging)
 
         Returns:
@@ -213,24 +214,25 @@ class GoalieModelTrainer:
             raise ValueError("Model not trained yet. Call train() first.")
 
         # Get predictions
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
-        y_pred = (y_pred_proba >= 0.5).astype(int)
+        y_pred = self.model.predict(X)
 
         # Calculate metrics
         metrics = {
-            'log_loss': log_loss(y, y_pred_proba),
-            'roc_auc': roc_auc_score(y, y_pred_proba),
-            'brier_score': brier_score_loss(y, y_pred_proba),
-            'accuracy': (y_pred == y).mean(),
-            'baseline_accuracy': y.mean()  # Predicting all 1s
+            'rmse': np.sqrt(mean_squared_error(y, y_pred)),
+            'mae': mean_absolute_error(y, y_pred),
+            'r2': r2_score(y, y_pred),
+            'mean_actual': y.mean(),
+            'mean_predicted': y_pred.mean(),
+            'std_actual': y.std(),
+            'std_predicted': y_pred.std()
         }
 
         logger.info(f"\n{dataset_name} Set Metrics:")
-        logger.info(f"  Log Loss: {metrics['log_loss']:.4f}")
-        logger.info(f"  ROC-AUC: {metrics['roc_auc']:.4f}")
-        logger.info(f"  Brier Score: {metrics['brier_score']:.4f}")
-        logger.info(f"  Accuracy: {metrics['accuracy']:.4f}")
-        logger.info(f"  Baseline (predict all over): {metrics['baseline_accuracy']:.4f}")
+        logger.info(f"  RMSE: {metrics['rmse']:.3f} saves")
+        logger.info(f"  MAE: {metrics['mae']:.3f} saves")
+        logger.info(f"  R²: {metrics['r2']:.4f}")
+        logger.info(f"  Mean Actual: {metrics['mean_actual']:.2f} saves")
+        logger.info(f"  Mean Predicted: {metrics['mean_predicted']:.2f} saves")
 
         return metrics
 

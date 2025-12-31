@@ -25,8 +25,8 @@ model:
   random_state: 42
   test_size: 0.15
   validation_size: 0.15
-  target_log_loss: 0.58
-  target_roc_auc: 0.62
+  target_rmse: 5.0  # Target: predict within 5 saves (RMSE)
+  target_mae: 3.5   # Target: average error under 3.5 saves
 
 paths:
   raw_data: "data/raw"

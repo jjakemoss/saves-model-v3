@@ -247,6 +247,7 @@ class FeatureEngineeringPipeline:
         df = self._fill_missing_values(df)
 
         # Step 5: Save processed features
+        # Note: 'saves' column is our target variable for regression
         logger.info(f"Saving processed features to {output_path}")
         output_path.parent.mkdir(parents=True, exist_ok=True)
         df.to_parquet(output_path, index=False, engine='pyarrow')
@@ -296,6 +297,58 @@ class FeatureEngineeringPipeline:
 
         # Fill remaining NaN with 0
         df = df.fillna(0)
+
+        return df
+
+    def _create_simulated_betting_lines(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Create simulated betting lines based on goalie's rolling average
+
+        In production, betting lines would come from sportsbooks.
+        For training, we simulate them based on the goalie's 5-game average.
+
+        Args:
+            df: DataFrame with features
+
+        Returns:
+            DataFrame with betting_line, over_line, and saves_margin columns
+        """
+        # Use 5-game rolling average as betting line (if available)
+        # Otherwise use season average
+        if 'saves_ewa_5' in df.columns:
+            betting_line = df['saves_ewa_5'].copy()
+        elif 'saves_rolling_5' in df.columns:
+            betting_line = df['saves_rolling_5'].copy()
+        else:
+            # Fall back to season average
+            betting_line = df.groupby(['goalie_id', 'season'])['saves'].transform('mean')
+
+        # Add some noise to make it realistic (bookmakers don't use exact averages)
+        # Round to nearest 0.5 (typical for betting lines)
+        np.random.seed(42)  # For reproducibility
+        noise = np.random.normal(0, 1.5, size=len(betting_line))
+        betting_line = np.round((betting_line + noise) * 2) / 2
+
+        # Ensure betting lines are reasonable (between 15 and 45 saves)
+        betting_line = betting_line.clip(15, 45)
+
+        # Fill NaN with median saves for that goalie
+        betting_line = betting_line.fillna(df.groupby('goalie_id')['saves'].transform('median'))
+
+        # Create target variables
+        df['betting_line'] = betting_line
+        df['over_line'] = (df['saves'] > betting_line).astype(int)
+        df['saves_margin'] = df['saves'] - betting_line
+
+        # Log statistics
+        logger.info(f"Betting line statistics:")
+        logger.info(f"  Mean: {betting_line.mean():.2f}")
+        logger.info(f"  Median: {betting_line.median():.2f}")
+        logger.info(f"  Std: {betting_line.std():.2f}")
+        logger.info(f"  Range: {betting_line.min():.1f} - {betting_line.max():.1f}")
+        logger.info(f"Over/Under distribution:")
+        logger.info(f"  Over: {df['over_line'].sum()} ({df['over_line'].mean():.1%})")
+        logger.info(f"  Under: {(1 - df['over_line']).sum()} ({(1 - df['over_line'].mean()):.1%})")
 
         return df
 
