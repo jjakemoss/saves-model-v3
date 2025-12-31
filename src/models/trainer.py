@@ -102,9 +102,9 @@ class GoalieModelTrainer:
         y_val = y.iloc[val_idx:test_idx]
         y_test = y.iloc[test_idx:]
 
-        logger.info(f"Train set: {len(X_train)} samples ({df['game_date'].iloc[:val_idx].min()} to {df['game_date'].iloc[val_idx-1].max()})")
-        logger.info(f"Validation set: {len(X_val)} samples ({df['game_date'].iloc[val_idx].min()} to {df['game_date'].iloc[test_idx-1].max()})")
-        logger.info(f"Test set: {len(X_test)} samples ({df['game_date'].iloc[test_idx].min()} to {df['game_date'].iloc[-1].max()})")
+        logger.info(f"Train set: {len(X_train)} samples ({df['game_date'].iloc[:val_idx].min()} to {df['game_date'].iloc[val_idx-1]})")
+        logger.info(f"Validation set: {len(X_val)} samples ({df['game_date'].iloc[val_idx]} to {df['game_date'].iloc[test_idx-1]})")
+        logger.info(f"Test set: {len(X_test)} samples ({df['game_date'].iloc[test_idx]} to {df['game_date'].iloc[-1]})")
 
         # Handle missing values
         X_train = X_train.fillna(0)
