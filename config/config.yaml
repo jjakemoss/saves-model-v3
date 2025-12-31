@@ -1,0 +1,36 @@
+api:
+  base_url: "https://api-web.nhle.com"
+  rate_limit: 10  # requests per second
+  timeout: 30
+  retry_attempts: 3
+  retry_delay: 1  # seconds
+
+data:
+  seasons: ["20222023", "20232024", "20242025"]
+  game_type: 2  # Regular season (2), Playoffs (3)
+  cache_ttl: 86400  # 24 hours in seconds
+  min_games_for_features: 5
+
+features:
+  rolling_windows: [3, 5, 10]
+  min_games_for_rolling: 3  # Minimum games needed before calculating rolling stats
+  exponential_weights:
+    ewa_3: [0.50, 0.30, 0.20]
+    ewa_5: [0.40, 0.25, 0.15, 0.12, 0.08]
+    ewa_10: [0.20, 0.15, 0.12, 0.10, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03]
+  high_danger_distance_threshold: 15  # feet from goal
+  rebound_time_threshold: 3  # seconds
+
+model:
+  random_state: 42
+  test_size: 0.15
+  validation_size: 0.15
+  target_log_loss: 0.58
+  target_roc_auc: 0.62
+
+paths:
+  raw_data: "data/raw"
+  processed_data: "data/processed"
+  cache_db: "data/cache/api_cache.db"
+  models: "models/trained"
+  logs: "logs"

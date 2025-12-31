@@ -1,0 +1,44 @@
+# Model Training Configuration
+
+xgboost:
+  objective: "binary:logistic"
+  eval_metric: "logloss"
+  n_estimators: 500
+  max_depth: 6
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  min_child_weight: 1
+  gamma: 0
+  reg_alpha: 0
+  reg_lambda: 1
+  random_state: 42
+
+random_forest:
+  n_estimators: 300
+  max_depth: 10
+  min_samples_split: 5
+  min_samples_leaf: 2
+  max_features: "sqrt"
+  random_state: 42
+
+training:
+  test_split: 0.15
+  validation_split: 0.15
+  cv_folds: 5
+  early_stopping_rounds: 50
+  verbose: true
+
+hyperparameter_tuning:
+  method: "grid_search"  # grid_search or bayesian
+  cv_folds: 3
+  param_grid:
+    max_depth: [4, 6, 8]
+    learning_rate: [0.01, 0.05, 0.1]
+    n_estimators: [300, 500, 700]
+    min_child_weight: [1, 3, 5]
+
+feature_selection:
+  variance_threshold: 0.01
+  correlation_threshold: 0.95
+  feature_importance_threshold: 0.001
