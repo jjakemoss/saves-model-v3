@@ -1,6 +1,6 @@
-"""Model evaluation and analysis module
+"""Model evaluation and analysis module for regression
 
-Provides detailed evaluation metrics, calibration analysis, and feature importance analysis.
+Provides detailed evaluation metrics, residual analysis, and feature importance analysis.
 """
 
 import pandas as pd
@@ -13,21 +13,20 @@ from typing import Dict, List, Tuple, Any, Optional
 from datetime import datetime
 
 from sklearn.metrics import (
-    log_loss, roc_auc_score, brier_score_loss, accuracy_score,
-    confusion_matrix, classification_report, roc_curve, precision_recall_curve
+    mean_squared_error, mean_absolute_error, r2_score,
+    mean_absolute_percentage_error
 )
-from sklearn.calibration import calibration_curve
 
 logger = logging.getLogger(__name__)
 
 
 class ModelEvaluator:
     """
-    Comprehensive model evaluation and analysis
+    Comprehensive model evaluation and analysis for regression
 
     Provides:
-    - Classification metrics (log loss, ROC-AUC, Brier score)
-    - Calibration analysis
+    - Regression metrics (RMSE, MAE, R², MAPE)
+    - Residual analysis
     - Feature importance analysis
     - Prediction distribution analysis
     - Error analysis by subgroups
@@ -38,25 +37,25 @@ class ModelEvaluator:
         Initialize evaluator
 
         Args:
-            model: Trained model (XGBoost classifier)
+            model: Trained model (XGBoost regressor)
             feature_names: List of feature names
         """
         self.model = model
         self.feature_names = feature_names
         self.evaluation_results = {}
 
-    def evaluate_classification_metrics(
+    def evaluate_regression_metrics(
         self,
         X: pd.DataFrame,
         y: pd.Series,
         dataset_name: str = "Test"
     ) -> Dict[str, float]:
         """
-        Calculate comprehensive classification metrics
+        Calculate comprehensive regression metrics
 
         Args:
             X: Features
-            y: True labels
+            y: True values (actual saves)
             dataset_name: Name of dataset for logging
 
         Returns:
@@ -65,92 +64,87 @@ class ModelEvaluator:
         logger.info(f"Evaluating {dataset_name} set...")
 
         # Get predictions
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
-        y_pred = (y_pred_proba >= 0.5).astype(int)
+        y_pred = self.model.predict(X)
 
         # Calculate metrics
         metrics = {
             'dataset': dataset_name,
             'n_samples': len(y),
-            'n_positive': y.sum(),
-            'positive_rate': y.mean(),
 
-            # Probabilistic metrics
-            'log_loss': log_loss(y, y_pred_proba),
-            'roc_auc': roc_auc_score(y, y_pred_proba),
-            'brier_score': brier_score_loss(y, y_pred_proba),
-
-            # Classification metrics
-            'accuracy': accuracy_score(y, y_pred),
-            'baseline_accuracy': max(y.mean(), 1 - y.mean()),  # Always predict majority class
+            # Regression metrics
+            'rmse': np.sqrt(mean_squared_error(y, y_pred)),
+            'mae': mean_absolute_error(y, y_pred),
+            'r2': r2_score(y, y_pred),
+            'mape': mean_absolute_percentage_error(y, y_pred) * 100,  # As percentage
 
             # Prediction statistics
-            'mean_predicted_prob': y_pred_proba.mean(),
-            'std_predicted_prob': y_pred_proba.std(),
-            'min_predicted_prob': y_pred_proba.min(),
-            'max_predicted_prob': y_pred_proba.max(),
-        }
+            'mean_actual': y.mean(),
+            'std_actual': y.std(),
+            'min_actual': y.min(),
+            'max_actual': y.max(),
+            'mean_predicted': y_pred.mean(),
+            'std_predicted': y_pred.std(),
+            'min_predicted': y_pred.min(),
+            'max_predicted': y_pred.max(),
 
-        # Confusion matrix
-        cm = confusion_matrix(y, y_pred)
-        if cm.shape == (2, 2):
-            tn, fp, fn, tp = cm.ravel()
-            metrics['true_negatives'] = int(tn)
-            metrics['false_positives'] = int(fp)
-            metrics['false_negatives'] = int(fn)
-            metrics['true_positives'] = int(tp)
-            metrics['precision'] = tp / (tp + fp) if (tp + fp) > 0 else 0.0
-            metrics['recall'] = tp / (tp + fn) if (tp + fn) > 0 else 0.0
-            metrics['f1_score'] = 2 * (metrics['precision'] * metrics['recall']) / (metrics['precision'] + metrics['recall']) if (metrics['precision'] + metrics['recall']) > 0 else 0.0
+            # Residual statistics
+            'mean_residual': (y - y_pred).mean(),
+            'std_residual': (y - y_pred).std(),
+        }
 
         # Store results
         self.evaluation_results[dataset_name] = metrics
 
         # Log key metrics
         logger.info(f"\n{dataset_name} Set Metrics:")
-        logger.info(f"  Samples: {metrics['n_samples']} ({metrics['n_positive']} positive, {metrics['positive_rate']:.1%})")
-        logger.info(f"  Log Loss: {metrics['log_loss']:.4f}")
-        logger.info(f"  ROC-AUC: {metrics['roc_auc']:.4f}")
-        logger.info(f"  Brier Score: {metrics['brier_score']:.4f}")
-        logger.info(f"  Accuracy: {metrics['accuracy']:.4f} (baseline: {metrics['baseline_accuracy']:.4f})")
-        if 'precision' in metrics:
-            logger.info(f"  Precision: {metrics['precision']:.4f}")
-            logger.info(f"  Recall: {metrics['recall']:.4f}")
-            logger.info(f"  F1 Score: {metrics['f1_score']:.4f}")
+        logger.info(f"  Samples: {metrics['n_samples']}")
+        logger.info(f"  RMSE: {metrics['rmse']:.3f} saves")
+        logger.info(f"  MAE: {metrics['mae']:.3f} saves")
+        logger.info(f"  R²: {metrics['r2']:.4f}")
+        logger.info(f"  MAPE: {metrics['mape']:.2f}%")
+        logger.info(f"  Mean Actual: {metrics['mean_actual']:.2f} saves")
+        logger.info(f"  Mean Predicted: {metrics['mean_predicted']:.2f} saves")
 
         return metrics
 
-    def analyze_calibration(
+    def analyze_residuals(
         self,
         X: pd.DataFrame,
         y: pd.Series,
-        n_bins: int = 10,
-        strategy: str = 'quantile'
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        n_bins: int = 10
+    ) -> pd.DataFrame:
         """
-        Analyze probability calibration
+        Analyze prediction residuals
 
         Args:
             X: Features
-            y: True labels
-            n_bins: Number of bins for calibration curve
-            strategy: 'uniform' or 'quantile' binning
+            y: True values
+            n_bins: Number of bins for residual distribution
 
         Returns:
-            (prob_true, prob_pred) - Calibration curve data
+            DataFrame with residual analysis
         """
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
+        y_pred = self.model.predict(X)
+        residuals = y - y_pred
 
-        prob_true, prob_pred = calibration_curve(
-            y, y_pred_proba, n_bins=n_bins, strategy=strategy
-        )
+        # Residual statistics
+        residual_stats = {
+            'mean': residuals.mean(),
+            'std': residuals.std(),
+            'min': residuals.min(),
+            'max': residuals.max(),
+            'q25': residuals.quantile(0.25),
+            'median': residuals.median(),
+            'q75': residuals.quantile(0.75),
+        }
 
-        # Calculate calibration error
-        calibration_error = np.mean(np.abs(prob_true - prob_pred))
+        logger.info(f"\nResidual Analysis:")
+        logger.info(f"  Mean: {residual_stats['mean']:.3f}")
+        logger.info(f"  Std Dev: {residual_stats['std']:.3f}")
+        logger.info(f"  Range: [{residual_stats['min']:.1f}, {residual_stats['max']:.1f}]")
+        logger.info(f"  IQR: [{residual_stats['q25']:.1f}, {residual_stats['q75']:.1f}]")
 
-        logger.info(f"Calibration Error (mean absolute): {calibration_error:.4f}")
-
-        return prob_true, prob_pred
+        return pd.DataFrame([residual_stats])
 
     def get_feature_importance(
         self,
@@ -188,164 +182,87 @@ class ModelEvaluator:
 
         return importance_df.head(top_n)
 
-    def analyze_predictions_by_line(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        betting_lines: pd.Series,
-        line_bins: List[float] = [0, 25, 30, 35, 100]
-    ) -> pd.DataFrame:
-        """
-        Analyze model performance by betting line ranges
-
-        Args:
-            X: Features
-            y: True labels
-            betting_lines: Betting line values
-            line_bins: Bin edges for grouping lines
-
-        Returns:
-            DataFrame with metrics by line range
-        """
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
-
-        # Create line bins
-        line_categories = pd.cut(betting_lines, bins=line_bins, include_lowest=True)
-
-        results = []
-        for category in line_categories.cat.categories:
-            mask = line_categories == category
-            if mask.sum() == 0:
-                continue
-
-            y_subset = y[mask]
-            y_pred_subset = y_pred_proba[mask]
-
-            result = {
-                'line_range': str(category),
-                'n_samples': mask.sum(),
-                'actual_over_rate': y_subset.mean(),
-                'predicted_over_rate': y_pred_subset.mean(),
-                'log_loss': log_loss(y_subset, y_pred_subset),
-                'roc_auc': roc_auc_score(y_subset, y_pred_subset) if len(y_subset.unique()) > 1 else np.nan,
-                'brier_score': brier_score_loss(y_subset, y_pred_subset)
-            }
-            results.append(result)
-
-        results_df = pd.DataFrame(results)
-
-        logger.info("\nPerformance by Betting Line Range:")
-        logger.info(results_df.to_string(index=False))
-
-        return results_df
-
-    def analyze_errors(
-        self,
-        X: pd.DataFrame,
-        y: pd.Series,
-        threshold: float = 0.5,
-        top_n: int = 10
-    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Analyze prediction errors (false positives and false negatives)
-
-        Args:
-            X: Features
-            y: True labels
-            threshold: Classification threshold
-            top_n: Number of worst errors to return
-
-        Returns:
-            (false_positives_df, false_negatives_df)
-        """
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
-        y_pred = (y_pred_proba >= threshold).astype(int)
-
-        # False positives (predicted over, actual under)
-        fp_mask = (y_pred == 1) & (y == 0)
-        fp_df = pd.DataFrame({
-            'predicted_prob': y_pred_proba[fp_mask],
-            'actual': y[fp_mask],
-            'error_magnitude': y_pred_proba[fp_mask] - y[fp_mask]
-        }).sort_values('predicted_prob', ascending=False).head(top_n)
-
-        # False negatives (predicted under, actual over)
-        fn_mask = (y_pred == 0) & (y == 1)
-        fn_df = pd.DataFrame({
-            'predicted_prob': y_pred_proba[fn_mask],
-            'actual': y[fn_mask],
-            'error_magnitude': y[fn_mask] - y_pred_proba[fn_mask]
-        }).sort_values('predicted_prob', ascending=True).head(top_n)
-
-        logger.info(f"\nError Analysis:")
-        logger.info(f"  False Positives: {fp_mask.sum()} ({fp_mask.mean():.1%})")
-        logger.info(f"  False Negatives: {fn_mask.sum()} ({fn_mask.mean():.1%})")
-
-        return fp_df, fn_df
-
-    def plot_calibration_curve(
+    def plot_residuals(
         self,
         X: pd.DataFrame,
         y: pd.Series,
         save_path: Optional[Path] = None
     ):
         """
-        Plot calibration curve
+        Plot residuals histogram and Q-Q plot
 
         Args:
             X: Features
-            y: True labels
+            y: True values
             save_path: Path to save plot (optional)
         """
-        prob_true, prob_pred = self.analyze_calibration(X, y)
+        y_pred = self.model.predict(X)
+        residuals = y - y_pred
 
-        plt.figure(figsize=(8, 6))
-        plt.plot([0, 1], [0, 1], 'k--', label='Perfect Calibration')
-        plt.plot(prob_pred, prob_true, 'o-', label='Model')
-        plt.xlabel('Mean Predicted Probability')
-        plt.ylabel('Actual Frequency')
-        plt.title('Calibration Curve')
-        plt.legend()
-        plt.grid(alpha=0.3)
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+        # Histogram of residuals
+        ax1.hist(residuals, bins=50, edgecolor='black', alpha=0.7)
+        ax1.axvline(0, color='red', linestyle='--', label='Zero Error')
+        ax1.set_xlabel('Residual (Actual - Predicted)')
+        ax1.set_ylabel('Frequency')
+        ax1.set_title('Residual Distribution')
+        ax1.legend()
+        ax1.grid(alpha=0.3)
+
+        # Residuals vs predicted
+        ax2.scatter(y_pred, residuals, alpha=0.5)
+        ax2.axhline(0, color='red', linestyle='--')
+        ax2.set_xlabel('Predicted Saves')
+        ax2.set_ylabel('Residual (Actual - Predicted)')
+        ax2.set_title('Residuals vs Predicted Values')
+        ax2.grid(alpha=0.3)
+
         plt.tight_layout()
 
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            logger.info(f"Calibration plot saved to {save_path}")
+            logger.info(f"Residuals plot saved to {save_path}")
+            plt.close()
         else:
             plt.show()
 
-    def plot_roc_curve(
+    def plot_predicted_vs_actual(
         self,
         X: pd.DataFrame,
         y: pd.Series,
         save_path: Optional[Path] = None
     ):
         """
-        Plot ROC curve
+        Plot predicted vs actual values
 
         Args:
             X: Features
-            y: True labels
+            y: True values
             save_path: Path to save plot (optional)
         """
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
-        fpr, tpr, thresholds = roc_curve(y, y_pred_proba)
-        auc = roc_auc_score(y, y_pred_proba)
+        y_pred = self.model.predict(X)
 
-        plt.figure(figsize=(8, 6))
-        plt.plot([0, 1], [0, 1], 'k--', label='Random (AUC = 0.50)')
-        plt.plot(fpr, tpr, label=f'Model (AUC = {auc:.3f})')
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('ROC Curve')
+        plt.figure(figsize=(8, 8))
+        plt.scatter(y, y_pred, alpha=0.5)
+
+        # Perfect prediction line
+        min_val = min(y.min(), y_pred.min())
+        max_val = max(y.max(), y_pred.max())
+        plt.plot([min_val, max_val], [min_val, max_val], 'r--', label='Perfect Prediction')
+
+        plt.xlabel('Actual Saves')
+        plt.ylabel('Predicted Saves')
+        plt.title('Predicted vs Actual Saves')
         plt.legend()
         plt.grid(alpha=0.3)
+        plt.axis('equal')
         plt.tight_layout()
 
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            logger.info(f"ROC curve saved to {save_path}")
+            logger.info(f"Predicted vs Actual plot saved to {save_path}")
+            plt.close()
         else:
             plt.show()
 
@@ -386,25 +303,27 @@ class ModelEvaluator:
         save_path: Optional[Path] = None
     ):
         """
-        Plot distribution of predicted probabilities
+        Plot distribution of predicted vs actual saves
 
         Args:
             X: Features
-            y: True labels
+            y: True values
             save_path: Path to save plot (optional)
         """
-        y_pred_proba = self.model.predict_proba(X)[:, 1]
+        y_pred = self.model.predict(X)
 
         plt.figure(figsize=(10, 6))
 
-        # Plot distributions for each class
-        plt.hist(y_pred_proba[y == 0], bins=30, alpha=0.5, label='Actual Under', color='blue')
-        plt.hist(y_pred_proba[y == 1], bins=30, alpha=0.5, label='Actual Over', color='red')
+        # Plot distributions
+        plt.hist(y, bins=30, alpha=0.5, label='Actual Saves', color='blue', edgecolor='black')
+        plt.hist(y_pred, bins=30, alpha=0.5, label='Predicted Saves', color='red', edgecolor='black')
 
-        plt.axvline(0.5, color='black', linestyle='--', label='Decision Threshold')
-        plt.xlabel('Predicted Probability (Over)')
+        plt.axvline(y.mean(), color='blue', linestyle='--', label=f'Actual Mean: {y.mean():.1f}')
+        plt.axvline(y_pred.mean(), color='red', linestyle='--', label=f'Predicted Mean: {y_pred.mean():.1f}')
+
+        plt.xlabel('Saves')
         plt.ylabel('Frequency')
-        plt.title('Prediction Distribution by Actual Outcome')
+        plt.title('Distribution of Actual vs Predicted Saves')
         plt.legend()
         plt.grid(alpha=0.3)
         plt.tight_layout()
@@ -412,6 +331,7 @@ class ModelEvaluator:
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
             logger.info(f"Prediction distribution plot saved to {save_path}")
+            plt.close()
         else:
             plt.show()
 

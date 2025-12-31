@@ -170,11 +170,11 @@ def main():
         evaluator = ModelEvaluator(model, trainer.feature_names)
 
         # Run detailed evaluation on test set
-        evaluator.evaluate_classification_metrics(X_test, y_test, "Test")
+        evaluator.evaluate_regression_metrics(X_test, y_test, "Test")
 
-        # Calibration analysis
-        logger.info("\nCalibration Analysis:")
-        evaluator.analyze_calibration(X_test, y_test)
+        # Residual analysis
+        logger.info("\nResidual Analysis:")
+        evaluator.analyze_residuals(X_test, y_test)
 
         # Feature importance
         logger.info("\nFeature Importance:")
@@ -189,13 +189,13 @@ def main():
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
             try:
-                evaluator.plot_calibration_curve(
+                evaluator.plot_residuals(
                     X_test, y_test,
-                    save_path=output_dir / f'calibration_curve_{timestamp}.png'
+                    save_path=output_dir / f'residuals_{timestamp}.png'
                 )
-                evaluator.plot_roc_curve(
+                evaluator.plot_predicted_vs_actual(
                     X_test, y_test,
-                    save_path=output_dir / f'roc_curve_{timestamp}.png'
+                    save_path=output_dir / f'predicted_vs_actual_{timestamp}.png'
                 )
                 evaluator.plot_feature_importance(
                     top_n=20,
