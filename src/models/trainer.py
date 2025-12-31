@@ -56,9 +56,10 @@ class GoalieModelTrainer:
         Prepare data with time-based train/validation/test split
 
         CRITICAL: Uses chronological split, not random split
+        CRITICAL: Recalculates rolling features for each split to prevent data leakage
 
         Args:
-            df: Complete dataset
+            df: Complete dataset with base features (NO rolling features yet)
             target_col: Name of target column
             test_size: Fraction for test set
             val_size: Fraction for validation set
@@ -68,17 +69,61 @@ class GoalieModelTrainer:
             X_train, X_val, X_test, y_train, y_val, y_test
         """
         logger.info("Preparing data with time-based split...")
+        logger.info("CRITICAL: Recalculating rolling features to prevent data leakage")
 
         # Sort by date to ensure chronological split
         df = df.sort_values('game_date').reset_index(drop=True)
 
-        # Identify feature columns (exclude metadata and target)
+        # Time-based split FIRST (before calculating rolling features)
+        n = len(df)
+        test_idx = int(n * (1 - test_size))
+        val_idx = int(test_idx * (1 - val_size))
+
+        logger.info(f"Train set: {val_idx} samples ({df['game_date'].iloc[0]} to {df['game_date'].iloc[val_idx-1]})")
+        logger.info(f"Validation set: {test_idx - val_idx} samples ({df['game_date'].iloc[val_idx]} to {df['game_date'].iloc[test_idx-1]})")
+        logger.info(f"Test set: {n - test_idx} samples ({df['game_date'].iloc[test_idx]} to {df['game_date'].iloc[-1]})")
+
+        # Recalculate rolling features for each split to prevent leakage
+        logger.info("Recalculating rolling features WITHOUT future data...")
+
+        # Identify rolling feature columns (to remove and recalculate)
+        rolling_cols = [col for col in df.columns if '_rolling_' in col or '_ewa_' in col]
+        logger.info(f"Found {len(rolling_cols)} rolling features to recalculate")
+
+        # Get base columns (non-rolling features + metadata)
+        base_df = df.drop(columns=rolling_cols)
+
+        # Recalculate rolling features properly
+        df_with_proper_rolling = self._recalculate_rolling_features(
+            base_df,
+            train_idx=val_idx,
+            val_idx=test_idx
+        )
+
+        # Now identify feature columns (exclude metadata, target, AND current-game outcomes)
         exclude_cols = [
+            # Metadata
             'goalie_id', 'game_id', 'game_date', 'season', 'team_abbrev',
-            'opponent_team', 'toi', 'decision', target_col
+            'opponent_team', 'toi', 'decision',
+            # Target variable
+            target_col,
+            # CRITICAL: Exclude current-game outcome features (not knowable before game)
+            # These can ONLY be used to calculate rolling averages for future games
+            'shots_against', 'total_shots_against', 'goals_against',
+            'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
+            'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
+            'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against',
+            'save_percentage', 'even_strength_save_pct', 'power_play_save_pct', 'short_handed_save_pct',
+            'high_danger_saves', 'high_danger_shots_against', 'high_danger_goals_against', 'high_danger_save_pct',
+            'mid_danger_saves', 'mid_danger_shots_against', 'mid_danger_goals_against', 'mid_danger_save_pct',
+            'low_danger_saves', 'low_danger_shots_against', 'low_danger_goals_against', 'low_danger_save_pct',
+            'total_xg_against', 'high_danger_xg_against', 'mid_danger_xg_against', 'low_danger_xg_against',
+            'rebounds_created', 'rebound_rate', 'dangerous_rebound_pct',
+            'avg_shot_distance', 'avg_shot_angle',
+            'toi_seconds', 'saves_volatility_10'
         ]
 
-        feature_cols = [col for col in df.columns if col not in exclude_cols]
+        feature_cols = [col for col in df_with_proper_rolling.columns if col not in exclude_cols]
 
         # Store feature names
         self.feature_names = feature_cols
@@ -86,14 +131,10 @@ class GoalieModelTrainer:
         logger.info(f"Using {len(feature_cols)} features for training")
 
         # Extract features and target
-        X = df[feature_cols].copy()
-        y = df[target_col].copy()
+        X = df_with_proper_rolling[feature_cols].copy()
+        y = df_with_proper_rolling[target_col].copy()
 
-        # Time-based split
-        n = len(df)
-        test_idx = int(n * (1 - test_size))
-        val_idx = int(test_idx * (1 - val_size))
-
+        # Split into train/val/test
         X_train = X.iloc[:val_idx]
         X_val = X.iloc[val_idx:test_idx]
         X_test = X.iloc[test_idx:]
@@ -101,10 +142,6 @@ class GoalieModelTrainer:
         y_train = y.iloc[:val_idx]
         y_val = y.iloc[val_idx:test_idx]
         y_test = y.iloc[test_idx:]
-
-        logger.info(f"Train set: {len(X_train)} samples ({df['game_date'].iloc[:val_idx].min()} to {df['game_date'].iloc[val_idx-1]})")
-        logger.info(f"Validation set: {len(X_val)} samples ({df['game_date'].iloc[val_idx]} to {df['game_date'].iloc[test_idx-1]})")
-        logger.info(f"Test set: {len(X_test)} samples ({df['game_date'].iloc[test_idx]} to {df['game_date'].iloc[-1]})")
 
         # Handle missing values
         X_train = X_train.fillna(0)
@@ -117,6 +154,57 @@ class GoalieModelTrainer:
         X_test = X_test.replace([np.inf, -np.inf], 0)
 
         return X_train, X_val, X_test, y_train, y_val, y_test
+
+    def _recalculate_rolling_features(
+        self,
+        df: pd.DataFrame,
+        train_idx: int,
+        val_idx: int
+    ) -> pd.DataFrame:
+        """
+        Recalculate rolling features WITHOUT data leakage
+
+        For each game, rolling features use ONLY data from prior games.
+
+        Args:
+            df: DataFrame with base features (no rolling features)
+            train_idx: Index where training set ends
+            val_idx: Index where validation set ends
+
+        Returns:
+            DataFrame with properly calculated rolling features
+        """
+        logger.info("Calculating rolling features with proper time-based windows...")
+
+        # Define stats to calculate rolling features for
+        goalie_stats = [
+            'saves',
+            'save_percentage',
+            'shots_against',
+            'goals_against',
+            'even_strength_save_pct',
+            'power_play_save_pct'
+        ]
+
+        # Only use stats that exist in the dataframe
+        goalie_stats = [stat for stat in goalie_stats if stat in df.columns]
+
+        windows = [3, 5, 10]
+
+        df_result = df.copy()
+
+        # Calculate rolling averages for each goalie
+        for stat in goalie_stats:
+            for window in windows:
+                # Rolling mean (excluding current game with shift(1))
+                col_name = f"{stat}_rolling_{window}"
+                df_result[col_name] = df_result.groupby('goalie_id')[stat].transform(
+                    lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
+                )
+
+        logger.info(f"Recalculated {len(goalie_stats) * len(windows)} rolling features")
+
+        return df_result
 
     def train(
         self,
