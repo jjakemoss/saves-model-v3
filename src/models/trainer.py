@@ -107,6 +107,8 @@ class GoalieModelTrainer:
             'opponent_team', 'toi', 'decision',
             # Target variable
             target_col,
+            # Constant features (all training samples have same value)
+            'is_starter',  # Always True in training data (we filter to starters only)
             # CRITICAL: Exclude current-game outcome features (not knowable before game)
             # These can ONLY be used to calculate rolling averages for future games
             'shots_against', 'total_shots_against', 'goals_against',

@@ -233,20 +233,28 @@ class FeatureEngineeringPipeline:
             logger.error("No features extracted. Check data directories.")
             return pd.DataFrame()
 
-        # Step 2: Sort by date (CRITICAL for preventing data leakage)
+        # Step 2: Filter to starting goalies only
+        # CRITICAL: We only predict for starters, so only train on starters
+        logger.info("Filtering to starting goalies only...")
+        initial_count = len(df)
+        df = df[df['is_starter'] == True].copy()
+        filtered_count = len(df)
+        logger.info(f"Filtered from {initial_count} to {filtered_count} goalie performances ({initial_count - filtered_count} relief appearances removed)")
+
+        # Step 3: Sort by date (CRITICAL for preventing data leakage)
         logger.info("Sorting by date...")
         df['game_date'] = pd.to_datetime(df['game_date'])
         df = df.sort_values(['goalie_id', 'game_date']).reset_index(drop=True)
 
-        # Step 3: Calculate rolling features
+        # Step 4: Calculate rolling features
         df = self.calculate_rolling_features(df)
 
-        # Step 4: Fill NaN values for early-season games
+        # Step 5: Fill NaN values for early-season games
         # For games where we don't have enough history, use season averages
         logger.info("Filling missing values...")
         df = self._fill_missing_values(df)
 
-        # Step 5: Save processed features
+        # Step 6: Save processed features
         # Note: 'saves' column is our target variable for regression
         logger.info(f"Saving processed features to {output_path}")
         output_path.parent.mkdir(parents=True, exist_ok=True)
