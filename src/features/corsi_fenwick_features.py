@@ -108,8 +108,9 @@ def add_corsi_rolling_features(
     """
     Add rolling averages for Corsi/Fenwick metrics
 
-    This is similar to team_rolling_features but specifically for Corsi/Fenwick.
-    We calculate these separately to allow for different window sizes.
+    CRITICAL: Calculate rolling features separately for each team to prevent data leakage.
+    Similar approach to team_rolling_features.py - create team game logs, calculate rolling
+    features with proper chronological ordering, then merge back.
 
     Args:
         games_df: DataFrame with Corsi/Fenwick features
@@ -120,6 +121,7 @@ def add_corsi_rolling_features(
     """
     logger.info("Calculating Corsi/Fenwick rolling features...")
 
+    # Ensure sorted by date
     df = games_df.sort_values('game_date').reset_index(drop=True)
 
     corsi_stats = [
@@ -138,22 +140,97 @@ def add_corsi_rolling_features(
         logger.warning("No Corsi/Fenwick stats found, skipping rolling features")
         return df
 
-    # Calculate rolling features for each team
-    for stat in corsi_stats:
-        for window in windows:
-            # Team rolling average (using shift(1) to exclude current game)
-            col_name = f'{stat}_rolling_{window}'
-            df[col_name] = df.groupby('team_abbrev')[stat].transform(
-                lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
-            )
+    # Get unique teams
+    unique_teams = df['team_abbrev'].unique()
 
-    # Also calculate opponent Corsi For (which becomes our Corsi Against perspective)
-    for stat in corsi_stats:
-        for window in windows:
-            col_name = f'opponent_{stat}_rolling_{window}'
-            df[col_name] = df.groupby('opponent_team')[stat].transform(
-                lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
-            )
+    # Store rolling features for each team
+    team_corsi_features = {}
+
+    logger.info(f"Calculating Corsi/Fenwick rolling features for {len(unique_teams)} teams...")
+
+    for team in unique_teams:
+        # Get this team's games in chronological order
+        team_games = df[df['team_abbrev'] == team].copy()
+        team_games = team_games.sort_values('game_date').reset_index(drop=True)
+
+        # Calculate rolling features for each stat
+        rolling_data = {
+            'game_id': team_games['game_id'].values,
+            'team_abbrev': [team] * len(team_games)  # Include team for merge key
+        }
+
+        for stat in corsi_stats:
+            for window in windows:
+                # CRITICAL: Use shift(1) to exclude current game
+                shifted_values = team_games[stat].shift(1)
+                rolling_avg = shifted_values.rolling(window=window, min_periods=1).mean()
+
+                col_name = f'{stat}_rolling_{window}'
+                rolling_data[col_name] = rolling_avg.values
+
+        # Store as DataFrame
+        team_corsi_features[team] = pd.DataFrame(rolling_data)
+
+    # Combine all team rolling features
+    all_team_features = []
+    for team, features in team_corsi_features.items():
+        all_team_features.append(features)
+
+    team_features_combined = pd.concat(all_team_features, ignore_index=True)
+
+    # Merge back into main dataset - use game_id AND team_abbrev to avoid duplicates
+    df = df.merge(
+        team_features_combined,
+        on=['game_id', 'team_abbrev'],
+        how='left',
+        suffixes=('', '_drop')
+    )
+
+    # Drop any duplicate columns from merge
+    df = df[[col for col in df.columns if not col.endswith('_drop')]]
+
+    # Also calculate opponent Corsi/Fenwick rolling features
+    opponent_corsi_features = {}
+
+    for team in unique_teams:
+        # Get games where this team was the OPPONENT
+        opp_games = df[df['opponent_team'] == team].copy()
+        opp_games = opp_games.sort_values('game_date').reset_index(drop=True)
+
+        # Calculate rolling features
+        rolling_data = {
+            'game_id': opp_games['game_id'].values,
+            'opponent_team': [team] * len(opp_games)  # Include opponent_team for merge key
+        }
+
+        for stat in corsi_stats:
+            for window in windows:
+                # Use shift(1) to exclude current game
+                shifted_values = opp_games[stat].shift(1)
+                rolling_avg = shifted_values.rolling(window=window, min_periods=1).mean()
+
+                col_name = f'opponent_{stat}_rolling_{window}'
+                rolling_data[col_name] = rolling_avg.values
+
+        opponent_corsi_features[team] = pd.DataFrame(rolling_data)
+
+    # Combine opponent features
+    all_opp_features = []
+    for team, features in opponent_corsi_features.items():
+        all_opp_features.append(features)
+
+    opp_features_combined = pd.concat(all_opp_features, ignore_index=True)
+
+    # Merge back - use game_id AND opponent_team to avoid duplicates
+    df = df.merge(
+        opp_features_combined,
+        on=['game_id', 'opponent_team'],
+        how='left',
+        suffixes=('', '_drop')
+    )
+
+    # Drop duplicates
+    df = df[[col for col in df.columns if not col.endswith('_drop')]]
 
     logger.info(f"Corsi/Fenwick rolling features calculated for windows: {windows}")
     logger.info(f"  - Added {len(corsi_stats) * len(windows) * 2} features")

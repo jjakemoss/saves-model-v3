@@ -319,13 +319,21 @@ class FeatureEngineeringPipeline:
 
         # Fill rolling features with season average
         for col in rolling_cols:
+            # Skip team/opponent rolling features - they're already properly calculated
+            if col.startswith('team_defense_') or col.startswith('opp_offense_'):
+                continue
+            if ('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower():
+                continue
+
             # Extract base stat name (e.g., 'saves_ewa_3' -> 'saves')
             base_stat = col.split('_ewa_')[0].split('_rolling_')[0]
 
             if base_stat in df.columns:
-                # Group by goalie and season, fill with expanding mean
+                # CRITICAL: Use shift(1) to exclude current game from expanding mean
+                # This prevents data leakage - we only use PRIOR games to fill NaN
+                # For goalie features, group by goalie and season
                 df[col] = df.groupby(['goalie_id', 'season'])[base_stat].transform(
-                    lambda x: x.fillna(x.expanding().mean())
+                    lambda x: x.fillna(x.shift(1).expanding().mean())
                 )
 
         # Fill percentage features with league average

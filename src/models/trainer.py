@@ -88,10 +88,12 @@ class GoalieModelTrainer:
 
         # Identify GOALIE rolling feature columns (to remove and recalculate)
         # Keep team/opponent rolling features - they're already properly calculated
+        # ALSO keep Corsi/Fenwick rolling features - they're already properly calculated
         goalie_rolling_cols = [col for col in df.columns
                               if ('_rolling_' in col or '_ewa_' in col)
                               and not col.startswith('team_defense_')
-                              and not col.startswith('opp_offense_')]
+                              and not col.startswith('opp_offense_')
+                              and not (('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower())]
         logger.info(f"Found {len(goalie_rolling_cols)} goalie rolling features to recalculate")
 
         # Count team features being preserved
@@ -99,6 +101,11 @@ class GoalieModelTrainer:
                            if ('_rolling_' in col or '_ewa_' in col or '_std_' in col)
                            and (col.startswith('team_defense_') or col.startswith('opp_offense_'))]
         logger.info(f"Preserving {len(team_rolling_cols)} team/opponent rolling features")
+
+        # Count Corsi/Fenwick rolling features being preserved
+        corsi_fenwick_rolling_cols = [col for col in df.columns
+                                     if ('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower()]
+        logger.info(f"Preserving {len(corsi_fenwick_rolling_cols)} Corsi/Fenwick rolling features")
 
         # Get base columns (drop only goalie rolling features, keep team features)
         base_df = df.drop(columns=goalie_rolling_cols)
@@ -155,6 +162,9 @@ class GoalieModelTrainer:
             # ALWAYS include team defense and opponent offense rolling features
             # These are historical averages, not current-game outcomes
             if col.startswith('team_defense_') or col.startswith('opp_offense_'):
+                feature_cols.append(col)
+            # ALWAYS include Corsi/Fenwick rolling features (safe historical averages)
+            elif ('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower():
                 feature_cols.append(col)
             # For other columns, check if they're in the exclusion list
             elif col not in exclude_cols:
