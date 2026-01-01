@@ -50,7 +50,9 @@ class GoalieModelTrainer:
         target_col: str = 'saves',
         test_size: float = 0.15,
         val_size: float = 0.15,
-        random_state: int = 42
+        random_state: int = 42,
+        use_ewa: bool = False,
+        ewa_span_multiplier: float = 1.0
     ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.Series, pd.Series, pd.Series]:
         """
         Prepare data with time-based train/validation/test split
@@ -89,10 +91,12 @@ class GoalieModelTrainer:
         # Identify GOALIE rolling feature columns (to remove and recalculate)
         # Keep team/opponent rolling features - they're already properly calculated
         # ALSO keep Corsi/Fenwick rolling features - they're already properly calculated
+        # ALSO keep opponent_ rolling features (e.g., opponent_shooting_pct_rolling_)
         goalie_rolling_cols = [col for col in df.columns
                               if ('_rolling_' in col or '_ewa_' in col)
                               and not col.startswith('team_defense_')
                               and not col.startswith('opp_offense_')
+                              and not col.startswith('opponent_')
                               and not (('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower())]
         logger.info(f"Found {len(goalie_rolling_cols)} goalie rolling features to recalculate")
 
@@ -107,6 +111,11 @@ class GoalieModelTrainer:
                                      if ('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower()]
         logger.info(f"Preserving {len(corsi_fenwick_rolling_cols)} Corsi/Fenwick rolling features")
 
+        # Count opponent rolling features being preserved
+        opponent_rolling_cols = [col for col in df.columns
+                                if col.startswith('opponent_') and '_rolling_' in col]
+        logger.info(f"Preserving {len(opponent_rolling_cols)} opponent rolling features (e.g., shooting_pct)")
+
         # Get base columns (drop only goalie rolling features, keep team features)
         base_df = df.drop(columns=goalie_rolling_cols)
 
@@ -114,7 +123,9 @@ class GoalieModelTrainer:
         df_with_proper_rolling = self._recalculate_rolling_features(
             base_df,
             train_idx=val_idx,
-            val_idx=test_idx
+            val_idx=test_idx,
+            use_ewa=use_ewa,
+            ewa_span_multiplier=ewa_span_multiplier
         )
 
         # Now identify feature columns (exclude metadata, target, AND current-game outcomes)
@@ -153,7 +164,39 @@ class GoalieModelTrainer:
             'team_fenwick_for', 'team_fenwick_against', 'team_fenwick_for_pct',
             'opp_blocked_shots',  # Used to calculate Corsi, but is current-game data
             # CRITICAL: Exclude game state from CURRENT game (only use rolling averages)
-            'is_win', 'is_loss', 'goal_differential'
+            'is_win', 'is_loss', 'goal_differential',
+            # ZERO-IMPORTANCE FEATURES (remove to reduce noise)
+            # Powerplay features (14 features with 0.0 importance)
+            'team_defense_team_powerplay_goals_rolling_3',
+            'team_defense_team_powerplay_goals_rolling_5',
+            'team_defense_team_powerplay_goals_rolling_10',
+            'team_defense_team_powerplay_opportunities_rolling_3',
+            'team_defense_team_powerplay_opportunities_rolling_5',
+            'team_defense_team_powerplay_opportunities_rolling_10',
+            'team_defense_opp_powerplay_opportunities_rolling_3',
+            'team_defense_opp_powerplay_opportunities_rolling_5',
+            'team_defense_opp_powerplay_opportunities_rolling_10',
+            'opp_offense_team_powerplay_goals_rolling_3',
+            'opp_offense_team_powerplay_goals_rolling_5',
+            'opp_offense_team_powerplay_goals_rolling_10',
+            'opp_offense_team_powerplay_opportunities_rolling_3',
+            'opp_offense_team_powerplay_opportunities_rolling_5',
+            'opp_offense_team_powerplay_opportunities_rolling_10',
+            # Physical play features (12 features with 0.0 importance)
+            'team_defense_team_blocked_shots_rolling_3',
+            'team_defense_team_blocked_shots_rolling_5',
+            'team_defense_team_blocked_shots_rolling_10',
+            'team_defense_team_hits_rolling_3',
+            'team_defense_team_hits_rolling_5',
+            'team_defense_team_hits_rolling_10',
+            'opp_offense_team_blocked_shots_rolling_3',
+            'opp_offense_team_blocked_shots_rolling_5',
+            'opp_offense_team_blocked_shots_rolling_10',
+            'opp_offense_team_hits_rolling_3',
+            'opp_offense_team_hits_rolling_5',
+            'opp_offense_team_hits_rolling_10',
+            # Goalie back-to-back (1 feature with 0.0 importance)
+            'goalie_is_back_to_back'
         ]
 
         # Build feature list with special handling for team/opponent rolling features
@@ -165,6 +208,9 @@ class GoalieModelTrainer:
                 feature_cols.append(col)
             # ALWAYS include Corsi/Fenwick rolling features (safe historical averages)
             elif ('corsi' in col.lower() or 'fenwick' in col.lower()) and 'rolling' in col.lower():
+                feature_cols.append(col)
+            # ALWAYS include opponent rolling features (e.g., opponent_shooting_pct_rolling_)
+            elif col.startswith('opponent_') and '_rolling_' in col:
                 feature_cols.append(col)
             # For other columns, check if they're in the exclusion list
             elif col not in exclude_cols:
@@ -207,7 +253,9 @@ class GoalieModelTrainer:
         self,
         df: pd.DataFrame,
         train_idx: int,
-        val_idx: int
+        val_idx: int,
+        use_ewa: bool = False,
+        ewa_span_multiplier: float = 1.0
     ) -> pd.DataFrame:
         """
         Recalculate rolling features WITHOUT data leakage
@@ -218,11 +266,16 @@ class GoalieModelTrainer:
             df: DataFrame with base features (no rolling features)
             train_idx: Index where training set ends
             val_idx: Index where validation set ends
+            use_ewa: If True, use exponential weighted averages instead of simple rolling
+            ewa_span_multiplier: Multiplier for EWA span (1.0 = span equals window size)
 
         Returns:
             DataFrame with properly calculated rolling features
         """
-        logger.info("Calculating rolling features with proper time-based windows...")
+        if use_ewa:
+            logger.info(f"Calculating EWA features (span_multiplier={ewa_span_multiplier}) with proper time-based windows...")
+        else:
+            logger.info("Calculating rolling features with proper time-based windows...")
 
         # Define stats to calculate rolling features for
         goalie_stats = [
@@ -241,16 +294,24 @@ class GoalieModelTrainer:
 
         df_result = df.copy()
 
-        # Calculate rolling averages for each goalie
+        # Calculate rolling averages OR EWA for each goalie
         for stat in goalie_stats:
             for window in windows:
-                # Rolling mean (excluding current game with shift(1))
                 col_name = f"{stat}_rolling_{window}"
-                df_result[col_name] = df_result.groupby('goalie_id')[stat].transform(
-                    lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
-                )
 
-        logger.info(f"Recalculated {len(goalie_stats) * len(windows)} rolling features")
+                if use_ewa:
+                    # Exponential weighted average (recent games weighted more)
+                    span = window * ewa_span_multiplier
+                    df_result[col_name] = df_result.groupby('goalie_id')[stat].transform(
+                        lambda x: x.ewm(span=span, adjust=False, min_periods=1).mean().shift(1)
+                    )
+                else:
+                    # Simple rolling mean
+                    df_result[col_name] = df_result.groupby('goalie_id')[stat].transform(
+                        lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
+                    )
+
+        logger.info(f"Recalculated {len(goalie_stats) * len(windows)} {'EWA' if use_ewa else 'rolling'} features")
 
         return df_result
 

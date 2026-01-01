@@ -83,6 +83,17 @@ def main():
         action='store_true',
         help='Save evaluation plots'
     )
+    parser.add_argument(
+        '--use-ewa',
+        action='store_true',
+        help='Use Exponential Weighted Averages instead of simple rolling averages'
+    )
+    parser.add_argument(
+        '--ewa-span-multiplier',
+        type=float,
+        default=1.25,
+        help='Span multiplier for EWA (default: 1.25 based on testing)'
+    )
 
     args = parser.parse_args()
 
@@ -119,13 +130,17 @@ def main():
     val_size = args.val_size if args.val_size is not None else config['model'].get('validation_size', 0.15)
 
     logger.info(f"Preparing train/val/test splits (test={test_size:.1%}, val={val_size:.1%})")
+    if args.use_ewa:
+        logger.info(f"Using Exponential Weighted Averages with span_multiplier={args.ewa_span_multiplier}")
 
     X_train, X_val, X_test, y_train, y_val, y_test = trainer.prepare_data(
         df,
         target_col='saves',
         test_size=test_size,
         val_size=val_size,
-        random_state=config['model'].get('random_state', 42)
+        random_state=config['model'].get('random_state', 42),
+        use_ewa=args.use_ewa,
+        ewa_span_multiplier=args.ewa_span_multiplier
     )
 
     # Train model

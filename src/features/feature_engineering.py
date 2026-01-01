@@ -27,6 +27,7 @@ from .interaction_features import calculate_all_interaction_features
 from .team_rolling_features import add_team_rolling_features_to_dataset
 from .rest_fatigue_features import calculate_rest_features, calculate_game_state_features
 from .corsi_fenwick_features import calculate_corsi_fenwick_features, add_corsi_rolling_features
+from .advanced_rolling_features import add_all_advanced_rolling_features
 
 logger = logging.getLogger(__name__)
 
@@ -278,6 +279,14 @@ class FeatureEngineeringPipeline:
         # Step 4.9: Calculate Corsi/Fenwick rolling features
         logger.info("Calculating Corsi/Fenwick rolling features...")
         df = add_corsi_rolling_features(df, windows=[5, 10])
+
+        # Step 4.10: Calculate advanced rolling features (shot quality, opponent shooting %)
+        # CRITICAL: These are high-value features that directly predict save totals
+        logger.info("Calculating advanced rolling features (shot quality, opponent shooting %)...")
+        df = add_all_advanced_rolling_features(
+            df,
+            windows=self.config['features']['rolling_windows']
+        )
 
         # Step 5: Fill NaN values for early-season games
         # For games where we don't have enough history, use season averages

@@ -1,0 +1,44 @@
+[
+  {
+    "config_name":"Medium-slow decay (span=window*1.25)",
+    "span_multiplier":1.25,
+    "test_rmse":6.5103360672,
+    "test_mae":5.2335057259,
+    "test_r2":-0.0041458607
+  },
+  {
+    "config_name":"Very slow decay (span=window*2.0)",
+    "span_multiplier":2.0,
+    "test_rmse":6.5145236395,
+    "test_mae":5.2048926353,
+    "test_r2":-0.0054380894
+  },
+  {
+    "config_name":"Baseline (current)",
+    "span_multiplier":1.0,
+    "test_rmse":6.5372526337,
+    "test_mae":5.2636957169,
+    "test_r2":-0.012466073
+  },
+  {
+    "config_name":"Slow decay (span=window*1.5)",
+    "span_multiplier":1.5,
+    "test_rmse":6.5423110677,
+    "test_mae":5.2482671738,
+    "test_r2":-0.014033556
+  },
+  {
+    "config_name":"Fast decay (span=window*0.5)",
+    "span_multiplier":0.5,
+    "test_rmse":6.551931245,
+    "test_mae":5.2819681168,
+    "test_r2":-0.0170179605
+  },
+  {
+    "config_name":"Medium-fast decay (span=window*0.75)",
+    "span_multiplier":0.75,
+    "test_rmse":6.5554966933,
+    "test_mae":5.2705430984,
+    "test_r2":-0.0181251764
+  }
+]
