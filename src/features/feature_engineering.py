@@ -24,6 +24,7 @@ from .rolling_features import RollingFeatureCalculator, calculate_all_rolling_fe
 from .shot_quality_features import ShotQualityFeatureExtractor
 from .matchup_features import MatchupFeatureCalculator, calculate_all_matchup_features
 from .interaction_features import calculate_all_interaction_features
+from .team_rolling_features import add_team_rolling_features_to_dataset
 
 logger = logging.getLogger(__name__)
 
@@ -248,6 +249,14 @@ class FeatureEngineeringPipeline:
 
         # Step 4: Calculate rolling features
         df = self.calculate_rolling_features(df)
+
+        # Step 4.5: Calculate team-level rolling features
+        # CRITICAL: This focuses on team defense + opponent offense
+        logger.info("Calculating team-level rolling features...")
+        df = add_team_rolling_features_to_dataset(
+            df,
+            windows=self.config['features']['rolling_windows']
+        )
 
         # Step 5: Fill NaN values for early-season games
         # For games where we don't have enough history, use season averages

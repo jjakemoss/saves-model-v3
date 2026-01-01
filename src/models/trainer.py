@@ -86,12 +86,22 @@ class GoalieModelTrainer:
         # Recalculate rolling features for each split to prevent leakage
         logger.info("Recalculating rolling features WITHOUT future data...")
 
-        # Identify rolling feature columns (to remove and recalculate)
-        rolling_cols = [col for col in df.columns if '_rolling_' in col or '_ewa_' in col]
-        logger.info(f"Found {len(rolling_cols)} rolling features to recalculate")
+        # Identify GOALIE rolling feature columns (to remove and recalculate)
+        # Keep team/opponent rolling features - they're already properly calculated
+        goalie_rolling_cols = [col for col in df.columns
+                              if ('_rolling_' in col or '_ewa_' in col)
+                              and not col.startswith('team_defense_')
+                              and not col.startswith('opp_offense_')]
+        logger.info(f"Found {len(goalie_rolling_cols)} goalie rolling features to recalculate")
 
-        # Get base columns (non-rolling features + metadata)
-        base_df = df.drop(columns=rolling_cols)
+        # Count team features being preserved
+        team_rolling_cols = [col for col in df.columns
+                           if ('_rolling_' in col or '_ewa_' in col or '_std_' in col)
+                           and (col.startswith('team_defense_') or col.startswith('opp_offense_'))]
+        logger.info(f"Preserving {len(team_rolling_cols)} team/opponent rolling features")
+
+        # Get base columns (drop only goalie rolling features, keep team features)
+        base_df = df.drop(columns=goalie_rolling_cols)
 
         # Recalculate rolling features properly
         df_with_proper_rolling = self._recalculate_rolling_features(
@@ -109,13 +119,21 @@ class GoalieModelTrainer:
             target_col,
             # Constant features (all training samples have same value)
             'is_starter',  # Always True in training data (we filter to starters only)
-            # CRITICAL: Exclude current-game outcome features (not knowable before game)
-            # These can ONLY be used to calculate rolling averages for future games
+            # CRITICAL: Exclude ALL current-game outcome features (not knowable before game)
+            # These are the RAW stats from the current game being predicted
+            # We CAN use their ROLLING AVERAGES (e.g., opp_shots_rolling_5)
             'shots_against', 'total_shots_against', 'goals_against',
             'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
             'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
             'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against',
             'save_percentage', 'even_strength_save_pct', 'power_play_save_pct', 'short_handed_save_pct',
+            # Current-game team/opponent stats (RAW values from this specific game)
+            'opp_shots', 'opp_goals', 'opp_powerplay_goals', 'opp_powerplay_opportunities',
+            'team_goals', 'team_shots', 'team_powerplay_goals', 'team_powerplay_opportunities',
+            'team_shooting_pct', 'team_powerplay_pct',
+            'team_hits', 'team_blocked_shots', 'team_pim', 'team_faceoff_win_pct',
+            'pim',
+            # Current-game shot quality stats (RAW values)
             'high_danger_saves', 'high_danger_shots_against', 'high_danger_goals_against', 'high_danger_save_pct',
             'mid_danger_saves', 'mid_danger_shots_against', 'mid_danger_goals_against', 'mid_danger_save_pct',
             'low_danger_saves', 'low_danger_shots_against', 'low_danger_goals_against', 'low_danger_save_pct',
@@ -125,12 +143,24 @@ class GoalieModelTrainer:
             'toi_seconds', 'saves_volatility_10'
         ]
 
-        feature_cols = [col for col in df_with_proper_rolling.columns if col not in exclude_cols]
+        # Build feature list with special handling for team/opponent rolling features
+        feature_cols = []
+        for col in df_with_proper_rolling.columns:
+            # ALWAYS include team defense and opponent offense rolling features
+            # These are historical averages, not current-game outcomes
+            if col.startswith('team_defense_') or col.startswith('opp_offense_'):
+                feature_cols.append(col)
+            # For other columns, check if they're in the exclusion list
+            elif col not in exclude_cols:
+                feature_cols.append(col)
 
         # Store feature names
         self.feature_names = feature_cols
 
         logger.info(f"Using {len(feature_cols)} features for training")
+        logger.info(f"  - Team defense features: {len([c for c in feature_cols if c.startswith('team_defense_')])}")
+        logger.info(f"  - Opponent offense features: {len([c for c in feature_cols if c.startswith('opp_offense_')])}")
+        logger.info(f"  - Goalie features: {len([c for c in feature_cols if not c.startswith('team_defense_') and not c.startswith('opp_offense_')])}")
 
         # Extract features and target
         X = df_with_proper_rolling[feature_cols].copy()
