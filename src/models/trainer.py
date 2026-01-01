@@ -140,7 +140,13 @@ class GoalieModelTrainer:
             'total_xg_against', 'high_danger_xg_against', 'mid_danger_xg_against', 'low_danger_xg_against',
             'rebounds_created', 'rebound_rate', 'dangerous_rebound_pct',
             'avg_shot_distance', 'avg_shot_angle',
-            'toi_seconds', 'saves_volatility_10'
+            'toi_seconds', 'saves_volatility_10',
+            # CRITICAL: Exclude Corsi/Fenwick from CURRENT game (only use rolling averages)
+            'team_corsi_for', 'team_corsi_against', 'team_corsi_for_pct',
+            'team_fenwick_for', 'team_fenwick_against', 'team_fenwick_for_pct',
+            'opp_blocked_shots',  # Used to calculate Corsi, but is current-game data
+            # CRITICAL: Exclude game state from CURRENT game (only use rolling averages)
+            'is_win', 'is_loss', 'goal_differential'
         ]
 
         # Build feature list with special handling for team/opponent rolling features
