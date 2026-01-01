@@ -102,22 +102,80 @@ class RealtimeFeatureCollector:
         season: str
     ) -> Optional[int]:
         """
-        Find goalie ID by name
+        Find goalie ID by name using team roster
 
-        For now, returns None (placeholder).
-        Full implementation would search roster or use player search API.
+        Searches team roster for goalie matching the provided name.
 
         Args:
-            goalie_name: Goalie's name
+            goalie_name: Goalie's name (e.g., "Filip Gustavsson")
             team_abbrev: Team abbreviation
             season: Season string
 
         Returns:
-            Goalie player ID or None
+            Goalie player ID or None if not found
         """
-        # Placeholder - would implement roster search here
-        logger.warning("Goalie ID lookup not yet implemented")
-        return None
+        try:
+            # Get team roster
+            endpoint = f"/v1/roster/{team_abbrev}/{season}"
+            response = self.api_client.get(endpoint)
+
+            if not response:
+                logger.warning(f"No roster data found for {team_abbrev}")
+                return None
+
+            # Search for goalie in roster
+            goalies = response.get('goalies', [])
+
+            # Normalize search name (remove accents, lowercase)
+            search_name = self._normalize_name(goalie_name)
+
+            for goalie in goalies:
+                # Get player info
+                first_name = goalie.get('firstName', {}).get('default', '')
+                last_name = goalie.get('lastName', {}).get('default', '')
+                full_name = f"{first_name} {last_name}"
+
+                # Normalize roster name
+                roster_name = self._normalize_name(full_name)
+
+                # Check if names match
+                if search_name == roster_name or search_name in roster_name or roster_name in search_name:
+                    player_id = goalie.get('id')
+                    logger.info(f"Found goalie: {full_name} (ID: {player_id})")
+                    return player_id
+
+            logger.warning(f"Goalie not found in roster: {goalie_name}")
+            return None
+
+        except Exception as e:
+            logger.error(f"Error finding goalie ID: {e}")
+            return None
+
+    def _normalize_name(self, name: str) -> str:
+        """
+        Normalize name for comparison
+
+        Removes accents, converts to lowercase, removes extra spaces.
+
+        Args:
+            name: Name to normalize
+
+        Returns:
+            Normalized name
+        """
+        import unicodedata
+
+        # Remove accents
+        name = unicodedata.normalize('NFKD', name)
+        name = ''.join([c for c in name if not unicodedata.combining(c)])
+
+        # Lowercase and strip
+        name = name.lower().strip()
+
+        # Remove extra spaces
+        name = ' '.join(name.split())
+
+        return name
 
     def _fetch_goalie_game_logs(
         self,
