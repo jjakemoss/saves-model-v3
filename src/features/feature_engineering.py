@@ -25,6 +25,8 @@ from .shot_quality_features import ShotQualityFeatureExtractor
 from .matchup_features import MatchupFeatureCalculator, calculate_all_matchup_features
 from .interaction_features import calculate_all_interaction_features
 from .team_rolling_features import add_team_rolling_features_to_dataset
+from .rest_fatigue_features import calculate_rest_features, calculate_game_state_features
+from .corsi_fenwick_features import calculate_corsi_fenwick_features, add_corsi_rolling_features
 
 logger = logging.getLogger(__name__)
 
@@ -250,13 +252,32 @@ class FeatureEngineeringPipeline:
         # Step 4: Calculate rolling features
         df = self.calculate_rolling_features(df)
 
-        # Step 4.5: Calculate team-level rolling features
+        # Step 4.5: Calculate rest & fatigue features
+        # CRITICAL: Back-to-back games can swing saves by 4-6
+        logger.info("Calculating rest and fatigue features...")
+        df = calculate_rest_features(df)
+
+        # Step 4.6: Calculate Corsi/Fenwick features
+        # CRITICAL: Better shot volume predictor than SOG
+        logger.info("Calculating Corsi/Fenwick features...")
+        df = calculate_corsi_fenwick_features(df)
+
+        # Step 4.7: Calculate game state features
+        # Teams trailing shoot ~30% more
+        logger.info("Calculating game state features...")
+        df = calculate_game_state_features(df, windows=[5, 10])
+
+        # Step 4.8: Calculate team-level rolling features
         # CRITICAL: This focuses on team defense + opponent offense
         logger.info("Calculating team-level rolling features...")
         df = add_team_rolling_features_to_dataset(
             df,
             windows=self.config['features']['rolling_windows']
         )
+
+        # Step 4.9: Calculate Corsi/Fenwick rolling features
+        logger.info("Calculating Corsi/Fenwick rolling features...")
+        df = add_corsi_rolling_features(df, windows=[5, 10])
 
         # Step 5: Fill NaN values for early-season games
         # For games where we don't have enough history, use season averages

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "your-project-name"
+name = "saves-model-v3"
 version = "0.1.0"
 description = "Your project description"
 readme = "README.md"

@@ -1,0 +1,5 @@
+Rest & Fatigue	❌ MISSING	CRITICAL - 3-5 save swing	🔴 URGENT
+Corsi/Fenwick	❌ MISSING	HIGH - Best shot volume predictor	🔴 HIGH
+Game State (trailing/leading trends)	❌ MISSING	HIGH - Trailing teams shoot 30% more	🟡 MEDIUM
+Opponent fatigue/rest	❌ MISSING	MEDIUM - Tired opponent = fewer shots	🟡 MEDIUM
+Travel distance	❌ MISSING	LOW-MEDIUM - West coast road trips	🟢 LOW
