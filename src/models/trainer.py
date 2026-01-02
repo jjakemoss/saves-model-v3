@@ -338,19 +338,19 @@ class GoalieModelTrainer:
         """
         logger.info("Training XGBoost regression model...")
 
-        # Default XGBoost parameters for regression
+        # Default XGBoost parameters for regression (optimized via hyperparameter tuning)
         default_params = {
             'objective': 'reg:squarederror',
             'eval_metric': 'rmse',
-            'n_estimators': 500,
-            'max_depth': 6,
-            'learning_rate': 0.05,
-            'subsample': 0.8,
-            'colsample_bytree': 0.8,
-            'min_child_weight': 3,
-            'gamma': 0.1,
-            'reg_alpha': 0.1,
-            'reg_lambda': 1.0,
+            'n_estimators': 600,
+            'max_depth': 4,
+            'learning_rate': 0.012,
+            'subsample': 0.9,
+            'colsample_bytree': 1.0,
+            'min_child_weight': 7,
+            'gamma': 0.05,
+            'reg_alpha': 0.05,
+            'reg_lambda': 2.0,
             'random_state': self.config.get('model', {}).get('random_state', 42),
             'n_jobs': -1,
             'verbosity': 1
