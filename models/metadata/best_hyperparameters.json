@@ -1,0 +1,17 @@
+{
+  "best_params": {
+    "n_estimators": 600,
+    "max_depth": 4,
+    "learning_rate": 0.012,
+    "subsample": 0.9,
+    "colsample_bytree": 1.0,
+    "min_child_weight": 7,
+    "gamma": 0.05,
+    "reg_alpha": 0.05,
+    "reg_lambda": 2.0
+  },
+  "val_rmse": 6.1633708841,
+  "test_rmse": 6.3659025616,
+  "iteration": 213,
+  "tuning_date": "2026-01-02T10:35:09.433109"
+}
