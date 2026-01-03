@@ -179,15 +179,19 @@ def add_corsi_rolling_features(
     team_features_combined = pd.concat(all_team_features, ignore_index=True)
 
     # Merge back into main dataset - use game_id AND team_abbrev to avoid duplicates
+    # CRITICAL: Use suffixes to prevent _x/_y column creation
     df = df.merge(
         team_features_combined,
         on=['game_id', 'team_abbrev'],
         how='left',
-        suffixes=('', '_drop')
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
 
     # Drop any duplicate columns from merge
-    df = df[[col for col in df.columns if not col.endswith('_drop')]]
+    drop_cols = [col for col in df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from team Corsi/Fenwick merge")
+        df = df.drop(columns=drop_cols)
 
     # Also calculate opponent Corsi/Fenwick rolling features
     opponent_corsi_features = {}
@@ -222,15 +226,19 @@ def add_corsi_rolling_features(
     opp_features_combined = pd.concat(all_opp_features, ignore_index=True)
 
     # Merge back - use game_id AND opponent_team to avoid duplicates
+    # CRITICAL: Use suffixes to prevent _x/_y column creation
     df = df.merge(
         opp_features_combined,
         on=['game_id', 'opponent_team'],
         how='left',
-        suffixes=('', '_drop')
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
 
     # Drop duplicates
-    df = df[[col for col in df.columns if not col.endswith('_drop')]]
+    drop_cols = [col for col in df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from opponent Corsi/Fenwick merge")
+        df = df.drop(columns=drop_cols)
 
     logger.info(f"Corsi/Fenwick rolling features calculated for windows: {windows}")
     logger.info(f"  - Added {len(corsi_stats) * len(windows) * 2} features")

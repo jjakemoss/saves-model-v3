@@ -1,0 +1,52 @@
+{
+  "total_rows": 7872,
+  "total_columns": 46,
+  "feature_columns": [
+    "is_home",
+    "saves_rolling_3",
+    "saves_rolling_std_3",
+    "saves_rolling_5",
+    "saves_rolling_std_5",
+    "saves_rolling_10",
+    "saves_rolling_std_10",
+    "shots_against_rolling_3",
+    "shots_against_rolling_std_3",
+    "shots_against_rolling_5",
+    "shots_against_rolling_std_5",
+    "shots_against_rolling_10",
+    "shots_against_rolling_std_10",
+    "goals_against_rolling_3",
+    "goals_against_rolling_std_3",
+    "goals_against_rolling_5",
+    "goals_against_rolling_std_5",
+    "goals_against_rolling_10",
+    "goals_against_rolling_std_10",
+    "save_percentage_rolling_3",
+    "save_percentage_rolling_std_3",
+    "save_percentage_rolling_5",
+    "save_percentage_rolling_std_5",
+    "save_percentage_rolling_10",
+    "save_percentage_rolling_std_10",
+    "opp_goals_rolling_5",
+    "opp_shots_rolling_5",
+    "opp_goals_rolling_10",
+    "opp_shots_rolling_10",
+    "goalie_days_rest",
+    "goalie_is_back_to_back"
+  ],
+  "exclude_columns": [
+    "saves",
+    "shots_against",
+    "goals_against",
+    "save_percentage",
+    "toi",
+    "team_goals",
+    "team_shots",
+    "opp_goals",
+    "opp_shots"
+  ],
+  "date_range": {
+    "min": "2022-10-07 00:00:00",
+    "max": "2025-04-17 00:00:00"
+  }
+}

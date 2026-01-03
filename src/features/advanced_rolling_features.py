@@ -152,15 +152,19 @@ def add_team_shot_quality_rolling_features(
     team_features_combined = pd.concat(all_team_features, ignore_index=True)
 
     # Merge back into main dataset
+    # CRITICAL: Use suffixes to prevent _x/_y column creation
     df = df.merge(
         team_features_combined,
         on=['game_id', 'team_abbrev'],
         how='left',
-        suffixes=('', '_drop')
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
 
     # Drop duplicate columns
-    df = df[[col for col in df.columns if not col.endswith('_drop')]]
+    drop_cols = [col for col in df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from team shot quality merge")
+        df = df.drop(columns=drop_cols)
 
     logger.info(f"Added {len(team_shot_quality_stats) * len(windows)} team shot quality rolling features")
 
@@ -260,15 +264,19 @@ def add_opponent_shooting_pct_features(
     opp_features_combined = pd.concat(all_opp_features, ignore_index=True)
 
     # Merge back into main dataset
+    # CRITICAL: Use suffixes to prevent _x/_y column creation
     df = df.merge(
         opp_features_combined,
         on=['game_id', 'opponent_team'],
         how='left',
-        suffixes=('', '_drop')
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
 
     # Drop duplicates
-    df = df[[col for col in df.columns if not col.endswith('_drop')]]
+    drop_cols = [col for col in df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from opponent shooting % merge")
+        df = df.drop(columns=drop_cols)
 
     logger.info(f"Added {len(windows) * 2} opponent shooting percentage features")
 

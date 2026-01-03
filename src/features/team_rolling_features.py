@@ -329,11 +329,19 @@ def add_team_rolling_features_to_dataset(
     # 2. Rolling features used .shift(1) to exclude current game
     # 3. game_id uniquely identifies a specific game
     # 4. The rolling feature for game_id X only uses data from games before X
+    # CRITICAL: Specify suffixes to prevent _x/_y column creation
     result_df = result_df.merge(
         team_features_combined,
         on=['game_id', 'team_abbrev', 'game_date'],
-        how='left'
+        how='left',
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
+
+    # Drop any _DROP columns from merge conflicts
+    drop_cols = [col for col in result_df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from team merge: {drop_cols}")
+        result_df = result_df.drop(columns=drop_cols)
 
     # Merge opponent's offensive features
     logger.info("Merging opponent offensive features...")
@@ -353,11 +361,19 @@ def add_team_rolling_features_to_dataset(
     opp_features_combined = pd.concat(all_opp_features, ignore_index=True)
 
     # Single merge operation for all opponents
+    # CRITICAL: Specify suffixes to prevent _x/_y column creation
     result_df = result_df.merge(
         opp_features_combined,
         on=['game_id', 'opponent_team', 'game_date'],
-        how='left'
+        how='left',
+        suffixes=('_DROP', '')  # Keep new features, drop old duplicates
     )
+
+    # Drop any _DROP columns from merge conflicts
+    drop_cols = [col for col in result_df.columns if col.endswith('_DROP')]
+    if drop_cols:
+        logger.warning(f"Dropping {len(drop_cols)} duplicate columns from opponent merge: {drop_cols}")
+        result_df = result_df.drop(columns=drop_cols)
 
     logger.info(f"Added {len([c for c in result_df.columns if 'team_defense_' in c or 'opp_offense_' in c])} team/opponent features")
 
