@@ -28,12 +28,13 @@ class BettingPredictor:
         self.model = xgb.XGBClassifier()
         self.model.load_model(str(self.model_path))
 
-    def predict(self, features_df):
+    def predict(self, features_df, betting_line=None):
         """
         Generate prediction for a single game
 
         Args:
             features_df: pd.DataFrame with single row of 89 features
+            betting_line: Optional betting line (saves o/u) for estimating predicted saves
 
         Returns:
             dict: {
@@ -62,9 +63,17 @@ class BettingPredictor:
         else:
             recommendation = 'NO BET'
 
-        # Predicted saves (not used for recommendation, but informative)
-        # This would require the regression model, for now use a simple heuristic
-        predicted_saves = 25.0  # Placeholder
+        # Estimate predicted saves based on betting line and probability
+        # If prob_over = 0.6 and line = 25.5, estimate ~26.5 saves (slightly over)
+        # If prob_over = 0.4 and line = 25.5, estimate ~24.5 saves (slightly under)
+        if betting_line is not None:
+            # Map probability to estimated distance from line
+            # prob_over 0.5 -> 0 difference, prob_over 0.75 -> +2.5, prob_over 0.25 -> -2.5
+            estimated_offset = (prob_over - 0.5) * 5  # Scale factor of 5 gives reasonable range
+            predicted_saves = round(betting_line + estimated_offset, 1)
+        else:
+            # If no betting line provided, use league average
+            predicted_saves = 25.0
 
         return {
             'predicted_saves': predicted_saves,

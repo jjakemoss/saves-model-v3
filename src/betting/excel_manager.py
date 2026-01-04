@@ -40,17 +40,17 @@ class BettingTracker:
         # Find next empty row
         next_row = ws.max_row + 1
 
-        # Append each game
+        # Append each game (column order: betting_line moved to position 4)
         for _, game in games_df.iterrows():
             row_data = [
                 game.get('game_date'),
                 game.get('game_id'),
                 game.get('goalie_name'),
+                '',  # betting_line (user fills) - MOVED HERE
                 game.get('goalie_id'),
                 game.get('team_abbrev'),
                 game.get('opponent_team'),
                 game.get('is_home'),
-                '',  # betting_line (user fills)
                 '',  # predicted_saves
                 '',  # prob_over
                 '',  # confidence_pct
@@ -83,11 +83,15 @@ class BettingTracker:
         # Load existing data
         df = pd.read_excel(self.tracker_file, sheet_name='Bets')
 
-        # Update predictions by game_id and goalie_id
+        # Update predictions by game_id and goalie_name (before goalie_id is populated)
         for _, pred in predictions_df.iterrows():
             game_id = pred['game_id']
             goalie_id = pred['goalie_id']
-            mask = (df['game_id'] == game_id) & (df['goalie_id'].isna() | (df['goalie_id'] == goalie_id))
+            goalie_name = pred.get('goalie_name', '')
+
+            # Match by game_id AND goalie_name to avoid updating TBD rows
+            # Use goalie_name because that's what the user entered
+            mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower())
 
             if mask.any():
                 # Update goalie_id if it was looked up

@@ -118,13 +118,14 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
                 recent_games=recent_games
             )
 
-            # Generate prediction
+            # Generate prediction (pass betting_line for save estimation)
             print("    Running model prediction...")
-            prediction = predictor.predict(features_df)
+            prediction = predictor.predict(features_df, betting_line=betting_line)
 
-            # Add game_id for tracking
+            # Add game_id and goalie info for tracking
             prediction['game_id'] = game_id
             prediction['goalie_id'] = goalie_id
+            prediction['goalie_name'] = goalie_name  # Include for Excel matching
 
             predictions_list.append(prediction)
 

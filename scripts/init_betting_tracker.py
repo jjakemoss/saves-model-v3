@@ -23,10 +23,10 @@ def create_betting_tracker():
     # Create Bets sheet
     bets_sheet = wb.create_sheet('Bets', 0)
 
-    # Define columns
+    # Define columns (betting_line moved to position 4, right after goalie_name)
     headers = [
-        'game_date', 'game_id', 'goalie_name', 'goalie_id', 'team_abbrev',
-        'opponent_team', 'is_home', 'betting_line', 'predicted_saves',
+        'game_date', 'game_id', 'goalie_name', 'betting_line', 'goalie_id',
+        'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
         'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation',
         'bet_amount', 'bet_selection', 'actual_saves', 'result',
         'profit_loss', 'notes'
@@ -45,16 +45,16 @@ def create_betting_tracker():
         cell.font = header_font
         cell.alignment = header_alignment
 
-    # Set column widths
+    # Set column widths (updated to match new column order)
     column_widths = {
         'A': 12,  # game_date
         'B': 12,  # game_id
         'C': 18,  # goalie_name
-        'D': 12,  # goalie_id
-        'E': 12,  # team_abbrev
-        'F': 15,  # opponent_team
-        'G': 10,  # is_home
-        'H': 13,  # betting_line
+        'D': 13,  # betting_line (MOVED HERE)
+        'E': 12,  # goalie_id
+        'F': 12,  # team_abbrev
+        'G': 15,  # opponent_team
+        'H': 10,  # is_home
         'I': 15,  # predicted_saves
         'J': 12,  # prob_over
         'K': 14,  # confidence_pct

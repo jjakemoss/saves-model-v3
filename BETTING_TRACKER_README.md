@@ -116,12 +116,12 @@ reports/                     # Performance reports (if using --save)
 | `game_date` | populate script | YYYY-MM-DD |
 | `game_id` | populate script | NHL game ID |
 | `goalie_name` | **USER** | Goalie's LAST NAME (e.g., "Shesterkin") |
+| `betting_line` | **USER** | Saves line from sportsbook (e.g., 24.5) |
 | `goalie_id` | generate script | NHL player ID (auto-looked up) |
 | `team_abbrev` | populate script | Team abbreviation |
 | `opponent_team` | populate script | Opponent abbreviation |
 | `is_home` | populate script | 1=home, 0=away |
-| `betting_line` | **USER** | Saves line from sportsbook |
-| `predicted_saves` | generate script | Model's predicted total |
+| `predicted_saves` | generate script | Model's predicted total (estimated from line + probability) |
 | `prob_over` | generate script | Probability > line (0-1.0) |
 | `confidence_pct` | generate script | Confidence 0-100% |
 | `confidence_bucket` | generate script | 50-55%, 55-60%, etc. |
