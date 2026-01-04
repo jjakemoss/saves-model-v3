@@ -13,3 +13,4 @@ __pycache__/
 *.parquet
 .claude
 claude.md
+saves_model_v3.egg-info/
