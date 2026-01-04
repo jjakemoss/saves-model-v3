@@ -1,0 +1,7 @@
+{
+  "model_type": "binary_classifier",
+  "objective": "predict_over_under",
+  "num_features": 90,
+  "training_date": "2026-01-03T18:32:42.379447",
+  "xgboost_version": "2.1.4"
+}

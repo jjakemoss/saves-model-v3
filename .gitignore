@@ -1,0 +1,15 @@
+data/raw/
+data/cache/
+models/trained/
+logs/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+.env
+*.db
+*.sqlite
+.DS_Store
+*.pkl
+*.parquet
+.claude
+claude.md

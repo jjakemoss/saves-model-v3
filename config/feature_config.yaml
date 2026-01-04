@@ -1,0 +1,91 @@
+# Feature Engineering Configuration
+
+goalie_features:
+  recent_performance:
+    - goalie_saves_ewa_3
+    - goalie_saves_ewa_10
+    - goalie_save_pct_ewa_3
+    - goalie_save_pct_ewa_10
+    - goalie_shots_against_ewa_5
+
+  season_stats:
+    - goalie_season_avg_saves
+    - goalie_season_save_pct
+    - goalie_home_save_pct_season
+    - goalie_away_save_pct_season
+    - goalie_save_volatility_last_10
+
+  shot_quality:
+    - goalie_high_danger_save_pct_last_10
+    - goalie_mid_danger_save_pct_last_10
+    - goalie_low_danger_save_pct_last_10
+    - goalie_rebound_rate_last_10
+    - goalie_dangerous_rebound_pct
+
+  situational:
+    - goalie_5v5_save_pct
+    - goalie_pp_save_pct
+    - goalie_pk_save_pct
+    - goalie_vs_opponent_save_pct_career
+
+team_features:
+  defensive_quality:
+    - team_shots_against_ewa_5
+    - team_shot_suppression_index
+    - team_penalty_kill_pct_last_10
+    - team_high_danger_chances_against_ewa_5
+    - team_expected_goals_against_ewa_5
+
+  defensive_system:
+    - team_avg_shot_distance_allowed
+    - team_blocked_shots_per_game
+
+  personnel:
+    - team_top_4_defensemen_corsi_for_pct
+    - team_defensemen_ice_time_distribution
+
+opponent_features:
+  offensive_volume:
+    - opponent_shots_per_game_ewa_5
+    - opponent_shot_generation_index
+    - opponent_high_danger_chances_ewa_5
+    - opponent_expected_goals_for_ewa_5
+
+  offensive_skill:
+    - opponent_shooting_pct_5v5_last_10
+    - opponent_shooting_pct_overall_last_10
+
+  game_state:
+    - opponent_avg_score_differential_last_10
+    - opponent_trailing_time_pct
+
+  special_teams:
+    - opponent_power_play_pct_last_10
+    - opponent_power_play_opportunities_per_game
+
+contextual_features:
+  rest_fatigue:
+    - days_since_last_start
+    - consecutive_starts_streak
+    - starts_in_last_7_days
+    - opponent_days_since_last_game
+
+  travel:
+    - travel_miles_since_last_game
+    - games_on_current_road_trip
+    - opponent_travel_miles
+
+  matchup:
+    - h2h_saves_avg_last_5
+    - goalie_vs_opponent_saves_avg
+    - betting_line
+    - line_vs_goalie_avg
+
+  volatility:
+    - goalie_overline_frequency_last_10
+
+interaction_features:
+  - team_defense_quality_x_opponent_offense_quality
+  - team_shot_suppression_x_opponent_shot_generation
+  - goalie_recent_save_pct_x_days_rest
+  - opponent_shooting_pct_x_opponent_days_rest

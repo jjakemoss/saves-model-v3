@@ -1,0 +1,31 @@
+{
+  "schedules": {
+    "total_seasons": 4,
+    "total_teams": 32,
+    "total_schedules_collected": 128
+  },
+  "games": {
+    "total_games": 5248,
+    "successful_boxscores": 5248,
+    "successful_pbp": 5248,
+    "failed_games": [],
+    "success_rate": 100.0
+  },
+  "goalies": {
+    "total_goalies": 183,
+    "total_seasons": 4,
+    "total_collections": 732,
+    "successful_gamelogs": 732,
+    "successful_edge": 394,
+    "success_rate": 76.91256830601093
+  },
+  "cache": {
+    "expired_cleared": 0,
+    "stats": {
+      "total_entries": 12754,
+      "active_entries": 12754,
+      "expired_entries": 0,
+      "db_path": "data/cache/api_cache.db"
+    }
+  }
+}

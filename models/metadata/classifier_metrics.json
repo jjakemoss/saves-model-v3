@@ -1,0 +1,18 @@
+{
+  "train": {
+    "accuracy": 0.8532934131736527
+  },
+  "test": {
+    "accuracy": 0.5193075898801598,
+    "log_loss": 0.7008951002640914,
+    "auc_roc": 0.5486905016770143,
+    "confusion_matrix": {
+      "true_negatives": 241,
+      "false_positives": 105,
+      "false_negatives": 256,
+      "true_positives": 149
+    },
+    "precision_over": 0.5866141732283464,
+    "recall_over": 0.36790123456790125
+  }
+}
