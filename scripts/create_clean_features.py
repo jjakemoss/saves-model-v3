@@ -61,6 +61,21 @@ def load_boxscores(boxscores_dir):
                     if not goalie_id:
                         continue
 
+                    # Parse situation-specific stats
+                    def parse_fraction(frac_str):
+                        """Parse '27/29' format to (saves, shots)"""
+                        if not frac_str or frac_str == '0/0':
+                            return 0, 0
+                        try:
+                            saves, shots = frac_str.split('/')
+                            return int(saves), int(shots)
+                        except:
+                            return 0, 0
+
+                    es_saves, es_shots = parse_fraction(goalie.get('evenStrengthShotsAgainst', '0/0'))
+                    pp_saves, pp_shots = parse_fraction(goalie.get('powerPlayShotsAgainst', '0/0'))
+                    sh_saves, sh_shots = parse_fraction(goalie.get('shorthandedShotsAgainst', '0/0'))
+
                     # Extract goalie stats
                     game_record = {
                         'game_id': game_id,
@@ -79,6 +94,17 @@ def load_boxscores(boxscores_dir):
                         'goals_against': goalie.get('goalsAgainst', 0),
                         'save_percentage': goalie.get('savePctg', 0.0) if goalie.get('savePctg') else 0.0,
                         'toi': goalie.get('toi', '0:00'),
+
+                        # Situation-specific goalie stats (CURRENT GAME - will be excluded)
+                        'even_strength_saves': es_saves,
+                        'even_strength_shots_against': es_shots,
+                        'even_strength_goals_against': goalie.get('evenStrengthGoalsAgainst', 0),
+                        'power_play_saves': pp_saves,
+                        'power_play_shots_against': pp_shots,
+                        'power_play_goals_against': goalie.get('powerPlayGoalsAgainst', 0),
+                        'short_handed_saves': sh_saves,
+                        'short_handed_shots_against': sh_shots,
+                        'short_handed_goals_against': goalie.get('shorthandedGoalsAgainst', 0),
 
                         # Team stats (CURRENT GAME - will be excluded)
                         'team_goals': team_data.get('score', 0),
@@ -108,7 +134,12 @@ def calculate_rolling_features(df):
     logger.info("Calculating rolling features (with shift to prevent leakage)...")
 
     # Stats to calculate rolling features for
-    stats = ['saves', 'shots_against', 'goals_against', 'save_percentage']
+    stats = [
+        'saves', 'shots_against', 'goals_against', 'save_percentage',
+        'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
+        'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
+        'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against'
+    ]
     windows = [3, 5, 10]
 
     # CRITICAL: Sort by goalie and date FIRST
@@ -182,6 +213,57 @@ def calculate_opponent_rolling_features(df):
     return df
 
 
+def calculate_team_defensive_features(df):
+    """
+    Calculate rolling features for team defensive performance
+
+    How well does the goalie's team defend? (shots against, goals against allowed)
+    This is different from goalie stats - it's about the team's overall defensive ability
+    """
+    logger.info("Calculating team defensive rolling features...")
+
+    windows = [5, 10]
+
+    # For each team, calculate their DEFENSIVE stats
+    team_features = {}
+
+    for team in df['team_abbrev'].unique():
+        # Get games where this team played (to calculate their defensive performance)
+        team_games = df[df['team_abbrev'] == team].sort_values('game_date').copy()
+
+        if len(team_games) == 0:
+            continue
+
+        # Calculate rolling averages of their defensive performance
+        features = pd.DataFrame({
+            'game_id': team_games['game_id'],
+            'team_abbrev': team
+        })
+
+        for window in windows:
+            # Goals against (team defense allows)
+            features[f'team_goals_against_rolling_{window}'] = team_games.groupby('team_abbrev')['opp_goals'].transform(
+                lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
+            )
+
+            # Shots against (team defense allows)
+            features[f'team_shots_against_rolling_{window}'] = team_games.groupby('team_abbrev')['opp_shots'].transform(
+                lambda x: x.rolling(window=window, min_periods=1).mean().shift(1)
+            )
+
+        team_features[team] = features
+
+    # Combine all team features
+    all_team = pd.concat(team_features.values(), ignore_index=True)
+
+    # Merge back to main dataset
+    df = df.merge(all_team, on=['game_id', 'team_abbrev'], how='left')
+
+    logger.info(f"Added {len(windows) * 2} team defensive rolling features")
+
+    return df
+
+
 def calculate_rest_features(df):
     """Calculate days rest for goalie"""
     logger.info("Calculating rest/fatigue features...")
@@ -246,10 +328,13 @@ def create_clean_features():
     # 3. Calculate opponent offensive patterns
     df = calculate_opponent_rolling_features(df)
 
-    # 4. Calculate rest/fatigue
+    # 4. Calculate team defensive patterns
+    df = calculate_team_defensive_features(df)
+
+    # 5. Calculate rest/fatigue
     df = calculate_rest_features(df)
 
-    # 5. Fill NaN values (from first few games with no rolling history)
+    # 6. Fill NaN values (from first few games with no rolling history)
     logger.info("Filling NaN values in rolling features...")
     rolling_cols = [c for c in df.columns if 'rolling' in c]
     df[rolling_cols] = df[rolling_cols].fillna(0)
