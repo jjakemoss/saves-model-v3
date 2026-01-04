@@ -716,8 +716,8 @@ def main():
     # Load all boxscores
     boxscores_by_date, sorted_dates = load_all_boxscores()
 
-    # Filter to 2024-25 season only
-    boxscores_by_date = filter_seasons(boxscores_by_date, seasons=['20242025'])
+    # Filter to 2025-26 season only
+    boxscores_by_date = filter_seasons(boxscores_by_date, seasons=['20252026'])
     sorted_dates = sorted(boxscores_by_date.keys())
 
     if not sorted_dates:

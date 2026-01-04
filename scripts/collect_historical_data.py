@@ -31,8 +31,8 @@ def main():
     parser.add_argument(
         "--seasons",
         nargs="+",
-        default=["20222023", "20232024", "20242025"],
-        help="Seasons to collect in YYYYYYYY format (default: last 3 seasons)"
+        default=["20222023", "20232024", "20242025", "20252026"],
+        help="Seasons to collect in YYYYYYYY format (default: last 4 seasons)"
     )
     parser.add_argument(
         "--config",
