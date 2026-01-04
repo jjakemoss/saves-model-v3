@@ -49,6 +49,7 @@ MAX_GAMES_TO_PROCESS = None  # Change to None to process all games
 def load_all_boxscores():
     """
     Load all boxscore JSON files and organize by game date
+    Only includes completed games (gameState == 'OFF')
 
     Returns:
         dict: {date_str: [boxscore1, boxscore2, ...]}
@@ -61,26 +62,37 @@ def load_all_boxscores():
     boxscores_by_date = defaultdict(list)
 
     total_files = 0
+    completed_games = 0
+    future_games = 0
+
     for boxscore_file in boxscore_dir.glob('*.json'):
         total_files += 1
         try:
             with open(boxscore_file, 'r') as f:
                 boxscore = json.load(f)
                 game_date = boxscore.get('gameDate', '')
+                game_state = boxscore.get('gameState', '')
 
-                if game_date:
+                # Only include completed games
+                if game_date and game_state == 'OFF':
                     boxscore['_file_path'] = str(boxscore_file)
                     boxscores_by_date[game_date].append(boxscore)
+                    completed_games += 1
+                elif game_date and game_state != 'OFF':
+                    future_games += 1
         except Exception as e:
             print(f"[WARNING] Failed to load {boxscore_file}: {e}")
 
     print(f"[OK] Loaded {total_files} boxscore files")
+    print(f"[OK] Completed games: {completed_games}")
+    print(f"[INFO] Skipped future/scheduled games: {future_games}")
     print(f"[OK] Found games across {len(boxscores_by_date)} unique dates")
 
     # Sort dates chronologically
     sorted_dates = sorted(boxscores_by_date.keys())
 
-    print(f"[INFO] Date range: {sorted_dates[0]} to {sorted_dates[-1]}")
+    if sorted_dates:
+        print(f"[INFO] Date range: {sorted_dates[0]} to {sorted_dates[-1]}")
 
     return boxscores_by_date, sorted_dates
 
@@ -716,8 +728,8 @@ def main():
     # Load all boxscores
     boxscores_by_date, sorted_dates = load_all_boxscores()
 
-    # Filter to 2025-26 season only
-    boxscores_by_date = filter_seasons(boxscores_by_date, seasons=['20252026'])
+    # Filter to 2024-25 and 2025-26 seasons
+    boxscores_by_date = filter_seasons(boxscores_by_date, seasons=['20242025', '20252026'])
     sorted_dates = sorted(boxscores_by_date.keys())
 
     if not sorted_dates:

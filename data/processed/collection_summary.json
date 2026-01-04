@@ -1,29 +1,29 @@
 {
   "schedules": {
-    "total_seasons": 3,
+    "total_seasons": 4,
     "total_teams": 32,
-    "total_schedules_collected": 96
+    "total_schedules_collected": 128
   },
   "games": {
-    "total_games": 3936,
-    "successful_boxscores": 3936,
-    "successful_pbp": 3936,
+    "total_games": 5248,
+    "successful_boxscores": 5248,
+    "successful_pbp": 5248,
     "failed_games": [],
     "success_rate": 100.0
   },
   "goalies": {
-    "total_goalies": 170,
-    "total_seasons": 3,
-    "total_collections": 510,
-    "successful_gamelogs": 510,
-    "successful_edge": 308,
-    "success_rate": 80.19607843137256
+    "total_goalies": 183,
+    "total_seasons": 4,
+    "total_collections": 732,
+    "successful_gamelogs": 732,
+    "successful_edge": 394,
+    "success_rate": 76.91256830601093
   },
   "cache": {
-    "expired_cleared": 32,
+    "expired_cleared": 0,
     "stats": {
-      "total_entries": 9586,
-      "active_entries": 9586,
+      "total_entries": 12754,
+      "active_entries": 12754,
       "expired_entries": 0,
       "db_path": "data/cache/api_cache.db"
     }

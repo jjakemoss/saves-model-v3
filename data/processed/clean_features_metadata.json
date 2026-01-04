@@ -1,5 +1,5 @@
 {
-  "total_rows": 7872,
+  "total_rows": 9180,
   "total_columns": 113,
   "feature_columns": [
     "is_home",
@@ -114,6 +114,6 @@
   ],
   "date_range": {
     "min": "2022-10-07 00:00:00",
-    "max": "2025-04-17 00:00:00"
+    "max": "2026-01-03 00:00:00"
   }
 }
