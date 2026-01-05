@@ -41,6 +41,15 @@ class BettingFeatureCalculator:
         # Convert to DataFrame for easier calculation
         df = pd.DataFrame(recent_games)
 
+        # CRITICAL: Filter out any games from the current date to prevent data leakage
+        # This allows re-running predictions for late games after early games complete
+        if 'gameDate' in df.columns:
+            df = df[df['gameDate'] != game_date].reset_index(drop=True)
+
+            if len(df) == 0:
+                # No historical games available (only same-day game in log)
+                return self._get_default_features()
+
         # Calculate rolling averages for different windows
         windows = [3, 5, 10]
 

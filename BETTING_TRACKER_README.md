@@ -46,7 +46,8 @@ python scripts/populate_daily_games.py
 
 **Note**: You don't need to wait for official lineups! The system automatically looks up goalie IDs from season stats, so you can enter names as soon as you know the expected starter.
 
-**Step 3: Generate Predictions**
+**Step 3: Generate Predictions** (can be run multiple times safely)
+
 ```bash
 python scripts/generate_predictions.py
 ```
@@ -64,6 +65,11 @@ python scripts/generate_predictions.py
   - `confidence_pct` (0-100% confidence)
   - `confidence_bucket` (50-55%, 55-60%, ..., 75%+)
   - `recommendation` (OVER/UNDER/NO BET)
+
+**Important**: You can safely re-run predictions multiple times throughout the day (e.g., for late games after early games have started). The system automatically **excludes any games from the current date** when calculating rolling averages, preventing data leakage. This means:
+- Morning games won't affect evening game predictions
+- You can add late game goalies and re-run the script
+- Predictions remain valid even after some games complete
 
 **Step 4: Make Betting Decisions**
 1. Review updated Excel file
