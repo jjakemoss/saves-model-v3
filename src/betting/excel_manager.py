@@ -80,8 +80,13 @@ class BettingTracker:
         Args:
             predictions_df: pd.DataFrame with game_id and prediction columns
         """
-        # Load existing data
-        df = pd.read_excel(self.tracker_file, sheet_name='Bets')
+        # Load existing data with explicit dtypes to avoid FutureWarning
+        df = pd.read_excel(self.tracker_file, sheet_name='Bets', dtype={
+            'result': 'object',  # String column
+            'confidence_bucket': 'object',  # String column
+            'recommendation': 'object',  # String column
+            'bet_selection': 'object',  # String column
+        })
 
         # Update predictions by game_id and goalie_name (before goalie_id is populated)
         for _, pred in predictions_df.iterrows():
@@ -117,8 +122,13 @@ class BettingTracker:
         Args:
             results_df: pd.DataFrame with game_id, actual_saves, result, profit_loss
         """
-        # Load existing data
-        df = pd.read_excel(self.tracker_file, sheet_name='Bets')
+        # Load existing data with explicit dtypes to avoid FutureWarning
+        df = pd.read_excel(self.tracker_file, sheet_name='Bets', dtype={
+            'result': 'object',  # String column
+            'confidence_bucket': 'object',  # String column
+            'recommendation': 'object',  # String column
+            'bet_selection': 'object',  # String column
+        })
 
         # Update results by game_id
         for _, result in results_df.iterrows():

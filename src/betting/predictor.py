@@ -25,7 +25,8 @@ class BettingPredictor:
         if not self.model_path.exists():
             raise FileNotFoundError(f"Model not found: {self.model_path}")
 
-        self.model = xgb.XGBClassifier()
+        # Load as Booster (core XGBoost class) for JSON format models
+        self.model = xgb.Booster()
         self.model.load_model(str(self.model_path))
 
     def predict(self, features_df, betting_line=None):
@@ -45,8 +46,9 @@ class BettingPredictor:
                 'recommendation': str (OVER/UNDER/NO BET)
             }
         """
-        # Get probability predictions
-        prob_over = self.model.predict_proba(features_df)[0, 1]
+        # Get probability predictions using DMatrix (for Booster interface)
+        dmatrix = xgb.DMatrix(features_df)
+        prob_over = self.model.predict(dmatrix)[0]
 
         # Calculate confidence (distance from 0.5)
         confidence = abs(prob_over - 0.5)

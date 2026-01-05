@@ -1,5 +1,6 @@
 data/raw/
 data/cache/
+data/betting_history/
 models/trained/
 logs/
 *.pyc
