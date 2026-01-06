@@ -165,6 +165,7 @@ def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
             results_list.append({
                 'game_id': game_id,
                 'goalie_id': goalie_id,
+                'game_date': date,  # Include for date sheet routing
                 'actual_saves': actual_saves,
                 'result': result,
                 'profit_loss': profit_loss

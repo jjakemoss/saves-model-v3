@@ -2,26 +2,28 @@
 Initialize betting tracker Excel file with proper structure
 
 Creates betting_tracker.xlsx with:
-- Bets sheet (main tracking)
-- Summary sheet (performance metrics)
-- Settings sheet (configuration)
+- Summary sheet (performance metrics) - First tab
+- Settings sheet (configuration) - Second tab
+- Date-based sheets for each day's games (newest first)
 """
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from pathlib import Path
 from datetime import datetime
 
-def create_betting_tracker():
-    """Create new betting tracker Excel file"""
+def create_date_sheet(wb, sheet_name, position):
+    """
+    Create a date-based sheet with proper headers and formatting
 
-    wb = openpyxl.Workbook()
+    Args:
+        wb: Workbook object
+        sheet_name: Name for the sheet (e.g., '2026-01-05')
+        position: Position index for sheet
 
-    # Remove default sheet
-    if 'Sheet' in wb.sheetnames:
-        wb.remove(wb['Sheet'])
-
-    # Create Bets sheet
-    bets_sheet = wb.create_sheet('Bets', 0)
+    Returns:
+        Worksheet object
+    """
+    sheet = wb.create_sheet(sheet_name, position)
 
     # Define columns (betting_line moved to position 4, right after goalie_name)
     headers = [
@@ -39,7 +41,7 @@ def create_betting_tracker():
 
     # Write headers
     for col_idx, header in enumerate(headers, 1):
-        cell = bets_sheet.cell(row=1, column=col_idx)
+        cell = sheet.cell(row=1, column=col_idx)
         cell.value = header
         cell.fill = header_fill
         cell.font = header_font
@@ -69,13 +71,24 @@ def create_betting_tracker():
     }
 
     for col, width in column_widths.items():
-        bets_sheet.column_dimensions[col].width = width
+        sheet.column_dimensions[col].width = width
 
     # Freeze top row
-    bets_sheet.freeze_panes = 'A2'
+    sheet.freeze_panes = 'A2'
 
-    # Create Summary sheet
-    summary_sheet = wb.create_sheet('Summary', 1)
+    return sheet
+
+def create_betting_tracker():
+    """Create new betting tracker Excel file"""
+
+    wb = openpyxl.Workbook()
+
+    # Remove default sheet
+    if 'Sheet' in wb.sheetnames:
+        wb.remove(wb['Sheet'])
+
+    # Create Summary sheet (first tab)
+    summary_sheet = wb.create_sheet('Summary', 0)
 
     # Summary headers
     summary_sheet['A1'] = 'BETTING PERFORMANCE SUMMARY'
@@ -89,39 +102,38 @@ def create_betting_tracker():
     summary_sheet['A5'] = 'OVERALL PERFORMANCE'
     summary_sheet['A5'].font = Font(bold=True, size=12)
 
-    overall_metrics = [
-        ('Total Bets', '=COUNTIF(Bets!O:O,"OVER")+COUNTIF(Bets!O:O,"UNDER")'),
-        ('Wins', '=COUNTIF(Bets!Q:Q,"WIN")'),
-        ('Losses', '=COUNTIF(Bets!Q:Q,"LOSS")'),
-        ('Pushes', '=COUNTIF(Bets!Q:Q,"PUSH")'),
-        ('Win Rate', '=IF(B6>0,B7/B6,0)'),
-        ('Total Profit/Loss', '=SUM(Bets!R:R)'),
-        ('ROI %', '=IF(B6>0,B11/(B6*110)*100,0)'),
-    ]
+    # Note: Formulas will aggregate across all date sheets
+    summary_sheet['A7'] = 'Total Bets'
+    summary_sheet['A8'] = 'Wins'
+    summary_sheet['A9'] = 'Losses'
+    summary_sheet['A10'] = 'Pushes'
+    summary_sheet['A11'] = 'Win Rate'
+    summary_sheet['A12'] = 'Total Profit/Loss'
+    summary_sheet['A13'] = 'ROI %'
 
-    for idx, (label, formula) in enumerate(overall_metrics, 6):
-        summary_sheet[f'A{idx}'] = label
-        summary_sheet[f'B{idx}'] = formula
-        if label in ['Win Rate', 'ROI %']:
-            summary_sheet[f'B{idx}'].number_format = '0.0%' if label == 'Win Rate' else '0.00'
+    # Placeholder values - will be updated by dashboard script
+    for idx in range(7, 14):
+        summary_sheet[f'B{idx}'] = 0
 
     # Performance by Confidence section
-    summary_sheet['A14'] = 'PERFORMANCE BY CONFIDENCE LEVEL'
-    summary_sheet['A14'].font = Font(bold=True, size=12)
+    summary_sheet['A16'] = 'PERFORMANCE BY CONFIDENCE LEVEL'
+    summary_sheet['A16'].font = Font(bold=True, size=12)
 
     conf_headers = ['Confidence', 'Bets', 'Wins', 'Win Rate', 'ROI %']
     for col_idx, header in enumerate(conf_headers, 1):
-        cell = summary_sheet.cell(row=15, column=col_idx)
+        cell = summary_sheet.cell(row=17, column=col_idx)
         cell.value = header
         cell.font = Font(bold=True)
 
     confidence_levels = ['50-55%', '55-60%', '60-65%', '65-70%', '70-75%', '75%+']
-    for idx, conf_level in enumerate(confidence_levels, 16):
+    for idx, conf_level in enumerate(confidence_levels, 18):
         summary_sheet[f'A{idx}'] = conf_level
-        # Formulas will be added by dashboard script
+        # Placeholder values - will be updated by dashboard script
+        for col in ['B', 'C', 'D', 'E']:
+            summary_sheet[f'{col}{idx}'] = 0
 
-    # Create Settings sheet
-    settings_sheet = wb.create_sheet('Settings', 2)
+    # Create Settings sheet (second tab)
+    settings_sheet = wb.create_sheet('Settings', 1)
 
     settings_sheet['A1'] = 'BETTING TRACKER SETTINGS'
     settings_sheet['A1'].font = Font(bold=True, size=14)
@@ -156,9 +168,9 @@ def create_betting_tracker():
 
     print(f'[OK] Created betting tracker: {output_path.absolute()}')
     print('\nSheets created:')
-    print('  1. Bets - Main tracking sheet')
-    print('  2. Summary - Performance metrics')
-    print('  3. Settings - Configuration')
+    print('  1. Summary - Performance metrics (first tab)')
+    print('  2. Settings - Configuration (second tab)')
+    print('  3. Date sheets will be created automatically when games are populated')
     print('\nNext steps:')
     print('  1. Run: python scripts/populate_daily_games.py')
     print('  2. Enter betting lines in Excel')
