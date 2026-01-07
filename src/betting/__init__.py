@@ -5,12 +5,13 @@ from .feature_calculator import BettingFeatureCalculator
 from .predictor import BettingPredictor
 from .excel_manager import BettingTracker
 from .nhl_fetcher import NHLBettingData
-from .metrics import calculate_performance_metrics
+from .metrics import calculate_performance_metrics, format_metrics_report
 
 __all__ = [
     'BettingFeatureCalculator',
     'BettingPredictor',
     'BettingTracker',
     'NHLBettingData',
-    'calculate_performance_metrics'
+    'calculate_performance_metrics',
+    'format_metrics_report'
 ]

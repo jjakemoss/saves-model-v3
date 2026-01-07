@@ -38,8 +38,23 @@ def show_dashboard(tracker_file='betting_tracker.xlsx', save_report=False):
 
     print("\nLoading betting data...")
 
-    # Read Bets sheet
-    bets_df = pd.read_excel(tracker_file, sheet_name='Bets')
+    # Read all date sheets and combine
+    import openpyxl
+    wb = openpyxl.load_workbook(tracker_file, read_only=True)
+    date_sheets = [s for s in wb.sheetnames if s not in ['Summary', 'Settings']]
+    wb.close()
+
+    if len(date_sheets) == 0:
+        print("[WARNING] No date sheets found - no betting data available yet")
+        return
+
+    # Combine all date sheets
+    all_data = []
+    for sheet_name in date_sheets:
+        df = pd.read_excel(tracker_file, sheet_name=sheet_name)
+        all_data.append(df)
+
+    bets_df = pd.concat(all_data, ignore_index=True)
 
     # Calculate metrics
     print("Calculating performance metrics...\n")
