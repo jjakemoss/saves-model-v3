@@ -70,6 +70,9 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
     for idx, row in pending.iterrows():
         game_id = row['game_id']
         goalie_id = row['goalie_id']
+        # Convert goalie_id to int if it's a float (pandas reads Excel as float)
+        if pd.notna(goalie_id):
+            goalie_id = int(goalie_id)
         goalie_name = row['goalie_name']
         team = row['team_abbrev']
         opponent = row['opponent_team']
