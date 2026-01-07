@@ -22,6 +22,47 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 from betting import BettingTracker, calculate_performance_metrics, format_metrics_report
 
 
+def update_summary_sheet(tracker_file, metrics):
+    """
+    Update Summary sheet in Excel with calculated metrics
+
+    Args:
+        tracker_file: Path to betting tracker Excel file
+        metrics: dict from calculate_performance_metrics()
+    """
+    import openpyxl
+    from openpyxl.styles import Font
+
+    wb = openpyxl.load_workbook(tracker_file)
+    summary = wb['Summary']
+
+    # Update timestamp
+    summary['B3'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # Update Overall Performance section (rows 7-13)
+    overall = metrics['overall']
+    summary['B7'] = overall['total_bets']
+    summary['B8'] = overall['wins']
+    summary['B9'] = overall['losses']
+    summary['B10'] = overall['pushes']
+    summary['B11'] = f"{overall['win_rate']:.1%}"
+    summary['B12'] = f"{overall['total_profit_loss']:+.2f}"
+    summary['B13'] = f"{overall['roi']:+.2f}%"
+
+    # Update Performance by Confidence section (rows 18-23)
+    confidence_buckets = ['50-55%', '55-60%', '60-65%', '65-70%', '70-75%', '75%+']
+    for idx, bucket in enumerate(confidence_buckets, 18):
+        conf_metrics = metrics['by_confidence'][bucket]
+        summary[f'B{idx}'] = conf_metrics['total_bets']
+        summary[f'C{idx}'] = conf_metrics['wins']
+        summary[f'D{idx}'] = f"{conf_metrics['win_rate']:.1%}" if conf_metrics['total_bets'] > 0 else "0.0%"
+        summary[f'E{idx}'] = f"{conf_metrics['roi']:+.2f}%" if conf_metrics['total_bets'] > 0 else "0.0%"
+
+    # Save workbook
+    wb.save(tracker_file)
+    wb.close()
+
+
 def show_dashboard(tracker_file='betting_tracker.xlsx', save_report=False):
     """
     Display betting performance dashboard
@@ -65,6 +106,11 @@ def show_dashboard(tracker_file='betting_tracker.xlsx', save_report=False):
 
     # Display to console
     print(report)
+
+    # Update Summary sheet in Excel
+    print("\nUpdating Summary sheet in Excel...")
+    update_summary_sheet(tracker_file, metrics)
+    print("[OK] Summary sheet updated")
 
     # Save to file if requested
     if save_report:
