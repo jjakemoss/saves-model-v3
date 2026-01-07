@@ -59,10 +59,10 @@ class BettingTracker:
 
         sheet = wb.create_sheet(date_str, position)
 
-        # Define columns
+        # Define columns (betting_line at position 4, line_over/line_under added at 5 & 6)
         headers = [
-            'game_date', 'game_id', 'goalie_name', 'betting_line', 'goalie_id',
-            'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
+            'game_date', 'game_id', 'goalie_name', 'betting_line', 'line_over', 'line_under',
+            'goalie_id', 'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
             'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation',
             'bet_amount', 'bet_selection', 'actual_saves', 'result',
             'profit_loss', 'notes'
@@ -81,12 +81,29 @@ class BettingTracker:
             cell.font = header_font
             cell.alignment = header_alignment
 
-        # Set column widths
+        # Set column widths (updated to match new column order)
         column_widths = {
-            'A': 12, 'B': 12, 'C': 18, 'D': 13, 'E': 12,
-            'F': 12, 'G': 15, 'H': 10, 'I': 15, 'J': 12,
-            'K': 14, 'L': 16, 'M': 15, 'N': 12, 'O': 14,
-            'P': 13, 'Q': 10, 'R': 12, 'S': 30
+            'A': 12,  # game_date
+            'B': 12,  # game_id
+            'C': 18,  # goalie_name
+            'D': 13,  # betting_line
+            'E': 12,  # line_over (NEW)
+            'F': 12,  # line_under (NEW)
+            'G': 12,  # goalie_id
+            'H': 12,  # team_abbrev
+            'I': 15,  # opponent_team
+            'J': 10,  # is_home
+            'K': 15,  # predicted_saves
+            'L': 12,  # prob_over
+            'M': 14,  # confidence_pct
+            'N': 16,  # confidence_bucket
+            'O': 15,  # recommendation
+            'P': 12,  # bet_amount
+            'Q': 14,  # bet_selection
+            'R': 13,  # actual_saves
+            'S': 10,  # result
+            'T': 12,  # profit_loss
+            'U': 30,  # notes
         }
 
         for col, width in column_widths.items():
@@ -134,6 +151,8 @@ class BettingTracker:
                     game.get('game_id'),
                     game.get('goalie_name'),
                     '',  # betting_line (user fills)
+                    '',  # line_over (user fills)
+                    '',  # line_under (user fills)
                     game.get('goalie_id'),
                     game.get('team_abbrev'),
                     game.get('opponent_team'),

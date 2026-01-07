@@ -21,11 +21,12 @@ import argparse
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from betting import NHLBettingData, BettingTracker
+from betting.odds_utils import american_to_decimal
 
 
 def calculate_profit_loss(row):
     """
-    Calculate profit/loss for a bet
+    Calculate profit/loss using actual odds (or -110 fallback)
 
     Args:
         row: DataFrame row with bet info
@@ -42,8 +43,25 @@ def calculate_profit_loss(row):
     if pd.isna(bet_selection) or bet_selection == 'NONE' or pd.isna(bet_amount) or bet_amount == 0:
         return 0.0
 
-    # Calculate win payout (assuming -110 odds)
-    win_payout = bet_amount * (100 / 110)
+    # Get odds for the selected side (.get() handles old data without odds columns)
+    line_over_odds = row.get('line_over')
+    line_under_odds = row.get('line_under')
+
+    # Determine which odds to use
+    if bet_selection == 'OVER':
+        odds = line_over_odds if pd.notna(line_over_odds) else None
+    elif bet_selection == 'UNDER':
+        odds = line_under_odds if pd.notna(line_under_odds) else None
+    else:
+        return 0.0
+
+    # Fall back to -110 if no odds provided (backwards compatibility)
+    if odds is None or pd.isna(odds):
+        odds = -110
+
+    # Convert to decimal and calculate payout
+    decimal_odds = american_to_decimal(odds)
+    win_payout = bet_amount * (decimal_odds - 1)
 
     # Determine result
     if actual_saves > betting_line:

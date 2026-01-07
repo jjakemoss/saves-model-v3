@@ -25,10 +25,10 @@ def create_date_sheet(wb, sheet_name, position):
     """
     sheet = wb.create_sheet(sheet_name, position)
 
-    # Define columns (betting_line moved to position 4, right after goalie_name)
+    # Define columns (betting_line at position 4, line_over/line_under added at 5 & 6)
     headers = [
-        'game_date', 'game_id', 'goalie_name', 'betting_line', 'goalie_id',
-        'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
+        'game_date', 'game_id', 'goalie_name', 'betting_line', 'line_over', 'line_under',
+        'goalie_id', 'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
         'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation',
         'bet_amount', 'bet_selection', 'actual_saves', 'result',
         'profit_loss', 'notes'
@@ -52,22 +52,24 @@ def create_date_sheet(wb, sheet_name, position):
         'A': 12,  # game_date
         'B': 12,  # game_id
         'C': 18,  # goalie_name
-        'D': 13,  # betting_line (MOVED HERE)
-        'E': 12,  # goalie_id
-        'F': 12,  # team_abbrev
-        'G': 15,  # opponent_team
-        'H': 10,  # is_home
-        'I': 15,  # predicted_saves
-        'J': 12,  # prob_over
-        'K': 14,  # confidence_pct
-        'L': 16,  # confidence_bucket
-        'M': 15,  # recommendation
-        'N': 12,  # bet_amount
-        'O': 14,  # bet_selection
-        'P': 13,  # actual_saves
-        'Q': 10,  # result
-        'R': 12,  # profit_loss
-        'S': 30,  # notes
+        'D': 13,  # betting_line
+        'E': 12,  # line_over (NEW)
+        'F': 12,  # line_under (NEW)
+        'G': 12,  # goalie_id
+        'H': 12,  # team_abbrev
+        'I': 15,  # opponent_team
+        'J': 10,  # is_home
+        'K': 15,  # predicted_saves
+        'L': 12,  # prob_over
+        'M': 14,  # confidence_pct
+        'N': 16,  # confidence_bucket
+        'O': 15,  # recommendation
+        'P': 12,  # bet_amount
+        'Q': 14,  # bet_selection
+        'R': 13,  # actual_saves
+        'S': 10,  # result
+        'T': 12,  # profit_loss
+        'U': 30,  # notes
     }
 
     for col, width in column_widths.items():
@@ -142,9 +144,10 @@ def create_betting_tracker():
         ('Default Unit Size', 1.0),
         ('Min Confidence to Bet (%)', 55),
         ('High Confidence Threshold (%)', 65),
+        ('Min Expected Value (%)', 2.0),
         ('', ''),
-        ('Odds Format', '-110'),
-        ('Win Payout Multiplier', 0.909),  # 100/110
+        ('Odds Format', 'American'),
+        ('Default Odds (if missing)', -110),
         ('', ''),
         ('Model Path', 'models/classifier_model.json'),
         ('Feature Count', 89),

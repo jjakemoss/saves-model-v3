@@ -4,6 +4,7 @@ Betting predictor - wrapper around trained XGBoost model
 import xgboost as xgb
 import numpy as np
 from pathlib import Path
+from .odds_utils import calculate_ev
 
 
 class BettingPredictor:
@@ -29,13 +30,15 @@ class BettingPredictor:
         self.model = xgb.Booster()
         self.model.load_model(str(self.model_path))
 
-    def predict(self, features_df, betting_line=None):
+    def predict(self, features_df, betting_line=None, line_over_odds=None, line_under_odds=None):
         """
         Generate prediction for a single game
 
         Args:
             features_df: pd.DataFrame with single row of 89 features
             betting_line: Optional betting line (saves o/u) for estimating predicted saves
+            line_over_odds: American odds for OVER (e.g., -115)
+            line_under_odds: American odds for UNDER (e.g., -105)
 
         Returns:
             dict: {
@@ -43,7 +46,10 @@ class BettingPredictor:
                 'prob_over': float (0-1),
                 'confidence_pct': float (0-100),
                 'confidence_bucket': str,
-                'recommendation': str (OVER/UNDER/NO BET)
+                'recommendation': str (OVER/UNDER/NO BET),
+                'ev_over': float or None (EV for OVER side),
+                'ev_under': float or None (EV for UNDER side),
+                'recommended_ev': float or None (EV of recommended bet)
             }
         """
         # Get probability predictions using DMatrix (for Booster interface)
@@ -57,13 +63,12 @@ class BettingPredictor:
         # Determine confidence bucket
         confidence_bucket = self.get_confidence_bucket(confidence)
 
-        # Make recommendation
-        if prob_over > 0.55:
-            recommendation = 'OVER'
-        elif prob_over < 0.45:
-            recommendation = 'UNDER'
-        else:
-            recommendation = 'NO BET'
+        # Make recommendation using EV-based logic
+        recommendation, ev_over, ev_under, recommended_ev = self._determine_recommendation(
+            prob_over,
+            line_over_odds,
+            line_under_odds
+        )
 
         # Estimate predicted saves based on betting line and probability
         # If prob_over = 0.6 and line = 25.5, estimate ~26.5 saves (slightly over)
@@ -82,7 +87,10 @@ class BettingPredictor:
             'prob_over': prob_over,
             'confidence_pct': confidence_pct,
             'confidence_bucket': confidence_bucket,
-            'recommendation': recommendation
+            'recommendation': recommendation,
+            'ev_over': ev_over,
+            'ev_under': ev_under,
+            'recommended_ev': recommended_ev
         }
 
     def get_confidence_bucket(self, confidence):
@@ -107,6 +115,64 @@ class BettingPredictor:
             return '70-75%'
         else:
             return '75%+'
+
+    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.02):
+        """
+        Determine bet recommendation using Expected Value (2% minimum).
+
+        Args:
+            prob_over: Model probability of OVER
+            line_over_odds: American odds for OVER (e.g., -115)
+            line_under_odds: American odds for UNDER (e.g., -105)
+            ev_threshold: Minimum EV required (default 0.02 = 2%)
+
+        Returns:
+            tuple: (recommendation, ev_over, ev_under, recommended_ev)
+
+        Logic:
+            1. Calculate EV for both sides (if odds provided)
+            2. Recommend side with EV >= 2% AND higher EV than other side
+            3. If no odds provided, fall back to probability thresholds (backwards compatible)
+            4. Return NO BET if neither side meets criteria
+        """
+        ev_over = None
+        ev_under = None
+        prob_under = 1 - prob_over
+
+        # Calculate EV if odds are provided
+        if line_over_odds is not None:
+            ev_over = calculate_ev(prob_over, line_over_odds)
+
+        if line_under_odds is not None:
+            ev_under = calculate_ev(prob_under, line_under_odds)
+
+        # If we have EV calculations, use them
+        if ev_over is not None or ev_under is not None:
+            over_qualifies = ev_over is not None and ev_over >= ev_threshold
+            under_qualifies = ev_under is not None and ev_under >= ev_threshold
+
+            if over_qualifies and under_qualifies:
+                # Both qualify - pick higher EV
+                if ev_over > ev_under:
+                    return 'OVER', ev_over, ev_under, ev_over
+                else:
+                    return 'UNDER', ev_over, ev_under, ev_under
+            elif over_qualifies:
+                return 'OVER', ev_over, ev_under, ev_over
+            elif under_qualifies:
+                return 'UNDER', ev_over, ev_under, ev_under
+            else:
+                # Neither qualifies
+                recommended_ev = max(ev_over or -999, ev_under or -999)
+                return 'NO BET', ev_over, ev_under, recommended_ev if recommended_ev > -999 else None
+
+        # Fallback to probability thresholds if no odds provided (backwards compatibility)
+        if prob_over > 0.55:
+            return 'OVER', None, None, None
+        elif prob_over < 0.45:
+            return 'UNDER', None, None, None
+        else:
+            return 'NO BET', None, None, None
 
     def predict_batch(self, features_df_list):
         """

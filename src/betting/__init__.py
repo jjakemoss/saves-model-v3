@@ -6,6 +6,13 @@ from .predictor import BettingPredictor
 from .excel_manager import BettingTracker
 from .nhl_fetcher import NHLBettingData
 from .metrics import calculate_performance_metrics, format_metrics_report
+from .odds_utils import (
+    american_to_implied_prob,
+    american_to_decimal,
+    calculate_ev,
+    validate_american_odds,
+    calculate_payout
+)
 
 __all__ = [
     'BettingFeatureCalculator',
@@ -13,5 +20,10 @@ __all__ = [
     'BettingTracker',
     'NHLBettingData',
     'calculate_performance_metrics',
-    'format_metrics_report'
+    'format_metrics_report',
+    'american_to_implied_prob',
+    'american_to_decimal',
+    'calculate_ev',
+    'validate_american_odds',
+    'calculate_payout'
 ]

@@ -75,6 +75,8 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
         opponent = row['opponent_team']
         is_home = row['is_home']
         betting_line = row['betting_line']
+        line_over_odds = row.get('line_over')
+        line_under_odds = row.get('line_under')
 
         print(f"\n  {goalie_name} ({team} vs {opponent}) - Line: {betting_line}")
 
@@ -118,9 +120,14 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
                 recent_games=recent_games
             )
 
-            # Generate prediction (pass betting_line for save estimation)
+            # Generate prediction (pass betting_line and odds)
             print("    Running model prediction...")
-            prediction = predictor.predict(features_df, betting_line=betting_line)
+            prediction = predictor.predict(
+                features_df,
+                betting_line=betting_line,
+                line_over_odds=line_over_odds if pd.notna(line_over_odds) else None,
+                line_under_odds=line_under_odds if pd.notna(line_under_odds) else None
+            )
 
             # Add game_id, goalie info, and date for tracking
             prediction['game_id'] = game_id
@@ -134,6 +141,8 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
             print(f"    [OK] Prediction: {prediction['recommendation']}")
             print(f"      Prob Over: {prediction['prob_over']:.1%}")
             print(f"      Confidence: {prediction['confidence_bucket']}")
+            if prediction.get('recommended_ev') is not None:
+                print(f"      Expected EV: {prediction['recommended_ev']:+.1%}")
 
         except Exception as e:
             print(f"    [ERROR] Error generating prediction: {e}")
