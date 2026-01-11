@@ -250,9 +250,9 @@ class ClassifierTrainer:
         logger.info(f"Val set:   {len(X_val)} samples (OVER: {y_val.sum()}, UNDER: {len(y_val)-y_val.sum()})")
         logger.info(f"Test set:  {len(X_test)} samples (OVER: {y_test.sum()}, UNDER: {len(y_test)-y_test.sum()})")
 
-        return X_train, X_val, X_test, y_train, y_val, y_test
+        return X_train, X_val, X_test, y_train, y_val, y_test, train_idx, val_idx, test_idx
 
-    def train(self, X_train, y_train, X_val, y_val, params=None):
+    def train(self, X_train, y_train, X_val, y_val, params=None, sample_weight=None):
         """
         Train XGBoost classifier
 
@@ -262,6 +262,7 @@ class ClassifierTrainer:
             X_val: Validation features
             y_val: Validation target
             params: Optional hyperparameters
+            sample_weight: Optional sample weights for training
 
         Returns:
             Trained model
@@ -295,8 +296,13 @@ class ClassifierTrainer:
         # Train model
         self.model = xgb.XGBClassifier(**default_params)
 
+        # Log sample weight usage
+        if sample_weight is not None:
+            logger.info(f"Training with sample weights (mean={sample_weight.mean():.2f})")
+
         self.model.fit(
             X_train, y_train,
+            sample_weight=sample_weight,
             eval_set=[(X_train, y_train), (X_val, y_val)],
             verbose=True
         )
@@ -366,6 +372,170 @@ class ClassifierTrainer:
 
         return metrics
 
+    def calculate_sample_weights(self, df, split_idx):
+        """
+        Calculate sample weights based on market efficiency (vig).
+
+        Strategy:
+        - Sharp lines (low vig <5%): Higher weight = 1.5 (trustworthy market signal)
+        - Soft lines (high vig >10%): Lower weight = 0.8 (uncertain market)
+        - Missing odds: Default weight = 1.0
+
+        Args:
+            df: DataFrame with odds columns
+            split_idx: Indices for the split (train/val/test)
+
+        Returns:
+            np.array: Sample weights for XGBoost
+        """
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        from betting.odds_utils import american_to_implied_prob
+
+        weights = np.ones(len(split_idx))
+        df_split = df.iloc[split_idx]
+
+        for i, (idx, row) in enumerate(df_split.iterrows()):
+            odds_over = row.get('odds_over_american')
+            odds_under = row.get('odds_under_american')
+
+            # Skip if no odds (use default weight = 1.0)
+            if pd.isna(odds_over) or pd.isna(odds_under):
+                continue
+
+            # Calculate implied probabilities
+            impl_prob_over = american_to_implied_prob(odds_over)
+            impl_prob_under = american_to_implied_prob(odds_under)
+
+            # Calculate vig (market overround)
+            vig = impl_prob_over + impl_prob_under - 1.0
+
+            # Weight by market sharpness
+            if vig < 0.05:  # <5% vig = sharp line
+                weights[i] = 1.5
+            elif vig > 0.10:  # >10% vig = soft line
+                weights[i] = 0.8
+
+        logger.info(f"Sample weights calculated (mean={weights.mean():.2f}, std={weights.std():.2f})")
+        sharp_count = np.sum(weights > 1.2)
+        soft_count = np.sum(weights < 0.9)
+        logger.info(f"  Sharp lines (weight=1.5): {sharp_count} ({sharp_count/len(weights)*100:.1f}%)")
+        logger.info(f"  Soft lines (weight=0.8): {soft_count} ({soft_count/len(weights)*100:.1f}%)")
+
+        return weights
+
+    def evaluate_profitability(self, X, y, df, split_idx, dataset_name='Test', ev_threshold=0.02):
+        """
+        Evaluate model performance on betting profitability metrics.
+
+        Backtests using actual historical odds to calculate real profits.
+
+        Args:
+            X: Feature matrix
+            y: True labels
+            df: Original DataFrame with odds columns
+            split_idx: Indices for the split
+            dataset_name: Name for logging
+            ev_threshold: Minimum EV required to place bet (default 2%)
+
+        Returns:
+            dict: Profitability metrics
+        """
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+        from betting.odds_utils import calculate_ev, calculate_payout
+
+        logger.info(f"\nEvaluating betting profitability on {dataset_name} set...")
+
+        # Get predictions
+        y_pred_proba = self.model.predict_proba(X)[:, 1]  # Probability of OVER
+
+        df_split = df.iloc[split_idx].reset_index(drop=True)
+
+        results = []
+        skipped_no_odds = 0
+
+        for i in range(len(y_pred_proba)):
+            prob_over = y_pred_proba[i]
+            prob_under = 1 - prob_over
+            actual_over = y[i]  # 1 if OVER hit, 0 if UNDER hit
+
+            odds_over = df_split.iloc[i].get('odds_over_american')
+            odds_under = df_split.iloc[i].get('odds_under_american')
+
+            # Skip if no odds available
+            if pd.isna(odds_over) or pd.isna(odds_under):
+                skipped_no_odds += 1
+                continue
+
+            # Calculate EV for both sides
+            ev_over = calculate_ev(prob_over, odds_over)
+            ev_under = calculate_ev(prob_under, odds_under)
+
+            # Make bet decision based on EV threshold
+            if ev_over >= ev_threshold and ev_over > ev_under:
+                bet = 'OVER'
+                won = (actual_over == 1)
+                profit = calculate_payout(1.0, odds_over, won)
+                ev = ev_over
+            elif ev_under >= ev_threshold:
+                bet = 'UNDER'
+                won = (actual_over == 0)
+                profit = calculate_payout(1.0, odds_under, won)
+                ev = ev_under
+            else:
+                continue  # NO BET
+
+            results.append({
+                'bet': bet,
+                'profit': profit,
+                'won': won,
+                'ev': ev
+            })
+
+        # Calculate metrics
+        if len(results) == 0:
+            logger.warning(f"  No bets placed on {dataset_name} set (no +EV opportunities)")
+            return {
+                'total_bets': 0,
+                'wins': 0,
+                'losses': 0,
+                'win_rate': 0.0,
+                'total_profit': 0.0,
+                'roi': 0.0,
+                'avg_ev': 0.0,
+                'skipped_no_odds': skipped_no_odds
+            }
+
+        total_bets = len(results)
+        wins = sum(r['won'] for r in results)
+        losses = total_bets - wins
+        win_rate = wins / total_bets
+        total_profit = sum(r['profit'] for r in results)
+        roi = (total_profit / total_bets) * 100  # ROI as percentage
+        avg_ev = np.mean([r['ev'] for r in results])
+
+        logger.info(f"  Total bets: {total_bets}")
+        logger.info(f"  Wins: {wins}, Losses: {losses}")
+        logger.info(f"  Win rate: {win_rate*100:.1f}%")
+        logger.info(f"  Total profit: {total_profit:+.2f} units")
+        logger.info(f"  ROI: {roi:+.2f}%")
+        logger.info(f"  Avg EV when betting: {avg_ev*100:+.1f}%")
+        logger.info(f"  Games skipped (no odds): {skipped_no_odds}")
+
+        return {
+            'total_bets': total_bets,
+            'wins': wins,
+            'losses': losses,
+            'win_rate': win_rate,
+            'total_profit': total_profit,
+            'roi': roi,
+            'avg_ev': avg_ev,
+            'skipped_no_odds': skipped_no_odds
+        }
+
     def save_model(self, output_dir='models'):
         """Save trained model and metadata"""
         output_dir = Path(output_dir)
@@ -401,10 +571,20 @@ class ClassifierTrainer:
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
+        # Convert numpy types to Python native types for JSON serialization
+        def convert_to_native(obj):
+            if isinstance(obj, dict):
+                return {k: convert_to_native(v) for k, v in obj.items()}
+            elif isinstance(obj, (np.integer, np.floating)):
+                return float(obj)
+            elif isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return obj
+
         metrics = {
-            'train': train_metrics,
-            'validation': val_metrics,
-            'test': test_metrics,
+            'train': convert_to_native(train_metrics),
+            'validation': convert_to_native(val_metrics),
+            'test': convert_to_native(test_metrics),
             'evaluation_date': datetime.now().isoformat()
         }
 
@@ -432,15 +612,28 @@ def main():
     trainer.feature_names = feature_names
 
     # Split data chronologically (df needed for game_date)
-    X_train, X_val, X_test, y_train, y_val, y_test = trainer.split_data(df, X, y)
+    X_train, X_val, X_test, y_train, y_val, y_test, train_idx, val_idx, test_idx = trainer.split_data(df, X, y)
 
-    # Train model
-    model = trainer.train(X_train, y_train, X_val, y_val)
+    # Calculate sample weights for training set
+    sample_weights = trainer.calculate_sample_weights(df, train_idx)
 
-    # Evaluate
+    # Train model with sample weights
+    model = trainer.train(X_train, y_train, X_val, y_val, sample_weight=sample_weights)
+
+    # Evaluate on accuracy metrics
     train_metrics = trainer.evaluate(X_train, y_train, 'Train')
     val_metrics = trainer.evaluate(X_val, y_val, 'Validation')
     test_metrics = trainer.evaluate(X_test, y_test, 'Test')
+
+    # Evaluate on profitability metrics (with real odds)
+    train_profit = trainer.evaluate_profitability(X_train, y_train, df, train_idx, 'Train')
+    val_profit = trainer.evaluate_profitability(X_val, y_val, df, val_idx, 'Validation')
+    test_profit = trainer.evaluate_profitability(X_test, y_test, df, test_idx, 'Test')
+
+    # Combine metrics
+    train_metrics.update({'profitability': train_profit})
+    val_metrics.update({'profitability': val_profit})
+    test_metrics.update({'profitability': test_profit})
 
     # Save model and metrics
     trainer.save_model()
