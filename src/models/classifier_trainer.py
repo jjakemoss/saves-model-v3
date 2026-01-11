@@ -269,19 +269,19 @@ class ClassifierTrainer:
         """
         logger.info("Training XGBoost classifier...")
 
-        # Default parameters for classification
+        # Default parameters for classification (conservative: profitable at 3% EV threshold)
         default_params = {
             'objective': 'binary:logistic',
             'eval_metric': ['logloss', 'auc'],
-            'n_estimators': 600,
-            'max_depth': 4,
-            'learning_rate': 0.012,
-            'subsample': 0.9,
-            'colsample_bytree': 1.0,
-            'min_child_weight': 7,
-            'gamma': 0.05,
-            'reg_alpha': 0.05,
-            'reg_lambda': 2.0,
+            'n_estimators': 800,  # More trees with slower learning
+            'max_depth': 3,  # Shallower trees to reduce overfitting
+            'learning_rate': 0.01,  # Slower learning for better generalization
+            'subsample': 0.8,  # Sample 80% of data per tree
+            'colsample_bytree': 0.8,  # Sample 80% of features per tree
+            'min_child_weight': 20,  # Require more samples per leaf
+            'gamma': 10,  # Much higher pruning threshold
+            'reg_alpha': 15,  # Stronger L1 regularization
+            'reg_lambda': 30,  # Stronger L2 regularization
             'random_state': self.config.get('model', {}).get('random_state', 42),
             'n_jobs': -1,
             'verbosity': 1
@@ -536,6 +536,67 @@ class ClassifierTrainer:
             'skipped_no_odds': skipped_no_odds
         }
 
+    def test_ev_thresholds(self, X, y, df, split_idx, dataset_name='Test', thresholds=[0.01, 0.02, 0.03, 0.05, 0.07, 0.10]):
+        """
+        Test multiple EV thresholds to find optimal betting strategy.
+
+        Args:
+            X: Feature matrix
+            y: True labels
+            df: Original DataFrame with odds columns
+            split_idx: Indices for the split
+            dataset_name: Name for logging
+            thresholds: List of EV thresholds to test
+
+        Returns:
+            dict: Results for each threshold
+        """
+        logger.info(f"\n{'='*70}")
+        logger.info(f"Testing EV Thresholds on {dataset_name} Set")
+        logger.info(f"{'='*70}")
+
+        results = {}
+        for threshold in thresholds:
+            metrics = self.evaluate_profitability(X, y, df, split_idx, dataset_name, ev_threshold=threshold)
+            results[threshold] = metrics
+
+        # Print summary table
+        logger.info(f"\n{'='*70}")
+        logger.info(f"EV THRESHOLD COMPARISON - {dataset_name} Set")
+        logger.info(f"{'='*70}")
+        logger.info(f"{'Threshold':>10} | {'Bets':>6} | {'Win Rate':>9} | {'ROI':>8} | {'Total P/L':>10}")
+        logger.info(f"{'-'*70}")
+
+        for threshold in thresholds:
+            m = results[threshold]
+            if m['total_bets'] > 0:
+                logger.info(
+                    f"{threshold*100:>9.0f}% | {m['total_bets']:>6} | "
+                    f"{m['win_rate']*100:>8.1f}% | {m['roi']:>7.2f}% | "
+                    f"{m['total_profit']:>9.2f} units"
+                )
+            else:
+                logger.info(f"{threshold*100:>9.0f}% | {'NO BETS':>6} |")
+
+        # Find best threshold by ROI
+        profitable = {t: m for t, m in results.items() if m['total_bets'] > 0 and m['roi'] > 0}
+        if profitable:
+            best_threshold = max(profitable.keys(), key=lambda t: profitable[t]['roi'])
+            best_metrics = profitable[best_threshold]
+            logger.info(f"\n{'='*70}")
+            logger.info(f"BEST THRESHOLD: {best_threshold*100:.0f}% EV")
+            logger.info(f"  ROI: {best_metrics['roi']:+.2f}%")
+            logger.info(f"  Win Rate: {best_metrics['win_rate']*100:.1f}%")
+            logger.info(f"  Total Bets: {best_metrics['total_bets']}")
+            logger.info(f"  Total Profit: {best_metrics['total_profit']:+.2f} units")
+            logger.info(f"{'='*70}")
+        else:
+            logger.info(f"\n{'='*70}")
+            logger.info(f"NO PROFITABLE THRESHOLD FOUND")
+            logger.info(f"{'='*70}")
+
+        return results
+
     def save_model(self, output_dir='models'):
         """Save trained model and metadata"""
         output_dir = Path(output_dir)
@@ -625,10 +686,16 @@ def main():
     val_metrics = trainer.evaluate(X_val, y_val, 'Validation')
     test_metrics = trainer.evaluate(X_test, y_test, 'Test')
 
-    # Evaluate on profitability metrics (with real odds)
+    # Evaluate on profitability metrics (with real odds at 2% EV threshold)
     train_profit = trainer.evaluate_profitability(X_train, y_train, df, train_idx, 'Train')
     val_profit = trainer.evaluate_profitability(X_val, y_val, df, val_idx, 'Validation')
     test_profit = trainer.evaluate_profitability(X_test, y_test, df, test_idx, 'Test')
+
+    # Test multiple EV thresholds on test set to find optimal strategy
+    ev_threshold_results = trainer.test_ev_thresholds(
+        X_test, y_test, df, test_idx, 'Test',
+        thresholds=[0.01, 0.02, 0.03, 0.04, 0.05, 0.07, 0.10]
+    )
 
     # Combine metrics
     train_metrics.update({'profitability': train_profit})
@@ -645,6 +712,7 @@ def main():
     logger.info(f"Test Accuracy: {test_metrics['accuracy']:.4f}")
     logger.info(f"Test AUC-ROC: {test_metrics['auc_roc']:.4f}")
     logger.info(f"Test Log Loss: {test_metrics['log_loss']:.4f}")
+    logger.info(f"Test ROI (2% EV): {test_profit['roi']:+.2f}%")
 
 
 if __name__ == "__main__":

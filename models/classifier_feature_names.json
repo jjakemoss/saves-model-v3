@@ -93,5 +93,13 @@
   "odds_under_american",
   "odds_over_decimal",
   "odds_under_decimal",
-  "num_books"
+  "num_books",
+  "impl_prob_over",
+  "impl_prob_under",
+  "market_vig",
+  "fair_prob_over",
+  "fair_prob_under",
+  "line_is_half",
+  "line_is_extreme_high",
+  "line_is_extreme_low"
 ]
