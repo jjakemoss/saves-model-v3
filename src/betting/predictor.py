@@ -116,22 +116,22 @@ class BettingPredictor:
         else:
             return '75%+'
 
-    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.02):
+    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.10):
         """
-        Determine bet recommendation using Expected Value (2% minimum).
+        Determine bet recommendation using Expected Value (10% minimum).
 
         Args:
             prob_over: Model probability of OVER
             line_over_odds: American odds for OVER (e.g., -115)
             line_under_odds: American odds for UNDER (e.g., -105)
-            ev_threshold: Minimum EV required (default 0.02 = 2%)
+            ev_threshold: Minimum EV required (default 0.10 = 10%)
 
         Returns:
             tuple: (recommendation, ev_over, ev_under, recommended_ev)
 
         Logic:
             1. Calculate EV for both sides (if odds provided)
-            2. Recommend side with EV >= 2% AND higher EV than other side
+            2. Recommend side with EV >= 10% AND higher EV than other side
             3. If no odds provided, fall back to probability thresholds (backwards compatible)
             4. Return NO BET if neither side meets criteria
         """
