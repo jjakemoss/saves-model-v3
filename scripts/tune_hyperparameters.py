@@ -1,345 +1,332 @@
 """
-Hyperparameter Tuning for XGBoost Goalie Saves Model
-
-This script performs hyperparameter optimization using both:
-1. Random search for initial exploration
-2. Grid search around promising regions
-
-Key hyperparameters to tune:
-- n_estimators: Number of boosting rounds
-- max_depth: Maximum tree depth
-- learning_rate: Step size shrinkage
-- subsample: Fraction of samples per tree
-- colsample_bytree: Fraction of features per tree
-- min_child_weight: Minimum sum of instance weight in a child
-- gamma: Minimum loss reduction for split
-- reg_alpha: L1 regularization
-- reg_lambda: L2 regularization
+Hyperparameter tuning for value-based classifier using grid search.
+Evaluates configurations based on validation ROI (not accuracy).
 """
 
 import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent))
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import pandas as pd
 import numpy as np
-import logging
-from src.models.trainer import GoalieModelTrainer
-from itertools import product
 import json
 from datetime import datetime
+from itertools import product
+from src.models.classifier_trainer import ClassifierTrainer
 
-logging.basicConfig(level=logging.INFO,
-                   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+def load_training_data():
+    """Load the classification training data."""
+    data_path = 'data/processed/classification_training_data.parquet'
+    df = pd.read_parquet(data_path)
 
+    # Remove market features if they exist (they hurt performance)
+    market_features = [
+        'line_vs_recent_avg', 'line_vs_season_avg', 'line_surprise_score',
+        'market_vig', 'impl_prob_over', 'impl_prob_under',
+        'fair_prob_over', 'fair_prob_under', 'line_vs_opp_shots',
+        'line_is_half', 'line_is_extreme_high', 'line_is_extreme_low'
+    ]
+    df = df.drop(columns=[col for col in market_features if col in df.columns], errors='ignore')
 
-def random_search_hyperparameters(
-    X_train, X_val, X_test,
-    y_train, y_val, y_test,
-    trainer,
-    n_iterations=30
-):
+    # Sort by date for chronological split
+    df = df.sort_values('game_date').reset_index(drop=True)
+
+    # Filter to samples with odds
+    df = df[df['odds_over_american'].notna() & df['odds_under_american'].notna()].reset_index(drop=True)
+
+    print(f"Loaded {len(df)} samples with odds data")
+    print(f"Features: {len([col for col in df.columns if col not in ['game_id', 'goalie_id', 'game_date', 'over_hit']])} features")
+
+    return df
+
+def evaluate_config(params, df, train_idx, val_idx, ev_threshold=0.02):
     """
-    Random search over hyperparameter space
-
-    Args:
-        X_train, X_val, X_test: Feature matrices
-        y_train, y_val, y_test: Target vectors
-        trainer: GoalieModelTrainer instance
-        n_iterations: Number of random configurations to try
-
-    Returns:
-        List of results dictionaries
+    Train model with given params and evaluate on validation ROI.
+    Returns validation ROI and other metrics.
     """
-    logger.info(f"\n{'='*70}")
-    logger.info("RANDOM SEARCH - Exploring Hyperparameter Space")
-    logger.info(f"Testing {n_iterations} random configurations")
-    logger.info(f"{'='*70}\n")
+    try:
+        # Create trainer
+        trainer = ClassifierTrainer()
 
-    # Define hyperparameter ranges
-    param_distributions = {
-        'n_estimators': [300, 500, 700, 1000, 1500],
-        'max_depth': [4, 5, 6, 7, 8, 10],
-        'learning_rate': [0.01, 0.02, 0.03, 0.05, 0.07, 0.1],
-        'subsample': [0.6, 0.7, 0.8, 0.9, 1.0],
-        'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
-        'min_child_weight': [1, 2, 3, 5, 7],
-        'gamma': [0, 0.05, 0.1, 0.2, 0.3],
-        'reg_alpha': [0, 0.01, 0.05, 0.1, 0.5, 1.0],
-        'reg_lambda': [0.5, 0.7, 1.0, 1.5, 2.0, 3.0]
-    }
+        # Prepare data - exclude categorical and target columns
+        # CRITICAL: Exclude actual game results to prevent data leakage
+        feature_cols = [col for col in df.columns if col not in [
+            'game_id', 'goalie_id', 'game_date', 'over_hit',
+            'odds_over_american', 'odds_under_american',
+            'odds_over_decimal', 'odds_under_decimal', 'num_books',
+            'team_abbrev', 'opponent_team', 'toi', 'season',
+            # EXCLUDE ACTUAL GAME RESULTS (data leakage):
+            'saves', 'shots_against', 'goals_against', 'save_percentage',
+            'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
+            'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
+            'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against',
+            'team_goals', 'team_shots', 'opp_goals', 'opp_shots', 'line_margin'
+        ]]
 
-    results = []
+        X = df[feature_cols].values
+        y = df['over_hit'].values
 
-    for i in range(n_iterations):
-        # Randomly sample hyperparameters
-        params = {
-            key: np.random.choice(values)
-            for key, values in param_distributions.items()
+        X_train, y_train = X[train_idx], y[train_idx]
+        X_val, y_val = X[val_idx], y[val_idx]
+
+        # Calculate sample weights for training
+        train_weights = trainer.calculate_sample_weights(df, train_idx)
+
+        # Train model with custom params
+        trainer.train(
+            X_train, y_train, X_val, y_val,
+            params=params,
+            sample_weight=train_weights
+        )
+
+        # Evaluate on validation set
+        val_metrics = trainer.evaluate_profitability(
+            X_val, y_val, df, val_idx,
+            dataset_name='Validation',
+            ev_threshold=ev_threshold
+        )
+
+        # Also get basic accuracy metrics
+        y_pred = trainer.model.predict(X_val)
+        accuracy = np.mean(y_pred == y_val)
+
+        return {
+            'roi': val_metrics['roi'],
+            'total_bets': val_metrics['total_bets'],
+            'win_rate': val_metrics['win_rate'],
+            'total_profit': val_metrics['total_profit'],
+            'accuracy': accuracy,
+            'success': True
         }
 
-        logger.info(f"\n--- Random Search Iteration {i+1}/{n_iterations} ---")
-        logger.info(f"Testing parameters: {params}")
+    except Exception as e:
+        print(f"Error with params {params}: {str(e)}")
+        return {
+            'roi': -100.0,
+            'total_bets': 0,
+            'win_rate': 0.0,
+            'total_profit': 0.0,
+            'accuracy': 0.0,
+            'success': False,
+            'error': str(e)
+        }
 
-        try:
-            # Train model with these hyperparameters
-            model = trainer.train(
-                X_train, y_train, X_val, y_val,
-                **params
-            )
-
-            # Evaluate on validation and test sets
-            val_metrics = trainer.evaluate(X_val, y_val, dataset_name="Validation")
-            test_metrics = trainer.evaluate(X_test, y_test, dataset_name="Test")
-
-            # Store results
-            result = {
-                'iteration': i + 1,
-                'params': params,
-                'val_rmse': val_metrics['rmse'],
-                'val_mae': val_metrics['mae'],
-                'test_rmse': test_metrics['rmse'],
-                'test_mae': test_metrics['mae']
-            }
-            results.append(result)
-
-            logger.info(f"Validation RMSE: {val_metrics['rmse']:.3f} | Test RMSE: {test_metrics['rmse']:.3f}")
-
-        except Exception as e:
-            logger.error(f"Error in iteration {i+1}: {e}")
-            continue
-
-    return results
-
-
-def grid_search_refined(
-    X_train, X_val, X_test,
-    y_train, y_val, y_test,
-    trainer,
-    base_params
-):
+def grid_search():
     """
-    Grid search around best parameters from random search
-
-    Args:
-        X_train, X_val, X_test: Feature matrices
-        y_train, y_val, y_test: Target vectors
-        trainer: GoalieModelTrainer instance
-        base_params: Best parameters from random search
-
-    Returns:
-        List of results dictionaries
+    Perform grid search over hyperparameter space.
     """
-    logger.info(f"\n{'='*70}")
-    logger.info("GRID SEARCH - Refining Best Configuration")
-    logger.info(f"Base parameters: {base_params}")
-    logger.info(f"{'='*70}\n")
+    print("Starting hyperparameter tuning...")
 
-    # Create grid around best parameters
+    # Load data
+    df = load_training_data()
+
+    # Create chronological splits (60/20/20)
+    n = len(df)
+    train_end = int(n * 0.6)
+    val_end = int(n * 0.8)
+
+    train_idx = np.arange(0, train_end)
+    val_idx = np.arange(train_end, val_end)
+    test_idx = np.arange(val_end, n)
+
+    print(f"Train: {len(train_idx)} samples")
+    print(f"Validation: {len(val_idx)} samples")
+    print(f"Test: {len(test_idx)} samples")
+
+    # Define parameter grid
     param_grid = {
-        'n_estimators': [
-            int(base_params['n_estimators'] * 0.8),
-            base_params['n_estimators'],
-            int(base_params['n_estimators'] * 1.2)
-        ],
-        'max_depth': [
-            max(3, base_params['max_depth'] - 1),
-            base_params['max_depth'],
-            min(12, base_params['max_depth'] + 1)
-        ],
-        'learning_rate': [
-            base_params['learning_rate'] * 0.8,
-            base_params['learning_rate'],
-            base_params['learning_rate'] * 1.2
-        ],
-        'subsample': [
-            max(0.5, base_params['subsample'] - 0.1),
-            base_params['subsample'],
-            min(1.0, base_params['subsample'] + 0.1)
-        ],
-        'colsample_bytree': [
-            max(0.5, base_params['colsample_bytree'] - 0.1),
-            base_params['colsample_bytree'],
-            min(1.0, base_params['colsample_bytree'] + 0.1)
-        ]
+        'max_depth': [3, 4, 5],
+        'min_child_weight': [10, 15, 20, 25],
+        'gamma': [1.0, 5.0, 10.0, 15.0],
+        'learning_rate': [0.01, 0.015, 0.02],
+        'reg_alpha': [5, 10, 15, 20],
+        'reg_lambda': [10, 20, 30, 40],
     }
 
-    # Fix other parameters
+    # Fixed params
     fixed_params = {
-        'min_child_weight': base_params['min_child_weight'],
-        'gamma': base_params['gamma'],
-        'reg_alpha': base_params['reg_alpha'],
-        'reg_lambda': base_params['reg_lambda']
+        'n_estimators': 800,
+        'subsample': 0.8,
+        'colsample_bytree': 0.8,
+        'objective': 'binary:logistic',
+        'eval_metric': 'logloss',
+        'random_state': 42,
+        'tree_method': 'hist',
     }
 
     # Generate all combinations
     param_names = list(param_grid.keys())
-    param_values = [param_grid[name] for name in param_names]
+    param_values = list(param_grid.values())
     all_combinations = list(product(*param_values))
 
-    logger.info(f"Testing {len(all_combinations)} grid combinations")
+    total_configs = len(all_combinations)
+    print(f"\nTesting {total_configs} configurations...")
+    print(f"Evaluating on validation ROI at 2% EV threshold\n")
 
-    results = []
+    # Store all results
+    all_results = []
 
-    for i, combination in enumerate(all_combinations):
-        params = dict(zip(param_names, combination))
-        params.update(fixed_params)
+    # Test each configuration
+    for i, combo in enumerate(all_combinations, 1):
+        # Create params dict
+        params = fixed_params.copy()
+        for param_name, param_value in zip(param_names, combo):
+            params[param_name] = param_value
 
-        logger.info(f"\n--- Grid Search {i+1}/{len(all_combinations)} ---")
-        logger.info(f"Parameters: {params}")
+        print(f"[{i}/{total_configs}] Testing: max_depth={params['max_depth']}, "
+              f"min_child_weight={params['min_child_weight']}, "
+              f"gamma={params['gamma']}, "
+              f"lr={params['learning_rate']}, "
+              f"alpha={params['reg_alpha']}, "
+              f"lambda={params['reg_lambda']}")
 
-        try:
-            # Train model
-            model = trainer.train(
-                X_train, y_train, X_val, y_val,
-                **params
-            )
+        # Evaluate this configuration
+        result = evaluate_config(params, df, train_idx, val_idx, ev_threshold=0.02)
 
-            # Evaluate
-            val_metrics = trainer.evaluate(X_val, y_val, dataset_name="Validation")
-            test_metrics = trainer.evaluate(X_test, y_test, dataset_name="Test")
+        # Store result
+        result['params'] = {k: v for k, v in params.items() if k in param_names}
+        result['config_num'] = i
+        all_results.append(result)
 
-            result = {
-                'iteration': i + 1,
-                'params': params,
-                'val_rmse': val_metrics['rmse'],
-                'val_mae': val_metrics['mae'],
-                'test_rmse': test_metrics['rmse'],
-                'test_mae': test_metrics['mae']
-            }
-            results.append(result)
+        if result['success']:
+            print(f"  Val ROI: {result['roi']:.2f}% | Bets: {result['total_bets']} | "
+                  f"Win Rate: {result['win_rate']:.1f}% | Accuracy: {result['accuracy']:.1f}%\n")
+        else:
+            print(f"  FAILED: {result.get('error', 'Unknown error')}\n")
 
-            logger.info(f"Validation RMSE: {val_metrics['rmse']:.3f} | Test RMSE: {test_metrics['rmse']:.3f}")
+    # Find best configuration by validation ROI
+    successful_results = [r for r in all_results if r['success'] and r['total_bets'] >= 50]
 
-        except Exception as e:
-            logger.error(f"Error in grid iteration {i+1}: {e}")
-            continue
+    if not successful_results:
+        print("\nNo successful configurations found with at least 50 bets!")
+        print("Saving all results anyway...")
 
-    return results
+        # Save all results
+        results_path = 'models/metadata/hyperparameter_tuning_results.json'
+        os.makedirs(os.path.dirname(results_path), exist_ok=True)
 
+        with open(results_path, 'w') as f:
+            json.dump({
+                'timestamp': datetime.now().isoformat(),
+                'total_configs': total_configs,
+                'all_results': all_results,
+                'best_config': None
+            }, f, indent=2)
 
-def main():
-    """Main hyperparameter tuning workflow"""
+        print(f"Results saved to {results_path}")
+        return
 
-    logger.info("="*70)
-    logger.info("XGBoost Hyperparameter Tuning")
-    logger.info("="*70)
+    # Sort by ROI
+    successful_results.sort(key=lambda x: x['roi'], reverse=True)
+    best_result = successful_results[0]
 
-    # Load training data
-    logger.info("\nLoading training data...")
-    data_path = Path('data/processed/training_data.parquet')
-    df = pd.read_parquet(data_path)
-    logger.info(f"Loaded {len(df)} samples")
+    print("\n" + "="*80)
+    print("BEST CONFIGURATION FOUND")
+    print("="*80)
+    print(f"Validation ROI: {best_result['roi']:.2f}%")
+    print(f"Validation Bets: {best_result['total_bets']}")
+    print(f"Validation Win Rate: {best_result['win_rate']:.1f}%")
+    print(f"Validation Accuracy: {best_result['accuracy']:.1f}%")
+    print(f"\nBest Parameters:")
+    for param, value in best_result['params'].items():
+        print(f"  {param}: {value}")
 
-    # Initialize trainer with EWA (best from previous optimization)
-    config = {
-        'model': {'random_state': 42},
-        'features': {'rolling_windows': [3, 5, 10]}
-    }
-    trainer = GoalieModelTrainer(config)
+    # Now test best config on test set with multiple EV thresholds
+    print("\n" + "="*80)
+    print("TESTING BEST CONFIG ON TEST SET")
+    print("="*80)
 
-    # Prepare data with EWA
-    logger.info("\nPreparing data with EWA (span=1.25)...")
-    X_train, X_val, X_test, y_train, y_val, y_test = trainer.prepare_data(
-        df,
-        target_col='saves',
-        use_ewa=True,
-        ewa_span_multiplier=1.25
+    best_params = fixed_params.copy()
+    best_params.update(best_result['params'])
+
+    trainer = ClassifierTrainer()
+
+    # Prepare data - exclude categorical and target columns
+    # CRITICAL: Exclude actual game results to prevent data leakage
+    feature_cols = [col for col in df.columns if col not in [
+        'game_id', 'goalie_id', 'game_date', 'over_hit',
+        'odds_over_american', 'odds_under_american',
+        'odds_over_decimal', 'odds_under_decimal', 'num_books',
+        'team_abbrev', 'opponent_team', 'toi', 'season',
+        # EXCLUDE ACTUAL GAME RESULTS (data leakage):
+        'saves', 'shots_against', 'goals_against', 'save_percentage',
+        'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
+        'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
+        'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against',
+        'team_goals', 'team_shots', 'opp_goals', 'opp_shots', 'line_margin'
+    ]]
+
+    X = df[feature_cols].values
+    y = df['over_hit'].values
+
+    # Train on train + val combined
+    train_val_idx = np.concatenate([train_idx, val_idx])
+    X_train_val = X[train_val_idx]
+    y_train_val = y[train_val_idx]
+
+    train_val_weights = trainer.calculate_sample_weights(df, train_val_idx)
+
+    print(f"Training on {len(train_val_idx)} samples (train + validation)...")
+
+    # Create a dummy val set for the train() method (we'll only use the model for testing)
+    dummy_val_idx = val_idx[:100]  # Small dummy set
+    X_dummy_val = X[dummy_val_idx]
+    y_dummy_val = y[dummy_val_idx]
+
+    trainer.train(
+        X_train_val, y_train_val, X_dummy_val, y_dummy_val,
+        params=best_params,
+        sample_weight=train_val_weights
     )
 
-    logger.info(f"Train: {len(X_train)} samples")
-    logger.info(f"Validation: {len(X_val)} samples")
-    logger.info(f"Test: {len(X_test)} samples")
+    # Test on multiple EV thresholds
+    X_test = X[test_idx]
+    y_test = y[test_idx]
 
-    # PHASE 1: Random Search
-    logger.info("\n" + "="*70)
-    logger.info("PHASE 1: Random Search")
-    logger.info("="*70)
-
-    random_results = random_search_hyperparameters(
-        X_train, X_val, X_test,
-        y_train, y_val, y_test,
-        trainer,
-        n_iterations=30
+    test_results = trainer.test_ev_thresholds(
+        X_test, y_test, df, test_idx,
+        dataset_name='Test',
+        thresholds=[0.01, 0.02, 0.03, 0.05, 0.07, 0.10]
     )
-
-    # Find best from random search
-    random_df = pd.DataFrame(random_results)
-    random_df = random_df.sort_values('val_rmse')
-    best_random = random_df.iloc[0]
-
-    logger.info(f"\n{'='*70}")
-    logger.info("BEST RESULT FROM RANDOM SEARCH")
-    logger.info(f"{'='*70}")
-    logger.info(f"Validation RMSE: {best_random['val_rmse']:.3f}")
-    logger.info(f"Test RMSE: {best_random['test_rmse']:.3f}")
-    logger.info(f"Parameters: {best_random['params']}")
-
-    # Save random search results
-    random_output = Path('models/metadata/hyperparameter_random_search.json')
-    random_df.to_json(random_output, orient='records', indent=2)
-    logger.info(f"\nRandom search results saved to {random_output}")
-
-    # PHASE 2: Grid Search around best parameters
-    logger.info(f"\n{'='*70}")
-    logger.info("PHASE 2: Grid Search Refinement")
-    logger.info(f"{'='*70}")
-
-    grid_results = grid_search_refined(
-        X_train, X_val, X_test,
-        y_train, y_val, y_test,
-        trainer,
-        base_params=best_random['params']
-    )
-
-    # Find overall best
-    all_results = random_results + grid_results
-    all_df = pd.DataFrame(all_results)
-    all_df = all_df.sort_values('val_rmse')
-    best_overall = all_df.iloc[0]
-
-    logger.info(f"\n{'='*70}")
-    logger.info("BEST HYPERPARAMETERS (OVERALL)")
-    logger.info(f"{'='*70}")
-    logger.info(f"Validation RMSE: {best_overall['val_rmse']:.3f}")
-    logger.info(f"Test RMSE: {best_overall['test_rmse']:.3f}")
-    logger.info(f"\nOptimal Parameters:")
-    for param, value in best_overall['params'].items():
-        logger.info(f"  {param}: {value}")
 
     # Save all results
-    output_path = Path('models/metadata/hyperparameter_tuning_results.json')
-    all_df.to_json(output_path, orient='records', indent=2)
-    logger.info(f"\nAll results saved to {output_path}")
+    results_path = 'models/metadata/hyperparameter_tuning_results.json'
+    os.makedirs(os.path.dirname(results_path), exist_ok=True)
 
-    # Save best parameters separately
-    best_params_path = Path('models/metadata/best_hyperparameters.json')
-    # Convert numpy types to native Python types for JSON serialization
-    best_params_serializable = {k: int(v) if isinstance(v, (np.integer, np.int64)) else float(v)
-                                for k, v in best_overall['params'].items()}
-    with open(best_params_path, 'w') as f:
-        json.dump({
-            'best_params': best_params_serializable,
-            'val_rmse': float(best_overall['val_rmse']),
-            'test_rmse': float(best_overall['test_rmse']),
-            'tuning_date': datetime.now().isoformat()
-        }, f, indent=2)
-    logger.info(f"Best parameters saved to {best_params_path}")
+    output = {
+        'timestamp': datetime.now().isoformat(),
+        'total_configs_tested': total_configs,
+        'successful_configs': len(successful_results),
+        'best_validation_result': best_result,
+        'test_results_by_ev_threshold': test_results,
+        'top_10_configs': successful_results[:10],
+        'all_results': all_results
+    }
 
-    # Compare to baseline
-    logger.info(f"\n{'='*70}")
-    logger.info("IMPROVEMENT SUMMARY")
-    logger.info(f"{'='*70}")
-    baseline_rmse = 6.510  # Current best with EWA
-    improvement = baseline_rmse - best_overall['test_rmse']
-    pct_improvement = (improvement / baseline_rmse) * 100
+    with open(results_path, 'w') as f:
+        json.dump(output, f, indent=2)
 
-    logger.info(f"Baseline (EWA, default params): {baseline_rmse:.3f} RMSE")
-    logger.info(f"Optimized hyperparameters:      {best_overall['test_rmse']:.3f} RMSE")
-    logger.info(f"Improvement:                    {improvement:.3f} saves ({pct_improvement:.2f}%)")
-    logger.info(f"{'='*70}\n")
+    print(f"\nAll results saved to {results_path}")
 
+    # Find best test threshold
+    best_test_threshold = None
+    best_test_roi = -float('inf')
 
-if __name__ == "__main__":
-    main()
+    for threshold, metrics in test_results.items():
+        if metrics['total_bets'] > 0 and metrics['roi'] > best_test_roi:
+            best_test_roi = metrics['roi']
+            best_test_threshold = threshold
+
+    if best_test_threshold and best_test_roi > 0:
+        print("\n" + "="*80)
+        print("BEST TEST RESULT")
+        print("="*80)
+        print(f"EV Threshold: {best_test_threshold*100:.0f}%")
+        print(f"Test ROI: {best_test_roi:.2f}%")
+        print(f"Test Bets: {test_results[best_test_threshold]['total_bets']}")
+        print(f"Test Win Rate: {test_results[best_test_threshold]['win_rate']:.1f}%")
+    else:
+        print("\nNo profitable threshold found on test set.")
+
+if __name__ == '__main__':
+    grid_search()
