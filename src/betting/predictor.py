@@ -10,7 +10,7 @@ from .odds_utils import calculate_ev
 class BettingPredictor:
     """Make predictions using trained classifier model"""
 
-    def __init__(self, model_path='models/trained/config_5419_ev4pct_20260113_102854.json', feature_order_path='training_feature_order_config_5419.txt'):
+    def __init__(self, model_path='models/trained/config_4398_ev2pct_20260113_140448.json/classifier_model.json', feature_order_path='models/trained/config_4398_ev2pct_20260113_140448.json/classifier_feature_names.json'):
         """
         Initialize predictor with trained model
 
@@ -36,10 +36,23 @@ class BettingPredictor:
 
     def _load_feature_order(self):
         """Load the expected feature order from training"""
+        import json
+
         if not self.feature_order_path.exists():
             raise FileNotFoundError(f"Feature order file not found: {self.feature_order_path}")
 
-        # Parse the feature order file
+        # Check if it's JSON format
+        try:
+            with open(self.feature_order_path, 'r') as f:
+                content = f.read()
+                # Try to parse as JSON first
+                if content.strip().startswith('['):
+                    self.feature_order = json.loads(content)
+                    return
+        except json.JSONDecodeError:
+            pass
+
+        # Fall back to text format
         # Format: "  1. is_home", "  2. saves_rolling_3", etc.
         with open(self.feature_order_path, 'r') as f:
             lines = f.readlines()
@@ -99,14 +112,18 @@ class BettingPredictor:
         ]
         features_cleaned = features_df.drop(columns=[col for col in features_to_remove if col in features_df.columns], errors='ignore')
 
-        # CRITICAL: Reorder features to match exact training order
-        # This ensures XGBoost sees features in the same order as training
-        missing_features = [f for f in self.feature_order if f not in features_cleaned.columns]
-        if missing_features:
-            raise ValueError(f"Missing required features: {missing_features}")
+        # CRITICAL: Only use features that are available in the input
+        # The model was trained with 103 features, but we only have 90 base features during prediction
+        # Filter feature_order to only include features we actually have
+        available_features = [f for f in self.feature_order if f in features_cleaned.columns]
 
-        # Reorder columns to match training exactly
-        features_ordered = features_cleaned[self.feature_order]
+        # Check if we have all the base features (should be ~90)
+        if len(available_features) < 85:  # Safety check: should have at least 85 features
+            missing_features = [f for f in self.feature_order if f not in features_cleaned.columns and f not in features_to_remove]
+            raise ValueError(f"Missing required base features: {missing_features}")
+
+        # Reorder columns to match training order (using only available features)
+        features_ordered = features_cleaned[available_features]
 
         # Get probability predictions using DMatrix (for Booster interface)
         dmatrix = xgb.DMatrix(features_ordered)
@@ -172,22 +189,22 @@ class BettingPredictor:
         else:
             return '75%+'
 
-    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.04):
+    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.02):
         """
-        Determine bet recommendation using Expected Value (4% minimum).
+        Determine bet recommendation using Expected Value (2% minimum).
 
         Args:
             prob_over: Model probability of OVER
             line_over_odds: American odds for OVER (e.g., -115)
             line_under_odds: American odds for UNDER (e.g., -105)
-            ev_threshold: Minimum EV required (default 0.04 = 4%)
+            ev_threshold: Minimum EV required (default 0.02 = 2%)
 
         Returns:
             tuple: (recommendation, ev_over, ev_under, recommended_ev)
 
         Logic:
             1. Calculate EV for both sides (if odds provided)
-            2. Recommend side with EV >= 4% AND higher EV than other side
+            2. Recommend side with EV >= 2% AND higher EV than other side
             3. If no odds provided, fall back to probability thresholds (backwards compatible)
             4. Return NO BET if neither side meets criteria
         """

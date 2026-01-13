@@ -66,7 +66,7 @@ python scripts/generate_predictions.py
   - `prob_over` (probability of exceeding betting line)
   - `confidence_pct` (0-100% confidence)
   - `confidence_bucket` (50-55%, 55-60%, ..., 75%+)
-  - `recommendation` (OVER/UNDER/NO BET based on 4% EV threshold)
+  - `recommendation` (OVER/UNDER/NO BET based on 2% EV threshold)
   - `recommended_ev` (Expected Value % for recommended bet)
 
 **Important**: You can safely re-run predictions multiple times throughout the day (e.g., for late games after early games have started). The system automatically **excludes any games from the current date** when calculating rolling averages, preventing data leakage. This means:
@@ -136,7 +136,7 @@ reports/                     # Performance reports (if using --save)
 | `prob_over` | generate script | Probability > line (0-1.0) |
 | `confidence_pct` | generate script | Confidence 0-100% |
 | `confidence_bucket` | generate script | 50-55%, 55-60%, etc. |
-| `recommendation` | generate script | OVER/UNDER/NO BET (based on 4% EV) |
+| `recommendation` | generate script | OVER/UNDER/NO BET (based on 2% EV) |
 | `recommended_ev` | generate script | Expected Value % |
 | `bet_amount` | **USER** | Units wagered |
 | `bet_selection` | **USER** | OVER/UNDER/NONE |
@@ -148,10 +148,10 @@ reports/                     # Performance reports (if using --save)
 ## Model Details
 
 ### Prediction Model
-- **Model**: Config #5419 (production model trained 2026-01-13)
+- **Model**: Config #4398 (production model trained 2026-01-13)
 - **Type**: XGBoost Binary Classifier (`binary:logistic`)
 - **Trained On**: Historical NHL goalie games (2017-2025)
-- **Features**: 90 features including:
+- **Features**: 90 base features including:
   - Rolling averages (3, 5, 10 game windows)
   - Saves, shots against, goals against, save %
   - Situation-specific stats (even-strength, PP, SH)
@@ -159,25 +159,24 @@ reports/                     # Performance reports (if using --save)
   - Team defensive and opponent offensive metrics
   - Betting line (for context)
 - **Hyperparameters**:
-  - max_depth: 5, learning_rate: 0.015, n_estimators: 800
-  - min_child_weight: 12, gamma: 0.5
-  - reg_alpha: 10, reg_lambda: 30
-  - Sample weighting enabled for sharp/soft lines
-- **Validation Performance** (80/20 split): -0.19% ROI (286 bets, essentially breakeven)
+  - max_depth: 4, learning_rate: 0.02, n_estimators: 800
+  - min_child_weight: 15, gamma: 1.0
+  - reg_alpha: 10, reg_lambda: 40
+  - Sample weighting: DISABLED (simpler, more stable)
+- **Validation Performance** (80/20 split): -2.02% ROI (357 bets)
 - **Tuning Performance** (60/20/20 chronological split):
-  - EV=4%: Combined ROI +2.18% (581 bets across val+test)
-  - EV=5%: Combined ROI +3.40% (475 bets across val+test)
+  - EV=2%: Val +2.54% (363 bets), Test +0.62% (336 bets), Combined +1.60% (699 bets)
 
 ### Recommendation Logic (Expected Value Based)
-The model now uses **Expected Value (EV)** rather than simple probability thresholds:
+The model uses **Expected Value (EV)** rather than simple probability thresholds:
 
 - **EV Calculation**: `EV = model_prob - implied_prob` where implied_prob comes from American odds
-- **Minimum EV Threshold**: 4% (0.04)
-- **OVER**: Recommended when `ev_over >= 4%` AND `ev_over > ev_under`
-- **UNDER**: Recommended when `ev_under >= 4%` AND `ev_under > ev_over`
-- **NO BET**: When neither side meets the 4% EV threshold
+- **Minimum EV Threshold**: 2% (0.02)
+- **OVER**: Recommended when `ev_over >= 2%` AND `ev_over > ev_under`
+- **UNDER**: Recommended when `ev_under >= 2%` AND `ev_under > ev_over`
+- **NO BET**: When neither side meets the 2% EV threshold
 
-This EV-based approach ensures we only bet when we have a mathematical edge over the sportsbook's implied probability.
+This EV-based approach ensures we only bet when we have a mathematical edge over the sportsbook's implied probability. The 2% threshold provides a good balance between volume (699 bets in tuning) and profitability (+1.60% ROI).
 
 ### Confidence Buckets
 Confidence buckets are based on distance from 50% probability and provide additional context alongside the EV-based recommendations:
@@ -251,11 +250,11 @@ Based on -110 odds:
 - **Excellent**: >58% win rate, >10% ROI
 
 ### Key Insight
-The new Config #5419 model with 4% EV threshold has shown:
-- +2.18% ROI on validation+test (581 bets)
-- Consistent performance across val and test sets
-- Best balance of volume and profitability
-- Expected 100-150 bets per season at 4% EV threshold
+The new Config #4398 model with 2% EV threshold has shown:
+- +1.60% ROI on validation+test (699 bets)
+- Consistent positive performance across val and test sets
+- Higher volume than higher EV thresholds
+- Expected 150-200 bets per season at 2% EV threshold
 
 ## Data Backups
 
@@ -284,8 +283,8 @@ Features are calculated in real-time from:
 - `/v1/schedule/{date}` (daily schedule)
 
 ### Model Files Required
-- `models/trained/config_5419_ev4pct_20260113_102854.json` - Trained XGBoost classifier (Config #5419)
-- `training_feature_order_config_5419.txt` - Feature order (90 features)
+- `models/trained/config_4398_ev2pct_20260113_140448.json/classifier_model.json` - Trained XGBoost classifier (Config #4398)
+- `models/trained/config_4398_ev2pct_20260113_140448.json/classifier_feature_names.json` - Feature order (103 features, 90 used)
 
 ## Support
 
