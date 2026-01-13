@@ -8,7 +8,7 @@ This system provides:
 - Daily game population and prediction generation
 - Excel-based tracking with performance metrics
 - Automatic result updates from NHL API
-- Confidence-based recommendations (OVER/UNDER/NO BET)
+- Expected Value (EV) based recommendations (OVER/UNDER/NO BET)
 - Historical performance analysis by confidence level
 
 ## Quick Start
@@ -36,11 +36,13 @@ python scripts/populate_daily_games.py
 - Creates 2 rows per game (one for each team's goalie)
 - Rows are initially blank - you'll fill in goalies you want to bet on
 
-**Step 2: Enter Goalie Names and Betting Lines** (anytime after lines are released)
+**Step 2: Enter Goalie Names, Betting Lines, and Odds** (anytime after lines are released)
 1. Open `betting_tracker.xlsx`
 2. For games you want to bet, enter:
    - `goalie_name`: Goalie's **LAST NAME** only (e.g., "Shesterkin", "Hellebuyck")
    - `betting_line`: Saves line from sportsbook (e.g., 24.5)
+   - `line_over`: American odds for OVER (e.g., -115)
+   - `line_under`: American odds for UNDER (e.g., -105)
 3. Leave rows blank for games you're not betting on
 4. Save file
 
@@ -64,7 +66,8 @@ python scripts/generate_predictions.py
   - `prob_over` (probability of exceeding betting line)
   - `confidence_pct` (0-100% confidence)
   - `confidence_bucket` (50-55%, 55-60%, ..., 75%+)
-  - `recommendation` (OVER/UNDER/NO BET)
+  - `recommendation` (OVER/UNDER/NO BET based on 4% EV threshold)
+  - `recommended_ev` (Expected Value % for recommended bet)
 
 **Important**: You can safely re-run predictions multiple times throughout the day (e.g., for late games after early games have started). The system automatically **excludes any games from the current date** when calculating rolling averages, preventing data leakage. This means:
 - Morning games won't affect evening game predictions
@@ -123,6 +126,8 @@ reports/                     # Performance reports (if using --save)
 | `game_id` | populate script | NHL game ID |
 | `goalie_name` | **USER** | Goalie's LAST NAME (e.g., "Shesterkin") |
 | `betting_line` | **USER** | Saves line from sportsbook (e.g., 24.5) |
+| `line_over` | **USER** | American odds for OVER (e.g., -115) |
+| `line_under` | **USER** | American odds for UNDER (e.g., -105) |
 | `goalie_id` | generate script | NHL player ID (auto-looked up) |
 | `team_abbrev` | populate script | Team abbreviation |
 | `opponent_team` | populate script | Opponent abbreviation |
@@ -131,7 +136,8 @@ reports/                     # Performance reports (if using --save)
 | `prob_over` | generate script | Probability > line (0-1.0) |
 | `confidence_pct` | generate script | Confidence 0-100% |
 | `confidence_bucket` | generate script | 50-55%, 55-60%, etc. |
-| `recommendation` | generate script | OVER/UNDER/NO BET |
+| `recommendation` | generate script | OVER/UNDER/NO BET (based on 4% EV) |
+| `recommended_ev` | generate script | Expected Value % |
 | `bet_amount` | **USER** | Units wagered |
 | `bet_selection` | **USER** | OVER/UNDER/NONE |
 | `actual_saves` | results script | Actual saves from game |
@@ -142,29 +148,47 @@ reports/                     # Performance reports (if using --save)
 ## Model Details
 
 ### Prediction Model
+- **Model**: Config #5419 (production model trained 2026-01-13)
 - **Type**: XGBoost Binary Classifier (`binary:logistic`)
-- **Trained On**: Historical NHL goalie games (2017-2024)
-- **Features**: 89 features including:
+- **Trained On**: Historical NHL goalie games (2017-2025)
+- **Features**: 90 features including:
   - Rolling averages (3, 5, 10 game windows)
   - Saves, shots against, goals against, save %
   - Situation-specific stats (even-strength, PP, SH)
   - Rest days, back-to-back status
   - Team defensive and opponent offensive metrics
-- **Performance**: 51.9% overall test accuracy, 58.5% win rate in 60-65% confidence bucket
+  - Betting line (for context)
+- **Hyperparameters**:
+  - max_depth: 5, learning_rate: 0.015, n_estimators: 800
+  - min_child_weight: 12, gamma: 0.5
+  - reg_alpha: 10, reg_lambda: 30
+  - Sample weighting enabled for sharp/soft lines
+- **Validation Performance** (80/20 split): -0.19% ROI (286 bets, essentially breakeven)
+- **Tuning Performance** (60/20/20 chronological split):
+  - EV=4%: Combined ROI +2.18% (581 bets across val+test)
+  - EV=5%: Combined ROI +3.40% (475 bets across val+test)
 
-### Recommendation Logic
-- **OVER**: `prob_over > 0.55` (>55% confidence)
-- **UNDER**: `prob_over < 0.45` (>55% confidence opposite direction)
-- **NO BET**: Between 0.45-0.55 (not enough edge)
+### Recommendation Logic (Expected Value Based)
+The model now uses **Expected Value (EV)** rather than simple probability thresholds:
+
+- **EV Calculation**: `EV = model_prob - implied_prob` where implied_prob comes from American odds
+- **Minimum EV Threshold**: 4% (0.04)
+- **OVER**: Recommended when `ev_over >= 4%` AND `ev_over > ev_under`
+- **UNDER**: Recommended when `ev_under >= 4%` AND `ev_under > ev_over`
+- **NO BET**: When neither side meets the 4% EV threshold
+
+This EV-based approach ensures we only bet when we have a mathematical edge over the sportsbook's implied probability.
 
 ### Confidence Buckets
-Based on distance from 50%:
+Confidence buckets are based on distance from 50% probability and provide additional context alongside the EV-based recommendations:
 - 50-55%: Low confidence
 - 55-60%: Moderate confidence
-- 60-65%: Good confidence (**historically most profitable**)
+- 60-65%: Good confidence
 - 65-70%: High confidence
 - 70-75%: Very high confidence
 - 75%+: Extreme confidence
+
+**Note**: With the new EV-based system, focus on the **recommended_ev** value rather than confidence buckets. The EV threshold ensures we only bet when we have a mathematical edge.
 
 ## Advanced Usage
 
@@ -227,10 +251,11 @@ Based on -110 odds:
 - **Excellent**: >58% win rate, >10% ROI
 
 ### Key Insight
-Focus bets on **60-65% confidence bucket** - historically shows:
-- 58.5% win rate
-- +11.75% ROI
-- Best risk/reward balance
+The new Config #5419 model with 4% EV threshold has shown:
+- +2.18% ROI on validation+test (581 bets)
+- Consistent performance across val and test sets
+- Best balance of volume and profitability
+- Expected 100-150 bets per season at 4% EV threshold
 
 ## Data Backups
 
@@ -259,8 +284,8 @@ Features are calculated in real-time from:
 - `/v1/schedule/{date}` (daily schedule)
 
 ### Model Files Required
-- `models/classifier_model.json` - Trained XGBoost classifier
-- `models/classifier_feature_names.json` - Feature order (89 features)
+- `models/trained/config_5419_ev4pct_20260113_102854.json` - Trained XGBoost classifier (Config #5419)
+- `training_feature_order_config_5419.txt` - Feature order (90 features)
 
 ## Support
 
