@@ -120,7 +120,8 @@ def generate_predictions(date=None, tracker_file='betting_tracker.xlsx'):
                 opponent=opponent,
                 is_home=is_home,
                 game_date=date,
-                recent_games=recent_games
+                recent_games=recent_games,
+                betting_line=betting_line  # CRITICAL: Pass betting line to feature calculator
             )
 
             # Generate prediction (pass betting_line and odds)
