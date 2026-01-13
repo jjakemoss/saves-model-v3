@@ -33,6 +33,11 @@ def load_betting_lines():
                 'game_id': game_id,
                 'goalie_id': entry['home_goalie_id'],
                 'betting_line': entry['home_goalie_line'],
+                'odds_over_american': entry.get('home_odds_over_american'),
+                'odds_under_american': entry.get('home_odds_under_american'),
+                'odds_over_decimal': entry.get('home_odds_over_decimal'),
+                'odds_under_decimal': entry.get('home_odds_under_decimal'),
+                'num_books': entry.get('home_num_books'),
                 'game_date': game_date
             })
 
@@ -42,6 +47,11 @@ def load_betting_lines():
                 'game_id': game_id,
                 'goalie_id': entry['away_goalie_id'],
                 'betting_line': entry['away_goalie_line'],
+                'odds_over_american': entry.get('away_odds_over_american'),
+                'odds_under_american': entry.get('away_odds_under_american'),
+                'odds_over_decimal': entry.get('away_odds_over_decimal'),
+                'odds_under_decimal': entry.get('away_odds_under_decimal'),
+                'num_books': entry.get('away_num_books'),
                 'game_date': game_date
             })
 
@@ -84,9 +94,14 @@ def merge_datasets(training_df, betting_lines_df):
     logger.info(f"Training data before merge: {len(training_df)} rows")
     logger.info(f"Betting lines: {len(betting_lines_df)} rows")
 
-    # Merge on game_id and goalie_id
+    # Merge on game_id and goalie_id (include odds columns)
     merged_df = training_df.merge(
-        betting_lines_df[['game_id', 'goalie_id', 'betting_line']],
+        betting_lines_df[[
+            'game_id', 'goalie_id', 'betting_line',
+            'odds_over_american', 'odds_under_american',
+            'odds_over_decimal', 'odds_under_decimal',
+            'num_books'
+        ]],
         on=['game_id', 'goalie_id'],
         how='left'
     )

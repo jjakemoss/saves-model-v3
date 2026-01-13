@@ -1,18 +1,84 @@
 {
   "train": {
-    "accuracy": 0.8532934131736527
+    "accuracy": 0.5497339336880884,
+    "log_loss": 0.6854969559761085,
+    "auc_roc": 0.5571072226358897,
+    "confusion_matrix": {
+      "true_negatives": 1343,
+      "false_positives": 0,
+      "false_negatives": 1100,
+      "true_positives": 0
+    },
+    "precision_over": 0.0,
+    "recall_over": 0.0,
+    "f1_over": 0.0,
+    "precision_under": 0.5497339336880884,
+    "recall_under": 1.0,
+    "f1_under": 0.7094558901215002,
+    "profitability": {
+      "total_bets": 1101,
+      "wins": 590.0,
+      "losses": 511.0,
+      "win_rate": 0.5358764759309719,
+      "total_profit": 28.41956084461953,
+      "roi": 2.58124984964755,
+      "avg_ev": 0.02677271313510222,
+      "skipped_no_odds": 0
+    }
+  },
+  "validation": {
+    "accuracy": 0.48845470692717585,
+    "log_loss": 0.7011830182159696,
+    "auc_roc": 0.47246843434343433,
+    "confusion_matrix": {
+      "true_negatives": 275,
+      "false_positives": 0,
+      "false_negatives": 288,
+      "true_positives": 0
+    },
+    "precision_over": 0.0,
+    "recall_over": 0.0,
+    "f1_over": 0.0,
+    "precision_under": 0.48845470692717585,
+    "recall_under": 1.0,
+    "f1_under": 0.6563245823389021,
+    "profitability": {
+      "total_bets": 320,
+      "wins": 159.0,
+      "losses": 161.0,
+      "win_rate": 0.496875,
+      "total_profit": -12.771637527491642,
+      "roi": -3.991136727341138,
+      "avg_ev": 0.027834023245556526,
+      "skipped_no_odds": 0
+    }
   },
   "test": {
-    "accuracy": 0.5193075898801598,
-    "log_loss": 0.7008951002640914,
-    "auc_roc": 0.5486905016770143,
+    "accuracy": 0.46870838881491345,
+    "log_loss": 0.7046630638739309,
+    "auc_roc": 0.4920646787423103,
     "confusion_matrix": {
-      "true_negatives": 241,
-      "false_positives": 105,
-      "false_negatives": 256,
-      "true_positives": 149
+      "true_negatives": 352,
+      "false_positives": 0,
+      "false_negatives": 399,
+      "true_positives": 0
     },
-    "precision_over": 0.5866141732283464,
-    "recall_over": 0.36790123456790125
-  }
+    "precision_over": 0.0,
+    "recall_over": 0.0,
+    "f1_over": 0.0,
+    "precision_under": 0.46870838881491345,
+    "recall_under": 1.0,
+    "f1_under": 0.6382592928377153,
+    "profitability": {
+      "total_bets": 449,
+      "wins": 219.0,
+      "losses": 230.0,
+      "win_rate": 0.48775055679287305,
+      "total_profit": -27.788305840684966,
+      "roi": -6.188932258504447,
+      "avg_ev": 0.027824355295104627,
+      "skipped_no_odds": 0
+    }
+  },
+  "evaluation_date": "2026-01-11T16:18:56.105576"
 }

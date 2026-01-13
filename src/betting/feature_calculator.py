@@ -154,9 +154,9 @@ class BettingFeatureCalculator:
 
         return features
 
-    def prepare_prediction_features(self, goalie_id, team, opponent, is_home, game_date, recent_games):
+    def prepare_prediction_features(self, goalie_id, team, opponent, is_home, game_date, recent_games, betting_line=None):
         """
-        Combine all features into model input format (89 features)
+        Combine all features into model input format (90 features including betting_line)
 
         Args:
             goalie_id: NHL goalie ID
@@ -165,9 +165,10 @@ class BettingFeatureCalculator:
             is_home: 1 if home, 0 if away
             game_date: Date of game
             recent_games: List of recent game dicts
+            betting_line: Betting line for saves over/under (REQUIRED for predictions)
 
         Returns:
-            pd.DataFrame: Single row with 89 features in correct order
+            pd.DataFrame: Single row with 90 features in correct order
         """
         features = {}
 
@@ -181,6 +182,14 @@ class BettingFeatureCalculator:
         # Team/opponent features
         team_features = self.calculate_team_features(team, opponent)
         features.update(team_features)
+
+        # CRITICAL: Add betting line (feature #90)
+        # This is a valid pre-game feature and was included in training
+        if betting_line is not None:
+            features['betting_line'] = betting_line
+        else:
+            # If no betting line provided, use league average (but this shouldn't happen)
+            features['betting_line'] = 25.0
 
         # If we have feature names, ensure correct order
         if self.feature_names:
