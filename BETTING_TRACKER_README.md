@@ -67,7 +67,7 @@ python scripts/generate_predictions.py
   - `confidence_pct` (0-100% confidence)
   - `confidence_bucket` (50-55%, 55-60%, ..., 75%+)
   - `recommendation` (OVER/UNDER/NO BET based on 2% EV threshold)
-  - `recommended_ev` (Expected Value % for recommended bet)
+  - `ev` (Expected Value % for recommended bet)
 
 **Important**: You can safely re-run predictions multiple times throughout the day (e.g., for late games after early games have started). The system automatically **excludes any games from the current date** when calculating rolling averages, preventing data leakage. This means:
 - Morning games won't affect evening game predictions
@@ -118,7 +118,7 @@ data/betting_history/        # Daily CSV backups
 reports/                     # Performance reports (if using --save)
 ```
 
-### Bets Sheet Schema (19 Columns)
+### Bets Sheet Schema (22 Columns)
 
 | Column | Filled By | Description |
 |--------|-----------|-------------|
@@ -137,7 +137,7 @@ reports/                     # Performance reports (if using --save)
 | `confidence_pct` | generate script | Confidence 0-100% |
 | `confidence_bucket` | generate script | 50-55%, 55-60%, etc. |
 | `recommendation` | generate script | OVER/UNDER/NO BET (based on 2% EV) |
-| `recommended_ev` | generate script | Expected Value % |
+| `ev` | generate script | Expected Value % for recommended bet |
 | `bet_amount` | **USER** | Units wagered |
 | `bet_selection` | **USER** | OVER/UNDER/NONE |
 | `actual_saves` | results script | Actual saves from game |

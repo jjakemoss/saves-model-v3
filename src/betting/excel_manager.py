@@ -63,7 +63,7 @@ class BettingTracker:
         headers = [
             'game_date', 'game_id', 'goalie_name', 'betting_line', 'line_over', 'line_under',
             'goalie_id', 'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
-            'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation',
+            'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation', 'ev',
             'bet_amount', 'bet_selection', 'actual_saves', 'result',
             'profit_loss', 'notes'
         ]
@@ -87,8 +87,8 @@ class BettingTracker:
             'B': 12,  # game_id
             'C': 18,  # goalie_name
             'D': 13,  # betting_line
-            'E': 12,  # line_over (NEW)
-            'F': 12,  # line_under (NEW)
+            'E': 12,  # line_over
+            'F': 12,  # line_under
             'G': 12,  # goalie_id
             'H': 12,  # team_abbrev
             'I': 15,  # opponent_team
@@ -98,12 +98,13 @@ class BettingTracker:
             'M': 14,  # confidence_pct
             'N': 16,  # confidence_bucket
             'O': 15,  # recommendation
-            'P': 12,  # bet_amount
-            'Q': 14,  # bet_selection
-            'R': 13,  # actual_saves
-            'S': 10,  # result
-            'T': 12,  # profit_loss
-            'U': 30,  # notes
+            'P': 12,  # ev (NEW)
+            'Q': 12,  # bet_amount
+            'R': 14,  # bet_selection
+            'S': 13,  # actual_saves
+            'T': 10,  # result
+            'U': 12,  # profit_loss
+            'V': 30,  # notes
         }
 
         for col, width in column_widths.items():
@@ -162,6 +163,7 @@ class BettingTracker:
                     '',  # confidence_pct
                     '',  # confidence_bucket
                     '',  # recommendation
+                    '',  # ev
                     '',  # bet_amount
                     'NONE',  # bet_selection
                     '',  # actual_saves
@@ -228,6 +230,7 @@ class BettingTracker:
                     df.loc[mask, 'confidence_pct'] = pred.get('confidence_pct')
                     df.loc[mask, 'confidence_bucket'] = pred.get('confidence_bucket')
                     df.loc[mask, 'recommendation'] = pred.get('recommendation')
+                    df.loc[mask, 'ev'] = pred.get('recommended_ev')
                     total_updated += mask.sum()
 
             # Write back to Excel
