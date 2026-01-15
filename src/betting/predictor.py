@@ -10,7 +10,7 @@ from .odds_utils import calculate_ev
 class BettingPredictor:
     """Make predictions using trained classifier model"""
 
-    def __init__(self, model_path='models/trained/config_4398_ev2pct_20260113_140448.json/classifier_model.json', feature_order_path='models/trained/config_4398_ev2pct_20260113_140448.json/classifier_feature_names.json'):
+    def __init__(self, model_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_model.json', feature_order_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_feature_names.json'):
         """
         Initialize predictor with trained model
 
