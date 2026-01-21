@@ -25,11 +25,11 @@ def create_date_sheet(wb, sheet_name, position):
     """
     sheet = wb.create_sheet(sheet_name, position)
 
-    # Define columns (betting_line at position 4, line_over/line_under added at 5 & 6)
+    # Define columns (book column at position 3)
     headers = [
-        'game_date', 'game_id', 'goalie_name', 'betting_line', 'line_over', 'line_under',
+        'game_date', 'game_id', 'book', 'goalie_name', 'betting_line', 'line_over', 'line_under',
         'goalie_id', 'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
-        'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation',
+        'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation', 'ev',
         'bet_amount', 'bet_selection', 'actual_saves', 'result',
         'profit_loss', 'notes'
     ]
@@ -47,29 +47,31 @@ def create_date_sheet(wb, sheet_name, position):
         cell.font = header_font
         cell.alignment = header_alignment
 
-    # Set column widths (updated to match new column order)
+    # Set column widths (with book column at C)
     column_widths = {
         'A': 12,  # game_date
         'B': 12,  # game_id
-        'C': 18,  # goalie_name
-        'D': 13,  # betting_line
-        'E': 12,  # line_over (NEW)
-        'F': 12,  # line_under (NEW)
-        'G': 12,  # goalie_id
-        'H': 12,  # team_abbrev
-        'I': 15,  # opponent_team
-        'J': 10,  # is_home
-        'K': 15,  # predicted_saves
-        'L': 12,  # prob_over
-        'M': 14,  # confidence_pct
-        'N': 16,  # confidence_bucket
-        'O': 15,  # recommendation
-        'P': 12,  # bet_amount
-        'Q': 14,  # bet_selection
-        'R': 13,  # actual_saves
-        'S': 10,  # result
-        'T': 12,  # profit_loss
-        'U': 30,  # notes
+        'C': 12,  # book
+        'D': 18,  # goalie_name
+        'E': 13,  # betting_line
+        'F': 12,  # line_over
+        'G': 12,  # line_under
+        'H': 12,  # goalie_id
+        'I': 12,  # team_abbrev
+        'J': 15,  # opponent_team
+        'K': 10,  # is_home
+        'L': 15,  # predicted_saves
+        'M': 12,  # prob_over
+        'N': 14,  # confidence_pct
+        'O': 16,  # confidence_bucket
+        'P': 15,  # recommendation
+        'Q': 12,  # ev
+        'R': 12,  # bet_amount
+        'S': 14,  # bet_selection
+        'T': 13,  # actual_saves
+        'U': 10,  # result
+        'V': 12,  # profit_loss
+        'W': 30,  # notes
     }
 
     for col, width in column_widths.items():

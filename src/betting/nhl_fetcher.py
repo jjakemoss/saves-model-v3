@@ -16,6 +16,7 @@ class NHLBettingData:
 
     def __init__(self):
         self.api = NHLAPIClient()
+        self._goalie_leaders_cache = None  # Cache for goalie stats leaders
 
     def get_todays_games(self, date=None):
         """
@@ -142,17 +143,32 @@ class NHLBettingData:
         Returns:
             int: Goalie player ID if found, None otherwise
         """
+        return self.get_goalie_id_by_name(last_name)
+
+    def get_goalie_id_by_name(self, last_name):
+        """
+        Find goalie ID by last name using stats leaders API.
+
+        This is more efficient than searching each game boxscore.
+
+        Args:
+            last_name: Goalie's last name (case insensitive)
+
+        Returns:
+            int: Goalie player ID if found, None otherwise
+        """
         try:
-            # Get goalie stats leaders to find active goalies
-            season = '20252026'
-            leaders = self.api.get_goalie_stats_leaders(
-                season=season,
-                game_type=2,
-                limit=200  # Get top 200 goalies
-            )
+            # Use cached leaders data if available
+            if self._goalie_leaders_cache is None:
+                season = '20252026'
+                self._goalie_leaders_cache = self.api.get_goalie_stats_leaders(
+                    season=season,
+                    game_type=2,
+                    limit=200
+                )
 
             # Search through goalies (they're in 'wins' key)
-            for goalie in leaders.get('wins', []):
+            for goalie in self._goalie_leaders_cache.get('wins', []):
                 goalie_last_name = goalie.get('lastName', {}).get('default', '')
                 # Match last name (case insensitive)
                 if last_name.lower() in goalie_last_name.lower():
@@ -161,7 +177,7 @@ class NHLBettingData:
             return None
 
         except Exception as e:
-            print(f"Error searching recent games: {e}")
+            print(f"Error searching for goalie by name: {e}")
             return None
 
     def get_game_result(self, game_id):

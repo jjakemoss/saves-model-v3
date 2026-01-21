@@ -59,9 +59,9 @@ class BettingTracker:
 
         sheet = wb.create_sheet(date_str, position)
 
-        # Define columns (betting_line at position 4, line_over/line_under added at 5 & 6)
+        # Define columns (book column added at position 3)
         headers = [
-            'game_date', 'game_id', 'goalie_name', 'betting_line', 'line_over', 'line_under',
+            'game_date', 'game_id', 'book', 'goalie_name', 'betting_line', 'line_over', 'line_under',
             'goalie_id', 'team_abbrev', 'opponent_team', 'is_home', 'predicted_saves',
             'prob_over', 'confidence_pct', 'confidence_bucket', 'recommendation', 'ev',
             'bet_amount', 'bet_selection', 'actual_saves', 'result',
@@ -81,30 +81,31 @@ class BettingTracker:
             cell.font = header_font
             cell.alignment = header_alignment
 
-        # Set column widths (updated to match new column order)
+        # Set column widths (with book column at C)
         column_widths = {
             'A': 12,  # game_date
             'B': 12,  # game_id
-            'C': 18,  # goalie_name
-            'D': 13,  # betting_line
-            'E': 12,  # line_over
-            'F': 12,  # line_under
-            'G': 12,  # goalie_id
-            'H': 12,  # team_abbrev
-            'I': 15,  # opponent_team
-            'J': 10,  # is_home
-            'K': 15,  # predicted_saves
-            'L': 12,  # prob_over
-            'M': 14,  # confidence_pct
-            'N': 16,  # confidence_bucket
-            'O': 15,  # recommendation
-            'P': 12,  # ev (NEW)
-            'Q': 12,  # bet_amount
-            'R': 14,  # bet_selection
-            'S': 13,  # actual_saves
-            'T': 10,  # result
-            'U': 12,  # profit_loss
-            'V': 30,  # notes
+            'C': 12,  # book
+            'D': 18,  # goalie_name
+            'E': 13,  # betting_line
+            'F': 12,  # line_over
+            'G': 12,  # line_under
+            'H': 12,  # goalie_id
+            'I': 12,  # team_abbrev
+            'J': 15,  # opponent_team
+            'K': 10,  # is_home
+            'L': 15,  # predicted_saves
+            'M': 12,  # prob_over
+            'N': 14,  # confidence_pct
+            'O': 16,  # confidence_bucket
+            'P': 15,  # recommendation
+            'Q': 12,  # ev
+            'R': 12,  # bet_amount
+            'S': 14,  # bet_selection
+            'T': 13,  # actual_saves
+            'U': 10,  # result
+            'V': 12,  # profit_loss
+            'W': 30,  # notes
         }
 
         for col, width in column_widths.items():
@@ -150,10 +151,11 @@ class BettingTracker:
                 row_data = [
                     game.get('game_date'),
                     game.get('game_id'),
+                    game.get('book', ''),  # book (e.g., 'Underdog')
                     game.get('goalie_name'),
-                    '',  # betting_line (user fills)
-                    '',  # line_over (user fills)
-                    '',  # line_under (user fills)
+                    game.get('betting_line', ''),  # betting_line (pre-filled or user fills)
+                    game.get('line_over', ''),  # line_over (pre-filled or user fills)
+                    game.get('line_under', ''),  # line_under (pre-filled or user fills)
                     game.get('goalie_id'),
                     game.get('team_abbrev'),
                     game.get('opponent_team'),
@@ -216,9 +218,13 @@ class BettingTracker:
                 game_id = pred['game_id']
                 goalie_id = pred['goalie_id']
                 goalie_name = pred.get('goalie_name', '')
+                book = pred.get('book', '')
 
-                # Match by game_id AND goalie_name
-                mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower())
+                # Match by game_id AND goalie_name AND book (if book specified)
+                if book and 'book' in df.columns:
+                    mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower()) & (df['book'] == book)
+                else:
+                    mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower())
 
                 if mask.any():
                     # Update goalie_id if it was looked up
