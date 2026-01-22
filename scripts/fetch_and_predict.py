@@ -31,13 +31,14 @@ from betting import (
 )
 
 
-def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx'):
+def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=False):
     """
     Fetch betting lines and generate predictions.
 
     Args:
         date: Date string (YYYY-MM-DD). If None, uses today
         tracker_file: Path to betting tracker Excel file
+        verbose: If True, display all rows with predictions at the end
 
     Returns:
         int: Number of EV opportunities found
@@ -315,6 +316,40 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx'):
         print(f"\nNo EV opportunities >= 2% found")
 
     print(f"\n{'='*70}")
+
+    # Verbose output: show all rows for this date
+    if verbose:
+        print(f"\nALL LINES FOR {date}:")
+        print("-" * 70)
+        all_rows = tracker.get_todays_games(date)
+        if not all_rows.empty:
+            # Sort by EV descending
+            all_rows = all_rows.sort_values('ev', ascending=False, na_position='last')
+            for _, row in all_rows.iterrows():
+                goalie = row.get('goalie_name', 'Unknown')
+                team = row.get('team_abbrev', '')
+                book = row.get('book', 'Unknown')
+                line = row.get('betting_line')
+                line_over = row.get('line_over')
+                line_under = row.get('line_under')
+                pred_saves = row.get('predicted_saves')
+                prob_over = row.get('prob_over')
+                rec = row.get('recommendation', '')
+                ev = row.get('ev')
+
+                line_str = f"{line:.1f}" if pd.notna(line) else "N/A"
+                over_str = f"{int(line_over):+d}" if pd.notna(line_over) else "N/A"
+                under_str = f"{int(line_under):+d}" if pd.notna(line_under) else "N/A"
+                pred_str = f"{pred_saves:.1f}" if pd.notna(pred_saves) else "N/A"
+                prob_str = f"{prob_over:.1%}" if pd.notna(prob_over) else "N/A"
+                ev_str = f"{ev:+.1%}" if pd.notna(ev) else "N/A"
+
+                print(f"  {goalie:12} ({team:3}) @ {book:10} | Line: {line_str:5} (O:{over_str:5}/U:{under_str:5}) | "
+                      f"Pred: {pred_str:5} | P(Over): {prob_str:6} | {rec:6} | EV: {ev_str}")
+        else:
+            print("  No data found")
+        print(f"{'='*70}")
+
     return len(ev_opportunities)
 
 
@@ -356,11 +391,16 @@ def main():
         default='betting_tracker.xlsx',
         help='Path to betting tracker file. Default: betting_tracker.xlsx'
     )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help='Display all rows with predictions for the date'
+    )
 
     args = parser.parse_args()
 
     try:
-        fetch_and_predict(date=args.date, tracker_file=args.tracker)
+        fetch_and_predict(date=args.date, tracker_file=args.tracker, verbose=args.verbose)
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
         sys.exit(1)
