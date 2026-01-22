@@ -13,6 +13,7 @@ from .odds_utils import (
     validate_american_odds,
     calculate_payout
 )
+from .odds_fetcher import UnderdogFetcher, extract_last_name
 
 __all__ = [
     'BettingFeatureCalculator',
@@ -25,5 +26,7 @@ __all__ = [
     'american_to_decimal',
     'calculate_ev',
     'validate_american_odds',
-    'calculate_payout'
+    'calculate_payout',
+    'UnderdogFetcher',
+    'extract_last_name',
 ]
