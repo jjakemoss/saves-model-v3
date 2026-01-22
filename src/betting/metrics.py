@@ -17,11 +17,10 @@ def calculate_performance_metrics(bets_df):
     """
     metrics = {}
 
-    # Filter to actual bets (exclude NO BET and empty selections)
+    # Filter to actual bets with valid results (exclude NO BET, pending, empty)
     actual_bets = bets_df[
         (bets_df['bet_selection'].isin(['OVER', 'UNDER'])) &
-        (bets_df['result'].notna()) &
-        (bets_df['result'] != '')
+        (bets_df['result'].isin(['WIN', 'LOSS', 'PUSH']))
     ].copy()
 
     # Overall Performance

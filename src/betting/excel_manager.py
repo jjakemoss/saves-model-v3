@@ -276,7 +276,13 @@ class BettingTracker:
             for _, result in date_results.iterrows():
                 game_id = result['game_id']
                 goalie_id = result['goalie_id']
-                mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id)
+                book = result.get('book', '')
+
+                # Match by game_id AND goalie_id AND book (if book specified)
+                if book and 'book' in df.columns:
+                    mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id) & (df['book'] == book)
+                else:
+                    mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id)
 
                 if mask.any():
                     df.loc[mask, 'actual_saves'] = result.get('actual_saves')
