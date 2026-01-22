@@ -24,3 +24,5 @@ jobs:
 
       - name: Run fetch and predict
         run: python scripts/fetch_and_predict.py --verbose
+        env:
+          TZ: America/New_York
