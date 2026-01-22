@@ -2,9 +2,6 @@ name: Fetch Predictions
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run at 10:00 AM, 2:00 PM, and 6:00 PM EST (20:00, 23:00, 25:00 UTC)
-    - cron: '0 20,23,25 * * *'
 
 jobs:
   fetch-predictions:
