@@ -68,6 +68,10 @@ class UnderdogFetcher:
             if stat_value is None:
                 continue
 
+            # Filter out period lines by value (full game lines are typically 18+)
+            if float(stat_value) < 15:
+                continue
+
             # Parse options for odds
             options = line_data.get('options', [])
             line_over = None
@@ -95,6 +99,10 @@ class UnderdogFetcher:
                         line_under = odds_value
 
             if not player_name:
+                continue
+
+            # Skip truncated/invalid player names (minimum 4 chars for last name)
+            if len(player_name.strip()) < 3:
                 continue
 
             # Try to get game time from appearances

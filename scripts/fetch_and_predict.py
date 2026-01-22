@@ -174,6 +174,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     existing_df = tracker.get_todays_games(date)
 
     new_lines = []
+    updated_lines = []
     for line in matched_lines:
         # Check if this exact combination already exists
         if not existing_df.empty:
@@ -186,7 +187,21 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 existing_mask = existing_mask & (existing_df['book'] == line['book'])
 
             if existing_mask.any():
-                continue  # Skip duplicate
+                # Check if lines have changed - add new row if so
+                existing_row = existing_df[existing_mask].iloc[0]
+                lines_changed = (
+                    existing_row['betting_line'] != line['betting_line'] or
+                    existing_row.get('line_over') != line['line_over'] or
+                    existing_row.get('line_under') != line['line_under']
+                )
+                if lines_changed:
+                    new_lines.append(line)
+                    updated_lines.append({
+                        'name': line['goalie_name'],
+                        'old_line': existing_row['betting_line'],
+                        'new_line': line['betting_line'],
+                    })
+                continue  # Skip if no change
 
         new_lines.append(line)
 
@@ -199,8 +214,14 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         for line in new_lines:
             over_str = f"{line['line_over']:+d}" if line['line_over'] else 'N/A'
             under_str = f"{line['line_under']:+d}" if line['line_under'] else 'N/A'
-            print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
-                  f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
+            # Check if this was a line update
+            update_info = next((u for u in updated_lines if u['name'] == line['goalie_name']), None)
+            if update_info:
+                print(f"    {line['goalie_name']} ({line['team_abbrev']}) - "
+                      f"Line MOVED: {update_info['old_line']} -> {line['betting_line']}, Over: {over_str}, Under: {under_str}")
+            else:
+                print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
+                      f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
     else:
         print(f"  No new lines to add (all already in tracker)")
 
