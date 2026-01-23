@@ -27,6 +27,7 @@ from betting import (
     BettingFeatureCalculator,
     BettingPredictor,
     UnderdogFetcher,
+    PrizePicksFetcher,
     extract_last_name,
 )
 
@@ -54,6 +55,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     # Initialize clients
     nhl_data = NHLBettingData()
     underdog = UnderdogFetcher()
+    prizepicks = PrizePicksFetcher()
 
     # Check if tracker exists, create if needed
     tracker_path = Path(tracker_file)
@@ -68,7 +70,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     predictor = BettingPredictor()
 
     # Step 1: Fetch NHL schedule
-    print(f"\n[1/5] Fetching NHL schedule for {date}...")
+    print(f"\n[1/6] Fetching NHL schedule for {date}...")
     nhl_games = nhl_data.get_todays_games(date)
 
     if not nhl_games:
@@ -79,25 +81,43 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     for game in nhl_games:
         print(f"    {game['away_team']} @ {game['home_team']} (ID: {game['game_id']})")
 
-    # Step 2: Fetch Underdog betting lines
-    print(f"\n[2/5] Fetching Underdog goalie saves lines...")
-    underdog_lines = underdog.get_goalie_saves()
+    # Step 2: Fetch betting lines from all sources
+    print(f"\n[2/6] Fetching betting lines...")
 
-    if not underdog_lines:
-        print(f"  [WARNING] No goalie saves lines found on Underdog")
+    # Fetch Underdog lines
+    print(f"  Fetching Underdog goalie saves lines...")
+    underdog_lines = underdog.get_goalie_saves()
+    if underdog_lines:
+        print(f"    Found {len(underdog_lines)} Underdog lines")
+    else:
+        print(f"    [WARNING] No Underdog lines found")
+
+    # Fetch PrizePicks lines
+    print(f"  Fetching PrizePicks goalie saves lines...")
+    prizepicks_lines = prizepicks.get_goalie_saves()
+    if prizepicks_lines:
+        print(f"    Found {len(prizepicks_lines)} PrizePicks lines")
+    else:
+        print(f"    [WARNING] No PrizePicks lines found (API may be blocked)")
+
+    # Combine all lines
+    all_lines = underdog_lines + prizepicks_lines
+
+    if not all_lines:
+        print(f"\n[WARNING] No betting lines found from any source")
         return 0
 
-    print(f"  Found {len(underdog_lines)} goalie saves lines")
+    print(f"  Total lines: {len(all_lines)}")
 
     # Step 3: Match lines to NHL games
-    print(f"\n[3/5] Matching lines to NHL games...")
+    print(f"\n[3/6] Matching lines to NHL games...")
     matched_lines = []
     unmatched = []
 
     # Cache goalie team lookups to avoid repeated API calls
     goalie_team_cache = {}
 
-    for line in underdog_lines:
+    for line in all_lines:
         player_name = line['player_name']
         last_name = extract_last_name(player_name)
 
@@ -168,40 +188,30 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         return 0
 
     # Step 4: Check for duplicates and append new rows
-    print(f"\n[4/5] Adding new lines to tracker...")
+    print(f"\n[4/6] Adding new lines to tracker...")
 
     # Get existing games for this date
     existing_df = tracker.get_todays_games(date)
 
     new_lines = []
-    updated_lines = []
     for line in matched_lines:
         # Check if this exact combination already exists
         if not existing_df.empty:
+            # Match on game_id + goalie_name + book + betting_line + odds for exact duplicate
             existing_mask = (
                 (existing_df['game_id'] == line['game_id']) &
-                (existing_df['goalie_name'].str.lower() == line['goalie_name'].lower())
+                (existing_df['goalie_name'].str.lower() == line['goalie_name'].lower()) &
+                (existing_df['betting_line'] == line['betting_line']) &
+                (existing_df['line_over'] == line['line_over']) &
+                (existing_df['line_under'] == line['line_under'])
             )
             # Also check book if column exists
             if 'book' in existing_df.columns:
                 existing_mask = existing_mask & (existing_df['book'] == line['book'])
 
             if existing_mask.any():
-                # Check if lines have changed - add new row if so
-                existing_row = existing_df[existing_mask].iloc[0]
-                lines_changed = (
-                    existing_row['betting_line'] != line['betting_line'] or
-                    existing_row.get('line_over') != line['line_over'] or
-                    existing_row.get('line_under') != line['line_under']
-                )
-                if lines_changed:
-                    new_lines.append(line)
-                    updated_lines.append({
-                        'name': line['goalie_name'],
-                        'old_line': existing_row['betting_line'],
-                        'new_line': line['betting_line'],
-                    })
-                continue  # Skip if no change
+                # Exact duplicate (same line AND same odds) - skip
+                continue
 
         new_lines.append(line)
 
@@ -210,23 +220,22 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         tracker.append_games(new_df)
         print(f"  Added {len(new_lines)} new lines")
 
-        # Show what was added
+        # Show what was added (limit output to avoid spam)
+        shown = 0
         for line in new_lines:
             over_str = f"{line['line_over']:+d}" if line['line_over'] else 'N/A'
             under_str = f"{line['line_under']:+d}" if line['line_under'] else 'N/A'
-            # Check if this was a line update
-            update_info = next((u for u in updated_lines if u['name'] == line['goalie_name']), None)
-            if update_info:
-                print(f"    {line['goalie_name']} ({line['team_abbrev']}) - "
-                      f"Line MOVED: {update_info['old_line']} -> {line['betting_line']}, Over: {over_str}, Under: {under_str}")
-            else:
-                print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
-                      f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
+            print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
+                  f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
+            shown += 1
+            if shown >= 20 and len(new_lines) > 25:
+                print(f"    ... and {len(new_lines) - shown} more lines")
+                break
     else:
         print(f"  No new lines to add (all already in tracker)")
 
     # Step 5: Generate predictions for pending rows
-    print(f"\n[5/5] Generating predictions...")
+    print(f"\n[5/6] Generating predictions...")
 
     pending = tracker.get_pending_predictions(date)
 
@@ -315,11 +324,12 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         predictions_df = pd.DataFrame(predictions_list)
         tracker.update_predictions(predictions_df)
 
-    # Display results
-    print(f"\n{'='*70}")
+    # Step 6: Display results
+    print(f"\n[6/6] Summary")
+    print(f"{'='*70}")
     print("RESULTS")
     print(f"{'='*70}")
-    print(f"Lines fetched: {len(underdog_lines)}")
+    print(f"Lines fetched: {len(all_lines)} (Underdog: {len(underdog_lines)}, PrizePicks: {len(prizepicks_lines)})")
     print(f"Lines matched: {len(matched_lines)}")
     print(f"New lines added: {len(new_lines)}")
     print(f"Predictions generated: {len(predictions_list)}")

@@ -128,6 +128,120 @@ class UnderdogFetcher:
         return lines
 
 
+class PrizePicksFetcher:
+    """Fetch goalie saves lines from PrizePicks API"""
+
+    BASE_URL = "https://api.prizepicks.com"
+    NHL_LEAGUE_ID = 8
+
+    # Implied odds for PrizePicks projection types (3-pick flex baseline)
+    IMPLIED_ODDS = {
+        'standard': -120,
+        'demon': -140,
+        'goblin': -105
+    }
+
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json',
+        })
+
+    def get_goalie_saves(self) -> list[dict]:
+        """
+        Fetch all NHL goalie saves lines from PrizePicks.
+
+        Returns:
+            List of dicts with keys:
+            - book: 'PrizePicks'
+            - player_name: Full goalie name (e.g., 'Connor Hellebuyck')
+            - line: Saves line (e.g., 28.5)
+            - line_over: Implied American odds for OVER based on odds_type
+            - line_under: None (PrizePicks only allows MORE picks)
+            - odds_type: 'standard', 'demon', or 'goblin'
+            - game_time: ISO timestamp of game start
+        """
+        try:
+            response = self.session.get(
+                f"{self.BASE_URL}/projections",
+                params={
+                    'league_id': self.NHL_LEAGUE_ID,
+                    'per_page': 250,
+                    'single_stat': 'true'
+                },
+                timeout=15
+            )
+            response.raise_for_status()
+            data = response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"[WARNING] Failed to fetch PrizePicks data: {e}")
+            return []
+
+        # Check if blocked by anti-bot
+        if not isinstance(data, dict) or 'data' not in data:
+            print("[WARNING] PrizePicks API blocked or invalid response")
+            return []
+
+        # Build player lookup from included data
+        players = {}
+        for item in data.get('included', []):
+            if item.get('type') == 'new_player':
+                players[item['id']] = {
+                    'name': item['attributes'].get('display_name', 'Unknown'),
+                    'team': item['attributes'].get('team', 'Unknown')
+                }
+
+        lines = []
+
+        for proj in data.get('data', []):
+            attrs = proj.get('attributes', {})
+            stat_type = attrs.get('stat_type', '')
+
+            # Filter for goalie saves only
+            if 'Goalie Saves' not in stat_type:
+                continue
+
+            # Get line value
+            line_score = attrs.get('line_score')
+            if line_score is None:
+                continue
+
+            # Filter out period lines by value (full game lines are typically 18+)
+            if float(line_score) < 15:
+                continue
+
+            # Get player info
+            player_id = proj.get('relationships', {}).get('new_player', {}).get('data', {}).get('id')
+            player_info = players.get(player_id, {'name': 'Unknown', 'team': 'Unknown'})
+
+            if player_info['name'] == 'Unknown':
+                continue
+
+            # Skip truncated/invalid player names
+            if len(player_info['name'].strip()) < 3:
+                continue
+
+            # Get odds type - only include standard lines (skip demons/goblins)
+            odds_type = attrs.get('odds_type', 'standard')
+            if odds_type != 'standard':
+                continue
+
+            implied_odds = self.IMPLIED_ODDS.get(odds_type, -120)
+
+            lines.append({
+                'book': 'PrizePicks',
+                'player_name': player_info['name'],
+                'line': float(line_score),
+                'line_over': implied_odds,
+                'line_under': implied_odds,  # Same implied odds for both sides
+                'odds_type': odds_type,
+                'game_time': attrs.get('start_time'),
+            })
+
+        return lines
+
+
 def extract_last_name(full_name: str) -> str:
     """
     Extract last name from full player name.
