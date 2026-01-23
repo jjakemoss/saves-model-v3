@@ -200,7 +200,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             # Match on game_id + goalie_name + book + betting_line + odds for exact duplicate
             existing_mask = (
                 (existing_df['game_id'] == line['game_id']) &
-                (existing_df['goalie_name'].str.lower() == line['goalie_name'].lower()) &
+                (existing_df['goalie_name'].fillna('').astype(str).str.lower() == line['goalie_name'].lower()) &
                 (existing_df['betting_line'] == line['betting_line']) &
                 (existing_df['line_over'] == line['line_over']) &
                 (existing_df['line_under'] == line['line_under'])
