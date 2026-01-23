@@ -219,12 +219,20 @@ class BettingTracker:
                 goalie_id = pred['goalie_id']
                 goalie_name = pred.get('goalie_name', '')
                 book = pred.get('book', '')
+                betting_line = pred.get('betting_line')
+                line_over = pred.get('line_over')
+                line_under = pred.get('line_under')
 
-                # Match by game_id AND goalie_name AND book (if book specified)
+                # Match by game_id + goalie_name + book + betting_line + odds for precise targeting
+                mask = (df['game_id'] == game_id) & (df['goalie_name'].fillna('').astype(str).str.lower() == goalie_name.lower())
                 if book and 'book' in df.columns:
-                    mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower()) & (df['book'] == book)
-                else:
-                    mask = (df['game_id'] == game_id) & (df['goalie_name'].str.lower() == goalie_name.lower())
+                    mask = mask & (df['book'] == book)
+                if betting_line is not None and 'betting_line' in df.columns:
+                    mask = mask & (df['betting_line'] == betting_line)
+                if line_over is not None and 'line_over' in df.columns:
+                    mask = mask & (df['line_over'] == line_over)
+                if line_under is not None and 'line_under' in df.columns:
+                    mask = mask & (df['line_under'] == line_under)
 
                 if mask.any():
                     # Update goalie_id if it was looked up

@@ -298,6 +298,9 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             prediction['goalie_name'] = goalie_name
             prediction['game_date'] = date
             prediction['book'] = book
+            prediction['betting_line'] = betting_line
+            prediction['line_over'] = line_over_odds
+            prediction['line_under'] = line_under_odds
 
             predictions_list.append(prediction)
 
