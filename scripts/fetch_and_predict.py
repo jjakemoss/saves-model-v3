@@ -342,7 +342,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print("-" * 70)
         ev_opportunities.sort(key=lambda x: x['ev'], reverse=True)
         for opp in ev_opportunities:
-            odds_str = f"{opp['odds']:+d}" if opp['odds'] else 'N/A'
+            odds_str = f"{int(opp['odds']):+d}" if opp['odds'] else 'N/A'
             print(f"  {opp['goalie_name']} ({opp['team']}) @ {opp['book']}")
             print(f"    {opp['recommendation']} {opp['line']} @ {odds_str}")
             print(f"    EV: {opp['ev']:+.1%}, Model Prob: {opp['prob']:.1%}")
