@@ -13,7 +13,7 @@ from .odds_utils import (
     validate_american_odds,
     calculate_payout
 )
-from .odds_fetcher import UnderdogFetcher, PrizePicksFetcher, extract_last_name
+from .odds_fetcher import UnderdogFetcher, PrizePicksFetcher, TheOddsAPIFetcher, extract_last_name
 
 __all__ = [
     'BettingFeatureCalculator',
@@ -29,5 +29,6 @@ __all__ = [
     'calculate_payout',
     'UnderdogFetcher',
     'PrizePicksFetcher',
+    'TheOddsAPIFetcher',
     'extract_last_name',
 ]
