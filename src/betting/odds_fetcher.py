@@ -252,7 +252,7 @@ class TheOddsAPIFetcher:
     BASE_URL = "https://api.the-odds-api.com/v4"
     SPORT = "icehockey_nhl"
     CACHE_DIR = Path("data/cache/odds_api")
-    CACHE_TTL_MINUTES = 30  # Cache valid for 30 minutes
+    CACHE_TTL_MINUTES = 5  # Cache valid for 5 minutes
 
     def __init__(self, api_key: str = None):
         """
