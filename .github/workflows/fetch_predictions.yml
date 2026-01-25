@@ -26,3 +26,4 @@ jobs:
         run: python scripts/fetch_and_predict.py --verbose
         env:
           TZ: America/New_York
+          API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
