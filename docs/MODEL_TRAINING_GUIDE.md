@@ -179,14 +179,102 @@ Current training data (as of Jan 2026):
 - **Seasons**: 20242025 (2,511), 20252026 (1,246)
 - **Over/Under split**: 47.6% OVER, 52.4% UNDER
 
+### Historical Odds Cache (The-Odds-API)
+
+Historical betting lines were collected via The-Odds-API and cached locally.
+
+**Cache Location**: `data/raw/betting_lines/cache/`
+
+**Cache Contents**:
+- **275 events files**: Daily game schedules (`events_date=YYYY-MM-DDTHH_MM_SSZ.json`)
+- **1,976 odds files**: Per-game betting lines (`odds_{eventId}_date=...json`)
+- **Date range**: Oct 4, 2024 to Jan 16, 2026
+
+**File Naming Convention**:
+```
+# Events file (daily schedule)
+events_date=2024-10-04T18_00_00Z.json
+
+# Odds file (per-game lines)
+odds_{eventId}_date={gameTime}_markets=player_total_saves_regions=us.json
+```
+
+**Events File Structure**:
+```json
+{
+  "timestamp": "2024-10-04T17:55:39Z",
+  "data": [
+    {
+      "id": "e1dd2bc0fa38ee53116f047cf3d0327e",
+      "sport_key": "icehockey_nhl",
+      "commence_time": "2024-10-04T17:14:42Z",
+      "home_team": "Buffalo Sabres",
+      "away_team": "New Jersey Devils"
+    }
+  ]
+}
+```
+
+**Odds File Structure**:
+```json
+{
+  "timestamp": "2024-10-04T17:10:39Z",
+  "data": {
+    "id": "e1dd2bc0fa38ee53116f047cf3d0327e",
+    "home_team": "Buffalo Sabres",
+    "away_team": "New Jersey Devils",
+    "bookmakers": [
+      {
+        "key": "williamhill_us",
+        "title": "Caesars",
+        "markets": [
+          {
+            "key": "player_total_saves",
+            "outcomes": [
+              {
+                "name": "Over",
+                "description": "Ukko-Pekka Luukkonen",
+                "price": 1.84,
+                "point": 26.5
+              },
+              {
+                "name": "Under",
+                "description": "Ukko-Pekka Luukkonen",
+                "price": 1.81,
+                "point": 26.5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Available Bookmakers
+
+The-Odds-API provides goalie saves lines from these bookmakers:
+
+| Bookmaker Key | Name | Notes |
+|---------------|------|-------|
+| `draftkings` | DraftKings | Major US book |
+| `fanduel` | FanDuel | Major US book |
+| `betmgm` | BetMGM | Major US book |
+| `betonlineag` | BetOnline.ag | Used in current integration |
+| `williamhill_us` | Caesars | In historical cache |
+| `espnbet` | ESPN Bet | US book |
+| `hardrockbet` | Hard Rock Bet | US book |
+| `pinnacle` | Pinnacle | Sharp book (reference lines) |
+
 ### Sources for Historical Odds
 
 Options for obtaining historical betting lines:
 
-1. **The-Odds-API** (recommended for future data)
+1. **The-Odds-API** (used for training data)
    - Endpoint: `/v4/sports/icehockey_nhl/events/{eventId}/odds`
    - Market: `player_total_saves`
-   - Note: Requires Champion tier ($49/mo) for player props
+   - Historical data cached in `data/raw/betting_lines/cache/`
 
 2. **Manual collection** from betting sites
    - Underdog Fantasy
@@ -197,23 +285,74 @@ Options for obtaining historical betting lines:
 
 ### Creating Classification Training Data
 
-To merge features with historical odds:
+To process the cached historical odds and merge with features:
 
 ```python
 import pandas as pd
+import json
+from pathlib import Path
 
 # Load base features
 features_df = pd.read_parquet('data/processed/training_data.parquet')
 
-# Load historical odds (you need to obtain this data)
-odds_df = pd.read_csv('data/historical_odds.csv')  # Your odds data
+# Parse cached odds files
+cache_dir = Path('data/raw/betting_lines/cache')
+odds_records = []
 
-# Merge on game_id and goalie_id
-merged_df = features_df.merge(
-    odds_df[['game_id', 'goalie_id', 'betting_line', 'odds_over_american', 'odds_under_american']],
-    on=['game_id', 'goalie_id'],
-    how='inner'
-)
+for odds_file in cache_dir.glob('odds_*.json'):
+    with open(odds_file) as f:
+        data = json.load(f)
+
+    event_data = data.get('data', {})
+    game_time = event_data.get('commence_time')
+    home_team = event_data.get('home_team')
+    away_team = event_data.get('away_team')
+
+    for bookmaker in event_data.get('bookmakers', []):
+        for market in bookmaker.get('markets', []):
+            if market.get('key') != 'player_total_saves':
+                continue
+
+            # Group outcomes by player
+            player_lines = {}
+            for outcome in market.get('outcomes', []):
+                player = outcome.get('description')
+                if not player:
+                    continue
+
+                if player not in player_lines:
+                    player_lines[player] = {'line': outcome.get('point')}
+
+                if outcome.get('name') == 'Over':
+                    player_lines[player]['odds_over'] = outcome.get('price')
+                else:
+                    player_lines[player]['odds_under'] = outcome.get('price')
+
+            for player, line_data in player_lines.items():
+                odds_records.append({
+                    'game_date': game_time[:10],
+                    'home_team': home_team,
+                    'away_team': away_team,
+                    'goalie_name': player,
+                    'betting_line': line_data.get('line'),
+                    'odds_over_decimal': line_data.get('odds_over'),
+                    'odds_under_decimal': line_data.get('odds_under'),
+                })
+
+odds_df = pd.DataFrame(odds_records)
+
+# Convert decimal to American odds
+def decimal_to_american(decimal_odds):
+    if decimal_odds >= 2.0:
+        return int((decimal_odds - 1) * 100)
+    else:
+        return int(-100 / (decimal_odds - 1))
+
+odds_df['odds_over_american'] = odds_df['odds_over_decimal'].apply(decimal_to_american)
+odds_df['odds_under_american'] = odds_df['odds_under_decimal'].apply(decimal_to_american)
+
+# Merge with features (requires matching goalie names to IDs)
+# ... additional matching logic needed ...
 
 # Create target variable
 merged_df['over_hit'] = (merged_df['saves'] > merged_df['betting_line']).astype(int)
