@@ -5,7 +5,7 @@ import requests
 import time
 import os
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
@@ -351,10 +351,14 @@ class TheOddsAPIFetcher:
                 return cached_lines
 
         # Step 1: Get list of events for today
+        # Note: NHL games in US Eastern evening (7pm EST) are after midnight UTC
+        # We extend the window to capture games on the target date in US Eastern time
         try:
             date_obj = datetime.strptime(date_str, "%Y-%m-%d")
-            commence_from = date_obj.strftime("%Y-%m-%dT00:00:00Z")
-            commence_to = date_obj.strftime("%Y-%m-%dT23:59:59Z")
+            commence_from = date_obj.strftime("%Y-%m-%dT10:00:00Z")  # 5am EST
+            # Extend to 10am UTC next day (5am EST next day) to capture evening games
+            next_day = date_obj + timedelta(days=1)
+            commence_to = next_day.strftime("%Y-%m-%dT10:00:00Z")
 
             response = self.session.get(
                 f"{self.BASE_URL}/sports/{self.SPORT}/events",
