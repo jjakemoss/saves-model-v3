@@ -187,6 +187,9 @@ def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
                 'game_id': game_id,
                 'goalie_id': goalie_id,
                 'book': row.get('book', ''),  # Include book to differentiate Underdog vs PrizePicks
+                'betting_line': row.get('betting_line'),  # Include for precise row matching
+                'line_over': row.get('line_over'),  # Include for precise row matching
+                'line_under': row.get('line_under'),  # Include for precise row matching
                 'game_date': date,  # Include for date sheet routing
                 'actual_saves': actual_saves,
                 'result': result,

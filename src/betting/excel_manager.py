@@ -285,12 +285,20 @@ class BettingTracker:
                 game_id = result['game_id']
                 goalie_id = result['goalie_id']
                 book = result.get('book', '')
+                betting_line = result.get('betting_line')
+                line_over = result.get('line_over')
+                line_under = result.get('line_under')
 
-                # Match by game_id AND goalie_id AND book (if book specified)
+                # Match by game_id + goalie_id + book + betting_line + odds for precise targeting
+                mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id)
                 if book and 'book' in df.columns:
-                    mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id) & (df['book'] == book)
-                else:
-                    mask = (df['game_id'] == game_id) & (df['goalie_id'] == goalie_id)
+                    mask = mask & (df['book'] == book)
+                if betting_line is not None and 'betting_line' in df.columns:
+                    mask = mask & (df['betting_line'] == betting_line)
+                if line_over is not None and 'line_over' in df.columns:
+                    mask = mask & (df['line_over'] == line_over)
+                if line_under is not None and 'line_under' in df.columns:
+                    mask = mask & (df['line_under'] == line_under)
 
                 if mask.any():
                     df.loc[mask, 'actual_saves'] = result.get('actual_saves')
