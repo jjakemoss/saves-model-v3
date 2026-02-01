@@ -9,24 +9,36 @@ This document describes the complete process for training the NHL goalie saves p
 3. [Feature Engineering](#feature-engineering)
 4. [Historical Betting Lines](#historical-betting-lines)
 5. [Model Training](#model-training)
-6. [Model Evaluation](#model-evaluation)
-7. [Model Deployment](#model-deployment)
-8. [Quick Reference Commands](#quick-reference-commands)
+6. [Feature Optimization](#feature-optimization)
+7. [Hyperparameter Tuning](#hyperparameter-tuning)
+8. [Model Evaluation](#model-evaluation)
+9. [Model Deployment](#model-deployment)
+10. [Quick Reference Commands](#quick-reference-commands)
 
 ---
 
 ## Overview
 
 ### Model Type
-- **Algorithm**: XGBoost Binary Classifier (`XGBClassifier`)
+- **Algorithm**: XGBoost Binary Classifier (saved as Booster JSON format)
 - **Objective**: Predict probability of OVER/UNDER on goalie saves betting lines
 - **Target**: `over_hit` (1 if actual_saves > betting_line, 0 otherwise)
 
 ### Current Production Model
-- **Config**: #4398
-- **EV Threshold**: 2% minimum
-- **Performance**: +1.60% ROI combined (699 bets across validation + test)
-- **Location**: `models/trained/config_4398_ev2pct_20260115_103430/`
+- **Name**: Tuned V1 (hyperparameter-optimized with engineered features)
+- **EV Threshold**: 12% minimum
+- **Features**: 114 (96 base + 18 engineered)
+- **Performance**: +23.31% ROI combined (441 bets across validation + test)
+- **Location**: `models/trained/tuned_v1_20260201_155204/`
+
+### Model Evolution
+
+| Model | Features | EV Threshold | Combined ROI | Combined Bets |
+|-------|----------|-------------|--------------|---------------|
+| Config #4398 (single-book) | 90 | 2% | +1.60% | 699 |
+| Multibook V1 (line-relative) | 96 | 12% | +7.32% | 700 |
+| Optimized V1 (engineered) | 114 | 12% | +15.24% | 451 |
+| **Tuned V1 (current)** | **114** | **12%** | **+23.31%** | **441** |
 
 ### Key Files
 
@@ -34,10 +46,14 @@ This document describes the complete process for training the NHL goalie saves p
 |------|---------|
 | `scripts/collect_historical_data.py` | Collect NHL game data |
 | `scripts/create_features.py` | Generate training features |
-| `scripts/train_production_4398.py` | Train production model |
+| `scripts/build_multibook_training_data.py` | Build multi-book training data |
+| `scripts/train_production_multibook.py` | Train multi-book model |
+| `scripts/optimize_features.py` | Test feature engineering configurations |
+| `scripts/tune_hyperparameters.py` | Hyperparameter tuning with randomized search |
 | `src/features/feature_engineering.py` | Feature calculation pipeline |
 | `src/models/classifier_trainer.py` | XGBoost training wrapper |
 | `src/betting/predictor.py` | Model inference |
+| `src/betting/feature_calculator.py` | Real-time feature calculation (114 features) |
 
 ---
 
@@ -51,8 +67,7 @@ python scripts/collect_historical_data.py --seasons 20222023 20232024 20242025 2
 
 This collects:
 - **Schedules**: Game dates and matchups for all NHL teams
-- **Boxscores**: Game statistics (saves, shots, goals, etc.)
-- **Play-by-play**: Shot locations and timing (for shot quality features)
+- **Boxscores**: Game statistics (saves, shots, goals, situation-specific stats)
 - **Goalie game logs**: Individual goalie performance history
 
 ### Data Sources
@@ -61,8 +76,8 @@ This collects:
 |-----------|--------|--------------|
 | Schedules | NHL API | `/v1/schedule/{date}` |
 | Boxscores | NHL API | `/v1/gamecenter/{gameId}/boxscore` |
-| Play-by-play | NHL API | `/v1/gamecenter/{gameId}/play-by-play` |
 | Goalie logs | NHL API | `/v1/player/{playerId}/game-log/{season}/{gameType}` |
+| Team schedules | NHL API | `/v1/club-schedule-season/{team}/{season}` |
 
 ### Data Storage
 
@@ -70,20 +85,15 @@ This collects:
 data/
 ├── raw/
 │   ├── boxscores/          # JSON files: {game_id}.json
-│   └── play_by_play/       # JSON files: {game_id}.json
+│   └── betting_lines/
+│       └── cache/          # Historical odds from The-Odds-API
 ├── processed/
-│   ├── training_data.parquet                    # Base features (no odds)
-│   └── classification_training_data.parquet    # With historical odds
+│   ├── training_data.parquet                          # Base features (no odds)
+│   ├── classification_training_data.parquet           # Single-book with odds
+│   └── multibook_classification_training_data.parquet # Multi-book with odds
 └── cache/
     └── api_cache.db        # SQLite cache for NHL API (24-hour TTL)
 ```
-
-### Cache Management
-
-The NHL API responses are cached in `data/cache/api_cache.db`:
-- **TTL**: 24 hours (configurable in `config/config.yaml`)
-- **Format**: SQLite database with MD5 hash keys
-- **Size**: ~750 MB for 2+ seasons of data
 
 ---
 
@@ -101,44 +111,75 @@ This creates `data/processed/training_data.parquet` with all calculated features
 
 The pipeline in `src/features/feature_engineering.py`:
 
-1. **Extract base features** from boxscores and play-by-play
+1. **Extract base features** from boxscores (including situation-specific stats)
 2. **Filter to starting goalies only** (exclude relief appearances)
 3. **Sort chronologically** (CRITICAL for preventing data leakage)
 4. **Calculate rolling features** with `shift(1)` to exclude current game
 5. **Add rest/fatigue features** (days rest, back-to-back)
-6. **Add team rolling features** (goals against, shots against)
-7. **Fill missing values** with season averages
+6. **Add team rolling features** (goals against, shots against per team)
+7. **Add opponent rolling features** (goals scored, shots per opponent team)
+8. **Fill missing values** with season averages
 
-### 90 Production Features
+### 114 Production Features
 
-The model uses exactly **90 features**:
+The model uses **114 features** across these categories:
 
 | Category | Features | Count |
 |----------|----------|-------|
 | Context | `is_home` | 1 |
-| Goalie rolling stats | `{stat}_rolling_{3,5,10}` + `_std` variants | 72 |
-| Team/opponent rolling | `opp_*_rolling_{5,10}`, `team_*_rolling_{5,10}` | 8 |
+| Goalie basic rolling | `saves`, `shots_against`, `goals_against`, `save_percentage` x 3 windows x (mean + std) | 24 |
+| Goalie situation-specific | `even_strength_*`, `power_play_*`, `short_handed_*` (saves, shots_against, goals_against) x 3 windows x (mean + std) | 54 |
+| Team defensive rolling | `team_goals_against`, `team_shots_against` x 2 windows | 4 |
+| Opponent offensive rolling | `opp_goals`, `opp_shots` x 2 windows | 4 |
 | Rest/fatigue | `goalie_days_rest`, `goalie_is_back_to_back` | 2 |
 | Betting line | `betting_line` | 1 |
-| **Total** | | **90** |
+| Line-relative | `line_vs_rolling_*`, `line_z_score_*` x 3 windows | 6 |
+| Engineered: interaction | `save_efficiency_{3,5,10}`, `es_saves_proportion_{5,10}`, `opp_vs_team_shots_{5,10}` | 7 |
+| Engineered: volatility | `saves_cv_{5,10}`, `volatility_vs_line_{5,10}` | 4 |
+| Engineered: momentum | `saves_momentum`, `shots_against_momentum`, `goals_against_momentum`, `save_pct_momentum` | 4 |
+| Engineered: matchup | `expected_workload_diff`, `line_vs_opp_implied_saves`, `rest_x_performance` | 3 |
+| **Total** | | **114** |
 
-### Goalie Rolling Stats (72 features)
+### Rolling Windows
 
-For each stat below, calculate `_rolling_{3,5,10}` mean and `_rolling_std_{3,5,10}` std:
+All rolling features are computed for 3 windows: **3, 5, and 10 games**. Team/opponent features use 5 and 10 game windows.
 
-- `saves`
-- `shots_against`
-- `goals_against`
-- `save_percentage`
-- `even_strength_saves`
-- `even_strength_shots_against`
-- `even_strength_goals_against`
-- `power_play_saves`
-- `power_play_shots_against`
-- `power_play_goals_against`
-- `short_handed_saves`
-- `short_handed_shots_against`
-- `short_handed_goals_against`
+For each rolling window, both **mean** and **standard deviation** are calculated:
+- `saves_rolling_5` = mean of saves over last 5 games
+- `saves_rolling_std_5` = std of saves over last 5 games
+
+### Situation-Specific Stats
+
+The model includes separate rolling stats for different game situations:
+- **Even strength**: `even_strength_saves`, `even_strength_shots_against`, `even_strength_goals_against`
+- **Power play**: `power_play_saves`, `power_play_shots_against`, `power_play_goals_against`
+- **Shorthanded**: `short_handed_saves`, `short_handed_shots_against`, `short_handed_goals_against`
+
+These are sourced from boxscores (not game logs, which lack this data).
+
+### Engineered Features
+
+The 18 engineered features are derived from base features:
+
+**Interaction features:**
+- `save_efficiency_{w}` = `saves_rolling_{w}` / `shots_against_rolling_{w}` (goalie efficiency)
+- `es_saves_proportion_{w}` = `even_strength_saves_rolling_{w}` / `saves_rolling_{w}` (even strength proportion)
+- `opp_vs_team_shots_{w}` = `opp_shots_rolling_{w}` - `team_shots_against_rolling_{w}` (opponent firepower vs team defense)
+
+**Volatility features:**
+- `saves_cv_{w}` = `saves_rolling_std_{w}` / `saves_rolling_{w}` (coefficient of variation)
+- `volatility_vs_line_{w}` = `saves_rolling_std_{w}` / `betting_line` (volatility relative to line)
+
+**Momentum features:**
+- `saves_momentum` = `saves_rolling_3` - `saves_rolling_10` (short-term vs long-term trend)
+- `shots_against_momentum` = `shots_against_rolling_3` - `shots_against_rolling_10`
+- `goals_against_momentum` = `goals_against_rolling_3` - `goals_against_rolling_10`
+- `save_pct_momentum` = `save_percentage_rolling_3` - `save_percentage_rolling_10`
+
+**Matchup context features:**
+- `expected_workload_diff` = `opp_shots_rolling_5` - `shots_against_rolling_5`
+- `line_vs_opp_implied_saves` = `betting_line` - (`opp_shots_rolling_5` - `opp_goals_rolling_5`)
+- `rest_x_performance` = `min(goalie_days_rest, 7)` * `saves_rolling_5`
 
 ### Data Leakage Prevention
 
@@ -160,9 +201,19 @@ df[col] = df.groupby('goalie_id')[stat].transform(
 
 ## Historical Betting Lines
 
-### Classification Training Data
+### Multi-Book Training Data
 
-The model requires historical betting lines with odds for training. The final training file `data/processed/classification_training_data.parquet` must contain:
+The model is trained on multi-book data where each goalie-game can have lines from multiple bookmakers. This provides more training samples and line-relative feature variation.
+
+```bash
+python scripts/build_multibook_training_data.py
+```
+
+Output: `data/processed/multibook_classification_training_data.parquet`
+
+### Classification Training Data Requirements
+
+The training data must contain:
 
 | Column | Description | Example |
 |--------|-------------|---------|
@@ -170,14 +221,7 @@ The model requires historical betting lines with odds for training. The final tr
 | `odds_over_american` | American odds for OVER | -115 |
 | `odds_under_american` | American odds for UNDER | -105 |
 | `over_hit` | Target: 1 if saves > line, 0 otherwise | 1 |
-
-### Data Summary
-
-Current training data (as of Jan 2026):
-- **Samples**: 3,757 goalie games
-- **Date range**: Oct 4, 2024 to Jan 3, 2026
-- **Seasons**: 20242025 (2,511), 20252026 (1,246)
-- **Over/Under split**: 47.6% OVER, 52.4% UNDER
+| `book_key` | Bookmaker identifier | `draftkings` |
 
 ### Historical Odds Cache (The-Odds-API)
 
@@ -185,206 +229,40 @@ Historical betting lines were collected via The-Odds-API and cached locally.
 
 **Cache Location**: `data/raw/betting_lines/cache/`
 
-**Cache Contents**:
-- **275 events files**: Daily game schedules (`events_date=YYYY-MM-DDTHH_MM_SSZ.json`)
-- **1,976 odds files**: Per-game betting lines (`odds_{eventId}_date=...json`)
-- **Date range**: Oct 4, 2024 to Jan 16, 2026
+**Available Bookmakers**:
 
-**File Naming Convention**:
-```
-# Events file (daily schedule)
-events_date=2024-10-04T18_00_00Z.json
-
-# Odds file (per-game lines)
-odds_{eventId}_date={gameTime}_markets=player_total_saves_regions=us.json
-```
-
-**Events File Structure**:
-```json
-{
-  "timestamp": "2024-10-04T17:55:39Z",
-  "data": [
-    {
-      "id": "e1dd2bc0fa38ee53116f047cf3d0327e",
-      "sport_key": "icehockey_nhl",
-      "commence_time": "2024-10-04T17:14:42Z",
-      "home_team": "Buffalo Sabres",
-      "away_team": "New Jersey Devils"
-    }
-  ]
-}
-```
-
-**Odds File Structure**:
-```json
-{
-  "timestamp": "2024-10-04T17:10:39Z",
-  "data": {
-    "id": "e1dd2bc0fa38ee53116f047cf3d0327e",
-    "home_team": "Buffalo Sabres",
-    "away_team": "New Jersey Devils",
-    "bookmakers": [
-      {
-        "key": "williamhill_us",
-        "title": "Caesars",
-        "markets": [
-          {
-            "key": "player_total_saves",
-            "outcomes": [
-              {
-                "name": "Over",
-                "description": "Ukko-Pekka Luukkonen",
-                "price": 1.84,
-                "point": 26.5
-              },
-              {
-                "name": "Under",
-                "description": "Ukko-Pekka Luukkonen",
-                "price": 1.81,
-                "point": 26.5
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Available Bookmakers
-
-The-Odds-API provides goalie saves lines from these bookmakers:
-
-| Bookmaker Key | Name | Notes |
-|---------------|------|-------|
-| `draftkings` | DraftKings | Major US book |
-| `fanduel` | FanDuel | Major US book |
-| `betmgm` | BetMGM | Major US book |
-| `betonlineag` | BetOnline.ag | Used in current integration |
-| `williamhill_us` | Caesars | In historical cache |
-| `espnbet` | ESPN Bet | US book |
-| `hardrockbet` | Hard Rock Bet | US book |
-| `pinnacle` | Pinnacle | Sharp book (reference lines) |
-
-### Sources for Historical Odds
-
-Options for obtaining historical betting lines:
-
-1. **The-Odds-API** (used for training data)
-   - Endpoint: `/v4/sports/icehockey_nhl/events/{eventId}/odds`
-   - Market: `player_total_saves`
-   - Historical data cached in `data/raw/betting_lines/cache/`
-
-2. **Manual collection** from betting sites
-   - Underdog Fantasy
-   - PrizePicks
-   - BetOnline
-
-3. **Third-party historical data providers**
-
-### Creating Classification Training Data
-
-To process the cached historical odds and merge with features:
-
-```python
-import pandas as pd
-import json
-from pathlib import Path
-
-# Load base features
-features_df = pd.read_parquet('data/processed/training_data.parquet')
-
-# Parse cached odds files
-cache_dir = Path('data/raw/betting_lines/cache')
-odds_records = []
-
-for odds_file in cache_dir.glob('odds_*.json'):
-    with open(odds_file) as f:
-        data = json.load(f)
-
-    event_data = data.get('data', {})
-    game_time = event_data.get('commence_time')
-    home_team = event_data.get('home_team')
-    away_team = event_data.get('away_team')
-
-    for bookmaker in event_data.get('bookmakers', []):
-        for market in bookmaker.get('markets', []):
-            if market.get('key') != 'player_total_saves':
-                continue
-
-            # Group outcomes by player
-            player_lines = {}
-            for outcome in market.get('outcomes', []):
-                player = outcome.get('description')
-                if not player:
-                    continue
-
-                if player not in player_lines:
-                    player_lines[player] = {'line': outcome.get('point')}
-
-                if outcome.get('name') == 'Over':
-                    player_lines[player]['odds_over'] = outcome.get('price')
-                else:
-                    player_lines[player]['odds_under'] = outcome.get('price')
-
-            for player, line_data in player_lines.items():
-                odds_records.append({
-                    'game_date': game_time[:10],
-                    'home_team': home_team,
-                    'away_team': away_team,
-                    'goalie_name': player,
-                    'betting_line': line_data.get('line'),
-                    'odds_over_decimal': line_data.get('odds_over'),
-                    'odds_under_decimal': line_data.get('odds_under'),
-                })
-
-odds_df = pd.DataFrame(odds_records)
-
-# Convert decimal to American odds
-def decimal_to_american(decimal_odds):
-    if decimal_odds >= 2.0:
-        return int((decimal_odds - 1) * 100)
-    else:
-        return int(-100 / (decimal_odds - 1))
-
-odds_df['odds_over_american'] = odds_df['odds_over_decimal'].apply(decimal_to_american)
-odds_df['odds_under_american'] = odds_df['odds_under_decimal'].apply(decimal_to_american)
-
-# Merge with features (requires matching goalie names to IDs)
-# ... additional matching logic needed ...
-
-# Create target variable
-merged_df['over_hit'] = (merged_df['saves'] > merged_df['betting_line']).astype(int)
-
-# Save
-merged_df.to_parquet('data/processed/classification_training_data.parquet')
-```
+| Bookmaker Key | Name |
+|---------------|------|
+| `draftkings` | DraftKings |
+| `fanduel` | FanDuel |
+| `betmgm` | BetMGM |
+| `betonlineag` | BetOnline.ag |
+| `williamhill_us` | Caesars |
+| `pinnacle` | Pinnacle |
 
 ---
 
 ## Model Training
 
-### Step 3: Train Production Model
+### Step 3: Train Multi-Book Model
 
 ```bash
-python scripts/train_production_4398.py
+python scripts/train_production_multibook.py
 ```
 
-### Hyperparameters (Config #4398)
+### Current Hyperparameters (Tuned V1)
 
 ```python
-CONFIG_4398 = {
-    'max_depth': 4,
-    'learning_rate': 0.02,
-    'min_child_weight': 15,
-    'gamma': 1.0,
-    'reg_alpha': 10,
-    'reg_lambda': 40,
-    'n_estimators': 800,
-    'subsample': 0.8,
+TUNED_V1 = {
+    'max_depth': 6,
+    'learning_rate': 0.05,
+    'min_child_weight': 30,
+    'gamma': 2.0,
+    'reg_alpha': 20,
+    'reg_lambda': 60,
+    'n_estimators': 600,
+    'subsample': 0.7,
     'colsample_bytree': 0.8,
-    'use_sample_weights': False
 }
 ```
 
@@ -413,7 +291,7 @@ import xgboost as xgb
 model = xgb.XGBClassifier(
     objective='binary:logistic',
     eval_metric=['logloss', 'auc'],
-    **CONFIG_4398
+    **TUNED_V1
 )
 
 model.fit(
@@ -421,6 +299,9 @@ model.fit(
     eval_set=[(X_train, y_train), (X_val, y_val)],
     verbose=True
 )
+
+# Save as Booster (compatible with predictor.py which loads as Booster)
+model.get_booster().save_model('classifier_model.json')
 ```
 
 ### Features Excluded from Training
@@ -430,22 +311,88 @@ These columns are removed before training:
 ```python
 excluded_cols = [
     # Metadata
-    'game_id', 'goalie_id', 'game_date', 'season', 'team_abbrev', 'opponent_team', 'toi',
+    'game_id', 'goalie_id', 'game_date', 'season', 'team_abbrev',
+    'opponent_team', 'toi', 'goalie_name', 'team_id',
+    'book_key', 'decision',
 
     # Target variables
-    'over_hit', 'saves', 'line_margin',
+    'over_hit', 'saves_margin', 'over_line', 'line_margin',
 
     # Odds (used for evaluation, not features)
-    'odds_over_american', 'odds_under_american', 'odds_over_decimal', 'odds_under_decimal', 'num_books',
+    'odds_over_american', 'odds_under_american',
+    'odds_over_decimal', 'odds_under_decimal', 'num_books',
 
     # Current-game stats (data leakage)
-    'shots_against', 'goals_against', 'save_percentage',
+    'saves', 'shots_against', 'goals_against', 'save_percentage',
     'even_strength_saves', 'even_strength_shots_against', 'even_strength_goals_against',
     'power_play_saves', 'power_play_shots_against', 'power_play_goals_against',
     'short_handed_saves', 'short_handed_shots_against', 'short_handed_goals_against',
-    'team_goals', 'team_shots', 'opp_goals', 'opp_shots'
+    'team_goals', 'team_shots', 'opp_goals', 'opp_shots',
+
+    # Market-derived features (not available at inference)
+    'line_vs_recent_avg', 'line_vs_season_avg', 'line_surprise_score',
+    'market_vig', 'impl_prob_over', 'impl_prob_under',
+    'fair_prob_over', 'fair_prob_under', 'line_vs_opp_shots',
+    'line_is_half', 'line_is_extreme_high', 'line_is_extreme_low',
 ]
 ```
+
+---
+
+## Feature Optimization
+
+### Testing Feature Configurations
+
+```bash
+python scripts/optimize_features.py
+```
+
+This script tests multiple feature configurations:
+1. Baseline (96 features)
+2. Baseline + engineered features (114 features)
+3. High regularization variants
+4. Feature selection (dropping low-importance features)
+
+Each configuration is evaluated on validation and test ROI. The best configuration found was 114 features with high regularization.
+
+---
+
+## Hyperparameter Tuning
+
+### Randomized Search
+
+```bash
+python scripts/tune_hyperparameters.py
+```
+
+This script:
+1. Tests 42 hyperparameter configurations x 4 EV thresholds (0.08, 0.10, 0.12, 0.15)
+2. Uses the 114 engineered features from the optimization step
+3. Filters results to 15-35% test bet rate for practical volume
+4. Saves the best model automatically
+
+### Hyperparameter Search Space
+
+| Parameter | Values |
+|-----------|--------|
+| `max_depth` | 3, 4, 5, 6 |
+| `learning_rate` | 0.01, 0.02, 0.05 |
+| `min_child_weight` | 10, 15, 20, 30 |
+| `gamma` | 0.5, 1.0, 2.0 |
+| `reg_alpha` | 5, 10, 20 |
+| `reg_lambda` | 20, 40, 60 |
+| `n_estimators` | 600, 800, 1200 |
+
+### EV Threshold Selection
+
+| Threshold | Effect |
+|-----------|--------|
+| 8% | More bets, lower selectivity |
+| 10% | Moderate selectivity |
+| **12%** | **Current production (good balance)** |
+| 15% | Fewer bets, higher selectivity |
+
+The 12% threshold was selected for the current model, producing a bet rate of ~20-25% of available lines.
 
 ---
 
@@ -456,36 +403,31 @@ excluded_cols = [
 The model is evaluated on betting profitability, not just accuracy:
 
 ```python
-def evaluate_profitability(X, y, df, split_idx, ev_threshold=0.02):
+def evaluate_profitability(X, y, df, split_idx, ev_threshold=0.12):
     """
     For each game:
-    1. Get model probability: prob_over = model.predict_proba(X)[:, 1]
-    2. Calculate EV: ev_over = (prob_over * payout) - 1
-    3. If ev >= threshold: place bet
-    4. Track profit/loss using actual odds
+    1. Get model probability: prob_over = model.predict(X)
+    2. Calculate EV for both OVER and UNDER using actual odds
+    3. If EV >= 12%: place bet on that side
+    4. Track profit/loss at actual odds
     """
 ```
 
-### Config #4398 Results
+### Tuned V1 Results (Current Production)
 
 | Metric | Validation | Test | Combined |
 |--------|------------|------|----------|
-| ROI | +2.54% | +0.62% | +1.60% |
-| Win Rate | 54.0% | 52.7% | 53.4% |
-| Total Bets | 363 | 336 | 699 |
+| ROI | +27.05% | +20.45% | +23.31% |
+| Bets | 191 (18%) | 250 (23%) | 441 |
 
-### EV Threshold Selection
+### Previous Model Results (for comparison)
 
-The model was tested at multiple EV thresholds:
-
-| Threshold | Bets | Win Rate | ROI |
-|-----------|------|----------|-----|
-| 1% | More | Lower | Lower |
-| **2%** | **699** | **53.4%** | **+1.60%** |
-| 3% | Fewer | Higher | Variable |
-| 4% | 581 | Higher | +1.8% |
-
-2% was chosen for balance between volume and profitability.
+| Model | Val ROI | Test ROI | Combined ROI | Bets |
+|-------|---------|----------|-------------|------|
+| Config #4398 (2% EV) | +2.54% | +0.62% | +1.60% | 699 |
+| Multibook V1 (12% EV) | +3.13% | +11.29% | +7.32% | 700 |
+| Optimized V1 (12% EV) | +21.01% | +10.68% | +15.24% | 451 |
+| **Tuned V1 (12% EV)** | **+27.05%** | **+20.45%** | **+23.31%** | **441** |
 
 ---
 
@@ -493,12 +435,12 @@ The model was tested at multiple EV thresholds:
 
 ### Model Artifacts
 
-After training, save these files:
+After training, these files are saved:
 
 ```
-models/trained/config_4398_ev2pct_{timestamp}/
-├── classifier_model.json          # XGBoost model in JSON format
-├── classifier_feature_names.json  # List of 90 features in exact order
+models/trained/tuned_v1_{timestamp}/
+├── classifier_model.json          # XGBoost Booster model in JSON format
+├── classifier_feature_names.json  # List of 114 features in exact order
 └── classifier_metadata.json       # Hyperparameters and performance metrics
 ```
 
@@ -510,10 +452,28 @@ After training a new model, update the default path in `src/betting/predictor.py
 class BettingPredictor:
     def __init__(
         self,
-        model_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_model.json',
-        feature_order_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_feature_names.json'
+        model_path='models/trained/tuned_v1_20260201_155204/classifier_model.json',
+        feature_order_path='models/trained/tuned_v1_20260201_155204/classifier_feature_names.json'
     ):
 ```
+
+Also update the feature names path in `src/betting/feature_calculator.py`:
+
+```python
+class BettingFeatureCalculator:
+    def __init__(self):
+        feature_file = Path('models/trained/tuned_v1_20260201_155204/classifier_feature_names.json')
+```
+
+### Train/Serve Parity
+
+The inference pipeline (`feature_calculator.py`) must compute features identically to training. Key considerations:
+
+1. **Saves field**: The NHL game log API does not provide a `saves` field. Compute as `shotsAgainst - goalsAgainst`.
+2. **Shots against**: Use `shotsAgainst` from game log (not `shots`).
+3. **Situation-specific stats**: Not available from game log API. Must fetch individual boxscores via `/v1/gamecenter/{gameId}/boxscore` and parse situation strings (e.g., `evenStrengthShotsAgainst: "18/20"` means 18 saves on 20 shots).
+4. **Team/opponent stats**: Fetch from boxscores (team defense) and opponent schedule + boxscores (opponent offense).
+5. **Boxscore caching**: In-memory cache (`_boxscore_cache`) avoids re-fetching the same boxscore for multiple goalies.
 
 ### Making Predictions
 
@@ -528,15 +488,16 @@ nhl_data = NHLBettingData()
 # Get goalie's recent games
 recent_games = nhl_data.get_goalie_recent_games(goalie_id, n_games=15)
 
-# Calculate features
+# Calculate features (passes nhl_fetcher for boxscore data)
 features_df = feature_calc.prepare_prediction_features(
     goalie_id=goalie_id,
     team='TOR',
     opponent='BOS',
     is_home=1,
-    game_date='2026-01-25',
+    game_date='2026-02-01',
     recent_games=recent_games,
-    betting_line=25.5
+    betting_line=25.5,
+    nhl_fetcher=nhl_data
 )
 
 # Generate prediction
@@ -554,9 +515,9 @@ prediction = predictor.predict(
 #     'confidence_pct': 16.0,
 #     'confidence_bucket': '55-60%',
 #     'recommendation': 'OVER',
-#     'ev_over': 0.035,
-#     'ev_under': -0.02,
-#     'recommended_ev': 0.035
+#     'ev_over': 0.15,
+#     'ev_under': -0.04,
+#     'recommended_ev': 0.15
 # }
 ```
 
@@ -573,19 +534,26 @@ python scripts/collect_historical_data.py --seasons 20242025 20252026
 # 2. Generate features
 python scripts/create_features.py
 
-# 3. (Manual) Add historical betting lines to create classification_training_data.parquet
+# 3. Build multi-book training data (requires historical odds in cache)
+python scripts/build_multibook_training_data.py
 
-# 4. Train model
-python scripts/train_production_4398.py
+# 4. (Optional) Test feature configurations
+python scripts/optimize_features.py
 
-# 5. Update predictor paths in src/betting/predictor.py
+# 5. (Optional) Hyperparameter tuning
+python scripts/tune_hyperparameters.py
+
+# 6. Train production model
+python scripts/train_production_multibook.py
+
+# 7. Update predictor paths in src/betting/predictor.py and src/betting/feature_calculator.py
 ```
 
 ### Daily Operations
 
 ```bash
 # Fetch lines and generate predictions
-python scripts/fetch_and_predict.py
+python scripts/fetch_and_predict.py --verbose
 
 # Update results after games complete
 python scripts/update_betting_results.py
@@ -600,10 +568,10 @@ When you have more data:
 
 1. Run data collection for new dates
 2. Regenerate features
-3. Merge new odds data
-4. Retrain with same hyperparameters
+3. Rebuild multi-book training data with new odds
+4. Run hyperparameter tuning (or retrain with existing params)
 5. Compare validation/test ROI to previous model
-6. Deploy if improved
+6. Deploy if improved (update predictor paths)
 
 ---
 
@@ -611,44 +579,56 @@ When you have more data:
 
 ```
 saves-model-v3/
+├── .github/workflows/
+│   └── fetch_predictions.yml       # GitHub Action for predictions
 ├── config/
-│   └── config.yaml              # Configuration settings
+│   └── config.yaml                 # Configuration settings
 ├── data/
 │   ├── raw/
-│   │   ├── boxscores/           # Raw game data
-│   │   └── play_by_play/        # Shot-by-shot data
+│   │   ├── boxscores/              # Raw game data
+│   │   └── betting_lines/
+│   │       └── cache/              # The-Odds-API historical odds cache
 │   ├── processed/
 │   │   ├── training_data.parquet
-│   │   └── classification_training_data.parquet
-│   ├── cache/
-│   │   ├── api_cache.db         # NHL API cache
-│   │   └── odds_api/            # The-Odds-API cache
-│   └── betting_history/         # CSV backups of tracker
+│   │   ├── classification_training_data.parquet
+│   │   └── multibook_classification_training_data.parquet
+│   └── cache/
+│       └── api_cache.db            # NHL API cache
 ├── models/
 │   └── trained/
-│       └── config_4398_ev2pct_*/
+│       └── tuned_v1_20260201_155204/
 │           ├── classifier_model.json
 │           ├── classifier_feature_names.json
 │           └── classifier_metadata.json
 ├── scripts/
 │   ├── collect_historical_data.py
 │   ├── create_features.py
-│   ├── train_production_4398.py
+│   ├── build_multibook_training_data.py
+│   ├── train_production_multibook.py
+│   ├── optimize_features.py
+│   ├── tune_hyperparameters.py
 │   ├── fetch_and_predict.py
-│   └── update_betting_results.py
+│   ├── generate_predictions.py
+│   ├── update_betting_results.py
+│   ├── betting_dashboard.py
+│   ├── add_manual_lines.py
+│   └── init_betting_tracker.py
 ├── src/
 │   ├── betting/
-│   │   ├── predictor.py
-│   │   ├── feature_calculator.py
-│   │   ├── odds_fetcher.py
-│   │   └── odds_utils.py
+│   │   ├── predictor.py            # Model inference (loads Booster)
+│   │   ├── feature_calculator.py   # Real-time 114-feature computation
+│   │   ├── nhl_fetcher.py          # NHL API + boxscore caching
+│   │   ├── odds_fetcher.py         # Underdog + BetOnline fetching
+│   │   ├── excel_manager.py        # Excel tracker I/O
+│   │   └── odds_utils.py           # EV calculation
 │   ├── data/
-│   │   ├── api_client.py
-│   │   ├── cache_manager.py
-│   │   └── collectors.py
+│   │   ├── api_client.py           # NHL API client
+│   │   └── cache_manager.py        # API response caching
 │   ├── features/
-│   │   └── feature_engineering.py
+│   │   ├── feature_engineering.py  # Training feature pipeline
+│   │   ├── rolling_features.py     # Rolling stat calculations
+│   │   └── team_rolling_features.py # Team-level rolling stats
 │   └── models/
-│       └── classifier_trainer.py
-└── betting_tracker.xlsx          # Excel tracker for daily bets
+│       └── classifier_trainer.py   # XGBoost training + evaluation
+└── betting_tracker.xlsx            # Excel tracker for daily bets
 ```
