@@ -316,7 +316,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
 
             # Check for EV opportunity
             ev = prediction.get('recommended_ev')
-            if ev is not None and ev >= 0.02:
+            if ev is not None and ev >= 0.12:
                 ev_opportunities.append({
                     'goalie_name': goalie_name,
                     'team': team,
@@ -348,7 +348,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     print(f"Predictions generated: {len(predictions_list)}")
 
     if ev_opportunities:
-        print(f"\nEV OPPORTUNITIES (>= 2%):")
+        print(f"\nEV OPPORTUNITIES (>= 12%):")
         print("-" * 70)
         ev_opportunities.sort(key=lambda x: x['ev'], reverse=True)
         for opp in ev_opportunities:
@@ -357,7 +357,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             print(f"    {opp['recommendation']} {opp['line']} @ {odds_str}")
             print(f"    EV: {opp['ev']:+.1%}, Model Prob: {opp['prob']:.1%}")
     else:
-        print(f"\nNo EV opportunities >= 2% found")
+        print(f"\nNo EV opportunities >= 12% found")
 
     print(f"\n{'='*70}")
 
