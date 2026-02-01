@@ -14,7 +14,11 @@ class BettingFeatureCalculator:
 
     def __init__(self):
         # Load feature names to ensure correct order
-        feature_file = Path('models/classifier_feature_names.json')
+        # Use the tuned model's feature names (114 features including engineered)
+        feature_file = Path('models/trained/tuned_v1_20260201_155204/classifier_feature_names.json')
+        if not feature_file.exists():
+            # Fallback to generic location
+            feature_file = Path('models/classifier_feature_names.json')
         if feature_file.exists():
             with open(feature_file, 'r') as f:
                 self.feature_names = json.load(f)
@@ -236,7 +240,7 @@ class BettingFeatureCalculator:
     def prepare_prediction_features(self, goalie_id, team, opponent, is_home, game_date,
                                      recent_games, betting_line=None, nhl_fetcher=None):
         """
-        Combine all features into model input format (96 features in correct order).
+        Combine all features into model input format (114 features in correct order).
 
         Args:
             goalie_id: NHL goalie ID
@@ -287,6 +291,9 @@ class BettingFeatureCalculator:
                 (bl - rolling_val) / std_val if std_val > 0.01 else 0.0
             )
 
+        # --- Engineered features (18 total) ---
+        self._add_engineered_features(features)
+
         # Ensure correct feature order
         if self.feature_names:
             ordered_features = {}
@@ -295,6 +302,72 @@ class BettingFeatureCalculator:
             return pd.DataFrame([ordered_features])
         else:
             return pd.DataFrame([features])
+
+    def _add_engineered_features(self, features):
+        """
+        Add the 18 engineered features to the feature dict.
+        Must be called after all base features (goalie, team, line-relative) are computed.
+        Matches the exact logic used in training (scripts/optimize_features.py).
+        """
+        # --- Interaction features ---
+        # Save efficiency: saves / shots_against
+        for w in [3, 5, 10]:
+            sr = features.get(f'saves_rolling_{w}', 25.0)
+            sar = features.get(f'shots_against_rolling_{w}', 28.0)
+            features[f'save_efficiency_{w}'] = sr / max(sar, 1.0)
+
+        # Even strength saves proportion of total saves
+        for w in [5, 10]:
+            es = features.get(f'even_strength_saves_rolling_{w}', 20.0)
+            sr = features.get(f'saves_rolling_{w}', 25.0)
+            features[f'es_saves_proportion_{w}'] = es / max(sr, 1.0)
+
+        # Opponent shots vs team shots against
+        for w in [5, 10]:
+            opp_shots = features.get(f'opp_shots_rolling_{w}', 30.0)
+            team_sa = features.get(f'team_shots_against_rolling_{w}', 30.0)
+            features[f'opp_vs_team_shots_{w}'] = opp_shots - team_sa
+
+        # --- Volatility features ---
+        # Coefficient of variation for saves
+        for w in [5, 10]:
+            mean_val = features.get(f'saves_rolling_{w}', 25.0)
+            std_val = features.get(f'saves_rolling_std_{w}', 5.0)
+            features[f'saves_cv_{w}'] = std_val / max(mean_val, 1.0)
+
+        # Volatility relative to line
+        bl = features.get('betting_line', 25.0)
+        for w in [5, 10]:
+            std_val = features.get(f'saves_rolling_std_{w}', 5.0)
+            features[f'volatility_vs_line_{w}'] = std_val / max(bl, 1.0)
+
+        # --- Trend / momentum features ---
+        # Short-term (3-game) vs long-term (10-game) momentum
+        for stat in ['saves', 'shots_against', 'goals_against']:
+            short_val = features.get(f'{stat}_rolling_3', 0.0)
+            long_val = features.get(f'{stat}_rolling_10', 0.0)
+            features[f'{stat}_momentum'] = short_val - long_val
+
+        # Save percentage momentum
+        sp_short = features.get('save_percentage_rolling_3', 0.905)
+        sp_long = features.get('save_percentage_rolling_10', 0.905)
+        features['save_pct_momentum'] = sp_short - sp_long
+
+        # --- Matchup context features ---
+        # Expected workload diff: opponent shots tendency vs goalie's recent workload
+        opp_shots_5 = features.get('opp_shots_rolling_5', 30.0)
+        sa_5 = features.get('shots_against_rolling_5', 28.0)
+        features['expected_workload_diff'] = opp_shots_5 - sa_5
+
+        # Line vs opponent-implied saves
+        opp_goals_5 = features.get('opp_goals_rolling_5', 3.0)
+        opp_saves_implied = opp_shots_5 - opp_goals_5
+        features['line_vs_opp_implied_saves'] = bl - opp_saves_implied
+
+        # Rest * recent performance interaction
+        rest = min(features.get('goalie_days_rest', 3), 7)
+        saves_5 = features.get('saves_rolling_5', 25.0)
+        features['rest_x_performance'] = rest * saves_5
 
     def _get_default_features(self):
         """Return default feature values when no history available"""
@@ -351,5 +424,21 @@ class BettingFeatureCalculator:
         for window in windows:
             defaults[f'line_vs_rolling_{window}'] = 0.0
             defaults[f'line_z_score_{window}'] = 0.0
+
+        # Engineered feature defaults
+        for w in [3, 5, 10]:
+            defaults[f'save_efficiency_{w}'] = 25.0 / 28.0  # ~0.893
+        for w in [5, 10]:
+            defaults[f'es_saves_proportion_{w}'] = 20.0 / 25.0  # ~0.80
+            defaults[f'opp_vs_team_shots_{w}'] = 0.0
+            defaults[f'saves_cv_{w}'] = 5.0 / 25.0  # ~0.20
+            defaults[f'volatility_vs_line_{w}'] = 5.0 / 25.0  # ~0.20
+        defaults['saves_momentum'] = 0.0
+        defaults['shots_against_momentum'] = 0.0
+        defaults['goals_against_momentum'] = 0.0
+        defaults['save_pct_momentum'] = 0.0
+        defaults['expected_workload_diff'] = 0.0
+        defaults['line_vs_opp_implied_saves'] = 0.0
+        defaults['rest_x_performance'] = 3 * 25.0  # rest=3 * saves=25
 
         return defaults
