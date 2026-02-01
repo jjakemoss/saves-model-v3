@@ -34,7 +34,7 @@ CONFIG = {
     'use_sample_weights': False
 }
 
-EV_THRESHOLD = 0.02  # 2%
+EV_THRESHOLD = 0.12
 
 print("=" * 80)
 print("TRAINING MULTI-BOOK MODEL WITH LINE-RELATIVE FEATURES")

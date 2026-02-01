@@ -10,7 +10,7 @@ from .odds_utils import calculate_ev
 class BettingPredictor:
     """Make predictions using trained classifier model"""
 
-    def __init__(self, model_path='models/trained/multibook_v1_20260201_100441/classifier_model.json', feature_order_path='models/trained/multibook_v1_20260201_100441/classifier_feature_names.json'):
+    def __init__(self, model_path='models/trained/multibook_v1_20260201_112500/classifier_model.json', feature_order_path='models/trained/multibook_v1_20260201_112500/classifier_feature_names.json'):
         """
         Initialize predictor with trained model
 
@@ -112,20 +112,15 @@ class BettingPredictor:
         ]
         features_cleaned = features_df.drop(columns=[col for col in features_to_remove if col in features_df.columns], errors='ignore')
 
-        # CRITICAL: Only use features that are available in the input
-        # The model was trained with 103 features, but we only have 90 base features during prediction
-        # Filter feature_order to only include features we actually have
-        available_features = [f for f in self.feature_order if f in features_cleaned.columns]
+        # 1. Ensure all expected features exist (fill missing with NaN)
+        for col in self.feature_order:
+            if col not in features_cleaned.columns:
+                features_cleaned[col] = np.nan
 
-        # Check if we have all the base features (should be ~96 with line-relative features)
-        if len(available_features) < 91:  # Safety check: should have at least 91 features
-            missing_features = [f for f in self.feature_order if f not in features_cleaned.columns and f not in features_to_remove]
-            raise ValueError(f"Missing required base features: {missing_features}")
+        # 2. Reorder to match the EXACT training schema
+        features_ordered = features_cleaned[self.feature_order]
 
-        # Reorder columns to match training order (using only available features)
-        features_ordered = features_cleaned[available_features]
-
-        # Get probability predictions using DMatrix (for Booster interface)
+        # 3. Predict
         dmatrix = xgb.DMatrix(features_ordered)
         prob_over = self.model.predict(dmatrix)[0]
 
@@ -189,7 +184,7 @@ class BettingPredictor:
         else:
             return '75%+'
 
-    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.02):
+    def _determine_recommendation(self, prob_over, line_over_odds, line_under_odds, ev_threshold=0.12):
         """
         Determine bet recommendation using Expected Value (2% minimum).
 
