@@ -435,6 +435,42 @@ class FeatureEngineeringPipeline:
         return df
 
 
+def compute_line_relative_features(df):
+    """
+    Compute line-relative features from betting_line and rolling averages.
+
+    These features explicitly encode the gap between the betting line and
+    the goalie's recent performance, helping the model learn line sensitivity.
+
+    Args:
+        df: DataFrame with betting_line and saves_rolling_* columns
+
+    Returns:
+        DataFrame with 6 new columns added:
+        - line_vs_rolling_3/5/10: raw difference (betting_line - rolling avg)
+        - line_z_score_3/5/10: standardized difference (in std devs)
+    """
+    for window in [3, 5, 10]:
+        rolling_col = f'saves_rolling_{window}'
+        std_col = f'saves_rolling_std_{window}'
+
+        if rolling_col in df.columns:
+            df[f'line_vs_rolling_{window}'] = df['betting_line'] - df[rolling_col]
+        else:
+            df[f'line_vs_rolling_{window}'] = 0.0
+
+        if rolling_col in df.columns and std_col in df.columns:
+            df[f'line_z_score_{window}'] = np.where(
+                df[std_col] > 0.01,
+                (df['betting_line'] - df[rolling_col]) / df[std_col],
+                0.0
+            )
+        else:
+            df[f'line_z_score_{window}'] = 0.0
+
+    return df
+
+
 def create_training_dataset(
     raw_data_dir: str = "data/raw",
     output_path: str = "data/processed/training_data.parquet",

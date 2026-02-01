@@ -56,7 +56,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     # Initialize clients
     nhl_data = NHLBettingData()
     underdog = UnderdogFetcher()
-    prizepicks = PrizePicksFetcher()
+    # prizepicks = PrizePicksFetcher()
     betonline = TheOddsAPIFetcher()
 
     # Check if tracker exists, create if needed
@@ -95,12 +95,12 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print(f"    [WARNING] No Underdog lines found")
 
     # Fetch PrizePicks lines
-    print(f"  Fetching PrizePicks goalie saves lines...")
-    prizepicks_lines = prizepicks.get_goalie_saves()
-    if prizepicks_lines:
-        print(f"    Found {len(prizepicks_lines)} PrizePicks lines")
-    else:
-        print(f"    [WARNING] No PrizePicks lines found (API may be blocked)")
+    # print(f"  Fetching PrizePicks goalie saves lines...")
+    # prizepicks_lines = prizepicks.get_goalie_saves()
+    # if prizepicks_lines:
+    #     print(f"    Found {len(prizepicks_lines)} PrizePicks lines")
+    # else:
+    #     print(f"    [WARNING] No PrizePicks lines found (API may be blocked)")
 
     # Fetch BetOnline lines (via The-Odds-API with caching)
     print(f"  Fetching BetOnline goalie saves lines...")
@@ -111,7 +111,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print(f"    [WARNING] No BetOnline lines found")
 
     # Combine all lines
-    all_lines = underdog_lines + prizepicks_lines + betonline_lines
+    all_lines = underdog_lines + betonline_lines
 
     if not all_lines:
         print(f"\n[WARNING] No betting lines found from any source")
@@ -342,7 +342,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     print(f"{'='*70}")
     print("RESULTS")
     print(f"{'='*70}")
-    print(f"Lines fetched: {len(all_lines)} (Underdog: {len(underdog_lines)}, PrizePicks: {len(prizepicks_lines)}, BetOnline: {len(betonline_lines)})")
+    print(f"Lines fetched: {len(all_lines)} (Underdog: {len(underdog_lines)}, BetOnline: {len(betonline_lines)})")
     print(f"Lines matched: {len(matched_lines)}")
     print(f"New lines added: {len(new_lines)}")
     print(f"Predictions generated: {len(predictions_list)}")

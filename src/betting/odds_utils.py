@@ -84,6 +84,39 @@ def american_to_decimal(odds):
         return (odds / 100) + 1
 
 
+def decimal_to_american(decimal_odds):
+    """
+    Convert decimal odds to American odds.
+
+    Args:
+        decimal_odds: float - Decimal odds (e.g., 1.91, 2.05)
+                      None is allowed and returns None
+
+    Returns:
+        int: American odds (e.g., -110, +105)
+             None if decimal_odds is None
+
+    Examples:
+        >>> decimal_to_american(1.91)
+        -110
+        >>> decimal_to_american(2.05)
+        +105
+        >>> decimal_to_american(3.0)
+        +200
+        >>> decimal_to_american(1.667)
+        -150
+        >>> decimal_to_american(None)
+        None
+    """
+    if decimal_odds is None:
+        return None
+
+    if decimal_odds >= 2.0:
+        return round((decimal_odds - 1) * 100)
+    else:
+        return round(-100 / (decimal_odds - 1))
+
+
 def calculate_ev(model_prob, odds):
     """
     Calculate Expected Value as the difference between model probability
