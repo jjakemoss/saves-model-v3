@@ -10,7 +10,7 @@ from .odds_utils import calculate_ev
 class BettingPredictor:
     """Make predictions using trained classifier model"""
 
-    def __init__(self, model_path='models\trained\multibook_v1_20260201_152947\classifier_model.json', feature_order_path='models\trained\multibook_v1_20260201_152947\classifier_feature_names.json'):
+    def __init__(self, model_path='models/trained/multibook_v1_20260201_152947/classifier_model.json', feature_order_path='models/trained/multibook_v1_20260201_152947/classifier_feature_names.json'):
         """
         Initialize predictor with trained model
 
@@ -192,7 +192,7 @@ class BettingPredictor:
             prob_over: Model probability of OVER
             line_over_odds: American odds for OVER (e.g., -115)
             line_under_odds: American odds for UNDER (e.g., -105)
-            ev_threshold: Minimum EV required (default 0.02 = 2%)
+            ev_threshold: Minimum EV required (default 0.12 = 12%)
 
         Returns:
             tuple: (recommendation, ev_over, ev_under, recommended_ev)
