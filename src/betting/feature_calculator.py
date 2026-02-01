@@ -168,7 +168,7 @@ class BettingFeatureCalculator:
             betting_line: Betting line for saves over/under (REQUIRED for predictions)
 
         Returns:
-            pd.DataFrame: Single row with 90 features in correct order
+            pd.DataFrame: Single row with 96 features in correct order
         """
         features = {}
 
@@ -190,6 +190,19 @@ class BettingFeatureCalculator:
         else:
             # If no betting line provided, use league average (but this shouldn't happen)
             features['betting_line'] = 25.0
+
+        # Line-relative features: how far the line is from the goalie's recent averages
+        bl = features['betting_line']
+        for window in [3, 5, 10]:
+            rolling_key = f'saves_rolling_{window}'
+            std_key = f'saves_rolling_std_{window}'
+            rolling_val = features.get(rolling_key, 25.0)
+            std_val = features.get(std_key, 5.0)
+
+            features[f'line_vs_rolling_{window}'] = bl - rolling_val
+            features[f'line_z_score_{window}'] = (
+                (bl - rolling_val) / std_val if std_val > 0.01 else 0.0
+            )
 
         # If we have feature names, ensure correct order
         if self.feature_names:
@@ -231,5 +244,10 @@ class BettingFeatureCalculator:
         defaults['team_goals_against_rolling_10'] = 3.0
         defaults['team_shots_against_rolling_5'] = 30.0
         defaults['team_shots_against_rolling_10'] = 30.0
+
+        # Line-relative feature defaults (neutral = line matches average)
+        for window in windows:
+            defaults[f'line_vs_rolling_{window}'] = 0.0
+            defaults[f'line_z_score_{window}'] = 0.0
 
         return defaults

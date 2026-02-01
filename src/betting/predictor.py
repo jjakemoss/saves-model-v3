@@ -10,7 +10,7 @@ from .odds_utils import calculate_ev
 class BettingPredictor:
     """Make predictions using trained classifier model"""
 
-    def __init__(self, model_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_model.json', feature_order_path='models/trained/config_4398_ev2pct_20260115_103430/classifier_feature_names.json'):
+    def __init__(self, model_path='models/trained/multibook_v1_20260201_100441/classifier_model.json', feature_order_path='models/trained/multibook_v1_20260201_100441/classifier_feature_names.json'):
         """
         Initialize predictor with trained model
 
@@ -117,8 +117,8 @@ class BettingPredictor:
         # Filter feature_order to only include features we actually have
         available_features = [f for f in self.feature_order if f in features_cleaned.columns]
 
-        # Check if we have all the base features (should be ~90)
-        if len(available_features) < 85:  # Safety check: should have at least 85 features
+        # Check if we have all the base features (should be ~96 with line-relative features)
+        if len(available_features) < 91:  # Safety check: should have at least 91 features
             missing_features = [f for f in self.feature_order if f not in features_cleaned.columns and f not in features_to_remove]
             raise ValueError(f"Missing required base features: {missing_features}")
 
