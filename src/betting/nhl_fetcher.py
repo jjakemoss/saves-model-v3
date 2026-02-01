@@ -17,6 +17,8 @@ class NHLBettingData:
     def __init__(self):
         self.api = NHLAPIClient()
         self._goalie_leaders_cache = None  # Cache for goalie stats leaders
+        self._boxscore_cache = {}  # Cache boxscores by game_id
+        self._schedule_cache = {}  # Cache team schedules by team_abbrev
 
     def get_todays_games(self, date=None):
         """
@@ -254,3 +256,165 @@ class NHLBettingData:
         except Exception as e:
             print(f"Error fetching recent games for goalie {goalie_id}: {e}")
             return []
+
+    def _get_boxscore(self, game_id):
+        """Fetch boxscore with in-memory caching"""
+        if game_id not in self._boxscore_cache:
+            try:
+                self._boxscore_cache[game_id] = self.api.get_boxscore(game_id)
+            except Exception as e:
+                print(f"Error fetching boxscore for game {game_id}: {e}")
+                return None
+        return self._boxscore_cache[game_id]
+
+    def _parse_situation_stat(self, stat_str, stat_type):
+        """Parse 'saves/shots' format strings from boxscore"""
+        try:
+            if '/' not in str(stat_str):
+                return 0
+            saves_str, shots_str = str(stat_str).split('/')
+            if stat_type == 'saves':
+                return int(saves_str)
+            else:
+                return int(shots_str)
+        except (ValueError, TypeError):
+            return 0
+
+    def get_goalie_boxscore_stats(self, game_id, goalie_id):
+        """
+        Fetch situation-specific goalie stats from a boxscore.
+
+        Returns dict with: saves, shots_against, goals_against, save_percentage,
+        even_strength_saves/shots_against/goals_against,
+        power_play_saves/shots_against/goals_against,
+        short_handed_saves/shots_against/goals_against
+        """
+        box = self._get_boxscore(game_id)
+        if not box:
+            return None
+
+        # Search for the goalie in both teams
+        for side in ['homeTeam', 'awayTeam']:
+            goalies = box.get('playerByGameStats', {}).get(side, {}).get('goalies', [])
+            for g in goalies:
+                if g.get('playerId') == goalie_id:
+                    es_sa_str = g.get('evenStrengthShotsAgainst', '0/0')
+                    pp_sa_str = g.get('powerPlayShotsAgainst', '0/0')
+                    sh_sa_str = g.get('shorthandedShotsAgainst', '0/0')
+
+                    es_saves = self._parse_situation_stat(es_sa_str, 'saves')
+                    es_shots = self._parse_situation_stat(es_sa_str, 'shots')
+                    pp_saves = self._parse_situation_stat(pp_sa_str, 'saves')
+                    pp_shots = self._parse_situation_stat(pp_sa_str, 'shots')
+                    sh_saves = self._parse_situation_stat(sh_sa_str, 'saves')
+                    sh_shots = self._parse_situation_stat(sh_sa_str, 'shots')
+
+                    return {
+                        'saves': g.get('saves', 0),
+                        'shots_against': g.get('shotsAgainst', 0),
+                        'goals_against': g.get('goalsAgainst', 0),
+                        'save_percentage': g.get('savePctg', 0.0),
+                        'even_strength_saves': es_saves,
+                        'even_strength_shots_against': es_shots,
+                        'even_strength_goals_against': g.get('evenStrengthGoalsAgainst', 0),
+                        'power_play_saves': pp_saves,
+                        'power_play_shots_against': pp_shots,
+                        'power_play_goals_against': g.get('powerPlayGoalsAgainst', 0),
+                        'short_handed_saves': sh_saves,
+                        'short_handed_shots_against': sh_shots,
+                        'short_handed_goals_against': g.get('shorthandedGoalsAgainst', 0),
+                    }
+        return None
+
+    def get_team_boxscore_stats(self, game_id, team_abbrev):
+        """
+        Fetch team-level stats from a boxscore.
+
+        Returns dict with: team_goals, team_shots, opp_goals, opp_shots
+        """
+        box = self._get_boxscore(game_id)
+        if not box:
+            return None
+
+        home_abbrev = box.get('homeTeam', {}).get('abbrev', '')
+        away_abbrev = box.get('awayTeam', {}).get('abbrev', '')
+
+        if team_abbrev == home_abbrev:
+            team_data = box.get('homeTeam', {})
+            opp_data = box.get('awayTeam', {})
+        elif team_abbrev == away_abbrev:
+            team_data = box.get('awayTeam', {})
+            opp_data = box.get('homeTeam', {})
+        else:
+            return None
+
+        return {
+            'team_goals': team_data.get('score', 0),
+            'team_shots': team_data.get('sog', 0),
+            'opp_goals': opp_data.get('score', 0),
+            'opp_shots': opp_data.get('sog', 0),
+        }
+
+    def get_opponent_recent_stats(self, opponent_abbrev, game_date, season='20252026', n_games=10):
+        """
+        Fetch opponent team's recent game stats (goals scored, shots).
+
+        Args:
+            opponent_abbrev: Opponent team abbreviation
+            game_date: Current game date (to exclude same-day/future games)
+            season: Season string
+            n_games: Number of recent games
+
+        Returns:
+            list of dicts with: opp_goals, opp_shots per game
+        """
+        # Fetch opponent schedule (cached)
+        if opponent_abbrev not in self._schedule_cache:
+            try:
+                sched = self.api.get_team_season_schedule(opponent_abbrev, season)
+                self._schedule_cache[opponent_abbrev] = sched.get('games', [])
+            except Exception as e:
+                print(f"Error fetching schedule for {opponent_abbrev}: {e}")
+                return []
+
+        all_games = self._schedule_cache[opponent_abbrev]
+
+        # Filter to completed games before game_date
+        completed = []
+        for g in all_games:
+            gd = g.get('gameDate', '')
+            state = g.get('gameState', '')
+            if state in ('OFF', 'FINAL') and gd < game_date:
+                completed.append(g)
+
+        # Sort descending by date, take most recent n_games
+        completed.sort(key=lambda x: x.get('gameDate', ''), reverse=True)
+        recent = completed[:n_games]
+
+        results = []
+        for g in recent:
+            game_id = g.get('id')
+            home = g.get('homeTeam', {})
+            away = g.get('awayTeam', {})
+
+            # Determine which side is the opponent team
+            if home.get('abbrev') == opponent_abbrev:
+                team_goals = home.get('score', 0)
+                team_shots_from_box = None
+            else:
+                team_goals = away.get('score', 0)
+                team_shots_from_box = None
+
+            # Fetch boxscore for shots (schedule only has scores)
+            box_stats = self.get_team_boxscore_stats(game_id, opponent_abbrev)
+            if box_stats:
+                team_shots = box_stats['team_shots']
+            else:
+                team_shots = 30  # fallback
+
+            results.append({
+                'opp_goals': team_goals if team_goals is not None else 3,
+                'opp_shots': team_shots,
+            })
+
+        return results

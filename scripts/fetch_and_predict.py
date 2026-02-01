@@ -291,7 +291,8 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 is_home=is_home,
                 game_date=date,
                 recent_games=recent_games,
-                betting_line=betting_line
+                betting_line=betting_line,
+                nhl_fetcher=nhl_data
             )
 
             # Generate prediction
