@@ -109,6 +109,10 @@ class UnderdogFetcher:
             if len(player_name.strip()) < 3:
                 continue
 
+            # Skip lines missing either side of the market
+            if line_over is None or line_under is None:
+                continue
+
             # Try to get game time from appearances
             game_time = None
             appearance_stat = over_under.get('appearance_stat', {})
