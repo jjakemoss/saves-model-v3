@@ -322,6 +322,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 ev_opportunities.append({
                     'goalie_name': goalie_name,
                     'team': team,
+                    'opponent': opponent,
                     'book': book,
                     'recommendation': prediction['recommendation'],
                     'line': betting_line,
@@ -356,7 +357,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         ev_opportunities.sort(key=lambda x: x['ev'], reverse=True)
         for opp in ev_opportunities:
             odds_str = f"{int(opp['odds']):+d}" if opp['odds'] else 'N/A'
-            print(f"  {opp['goalie_name']} ({opp['team']}) @ {opp['book']}")
+            print(f"  {opp['goalie_name']} ({opp['team']} vs {opp['opponent']}) @ {opp['book']}")
             print(f"    {opp['recommendation']} {opp['line']} @ {odds_str}")
             print(f"    EV: {opp['ev']:+.1%}, Model Prob: {opp['prob']:.1%}")
     else:
@@ -375,6 +376,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             for _, row in all_rows.iterrows():
                 goalie = row.get('goalie_name', 'Unknown')
                 team = row.get('team_abbrev', '')
+                opponent = row.get('opponent_team', '')
                 book = row.get('book', 'Unknown')
                 line = row.get('betting_line')
                 line_over = row.get('line_over')
@@ -391,7 +393,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 prob_str = f"{prob_over:.1%}" if pd.notna(prob_over) else "N/A"
                 ev_str = f"{ev:+.1%}" if pd.notna(ev) else "N/A"
 
-                print(f"  {goalie:12} ({team:3}) @ {book:10} | Line: {line_str:5} (O:{over_str:5}/U:{under_str:5}) | "
+                print(f"  {goalie:12} ({team:3} vs {opponent:3}) @ {book:10} | Line: {line_str:5} (O:{over_str:5}/U:{under_str:5}) | "
                       f"Pred: {pred_str:5} | P(Over): {prob_str:6} | {rec:6} | EV: {ev_str}")
         else:
             print("  No data found")
