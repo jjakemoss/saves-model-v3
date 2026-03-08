@@ -251,14 +251,22 @@ class PrizePicksFetcher:
 
 
 class TheOddsAPIFetcher:
-    """Fetch goalie saves lines from The-Odds-API (BetOnline)"""
+    """Fetch goalie saves lines from The-Odds-API (BetMGM, Caesars, etc.)"""
 
     BASE_URL = "https://api.the-odds-api.com/v4"
     SPORT = "icehockey_nhl"
     CACHE_DIR = Path("data/cache/odds_api")
     CACHE_TTL_MINUTES = 5  # Cache valid for 5 minutes
 
-    def __init__(self, api_key: str = None):
+    DEFAULT_BOOKMAKERS = ['betmgm', 'caesars']
+
+    BOOKMAKER_DISPLAY_NAMES = {
+        'betmgm': 'BetMGM',
+        'caesars': 'Caesars',
+        'betonlineag': 'BetOnline',
+    }
+
+    def __init__(self, api_key: str = None, bookmakers: list = None):
         """
         Initialize fetcher with API key.
 
@@ -266,6 +274,7 @@ class TheOddsAPIFetcher:
             api_key: The-Odds-API key. If None, reads from .env file or environment.
         """
         self.api_key = api_key or self._load_api_key()
+        self.bookmakers = bookmakers or self.DEFAULT_BOOKMAKERS
         self.session = requests.Session()
 
     def _load_api_key(self) -> str:
@@ -288,7 +297,8 @@ class TheOddsAPIFetcher:
     def _get_cache_path(self, date_str: str) -> Path:
         """Get cache file path for a specific date"""
         self.CACHE_DIR.mkdir(parents=True, exist_ok=True)
-        return self.CACHE_DIR / f"betonline_{date_str}.json"
+        books_key = '_'.join(sorted(self.bookmakers))
+        return self.CACHE_DIR / f"odds_api_{books_key}_{date_str}.json"
 
     def _is_cache_valid(self, cache_path: Path) -> bool:
         """Check if cache file exists and is still valid (not expired)"""
@@ -351,7 +361,8 @@ class TheOddsAPIFetcher:
         if self._is_cache_valid(cache_path):
             cached_lines = self._load_from_cache(cache_path)
             if cached_lines:
-                print(f"    [CACHE] Using cached BetOnline data ({len(cached_lines)} lines)")
+                books_str = '/'.join(self.BOOKMAKER_DISPLAY_NAMES.get(b, b) for b in self.bookmakers)
+                print(f"    [CACHE] Using cached {books_str} data ({len(cached_lines)} lines)")
                 return cached_lines
 
         # Step 1: Get list of events for today
@@ -402,7 +413,7 @@ class TheOddsAPIFetcher:
                         'apiKey': self.api_key,
                         'regions': 'us',
                         'markets': 'player_total_saves',
-                        'bookmakers': 'betonlineag',
+                        'bookmakers': ','.join(self.bookmakers),
                         'oddsFormat': 'american'
                     },
                     timeout=15
@@ -435,8 +446,8 @@ class TheOddsAPIFetcher:
         lines = []
 
         for bookmaker in event_data.get('bookmakers', []):
-            if bookmaker.get('key') != 'betonlineag':
-                continue
+            book_key = bookmaker.get('key', '')
+            book_name = self.BOOKMAKER_DISPLAY_NAMES.get(book_key, book_key)
 
             for market in bookmaker.get('markets', []):
                 if market.get('key') != 'player_total_saves':
@@ -479,7 +490,7 @@ class TheOddsAPIFetcher:
                         continue
 
                     lines.append({
-                        'book': 'BetOnline',
+                        'book': book_name,
                         'player_name': player_name,
                         'line': float(line_data['line']),
                         'line_over': line_data['line_over'],
