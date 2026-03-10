@@ -258,7 +258,7 @@ class TheOddsAPIFetcher:
     CACHE_DIR = Path("data/cache/odds_api")
     CACHE_TTL_MINUTES = 5  # Cache valid for 5 minutes
 
-    DEFAULT_BOOKMAKERS = ['betmgm', 'caesars']
+    DEFAULT_BOOKMAKERS = ['betmgm']
 
     BOOKMAKER_DISPLAY_NAMES = {
         'betmgm': 'BetMGM',
