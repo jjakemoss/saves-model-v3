@@ -369,9 +369,15 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print("-" * 70)
         all_rows = tracker.get_todays_games(date)
         if not all_rows.empty:
+            # Identify the current (latest) row index for each goalie+book combo
+            # Rows are in insertion order, so last occurrence = current line
+            current_idx = set(
+                all_rows.groupby(['goalie_name', 'book']).apply(lambda g: g.index[-1], include_groups=False).values
+            )
+
             # Sort by EV descending
             all_rows = all_rows.sort_values('ev', ascending=False, na_position='last')
-            for _, row in all_rows.iterrows():
+            for idx, row in all_rows.iterrows():
                 goalie = row.get('goalie_name', 'Unknown')
                 team = row.get('team_abbrev', '')
                 opponent = row.get('opponent_team', '')
@@ -383,6 +389,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 prob_over = row.get('prob_over')
                 rec = row.get('recommendation', '')
                 ev = row.get('ev')
+                outdated = idx not in current_idx
 
                 line_str = f"{line:.1f}" if pd.notna(line) else "N/A"
                 over_str = f"{int(line_over):+d}" if pd.notna(line_over) else "N/A"
@@ -390,9 +397,10 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 pred_str = f"{pred_saves:.1f}" if pd.notna(pred_saves) else "N/A"
                 prob_str = f"{prob_over:.1%}" if pd.notna(prob_over) else "N/A"
                 ev_str = f"{ev:+.1%}" if pd.notna(ev) else "N/A"
+                stale_tag = " [OUTDATED]" if outdated else ""
 
                 print(f"  {goalie:12} ({team:3} vs {opponent:3}) @ {book:10} | Line: {line_str:5} (O:{over_str:5}/U:{under_str:5}) | "
-                      f"Pred: {pred_str:5} | P(Over): {prob_str:6} | {rec:6} | EV: {ev_str}")
+                      f"Pred: {pred_str:5} | P(Over): {prob_str:6} | {rec:6} | EV: {ev_str}{stale_tag}")
         else:
             print("  No data found")
         print(f"{'='*70}")
