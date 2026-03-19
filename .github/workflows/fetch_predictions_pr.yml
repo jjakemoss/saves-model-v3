@@ -1,0 +1,51 @@
+name: Fetch Predictions (PR)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch-predictions:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run fetch and predict
+        run: python scripts/fetch_and_predict.py --verbose
+        env:
+          TZ: America/New_York
+          API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
+
+      - name: Get current date
+        id: date
+        run: echo "date=$(TZ=America/New_York date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Create pull request if changes exist
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: predictions/update-${{ github.run_id }}
+          commit-message: "Update betting_tracker with latest predictions"
+          title: "Predictions update - ${{ steps.date.outputs.date }}"
+          body: |
+            Automated predictions update from fetch_and_predict.py
+
+            Triggered by: @${{ github.actor }}
+          base: main
+          add-paths: betting_tracker.xlsx
