@@ -197,93 +197,35 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print(f"\n[WARNING] No lines could be matched to today's games")
         return 0
 
-    # Step 4: Check for duplicates and append new rows
-    print(f"\n[4/6] Adding new lines to tracker...")
+    # Steps 4+5: Predict all matched lines, deduplicate by predictions, append new rows
+    print(f"\n[4/6] Predicting all lines and checking for changes...")
 
-    # Get existing games for this date
     existing_df = tracker.get_todays_games(date)
 
     new_lines = []
-    for line in matched_lines:
-        # Check if this exact combination already exists
-        if not existing_df.empty:
-            # Match on game_id + goalie_name + book + betting_line + odds for exact duplicate
-            existing_mask = (
-                (existing_df['game_id'] == line['game_id']) &
-                (existing_df['goalie_name'].fillna('').astype(str).str.lower() == line['goalie_name'].lower()) &
-                (existing_df['betting_line'] == line['betting_line']) &
-                (existing_df['line_over'] == line['line_over']) &
-                (existing_df['line_under'] == line['line_under'])
-            )
-            # Also check book if column exists
-            if 'book' in existing_df.columns:
-                existing_mask = existing_mask & (existing_df['book'] == line['book'])
-
-            if existing_mask.any():
-                # Exact duplicate (same line AND same odds) - skip
-                continue
-
-        new_lines.append(line)
-
-    if new_lines:
-        new_df = pd.DataFrame(new_lines)
-        tracker.append_games(new_df)
-        print(f"  Added {len(new_lines)} new lines")
-
-        # Show what was added (limit output to avoid spam)
-        shown = 0
-        for line in new_lines:
-            over_str = f"{line['line_over']:+d}" if line['line_over'] else 'N/A'
-            under_str = f"{line['line_under']:+d}" if line['line_under'] else 'N/A'
-            print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
-                  f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
-            shown += 1
-            if shown >= 20 and len(new_lines) > 25:
-                print(f"    ... and {len(new_lines) - shown} more lines")
-                break
-    else:
-        print(f"  No new lines to add (all already in tracker)")
-
-    # Step 5: Generate predictions for pending rows
-    print(f"\n[5/6] Generating predictions...")
-
-    pending = tracker.get_pending_predictions(date)
-
-    if len(pending) == 0:
-        print(f"  No games need predictions")
-    else:
-        print(f"  {len(pending)} games need predictions")
-
     predictions_list = []
     ev_opportunities = []
+    skipped_identical = 0
 
-    for idx, row in pending.iterrows():
-        game_id = row['game_id']
-        goalie_id = row['goalie_id']
-        if pd.notna(goalie_id):
-            goalie_id = int(goalie_id)
-        goalie_name = row['goalie_name']
-        team = row['team_abbrev']
-        opponent = row['opponent_team']
-        is_home = row['is_home']
-        betting_line = row['betting_line']
-        line_over_odds = row.get('line_over')
-        line_under_odds = row.get('line_under')
-        book = row.get('book', 'Unknown')
-
-        # Skip if no goalie info
-        if pd.isna(goalie_id) or pd.isna(betting_line):
-            continue
+    for line in matched_lines:
+        game_id = line['game_id']
+        goalie_id = line['goalie_id']
+        goalie_name = line['goalie_name']
+        team = line['team_abbrev']
+        opponent = line['opponent_team']
+        is_home = line['is_home']
+        betting_line = line['betting_line']
+        line_over_odds = line['line_over']
+        line_under_odds = line['line_under']
+        book = line['book']
 
         try:
-            # Fetch recent games
             recent_games = nhl_data.get_goalie_recent_games(
                 goalie_id,
                 season='20252026',
                 n_games=15
             )
 
-            # Calculate features
             features_df = feature_calc.prepare_prediction_features(
                 goalie_id=goalie_id,
                 team=team,
@@ -295,7 +237,6 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 nhl_fetcher=nhl_data
             )
 
-            # Generate prediction
             prediction = predictor.predict(
                 features_df,
                 betting_line=betting_line,
@@ -303,41 +244,101 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 line_under_odds=line_under_odds if pd.notna(line_under_odds) else None
             )
 
-            # Add tracking info
-            prediction['game_id'] = game_id
-            prediction['goalie_id'] = goalie_id
-            prediction['goalie_name'] = goalie_name
-            prediction['game_date'] = date
-            prediction['book'] = book
-            prediction['betting_line'] = betting_line
-            prediction['line_over'] = line_over_odds
-            prediction['line_under'] = line_under_odds
-
-            predictions_list.append(prediction)
-
-            # Check for EV opportunity
-            ev = prediction.get('recommended_ev')
-            if ev is not None and ev >= 0.12:
-                ev_opportunities.append({
-                    'goalie_name': goalie_name,
-                    'team': team,
-                    'opponent': opponent,
-                    'book': book,
-                    'recommendation': prediction['recommendation'],
-                    'line': betting_line,
-                    'odds': line_over_odds if prediction['recommendation'] == 'OVER' else line_under_odds,
-                    'ev': ev,
-                    'prob': prediction['prob_over'] if prediction['recommendation'] == 'OVER' else (1 - prediction['prob_over']),
-                })
-
         except Exception as e:
             print(f"    [ERROR] {goalie_name}: {e}")
             continue
 
-    # Update tracker with predictions
+        predicted_saves = prediction.get('predicted_saves')
+        prob_over = prediction.get('prob_over')
+        recommendation = prediction.get('recommendation')
+        ev = prediction.get('recommended_ev')
+
+        # Collect EV opportunity regardless of whether this is a new row
+        if ev is not None and ev >= 0.12:
+            ev_opportunities.append({
+                'goalie_name': goalie_name,
+                'team': team,
+                'opponent': opponent,
+                'book': book,
+                'recommendation': recommendation,
+                'line': betting_line,
+                'odds': line_over_odds if recommendation == 'OVER' else line_under_odds,
+                'ev': ev,
+                'prob': prob_over if recommendation == 'OVER' else (1 - prob_over),
+            })
+
+        # Check if an identical row already exists (same odds AND same predictions)
+        is_duplicate = False
+        if not existing_df.empty:
+            mask = (
+                (existing_df['game_id'] == game_id) &
+                (existing_df['goalie_name'].fillna('').astype(str).str.lower() == goalie_name.lower()) &
+                (existing_df['betting_line'] == betting_line) &
+                (existing_df['line_over'] == line_over_odds) &
+                (existing_df['line_under'] == line_under_odds)
+            )
+            if 'book' in existing_df.columns:
+                mask = mask & (existing_df['book'] == book)
+
+            matching = existing_df[mask]
+            if not matching.empty:
+                for _, existing_row in matching.iterrows():
+                    if (existing_row.get('predicted_saves') == predicted_saves and
+                            existing_row.get('prob_over') == prob_over and
+                            existing_row.get('recommendation') == recommendation and
+                            existing_row.get('ev') == ev):
+                        is_duplicate = True
+                        break
+
+        if is_duplicate:
+            skipped_identical += 1
+            continue
+
+        new_lines.append(line)
+
+        pred_entry = dict(prediction)
+        pred_entry.update({
+            'game_id': game_id,
+            'goalie_id': goalie_id,
+            'goalie_name': goalie_name,
+            'game_date': date,
+            'book': book,
+            'betting_line': betting_line,
+            'line_over': line_over_odds,
+            'line_under': line_under_odds,
+        })
+        predictions_list.append(pred_entry)
+
+    if new_lines:
+        new_df = pd.DataFrame(new_lines)
+        tracker.append_games(new_df)
+        print(f"  Added {len(new_lines)} new rows")
+
+        shown = 0
+        for line in new_lines:
+            over_str = f"{line['line_over']:+d}" if line['line_over'] else 'N/A'
+            under_str = f"{line['line_under']:+d}" if line['line_under'] else 'N/A'
+            print(f"    {line['goalie_name']} ({line['team_abbrev']} vs {line['opponent_team']}) - "
+                  f"Line: {line['betting_line']}, Over: {over_str}, Under: {under_str}")
+            shown += 1
+            if shown >= 20 and len(new_lines) > 25:
+                print(f"    ... and {len(new_lines) - shown} more rows")
+                break
+    else:
+        print(f"  No new rows to add (all lines identical to existing predictions)")
+
+    if skipped_identical:
+        print(f"  Skipped {skipped_identical} line(s) with unchanged predictions")
+
+    # Step 5: Write predictions for new rows
+    print(f"\n[5/6] Writing predictions...")
+
     if predictions_list:
         predictions_df = pd.DataFrame(predictions_list)
         tracker.update_predictions(predictions_df)
+        print(f"  Updated {len(predictions_list)} predictions")
+    else:
+        print(f"  No new predictions to write")
 
     # Step 6: Display results
     print(f"\n[6/6] Summary")
@@ -346,8 +347,8 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     print(f"{'='*70}")
     print(f"Lines fetched: {len(all_lines)} (Underdog: {len(underdog_lines)}, BetMGM/Caesars: {len(sportsbook_lines)})")
     print(f"Lines matched: {len(matched_lines)}")
-    print(f"New lines added: {len(new_lines)}")
-    print(f"Predictions generated: {len(predictions_list)}")
+    print(f"New rows added: {len(new_lines)} (skipped {skipped_identical} identical)")
+    print(f"Predictions written: {len(predictions_list)}")
 
     if ev_opportunities:
         print(f"\nEV OPPORTUNITIES (>= 12%):")
