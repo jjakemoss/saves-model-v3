@@ -282,11 +282,17 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
 
             matching = existing_df[mask]
             if not matching.empty:
+                def _r(v):
+                    try:
+                        return round(float(v), 4)
+                    except (TypeError, ValueError):
+                        return None
+
                 for _, existing_row in matching.iterrows():
-                    if (existing_row.get('predicted_saves') == predicted_saves and
-                            existing_row.get('prob_over') == prob_over and
+                    if (_r(existing_row.get('predicted_saves')) == _r(predicted_saves) and
+                            _r(existing_row.get('prob_over')) == _r(prob_over) and
                             existing_row.get('recommendation') == recommendation and
-                            existing_row.get('ev') == ev):
+                            _r(existing_row.get('ev')) == _r(ev)):
                         is_duplicate = True
                         break
 
