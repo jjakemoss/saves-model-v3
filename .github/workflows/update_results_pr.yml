@@ -47,6 +47,4 @@ jobs:
 
             Triggered by: @${{ github.actor }}
           base: main
-          add-paths: |
-            betting_tracker.xlsx
-            data/betting_history/
+          add-paths: betting_tracker.xlsx
