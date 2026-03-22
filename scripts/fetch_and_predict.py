@@ -267,7 +267,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 'prob': prob_over if recommendation == 'OVER' else (1 - prob_over),
             })
 
-        # Check if an identical row already exists (same odds AND same predictions)
+        # Check if a row with the same odds already exists
         is_duplicate = False
         if not existing_df.empty:
             mask = (
@@ -279,22 +279,7 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             )
             if 'book' in existing_df.columns:
                 mask = mask & (existing_df['book'] == book)
-
-            matching = existing_df[mask]
-            if not matching.empty:
-                def _fmt(v, fmt):
-                    try:
-                        return format(float(v), fmt)
-                    except (TypeError, ValueError):
-                        return None
-
-                for _, existing_row in matching.iterrows():
-                    if (_fmt(existing_row.get('predicted_saves'), '.1f') == _fmt(predicted_saves, '.1f') and
-                            _fmt(existing_row.get('prob_over'), '.1%') == _fmt(prob_over, '.1%') and
-                            existing_row.get('recommendation') == recommendation and
-                            _fmt(existing_row.get('ev'), '.1%') == _fmt(ev, '.1%')):
-                        is_duplicate = True
-                        break
+            is_duplicate = mask.any()
 
         if is_duplicate:
             skipped_identical += 1
