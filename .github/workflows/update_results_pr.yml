@@ -1,0 +1,52 @@
+name: Update Betting Results (PR)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-results:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run update betting results
+        run: python scripts/update_betting_results.py
+        env:
+          TZ: America/New_York
+
+      - name: Get yesterday's date
+        id: date
+        run: echo "date=$(TZ=America/New_York date -d 'yesterday' +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+      - name: Create pull request if changes exist
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: results/${{ steps.date.outputs.date }}
+          commit-message: "Update betting results for ${{ steps.date.outputs.date }}"
+          title: "Results update - ${{ steps.date.outputs.date }}"
+          body: |
+            Automated results update from update_betting_results.py
+
+            Triggered by: @${{ github.actor }}
+          base: main
+          add-paths: |
+            betting_tracker.xlsx
+            data/betting_history/
