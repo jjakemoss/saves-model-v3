@@ -2,8 +2,8 @@ api:
   base_url: "https://api-web.nhle.com"
   rate_limit: 10  # requests per second
   timeout: 30
-  retry_attempts: 3
-  retry_delay: 1  # seconds
+  retry_attempts: 5
+  retry_delay: 5  # backoff_factor: waits 5s, 10s, 20s, 40s, 80s between retries
 
 data:
   seasons: ["20222023", "20232024", "20242025"]

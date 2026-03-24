@@ -31,6 +31,7 @@ from betting import (
     TheOddsAPIFetcher,
     extract_last_name,
 )
+from data.api_client import RateLimitError
 
 
 def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=False):
@@ -279,6 +280,12 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 line_under_odds=line_under_odds if pd.notna(line_under_odds) else None
             )
 
+        except RateLimitError as e:
+            # Rate limiting is unrecoverable — fail immediately rather than
+            # writing incomplete predictions to the tracker
+            print(f"\n[FATAL] NHL API rate limit exhausted: {e}")
+            print("[FATAL] Aborting to prevent incomplete data from being written.")
+            sys.exit(1)
         except Exception as e:
             print(f"    [ERROR] {goalie_name}: {e}")
             continue

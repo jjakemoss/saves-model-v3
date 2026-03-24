@@ -26,6 +26,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Cache NHL boxscores
+        uses: actions/cache@v4
+        with:
+          path: data/cache/boxscores
+          key: nhl-boxscores-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            nhl-boxscores-${{ runner.os }}-
+
       - name: Run update betting results
         run: python scripts/update_betting_results.py
         env:

@@ -10,6 +10,11 @@ from urllib3.util.retry import Retry
 import yaml
 
 
+class RateLimitError(Exception):
+    """Raised when the NHL API returns 429 and all retries are exhausted"""
+    pass
+
+
 class NHLAPIClient:
     """
     Wrapper for NHL API endpoints with:
@@ -51,8 +56,10 @@ class NHLAPIClient:
         retry_strategy = Retry(
             total=self.retry_attempts,
             backoff_factor=self.retry_delay,
+            backoff_max=120,
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["GET"]
+            allowed_methods=["GET"],
+            respect_retry_after_header=True,
         )
 
         adapter = HTTPAdapter(max_retries=retry_strategy)
@@ -103,6 +110,20 @@ class NHLAPIClient:
             raise
         except requests.exceptions.HTTPError as e:
             self.logger.error(f"HTTP Error {response.status_code}: GET {endpoint}")
+            if response.status_code == 429:
+                raise RateLimitError(
+                    f"Rate limited by NHL API on {endpoint} — all retries exhausted"
+                ) from e
+            raise
+        except requests.exceptions.RetryError as e:
+            # urllib3 exhausted retries — check if 429 was the cause
+            err_str = str(e).lower()
+            if '429' in err_str or 'too many' in err_str:
+                self.logger.error(f"Rate limit retries exhausted: GET {endpoint}")
+                raise RateLimitError(
+                    f"Rate limited by NHL API on {endpoint} — all retries exhausted"
+                ) from e
+            self.logger.error(f"Request failed: GET {endpoint} - {str(e)}")
             raise
         except requests.exceptions.RequestException as e:
             self.logger.error(f"Request failed: GET {endpoint} - {str(e)}")

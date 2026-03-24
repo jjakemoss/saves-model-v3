@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from betting import NHLBettingData, BettingTracker
 from betting.odds_utils import american_to_decimal
+from data.api_client import RateLimitError
 
 
 def calculate_profit_loss(row):
@@ -202,6 +203,10 @@ def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
             else:
                 print(f"    [OK] Result: {result} ({profit_loss:+.2f} units)")
 
+        except RateLimitError as e:
+            print(f"\n[FATAL] NHL API rate limit exhausted: {e}")
+            print("[FATAL] Aborting to prevent partial results from being written.")
+            sys.exit(1)
         except Exception as e:
             print(f"    [ERROR] Error fetching result: {e}")
             continue

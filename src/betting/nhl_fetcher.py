@@ -2,23 +2,26 @@
 NHL API data fetcher for betting predictions
 """
 import sys
+import json
 from pathlib import Path
 from datetime import datetime, timedelta
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from data.api_client import NHLAPIClient
+from data.api_client import NHLAPIClient, RateLimitError
 
 
 class NHLBettingData:
     """Fetch NHL game data for betting predictions"""
 
-    def __init__(self):
+    def __init__(self, cache_dir='data/cache/boxscores'):
         self.api = NHLAPIClient()
         self._goalie_leaders_cache = None  # Cache for goalie stats leaders
-        self._boxscore_cache = {}  # Cache boxscores by game_id
+        self._boxscore_cache = {}  # In-memory cache for boxscores by game_id
         self._schedule_cache = {}  # Cache team schedules by team_abbrev
+        self._disk_cache_dir = Path(cache_dir)
+        self._disk_cache_dir.mkdir(parents=True, exist_ok=True)
 
     def get_todays_games(self, date=None):
         """
@@ -71,7 +74,7 @@ class NHLBettingData:
         """
         try:
             # Try to get from boxscore (works for completed games and sometimes live)
-            boxscore = self.api.get_boxscore(game_id)
+            boxscore = self._get_boxscore(game_id)
 
             starters = {'home': None, 'away': None}
 
@@ -116,7 +119,7 @@ class NHLBettingData:
         """
         try:
             # Try current game roster first (works if lineups announced)
-            boxscore = self.api.get_boxscore(game_id)
+            boxscore = self._get_boxscore(game_id)
 
             # Check both teams
             for team_key in ['homeTeam', 'awayTeam']:
@@ -193,7 +196,7 @@ class NHLBettingData:
             dict: {goalie_id: saves_count} for all goalies in game
         """
         try:
-            boxscore = self.api.get_boxscore(game_id)
+            boxscore = self._get_boxscore(game_id)
 
             goalie_saves = {}
 
@@ -226,6 +229,8 @@ class NHLBettingData:
 
             return goalie_saves
 
+        except RateLimitError:
+            raise
         except Exception as e:
             print(f"Error fetching game result for {game_id}: {e}")
             return {}
@@ -258,14 +263,37 @@ class NHLBettingData:
             return []
 
     def _get_boxscore(self, game_id):
-        """Fetch boxscore with in-memory caching"""
-        if game_id not in self._boxscore_cache:
-            try:
-                self._boxscore_cache[game_id] = self.api.get_boxscore(game_id)
-            except Exception as e:
-                print(f"Error fetching boxscore for game {game_id}: {e}")
-                return None
-        return self._boxscore_cache[game_id]
+        """Fetch boxscore with disk + in-memory caching"""
+        if game_id in self._boxscore_cache:
+            return self._boxscore_cache[game_id]
+
+        # Check disk cache (only contains completed games)
+        cache_file = self._disk_cache_dir / f'{game_id}.json'
+        if cache_file.exists():
+            with open(cache_file, 'r') as f:
+                boxscore = json.load(f)
+            self._boxscore_cache[game_id] = boxscore
+            return boxscore
+
+        # Fetch from API
+        try:
+            boxscore = self.api.get_boxscore(game_id)
+            self._boxscore_cache[game_id] = boxscore
+
+            # Only write to disk cache for completed games (they never change)
+            game_state = boxscore.get('gameState', '')
+            if game_state in ('OFF', 'FINAL'):
+                with open(cache_file, 'w') as f:
+                    json.dump(boxscore, f)
+
+            return boxscore
+        except RateLimitError:
+            # Don't swallow rate limit errors — let them propagate so the
+            # workflow fails rather than producing incomplete predictions
+            raise
+        except Exception as e:
+            print(f"Error fetching boxscore for game {game_id}: {e}")
+            return None
 
     def _parse_situation_stat(self, stat_str, stat_type):
         """Parse 'saves/shots' format strings from boxscore"""
