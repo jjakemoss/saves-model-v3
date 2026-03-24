@@ -197,8 +197,8 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         print(f"\n[WARNING] No lines could be matched to today's games")
         return 0
 
-    # Steps 4+5: Predict all matched lines, deduplicate by predictions, append new rows
-    print(f"\n[4/6] Predicting all lines and checking for changes...")
+    # Steps 4+5: Check for new lines, predict only new ones, append new rows
+    print(f"\n[4/6] Checking for new lines and generating predictions...")
 
     existing_df = tracker.get_todays_games(date)
 
@@ -218,6 +218,41 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
         line_over_odds = line['line_over']
         line_under_odds = line['line_under']
         book = line['book']
+
+        # Check if a row with the same odds already exists before making any API calls
+        is_duplicate = False
+        if not existing_df.empty:
+            mask = (
+                (existing_df['game_id'] == game_id) &
+                (existing_df['goalie_name'].fillna('').astype(str).str.lower() == goalie_name.lower()) &
+                (existing_df['betting_line'] == betting_line) &
+                (existing_df['line_over'] == line_over_odds) &
+                (existing_df['line_under'] == line_under_odds)
+            )
+            if 'book' in existing_df.columns:
+                mask = mask & (existing_df['book'] == book)
+            is_duplicate = mask.any()
+
+        if is_duplicate:
+            # Use stored prediction for EV display
+            stored = existing_df[mask].iloc[-1]
+            ev = stored.get('ev')
+            if pd.notna(ev) and float(ev) >= 0.12:
+                rec = stored.get('recommendation', '')
+                prob_over = stored.get('prob_over')
+                ev_opportunities.append({
+                    'goalie_name': goalie_name,
+                    'team': team,
+                    'opponent': opponent,
+                    'book': book,
+                    'recommendation': rec,
+                    'line': betting_line,
+                    'odds': line_over_odds if rec == 'OVER' else line_under_odds,
+                    'ev': float(ev),
+                    'prob': float(prob_over) if rec == 'OVER' else (1 - float(prob_over)),
+                })
+            skipped_identical += 1
+            continue
 
         try:
             recent_games = nhl_data.get_goalie_recent_games(
@@ -248,12 +283,10 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
             print(f"    [ERROR] {goalie_name}: {e}")
             continue
 
-        predicted_saves = prediction.get('predicted_saves')
-        prob_over = prediction.get('prob_over')
         recommendation = prediction.get('recommendation')
+        prob_over = prediction.get('prob_over')
         ev = prediction.get('recommended_ev')
 
-        # Collect EV opportunity regardless of whether this is a new row
         if ev is not None and ev >= 0.12:
             ev_opportunities.append({
                 'goalie_name': goalie_name,
@@ -266,31 +299,6 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 'ev': ev,
                 'prob': prob_over if recommendation == 'OVER' else (1 - prob_over),
             })
-
-        # Check if a row with the same odds exists and EV hasn't changed by >= 0.1%
-        is_duplicate = False
-        if not existing_df.empty:
-            mask = (
-                (existing_df['game_id'] == game_id) &
-                (existing_df['goalie_name'].fillna('').astype(str).str.lower() == goalie_name.lower()) &
-                (existing_df['betting_line'] == betting_line) &
-                (existing_df['line_over'] == line_over_odds) &
-                (existing_df['line_under'] == line_under_odds)
-            )
-            if 'book' in existing_df.columns:
-                mask = mask & (existing_df['book'] == book)
-            if mask.any():
-                def _fmt_ev(v):
-                    try:
-                        return format(float(v), '.1%')
-                    except (TypeError, ValueError):
-                        return None
-                existing_evs = existing_df.loc[mask, 'ev']
-                is_duplicate = existing_evs.apply(_fmt_ev).eq(_fmt_ev(ev)).any()
-
-        if is_duplicate:
-            skipped_identical += 1
-            continue
 
         new_lines.append(line)
 

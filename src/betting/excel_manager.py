@@ -235,6 +235,11 @@ class BettingTracker:
                     mask = mask & (df['line_under'] == line_under)
 
                 if mask.any():
+                    # Only update rows that don't already have a prediction
+                    empty_pred = df['predicted_saves'].isna() | (df['predicted_saves'] == '')
+                    mask = mask & empty_pred
+
+                if mask.any():
                     # Update goalie_id if it was looked up
                     if pd.notna(goalie_id):
                         df.loc[mask, 'goalie_id'] = goalie_id
