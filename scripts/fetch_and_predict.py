@@ -34,7 +34,7 @@ from betting import (
 from data.api_client import RateLimitError
 
 
-def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=False):
+def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=False, debug=False):
     """
     Fetch betting lines and generate predictions.
 
@@ -262,6 +262,14 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 n_games=15
             )
 
+            if debug:
+                print(f"\n    [DEBUG] {goalie_name} game log ({len(recent_games)} games):")
+                filtered = [g for g in recent_games if g.get('gameDate', '') != date]
+                for g in filtered:
+                    sa = g.get('shotsAgainst', 0)
+                    ga = g.get('goalsAgainst', 0)
+                    print(f"      {g.get('gameDate')}  game={g.get('gameId')}  SA={sa}  GA={ga}  saves={sa - ga}")
+
             features_df = feature_calc.prepare_prediction_features(
                 goalie_id=goalie_id,
                 team=team,
@@ -272,6 +280,16 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
                 betting_line=betting_line,
                 nhl_fetcher=nhl_data
             )
+
+            if debug:
+                row = features_df.iloc[0]
+                print(f"    [DEBUG] {goalie_name} key features:")
+                for w in [3, 5, 10]:
+                    print(f"      saves_rolling_{w}={row.get(f'saves_rolling_{w}', 'N/A'):.2f}  "
+                          f"shots_rolling_{w}={row.get(f'shots_against_rolling_{w}', 'N/A'):.2f}")
+                for w in [5, 10]:
+                    print(f"      es_saves_rolling_{w}={row.get(f'even_strength_saves_rolling_{w}', 'N/A'):.2f}  "
+                          f"pp_saves_rolling_{w}={row.get(f'power_play_saves_rolling_{w}', 'N/A'):.2f}")
 
             prediction = predictor.predict(
                 features_df,
@@ -465,11 +483,16 @@ def main():
         action='store_true',
         help='Display all rows with predictions for the date'
     )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Print raw game log data and computed features for each goalie'
+    )
 
     args = parser.parse_args()
 
     try:
-        fetch_and_predict(date=args.date, tracker_file=args.tracker, verbose=args.verbose)
+        fetch_and_predict(date=args.date, tracker_file=args.tracker, verbose=args.verbose, debug=args.debug)
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
         sys.exit(1)
