@@ -2,7 +2,6 @@
 NHL API data fetcher for betting predictions
 """
 import sys
-import json
 from pathlib import Path
 from datetime import datetime, timedelta
 
@@ -15,13 +14,11 @@ from data.api_client import NHLAPIClient, RateLimitError
 class NHLBettingData:
     """Fetch NHL game data for betting predictions"""
 
-    def __init__(self, cache_dir='data/cache/boxscores'):
+    def __init__(self):
         self.api = NHLAPIClient()
         self._goalie_leaders_cache = None  # Cache for goalie stats leaders
         self._boxscore_cache = {}  # In-memory cache for boxscores by game_id
         self._schedule_cache = {}  # Cache team schedules by team_abbrev
-        self._disk_cache_dir = Path(cache_dir)
-        self._disk_cache_dir.mkdir(parents=True, exist_ok=True)
 
     def get_todays_games(self, date=None):
         """
@@ -263,33 +260,15 @@ class NHLBettingData:
             return []
 
     def _get_boxscore(self, game_id):
-        """Fetch boxscore with disk + in-memory caching"""
+        """Fetch boxscore with in-memory caching"""
         if game_id in self._boxscore_cache:
             return self._boxscore_cache[game_id]
 
-        # Check disk cache (only contains completed games)
-        cache_file = self._disk_cache_dir / f'{game_id}.json'
-        if cache_file.exists():
-            with open(cache_file, 'r') as f:
-                boxscore = json.load(f)
-            self._boxscore_cache[game_id] = boxscore
-            return boxscore
-
-        # Fetch from API
         try:
             boxscore = self.api.get_boxscore(game_id)
             self._boxscore_cache[game_id] = boxscore
-
-            # Only write to disk cache for completed games (they never change)
-            game_state = boxscore.get('gameState', '')
-            if game_state in ('OFF', 'FINAL'):
-                with open(cache_file, 'w') as f:
-                    json.dump(boxscore, f)
-
             return boxscore
         except RateLimitError:
-            # Don't swallow rate limit errors — let them propagate so the
-            # workflow fails rather than producing incomplete predictions
             raise
         except Exception as e:
             print(f"Error fetching boxscore for game {game_id}: {e}")
