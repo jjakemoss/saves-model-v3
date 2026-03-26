@@ -283,13 +283,10 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
 
             if debug:
                 row = features_df.iloc[0]
-                print(f"    [DEBUG] {goalie_name} key features:")
-                for w in [3, 5, 10]:
-                    print(f"      saves_rolling_{w}={row.get(f'saves_rolling_{w}', 'N/A'):.2f}  "
-                          f"shots_rolling_{w}={row.get(f'shots_against_rolling_{w}', 'N/A'):.2f}")
-                for w in [5, 10]:
-                    print(f"      es_saves_rolling_{w}={row.get(f'even_strength_saves_rolling_{w}', 'N/A'):.2f}  "
-                          f"pp_saves_rolling_{w}={row.get(f'power_play_saves_rolling_{w}', 'N/A'):.2f}")
+                print(f"    [DEBUG] {goalie_name} all features:")
+                for col in features_df.columns:
+                    val = row[col]
+                    print(f"      {col}={val}")
 
             prediction = predictor.predict(
                 features_df,
