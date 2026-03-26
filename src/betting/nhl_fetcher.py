@@ -19,6 +19,7 @@ class NHLBettingData:
         self._goalie_leaders_cache = None  # Cache for goalie stats leaders
         self._boxscore_cache = {}  # In-memory cache for boxscores by game_id
         self._schedule_cache = {}  # Cache team schedules by team_abbrev
+        self._game_log_cache = {}  # In-memory cache for game logs by (goalie_id, season)
 
     def get_todays_games(self, date=None):
         """
@@ -244,20 +245,19 @@ class NHLBettingData:
         Returns:
             list: List of game dicts with goalie stats
         """
-        try:
-            game_log = self.api.get_player_game_log(goalie_id, season, game_type=2)
+        cache_key = (goalie_id, season)
+        if cache_key not in self._game_log_cache:
+            try:
+                game_log = self.api.get_player_game_log(goalie_id, season, game_type=2)
+                games = game_log.get('gameLog', [])
+                self._game_log_cache[cache_key] = sorted(
+                    games, key=lambda x: x.get('gameDate', ''), reverse=True
+                )
+            except Exception as e:
+                print(f"Error fetching recent games for goalie {goalie_id}: {e}")
+                return []
 
-            games = game_log.get('gameLog', [])
-
-            # Sort by date descending and take last n_games
-            games_sorted = sorted(games, key=lambda x: x.get('gameDate', ''), reverse=True)
-            recent_games = games_sorted[:n_games]
-
-            return recent_games
-
-        except Exception as e:
-            print(f"Error fetching recent games for goalie {goalie_id}: {e}")
-            return []
+        return self._game_log_cache[cache_key][:n_games]
 
     def _get_boxscore(self, game_id):
         """Fetch boxscore with in-memory caching"""
