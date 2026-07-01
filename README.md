@@ -8,8 +8,8 @@ An XGBoost classifier that predicts NHL goalie saves over/under betting lines. A
 - **114 predictive features** including rolling averages, situation-specific stats, team/opponent stats, and engineered features
 - **EV-based recommendations** with 12% minimum threshold
 - **Boxscore-powered inference** fetching real situation-specific stats from NHL API
-- **Excel-based betting tracker** for tracking bets and performance
-- **GitHub Actions** for running predictions on-demand
+- **SQLite-backed betting tracker** (`data/betting.db`) as the single source of truth, with a read-only `betting_tracker.xlsx` snapshot regenerated after every write
+- **Phone-first GitHub Actions workflow** for fetching predictions, recording bets, and updating results without needing a PC
 
 ## Quick Start
 
@@ -53,11 +53,11 @@ ALL LINES FOR 2026-02-01:
 | Script | Description |
 |--------|-------------|
 | `fetch_and_predict.py` | Main script - fetches lines from Underdog/BetOnline and generates predictions |
-| `generate_predictions.py` | Generate predictions for rows with lines but no predictions |
+| `record_bet.py` | Record a bet you placed, independent of the model's recommendation |
 | `update_betting_results.py` | Update actual saves and P/L after games complete |
-| `betting_dashboard.py` | Display performance metrics and update Summary sheet |
-| `add_manual_lines.py` | Add blank rows for manual line entry from other sportsbooks |
-| `init_betting_tracker.py` | Create a new betting tracker Excel file |
+| `betting_dashboard.py` | Display performance metrics and refresh the Excel snapshot |
+| `init_betting_tracker.py` | Create a new betting database and its Excel snapshot |
+| `migrate_to_sqlite.py` | One-off: fold an existing xlsx/CSV history into `data/betting.db` |
 | `optimize_features.py` | Test feature engineering configurations |
 | `tune_hyperparameters.py` | Hyperparameter tuning with randomized search |
 | `train_production_multibook.py` | Train model on multi-book training data |
@@ -71,6 +71,10 @@ ALL LINES FOR 2026-02-01:
 # Fetch lines and predictions (run multiple times as lines update)
 python scripts/fetch_and_predict.py --verbose
 
+# Right after placing a bet on your sportsbook app
+python scripts/record_bet.py --goalie_name Shesterkin --book Underdog \
+    --bet_selection OVER --bet_amount 2
+
 # After games complete, update results
 python scripts/update_betting_results.py
 
@@ -78,36 +82,36 @@ python scripts/update_betting_results.py
 python scripts/betting_dashboard.py
 ```
 
-### Adding Lines from Other Sportsbooks
+`data/betting.db` (SQLite) is the source of truth for all of the above. `betting_tracker.xlsx` is a read-only snapshot regenerated after every write -- open it to browse, but never edit it directly; edits won't persist.
 
-```bash
-# Add blank rows for a book (e.g., PrizePicks)
-python scripts/add_manual_lines.py --book "PrizePicks"
+### GitHub Actions (phone-first workflow)
 
-# Fill in lines manually in Excel, then generate predictions
-python scripts/generate_predictions.py
-```
+All three daily steps are available as `workflow_dispatch` Actions, and all three commit directly to `main` (each pushes with a fetch/rebase retry loop, so a rare race between two runs fails loudly and cleanly instead of overwriting anything -- see the "Concurrent writes" note below). The full loop -- fetch, bet, record, check results -- works from a phone without ever needing a PC:
 
-### GitHub Actions
+1. **Fetch Predictions** -- fetches lines, runs predictions, commits directly to `main`
+2. **Record Bet** -- fill in goalie/book/side/amount, commits directly to `main`
+3. **Update Betting Results** -- fetches completed game results, commits directly to `main`
 
-Run predictions remotely via GitHub Actions:
-1. Go to Actions tab
-2. Select "Fetch Predictions" workflow
-3. Click "Run workflow"
+**Concurrent writes:** `data/betting.db` is a single SQLite file, so git can't merge two commits that both touch it -- a genuine collision (e.g. `record_bet` and `fetch_predictions` racing within the same few seconds) makes the losing workflow run fail with a clear "rebase conflict" error rather than silently overwriting data. Just re-run the failed workflow; it'll start from the now-current `main` and won't conflict.
+
+See [docs/WORKFLOW_MODERNIZATION_PROPOSAL.md](docs/WORKFLOW_MODERNIZATION_PROPOSAL.md) for the full design.
 
 ## Project Structure
 
 ```
 saves-model-v3/
 ├── .github/workflows/
-│   └── fetch_predictions.yml        # GitHub Action for predictions
+│   ├── fetch_predictions.yml        # Fetch lines + predictions, direct commit
+│   ├── record_bet.yml               # Record a placed bet, direct commit
+│   └── update_results.yml           # Update completed game results, direct commit
 ├── models/trained/
 │   └── tuned_v1_20260201_155204/    # Active production model (114 features)
 ├── src/
 │   ├── betting/                     # Betting module
 │   │   ├── predictor.py            # XGBoost prediction interface
 │   │   ├── feature_calculator.py   # Real-time feature calculation (114 features)
-│   │   ├── excel_manager.py        # Excel tracker management
+│   │   ├── db_manager.py           # SQLite read/write layer (source of truth)
+│   │   ├── excel_export.py         # Regenerates the read-only xlsx snapshot
 │   │   ├── nhl_fetcher.py          # NHL API data fetching + boxscore caching
 │   │   ├── odds_fetcher.py         # Underdog + BetOnline line fetching
 │   │   └── odds_utils.py           # EV calculation utilities
@@ -119,9 +123,10 @@ saves-model-v3/
 │       └── classifier_trainer.py   # XGBoost training wrapper
 ├── scripts/                         # CLI scripts (see table above)
 ├── data/
+│   ├── betting.db                   # Betting tracker database (source of truth)
 │   └── processed/
 │       └── multibook_classification_training_data.parquet  # Training data
-├── betting_tracker.xlsx             # Excel tracker (created by init script)
+├── betting_tracker.xlsx             # Read-only Excel snapshot (do not hand-edit)
 └── requirements.txt
 ```
 
@@ -187,16 +192,19 @@ A bet is recommended when EV >= 12%.
 
 ## Betting Tracker
 
-The Excel tracker (`betting_tracker.xlsx`) contains:
+`data/betting.db` (SQLite, single `bets` table) is the source of truth for every line, prediction, bet, and result. It's committed to git, so full history lives in `git log`. Nothing hand-edits it directly -- all writes go through `fetch_and_predict.py`, `record_bet.py`, or `update_betting_results.py`.
+
+`betting_tracker.xlsx` is a read-only snapshot regenerated from the database after every write, for browsing:
 
 - **Summary** - Overall performance metrics
-- **Settings** - Configuration
-- **Date sheets** - One sheet per date with all lines and predictions
+- **Settings** - Configuration reference
+- **Date sheets** - One sheet per date with all lines, predictions, bets, and results
 
 Columns tracked:
 - Game info (date, teams, goalie)
 - Book and line info (book, line, over/under odds)
 - Predictions (predicted saves, prob_over, recommendation, EV)
+- Your bet (bet_amount, bet_selection, bet_placed_at, notes) -- independent of the model's recommendation
 - Results (actual saves, result, profit/loss)
 
 ## Configuration

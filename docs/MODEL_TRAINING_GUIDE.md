@@ -580,10 +580,13 @@ When you have more data:
 ```
 saves-model-v3/
 ├── .github/workflows/
-│   └── fetch_predictions.yml       # GitHub Action for predictions
+│   ├── fetch_predictions.yml       # Fetch lines + predictions, direct commit
+│   ├── record_bet.yml              # Record a placed bet, direct commit
+│   └── update_results.yml          # Update completed game results, direct commit
 ├── config/
 │   └── config.yaml                 # Configuration settings
 ├── data/
+│   ├── betting.db                  # Betting tracker database (source of truth)
 │   ├── raw/
 │   │   ├── boxscores/              # Raw game data
 │   │   └── betting_lines/
@@ -608,10 +611,10 @@ saves-model-v3/
 │   ├── optimize_features.py
 │   ├── tune_hyperparameters.py
 │   ├── fetch_and_predict.py
-│   ├── generate_predictions.py
+│   ├── record_bet.py
 │   ├── update_betting_results.py
 │   ├── betting_dashboard.py
-│   ├── add_manual_lines.py
+│   ├── migrate_to_sqlite.py
 │   └── init_betting_tracker.py
 ├── src/
 │   ├── betting/
@@ -619,7 +622,8 @@ saves-model-v3/
 │   │   ├── feature_calculator.py   # Real-time 114-feature computation
 │   │   ├── nhl_fetcher.py          # NHL API + boxscore caching
 │   │   ├── odds_fetcher.py         # Underdog + BetOnline fetching
-│   │   ├── excel_manager.py        # Excel tracker I/O
+│   │   ├── db_manager.py           # SQLite read/write layer (source of truth)
+│   │   ├── excel_export.py         # Regenerates the read-only xlsx snapshot
 │   │   └── odds_utils.py           # EV calculation
 │   ├── data/
 │   │   ├── api_client.py           # NHL API client
@@ -630,5 +634,5 @@ saves-model-v3/
 │   │   └── team_rolling_features.py # Team-level rolling stats
 │   └── models/
 │       └── classifier_trainer.py   # XGBoost training + evaluation
-└── betting_tracker.xlsx            # Excel tracker for daily bets
+└── betting_tracker.xlsx            # Read-only Excel snapshot (do not hand-edit)
 ```

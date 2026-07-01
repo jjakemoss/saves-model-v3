@@ -2,11 +2,11 @@
 Update betting tracker with yesterday's game results
 
 This script:
-1. Reads betting_tracker.xlsx
+1. Reads data/betting.db
 2. Finds games needing results (yesterday's games with empty actual_saves)
 3. Fetches completed game boxscores
 4. Updates actual_saves, result (WIN/LOSS/PUSH/NO BET), profit_loss
-5. Creates daily backup to data/betting_history/
+5. Regenerates the betting_tracker.xlsx snapshot
 
 Usage:
     python scripts/update_betting_results.py [--date YYYY-MM-DD]
@@ -20,7 +20,9 @@ import argparse
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from betting import NHLBettingData, BettingTracker
+from betting import NHLBettingData, BettingDB, export_to_excel
+from betting.db_manager import DEFAULT_DB_PATH
+from betting.excel_export import DEFAULT_XLSX_PATH
 from betting.odds_utils import american_to_decimal
 from data.api_client import RateLimitError
 
@@ -110,20 +112,21 @@ def determine_result(row):
         return 'PUSH'
 
 
-def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
+def update_betting_results(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_XLSX_PATH):
     """
     Update results for yesterday's games
 
     Args:
         date: Date string (YYYY-MM-DD). If None, uses yesterday
-        tracker_file: Path to betting tracker Excel file
+        db_path: Path to the betting database (source of truth)
+        tracker_file: Path to the generated Excel snapshot
 
     Returns:
         int: Number of results updated
     """
     # Initialize clients
     nhl_data = NHLBettingData()
-    tracker = BettingTracker(tracker_file)
+    tracker = BettingDB(db_path)
 
     # Get date (default to yesterday)
     if date is None:
@@ -150,7 +153,8 @@ def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
     for idx, row in pending.iterrows():
         game_id = row['game_id']
         goalie_id = row['goalie_id']
-        # Convert goalie_id to int if it's a float (pandas reads Excel as float)
+        # Convert goalie_id to int if it's a float (pandas uses float64 for a
+        # nullable integer column when any row has NULL)
         if pd.notna(goalie_id):
             goalie_id = int(goalie_id)
         goalie_name = row['goalie_name']
@@ -221,8 +225,9 @@ def update_betting_results(date=None, tracker_file='betting_tracker.xlsx'):
     # Update tracker
     tracker.update_results(results_df)
 
-    # Create backup
-    backup_file = tracker.backup_to_csv()
+    # Regenerate the Excel snapshot so it reflects the latest database state
+    export_to_excel(db_path, tracker_file)
+    print(f"[OK] Refreshed Excel snapshot: {tracker_file}")
 
     print(f"\n{'='*60}")
     print(f"[OK] Updated {len(results_df)} game results")
@@ -256,16 +261,22 @@ def main():
         help='Date to update results for (YYYY-MM-DD). Default: yesterday'
     )
     parser.add_argument(
+        '--db',
+        type=str,
+        default=DEFAULT_DB_PATH,
+        help='Path to betting database. Default: data/betting.db'
+    )
+    parser.add_argument(
         '--tracker',
         type=str,
-        default='betting_tracker.xlsx',
-        help='Path to betting tracker file. Default: betting_tracker.xlsx'
+        default=DEFAULT_XLSX_PATH,
+        help='Path to betting tracker Excel snapshot. Default: betting_tracker.xlsx'
     )
 
     args = parser.parse_args()
 
     try:
-        update_betting_results(date=args.date, tracker_file=args.tracker)
+        update_betting_results(date=args.date, db_path=args.db, tracker_file=args.tracker)
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
         sys.exit(1)

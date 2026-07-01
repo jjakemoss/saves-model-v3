@@ -1,6 +1,5 @@
 data/raw/
 data/cache/
-data/betting_history/
 logs/
 models/archive/
 *.pyc
@@ -8,6 +7,7 @@ __pycache__/
 .ipynb_checkpoints/
 .env
 *.db
+!data/betting.db
 *.sqlite
 .DS_Store
 *.pkl

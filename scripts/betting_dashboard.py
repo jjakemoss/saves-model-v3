@@ -2,10 +2,11 @@
 Display betting performance dashboard
 
 This script:
-1. Reads betting_tracker.xlsx
+1. Reads data/betting.db
 2. Calculates performance metrics
 3. Displays formatted report to console
-4. Optionally saves report to file
+4. Regenerates the Excel snapshot (including the Summary sheet)
+5. Optionally saves report to file
 
 Usage:
     python scripts/betting_dashboard.py [--save]
@@ -13,89 +14,36 @@ Usage:
 import sys
 from pathlib import Path
 from datetime import datetime
-import pandas as pd
 import argparse
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from betting import BettingTracker, calculate_performance_metrics, format_metrics_report
+from betting import BettingDB, calculate_performance_metrics, format_metrics_report, export_to_excel
+from betting.db_manager import DEFAULT_DB_PATH
+from betting.excel_export import DEFAULT_XLSX_PATH
 
 
-def update_summary_sheet(tracker_file, metrics):
-    """
-    Update Summary sheet in Excel with calculated metrics
-
-    Args:
-        tracker_file: Path to betting tracker Excel file
-        metrics: dict from calculate_performance_metrics()
-    """
-    import openpyxl
-    from openpyxl.styles import Font
-
-    wb = openpyxl.load_workbook(tracker_file)
-    summary = wb['Summary']
-
-    # Update timestamp
-    summary['B3'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    # Update Overall Performance section (rows 7-13)
-    overall = metrics['overall']
-    summary['B7'] = overall['total_bets']
-    summary['B8'] = overall['wins']
-    summary['B9'] = overall['losses']
-    summary['B10'] = overall['pushes']
-    summary['B11'] = f"{overall['win_rate']:.1%}"
-    summary['B12'] = f"{overall['total_profit_loss']:+.2f}"
-    summary['B13'] = f"{overall['roi']:+.2f}%"
-
-    # Update Performance by Confidence section (rows 18-23)
-    confidence_buckets = ['50-55%', '55-60%', '60-65%', '65-70%', '70-75%', '75%+']
-    for idx, bucket in enumerate(confidence_buckets, 18):
-        conf_metrics = metrics['by_confidence'][bucket]
-        summary[f'B{idx}'] = conf_metrics['total_bets']
-        summary[f'C{idx}'] = conf_metrics['wins']
-        summary[f'D{idx}'] = f"{conf_metrics['win_rate']:.1%}" if conf_metrics['total_bets'] > 0 else "0.0%"
-        summary[f'E{idx}'] = f"{conf_metrics['roi']:+.2f}%" if conf_metrics['total_bets'] > 0 else "0.0%"
-
-    # Save workbook
-    wb.save(tracker_file)
-    wb.close()
-
-
-def show_dashboard(tracker_file='betting_tracker.xlsx', save_report=False):
+def show_dashboard(db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_XLSX_PATH, save_report=False):
     """
     Display betting performance dashboard
 
     Args:
-        tracker_file: Path to betting tracker Excel file
+        db_path: Path to the betting database
+        tracker_file: Path to the generated Excel snapshot
         save_report: If True, save report to file
 
     Returns:
         None
     """
-    # Initialize tracker
-    tracker = BettingTracker(tracker_file)
+    tracker = BettingDB(db_path)
 
     print("\nLoading betting data...")
+    bets_df = tracker.get_all_bets()
 
-    # Read all date sheets and combine
-    import openpyxl
-    wb = openpyxl.load_workbook(tracker_file, read_only=True)
-    date_sheets = [s for s in wb.sheetnames if s not in ['Summary', 'Settings']]
-    wb.close()
-
-    if len(date_sheets) == 0:
-        print("[WARNING] No date sheets found - no betting data available yet")
+    if len(bets_df) == 0:
+        print("[WARNING] No betting data available yet")
         return
-
-    # Combine all date sheets
-    all_data = []
-    for sheet_name in date_sheets:
-        df = pd.read_excel(tracker_file, sheet_name=sheet_name)
-        all_data.append(df)
-
-    bets_df = pd.concat(all_data, ignore_index=True)
 
     # Calculate metrics
     print("Calculating performance metrics...\n")
@@ -107,10 +55,10 @@ def show_dashboard(tracker_file='betting_tracker.xlsx', save_report=False):
     # Display to console
     print(report)
 
-    # Update Summary sheet in Excel
-    print("\nUpdating Summary sheet in Excel...")
-    update_summary_sheet(tracker_file, metrics)
-    print("[OK] Summary sheet updated")
+    # Regenerate Excel snapshot (includes an updated Summary sheet)
+    print("\nRegenerating Excel snapshot...")
+    export_to_excel(db_path, tracker_file)
+    print(f"[OK] Excel snapshot updated: {tracker_file}")
 
     # Save to file if requested
     if save_report:
@@ -220,10 +168,16 @@ def main():
         description='Display betting performance dashboard'
     )
     parser.add_argument(
+        '--db',
+        type=str,
+        default=DEFAULT_DB_PATH,
+        help='Path to betting database. Default: data/betting.db'
+    )
+    parser.add_argument(
         '--tracker',
         type=str,
-        default='betting_tracker.xlsx',
-        help='Path to betting tracker file. Default: betting_tracker.xlsx'
+        default=DEFAULT_XLSX_PATH,
+        help='Path to betting tracker Excel snapshot. Default: betting_tracker.xlsx'
     )
     parser.add_argument(
         '--save',
@@ -234,7 +188,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        show_dashboard(tracker_file=args.tracker, save_report=args.save)
+        show_dashboard(db_path=args.db, tracker_file=args.tracker, save_report=args.save)
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
         sys.exit(1)

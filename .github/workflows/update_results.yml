@@ -1,4 +1,4 @@
-name: Fetch Predictions
+name: Update Betting Results
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: write
 
 jobs:
-  fetch-predictions:
+  update-results:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,11 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run fetch and predict
-        run: python scripts/fetch_and_predict.py --verbose
+      - name: Run update betting results
+        run: python scripts/update_betting_results.py
         env:
           TZ: America/New_York
-          API_KEY: ${{ secrets.THE_ODDS_API_KEY }}
 
       - name: Commit and push
         run: |
@@ -42,10 +41,10 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Fetch predictions - $(TZ=America/New_York date +'%Y-%m-%d %H:%M %Z')"
+          git commit -m "Update betting results - $(TZ=America/New_York date -d 'yesterday' +'%Y-%m-%d')"
 
           # Direct push to main -- retry a few times in case another workflow
-          # (record_bet, update_results, or another fetch_predictions run)
+          # (record_bet, fetch_predictions, or another update_results run)
           # pushed in between our checkout and our push.
           for attempt in 1 2 3 4 5; do
             if git push origin HEAD:main; then

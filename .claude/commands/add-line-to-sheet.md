@@ -28,13 +28,14 @@ $ARGUMENTS
 
 2. Write and run a Python script (using the `.venv` interpreter at `.venv/Scripts/python.exe`) that:
    - Adds `src` to `sys.path`
-   - Imports `NHLBettingData` and `BettingTracker` from `betting`
+   - Imports `NHLBettingData`, `BettingDB`, and `export_to_excel` from `betting`
    - Gets today's date with `datetime.now().strftime('%Y-%m-%d')`
    - Fetches today's schedule via `nhl_data.get_todays_games(date)` to resolve `game_id` and `is_home` for each parsed team/opponent pair
    - Looks up each `goalie_id` via `nhl_data.get_goalie_id_by_name(goalie_name)`
-   - Checks for duplicates against the existing sheet before inserting: skip a row if a row already exists with the same `game_id` + `goalie_name` (case-insensitive) + `book` + `betting_line`
+   - Opens the database with `BettingDB('data/betting.db')` -- duplicate detection is handled automatically by the database's UNIQUE constraint (same `game_id` + `goalie_name` + `book` + `betting_line` + `line_over` + `line_under`), so no manual pre-check is needed
    - Builds a `pd.DataFrame` of new rows with all columns populated including prediction columns: `predicted_saves`, `prob_over`, `recommendation`, `ev`; leave `confidence_pct`, `confidence_bucket`, `bet_amount`, `bet_selection`, `actual_saves`, `result`, `profit_loss`, `notes` empty (or `NONE` for `bet_selection`)
-   - Calls `tracker.append_games(df)` — note this method only writes the base game columns, so after appending you must also call `tracker.update_predictions(predictions_df)` with a DataFrame containing `game_id`, `game_date`, `goalie_id`, `goalie_name`, `book`, `betting_line`, `line_over`, `line_under`, `predicted_saves`, `prob_over`, `recommendation`, `recommended_ev` to fill in the prediction columns on the newly written rows
+   - Calls `tracker.append_games(df)` — this only writes the base game columns and silently skips any row that already exists, so after appending you must also call `tracker.update_predictions(predictions_df)` with a DataFrame containing `game_id`, `game_date`, `goalie_id`, `goalie_name`, `book`, `betting_line`, `line_over`, `line_under`, `predicted_saves`, `prob_over`, `recommendation`, `recommended_ev` to fill in the prediction columns on the newly written rows
+   - Calls `export_to_excel('data/betting.db', 'betting_tracker.xlsx')` at the end so the read-only Excel snapshot reflects the new rows -- without this the database and the spreadsheet would drift out of sync
 
 3. Print what was added and what was skipped as duplicates.
 

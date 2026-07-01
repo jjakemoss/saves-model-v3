@@ -23,24 +23,28 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from betting import (
     NHLBettingData,
-    BettingTracker,
+    BettingDB,
     BettingFeatureCalculator,
     BettingPredictor,
     UnderdogFetcher,
     PrizePicksFetcher,
     TheOddsAPIFetcher,
+    export_to_excel,
     extract_last_name,
 )
+from betting.db_manager import DEFAULT_DB_PATH
+from betting.excel_export import DEFAULT_XLSX_PATH
 from data.api_client import RateLimitError
 
 
-def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=False):
+def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_XLSX_PATH, verbose=False):
     """
     Fetch betting lines and generate predictions.
 
     Args:
         date: Date string (YYYY-MM-DD). If None, uses today
-        tracker_file: Path to betting tracker Excel file
+        db_path: Path to the betting database (source of truth)
+        tracker_file: Path to the generated Excel snapshot
         verbose: If True, display all rows with predictions at the end
 
     Returns:
@@ -60,15 +64,14 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     # prizepicks = PrizePicksFetcher()
     sportsbook = TheOddsAPIFetcher()
 
-    # Check if tracker exists, create if needed
-    tracker_path = Path(tracker_file)
-    if not tracker_path.exists():
-        print(f"\n[INFO] Tracker not found, creating new one...")
-        # Import and run init
+    # Check if database exists, create if needed
+    db_file = Path(db_path)
+    if not db_file.exists():
+        print(f"\n[INFO] Database not found, creating new one...")
         from init_betting_tracker import create_betting_tracker
-        create_betting_tracker()
+        create_betting_tracker(db_path=db_path, xlsx_path=tracker_file)
 
-    tracker = BettingTracker(tracker_file)
+    tracker = BettingDB(db_path)
     feature_calc = BettingFeatureCalculator()
     predictor = BettingPredictor()
 
@@ -353,6 +356,11 @@ def fetch_and_predict(date=None, tracker_file='betting_tracker.xlsx', verbose=Fa
     else:
         print(f"  No new predictions to write")
 
+    # Regenerate the Excel snapshot so it reflects the latest database state
+    if new_lines or predictions_list:
+        export_to_excel(db_path, tracker_file)
+        print(f"  Refreshed Excel snapshot: {tracker_file}")
+
     # Step 6: Display results
     print(f"\n[6/6] Summary")
     print(f"{'='*70}")
@@ -455,10 +463,16 @@ def main():
         help='Date to fetch lines for (YYYY-MM-DD). Default: today'
     )
     parser.add_argument(
+        '--db',
+        type=str,
+        default=DEFAULT_DB_PATH,
+        help='Path to betting database. Default: data/betting.db'
+    )
+    parser.add_argument(
         '--tracker',
         type=str,
-        default='betting_tracker.xlsx',
-        help='Path to betting tracker file. Default: betting_tracker.xlsx'
+        default=DEFAULT_XLSX_PATH,
+        help='Path to betting tracker Excel snapshot. Default: betting_tracker.xlsx'
     )
     parser.add_argument(
         '-v', '--verbose',
@@ -468,7 +482,7 @@ def main():
     args = parser.parse_args()
 
     try:
-        fetch_and_predict(date=args.date, tracker_file=args.tracker, verbose=args.verbose)
+        fetch_and_predict(date=args.date, db_path=args.db, tracker_file=args.tracker, verbose=args.verbose)
     except FileNotFoundError as e:
         print(f"\n[ERROR] {e}")
         sys.exit(1)

@@ -1,0 +1,105 @@
+name: Record Bet
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Game date (YYYY-MM-DD). Leave blank for today.'
+        required: false
+      goalie_name:
+        description: "Goalie's last name"
+        required: true
+      book:
+        description: 'Sportsbook'
+        required: true
+        type: choice
+        options:
+          - Underdog
+          - BetOnline
+          - BetMGM
+          - Caesars
+          - PrizePicks
+          - Other
+      bet_selection:
+        description: 'Which side you bet'
+        required: true
+        type: choice
+        options:
+          - OVER
+          - UNDER
+      bet_amount:
+        description: 'Units wagered (e.g. 1, 2.5)'
+        required: true
+      notes:
+        description: 'Optional notes'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  record-bet:
+    runs-on: ubuntu-latest
+    env:
+      BET_DATE: ${{ inputs.date }}
+      GOALIE_NAME: ${{ inputs.goalie_name }}
+      BOOK: ${{ inputs.book }}
+      BET_SELECTION: ${{ inputs.bet_selection }}
+      BET_AMOUNT: ${{ inputs.bet_amount }}
+      NOTES: ${{ inputs.notes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Record bet
+        run: |
+          ARGS=(--goalie_name "$GOALIE_NAME" --book "$BOOK" --bet_selection "$BET_SELECTION" --bet_amount "$BET_AMOUNT")
+          if [ -n "$BET_DATE" ]; then ARGS+=(--date "$BET_DATE"); fi
+          if [ -n "$NOTES" ]; then ARGS+=(--notes "$NOTES"); fi
+          python scripts/record_bet.py "${ARGS[@]}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/betting.db betting_tracker.xlsx
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Record bet: $GOALIE_NAME ($BOOK) - $BET_SELECTION ${BET_AMOUNT}u"
+
+          # Direct push to main -- retry a few times in case another workflow
+          # (fetch_predictions, update_results, or another record_bet run)
+          # pushed in between our checkout and our push.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $attempt), rebasing onto latest main..."
+            git fetch origin main
+
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::error::Rebase conflict against main (likely a concurrent update to data/betting.db). Re-run this workflow."
+              exit 1
+            fi
+          done
+
+          echo "::error::Failed to push after 5 attempts"
+          exit 1

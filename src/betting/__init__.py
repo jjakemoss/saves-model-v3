@@ -3,7 +3,8 @@ Betting module for NHL goalie saves predictions and tracking
 """
 from .feature_calculator import BettingFeatureCalculator
 from .predictor import BettingPredictor
-from .excel_manager import BettingTracker
+from .db_manager import BettingDB, init_db
+from .excel_export import export_to_excel
 from .nhl_fetcher import NHLBettingData
 from .metrics import calculate_performance_metrics, format_metrics_report
 from .odds_utils import (
@@ -18,7 +19,9 @@ from .odds_fetcher import UnderdogFetcher, PrizePicksFetcher, TheOddsAPIFetcher,
 __all__ = [
     'BettingFeatureCalculator',
     'BettingPredictor',
-    'BettingTracker',
+    'BettingDB',
+    'init_db',
+    'export_to_excel',
     'NHLBettingData',
     'calculate_performance_metrics',
     'format_metrics_report',
