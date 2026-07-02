@@ -11,7 +11,7 @@ import logging
 # Add src to path (needed for odds_utils)
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from betting.odds_utils import american_to_decimal
+from betting.odds_utils import american_to_decimal, american_to_implied_prob, decimal_to_american
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -115,17 +115,31 @@ def load_betting_lines_from_tracker(min_date, db_path='data/betting.db'):
 
     bets['goalie_id'] = bets['goalie_id'].astype(int)
 
+    # American odds cannot be averaged directly -- they're on a non-linear
+    # scale, and averaging e.g. +102 and -103 (two ~50% quotes) yields -0.5,
+    # which isn't even a valid American odds value. Average in implied-
+    # probability space instead, then convert the averaged probability back
+    # to decimal/American odds for storage.
+    bets['implied_prob_over'] = bets['line_over'].apply(american_to_implied_prob)
+    bets['implied_prob_under'] = bets['line_under'].apply(american_to_implied_prob)
+
     # Average across books to get one consensus line per (game_id, goalie_id)
     grouped = bets.groupby(['game_id', 'goalie_id']).agg(
         betting_line=('betting_line', 'mean'),
-        odds_over_american=('line_over', 'mean'),
-        odds_under_american=('line_under', 'mean'),
+        implied_prob_over=('implied_prob_over', 'mean'),
+        implied_prob_under=('implied_prob_under', 'mean'),
         num_books=('betting_line', 'count'),
         game_date=('game_date', 'first'),
     ).reset_index()
 
-    grouped['odds_over_decimal'] = grouped['odds_over_american'].apply(american_to_decimal)
-    grouped['odds_under_decimal'] = grouped['odds_under_american'].apply(american_to_decimal)
+    grouped['odds_over_decimal'] = 1.0 / grouped['implied_prob_over']
+    grouped['odds_under_decimal'] = 1.0 / grouped['implied_prob_under']
+    grouped['odds_over_american'] = grouped['odds_over_decimal'].apply(
+        lambda d: decimal_to_american(d) if pd.notna(d) else None
+    )
+    grouped['odds_under_american'] = grouped['odds_under_decimal'].apply(
+        lambda d: decimal_to_american(d) if pd.notna(d) else None
+    )
 
     logger.info(
         f"Loaded {len(grouped)} goalie betting lines from {bets['game_id'].nunique()} games "
