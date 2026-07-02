@@ -13,6 +13,7 @@ Usage:
     python scripts/build_multibook_training_data.py
 """
 import sys
+import sqlite3
 from pathlib import Path
 import json
 import pandas as pd
@@ -20,7 +21,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from betting.odds_utils import decimal_to_american
+from betting.odds_utils import decimal_to_american, american_to_decimal
 from features.feature_engineering import compute_line_relative_features
 
 # Full NHL team name -> abbreviation mapping
@@ -163,6 +164,65 @@ def parse_odds_cache(cache_dir):
     return records
 
 
+def parse_betting_db(db_path='data/betting.db', min_date=None):
+    """
+    Parse per-bookmaker odds from the live betting tracker DB (data/betting.db)
+    for dates not covered by the raw Odds-API cache.
+
+    Returns records in the same shape as parse_odds_cache(), one record per
+    (game, goalie, book) row -- i.e. one bookmaker observation each, matching
+    the multi-book granularity of the raw cache path.
+    """
+    db_file = Path(db_path)
+    if not db_file.exists():
+        print(f"  No betting tracker DB found at {db_path}, skipping")
+        return []
+
+    conn = sqlite3.connect(db_file)
+    try:
+        query = """
+            SELECT game_date, goalie_name, team_abbrev, opponent_team, is_home,
+                   book, betting_line, line_over, line_under
+            FROM bets
+            WHERE goalie_id IS NOT NULL
+              AND betting_line IS NOT NULL
+              AND line_over IS NOT NULL
+              AND line_under IS NOT NULL
+        """
+        params = ()
+        if min_date is not None:
+            query += " AND game_date >= ?"
+            params = (min_date,)
+        bets = pd.read_sql_query(query, conn, params=params)
+    finally:
+        conn.close()
+
+    print(f"  Found {len(bets)} tracker rows (game_date >= {min_date})")
+
+    records = []
+    for _, row in bets.iterrows():
+        is_home = bool(row['is_home'])
+        home_abbrev = row['team_abbrev'] if is_home else row['opponent_team']
+        away_abbrev = row['opponent_team'] if is_home else row['team_abbrev']
+
+        records.append({
+            'game_date': row['game_date'],
+            'home_team_abbrev': home_abbrev,
+            'away_team_abbrev': away_abbrev,
+            'book_key': str(row['book']).lower(),
+            'goalie_name': row['goalie_name'],
+            'goalie_last_name': extract_last_name(str(row['goalie_name'])),
+            'betting_line': row['betting_line'],
+            'odds_over_decimal': american_to_decimal(row['line_over']),
+            'odds_under_decimal': american_to_decimal(row['line_under']),
+            'odds_over_american': row['line_over'],
+            'odds_under_american': row['line_under'],
+        })
+
+    print(f"  Extracted {len(records)} bookmaker-goalie line records from betting tracker")
+    return records
+
+
 def build_multibook_data(
     base_features_path='data/processed/classification_training_data.parquet',
     odds_cache_dir='data/raw/betting_lines/cache',
@@ -200,6 +260,18 @@ def build_multibook_data(
     if len(odds_df) == 0:
         print("[ERROR] No odds records found")
         return
+
+    # Supplement with the live betting tracker DB for dates the raw cache
+    # doesn't cover (the cache is a one-time historical backfill and stops
+    # being updated once the live daily workflow takes over)
+    print("\n[3b/5] Parsing supplemental odds from betting tracker...")
+    cache_max_date = odds_df['game_date'].max()
+    tracker_min_date = (pd.to_datetime(cache_max_date) + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
+    db_records = parse_betting_db(min_date=tracker_min_date)
+    if db_records:
+        db_odds_df = pd.DataFrame(db_records)
+        odds_df = pd.concat([odds_df, db_odds_df], ignore_index=True)
+        print(f"  Combined odds records: {len(odds_records)} from cache + {len(db_records)} from tracker = {len(odds_df)} total")
 
     # Deduplicate odds: keep one record per (game_date, book, goalie_name, line)
     # Same book might appear in multiple cache files for the same game

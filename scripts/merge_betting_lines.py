@@ -1,18 +1,25 @@
 """
 Merge betting lines with training data and create classification dataset
 """
+import sys
+import sqlite3
 import pandas as pd
 import json
 from pathlib import Path
 import logging
+
+# Add src to path (needed for odds_utils)
+sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+
+from betting.odds_utils import american_to_decimal
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
 
-def load_betting_lines():
-    """Load betting lines from JSON file"""
+def load_betting_lines_from_json():
+    """Load betting lines from the historical Odds-API cache JSON file"""
     lines_file = Path('data/raw/betting_lines/betting_lines.json')
 
     logger.info(f"Loading betting lines from {lines_file}")
@@ -56,7 +63,98 @@ def load_betting_lines():
             })
 
     df = pd.DataFrame(records)
-    logger.info(f"Loaded {len(df)} goalie betting lines from {len(data)} games")
+    logger.info(f"Loaded {len(df)} goalie betting lines from {len(data)} games (JSON cache)")
+
+    return df
+
+
+def load_betting_lines_from_tracker(min_date, db_path='data/betting.db'):
+    """
+    Load betting lines from the live betting tracker DB (data/betting.db) for
+    dates not covered by the historical Odds-API JSON cache.
+
+    The tracker stores one row per (game, goalie, book) with real quoted odds
+    from the live daily workflow. This averages across books per (game_id,
+    goalie_id) to produce one consensus row, matching the shape of the JSON
+    cache loader above -- the per-bookmaker detail is preserved separately by
+    build_multibook_training_data.py, which reads the tracker directly.
+
+    Args:
+        min_date: only include rows with game_date >= this date (YYYY-MM-DD)
+        db_path: path to the betting tracker SQLite DB
+
+    Returns:
+        DataFrame with the same columns as load_betting_lines_from_json()
+    """
+    db_file = Path(db_path)
+    if not db_file.exists():
+        logger.info(f"No betting tracker DB found at {db_path}, skipping")
+        return pd.DataFrame()
+
+    logger.info(f"Loading supplemental betting lines from {db_path} (game_date >= {min_date})")
+
+    conn = sqlite3.connect(db_file)
+    try:
+        bets = pd.read_sql_query(
+            """
+            SELECT game_id, goalie_id, game_date, betting_line, line_over, line_under
+            FROM bets
+            WHERE goalie_id IS NOT NULL
+              AND betting_line IS NOT NULL
+              AND game_date >= ?
+            """,
+            conn,
+            params=(min_date,),
+        )
+    finally:
+        conn.close()
+
+    if bets.empty:
+        logger.info("No tracker rows found in the supplemental date range")
+        return pd.DataFrame()
+
+    bets['goalie_id'] = bets['goalie_id'].astype(int)
+
+    # Average across books to get one consensus line per (game_id, goalie_id)
+    grouped = bets.groupby(['game_id', 'goalie_id']).agg(
+        betting_line=('betting_line', 'mean'),
+        odds_over_american=('line_over', 'mean'),
+        odds_under_american=('line_under', 'mean'),
+        num_books=('betting_line', 'count'),
+        game_date=('game_date', 'first'),
+    ).reset_index()
+
+    grouped['odds_over_decimal'] = grouped['odds_over_american'].apply(american_to_decimal)
+    grouped['odds_under_decimal'] = grouped['odds_under_american'].apply(american_to_decimal)
+
+    logger.info(
+        f"Loaded {len(grouped)} goalie betting lines from {bets['game_id'].nunique()} games "
+        f"(betting tracker, averaged across {len(bets)} book quotes)"
+    )
+
+    return grouped[['game_id', 'goalie_id', 'betting_line', 'odds_over_american',
+                     'odds_under_american', 'odds_over_decimal', 'odds_under_decimal',
+                     'num_books', 'game_date']]
+
+
+def load_betting_lines():
+    """
+    Load betting lines from all available sources: the historical Odds-API
+    JSON cache (data/raw/betting_lines/betting_lines.json), supplemented by
+    the live betting tracker DB (data/betting.db) for any dates after the
+    JSON cache's coverage ends.
+    """
+    json_df = load_betting_lines_from_json()
+
+    json_max_date = json_df['game_date'].max()
+    tracker_min_date = pd.to_datetime(json_max_date) + pd.Timedelta(days=1)
+    tracker_df = load_betting_lines_from_tracker(tracker_min_date.strftime('%Y-%m-%d'))
+
+    if tracker_df.empty:
+        return json_df
+
+    df = pd.concat([json_df, tracker_df], ignore_index=True)
+    logger.info(f"Combined betting lines: {len(json_df)} from JSON cache + {len(tracker_df)} from tracker = {len(df)} total")
 
     return df
 
