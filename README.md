@@ -60,8 +60,14 @@ ALL LINES FOR 2026-02-01:
 | `migrate_to_sqlite.py` | One-off: fold an existing xlsx/CSV history into `data/betting.db` |
 | `optimize_features.py` | Test feature engineering configurations |
 | `tune_hyperparameters.py` | Hyperparameter tuning with randomized search |
-| `train_production_multibook.py` | Train model on multi-book training data |
 | `build_multibook_training_data.py` | Build training data with multiple bookmaker lines per game |
+| `collect_historical_data.py` | Pull raw historical goalie game logs from the NHL API |
+| `extract_historical_odds.py` | Extract historical odds from cached Odds-API responses (`data/raw/betting_lines/`) |
+| `merge_betting_lines.py` | Merge betting lines with training data to build the classification dataset (implied-probability odds averaging -- see [docs/HISTORICAL_DATA_ANALYSIS.md](docs/HISTORICAL_DATA_ANALYSIS.md)) |
+| `create_clean_features.py` | Clean feature engineering pipeline for the classification model |
+| `add_market_features.py` | Add market-disagreement features to the classification training data |
+
+Retired one-off scripts (superseded, kept for reference) live in `scripts/archive/`, e.g. `train_production_multibook.py`.
 
 ## Usage
 
@@ -94,7 +100,15 @@ All three daily steps are available as `workflow_dispatch` Actions, and all thre
 
 **Concurrent writes:** `data/betting.db` is a single SQLite file, so git can't merge two commits that both touch it -- a genuine collision (e.g. `record_bet` and `fetch_predictions` racing within the same few seconds) makes the losing workflow run fail with a clear "rebase conflict" error rather than silently overwriting data. Just re-run the failed workflow; it'll start from the now-current `main` and won't conflict.
 
-See [docs/WORKFLOW_MODERNIZATION_PROPOSAL.md](docs/WORKFLOW_MODERNIZATION_PROPOSAL.md) for the full design.
+## Documentation
+
+Deep-dive reference material lives in `docs/` and is kept up to date across sessions rather than treated as a one-off writeup:
+
+| Doc | What it covers |
+|-----|-----------------|
+| [docs/HISTORICAL_DATA_ANALYSIS.md](docs/HISTORICAL_DATA_ANALYSIS.md) | The authoritative synthesis of every historical-data finding -- what actually has edge (a directional UNDER-vs-OVER signal, not a broad EV-threshold edge) and what doesn't |
+| [docs/CURRENT_HISTORICAL_DATA.md](docs/CURRENT_HISTORICAL_DATA.md) | Audit of every historical data source, how they relate, and how much data the model actually has to train/evaluate on |
+| [docs/MODEL_TRAINING_GUIDE.md](docs/MODEL_TRAINING_GUIDE.md) | Complete account of how the current production model was built -- pipeline, features, hyperparameters, bugs found along the way |
 
 ## Project Structure
 
@@ -114,7 +128,8 @@ saves-model-v3/
 │   │   ├── excel_export.py         # Regenerates the read-only xlsx snapshot
 │   │   ├── nhl_fetcher.py          # NHL API data fetching + boxscore caching
 │   │   ├── odds_fetcher.py         # Underdog + BetOnline line fetching
-│   │   └── odds_utils.py           # EV calculation utilities
+│   │   ├── odds_utils.py           # EV calculation utilities
+│   │   └── metrics.py              # Performance/ROI metrics used by the dashboard
 │   ├── data/
 │   │   └── api_client.py           # NHL API client
 │   ├── features/
@@ -122,10 +137,12 @@ saves-model-v3/
 │   └── models/
 │       └── classifier_trainer.py   # XGBoost training wrapper
 ├── scripts/                         # CLI scripts (see table above)
+│   └── archive/                     # Retired one-off scripts, kept for reference
 ├── data/
-│   ├── betting.db                   # Betting tracker database (source of truth)
-│   └── processed/
-│       └── multibook_classification_training_data.parquet  # Training data
+│   ├── betting.db                   # Betting tracker database (source of truth, tracked in git)
+│   └── processed/                   # Training parquets (gitignored, regenerate via scripts/)
+├── docs/                            # Living reference docs (see Documentation section above)
+├── HANDOVER/                        # Cross-session handover notes (gitignored, local only)
 ├── betting_tracker.xlsx             # Read-only Excel snapshot (do not hand-edit)
 └── requirements.txt
 ```
