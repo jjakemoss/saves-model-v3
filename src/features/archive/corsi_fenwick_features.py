@@ -1,4 +1,13 @@
-"""Calculate Corsi and Fenwick shot suppression metrics
+"""ARCHIVED -- not used by the current production pipeline.
+
+This module was the site of the Jan 1, 2026 data-leakage bug (current-game
+Corsi/Fenwick fed into the model unshifted) -- see docs/MODEL_TRAINING_GUIDE.md
+§2 Phase 0 and §5. Superseded when scripts/create_clean_features.py replaced
+the original feature-engineering pipeline. Kept for reference, not
+recommended as a starting point without re-verifying the shift(1) logic
+throughout.
+
+Calculate Corsi and Fenwick shot suppression metrics
 
 Corsi and Fenwick are advanced hockey analytics metrics that measure shot attempts,
 which are more predictive of future performance than just shots on goal.

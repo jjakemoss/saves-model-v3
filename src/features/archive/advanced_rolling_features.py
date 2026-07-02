@@ -1,4 +1,11 @@
-"""Calculate advanced rolling features for shot quality and opponent offense
+"""ARCHIVED -- not used by the current production pipeline.
+
+Rolls up shot_quality_features.py / corsi_fenwick_features.py into rolling
+windows. Superseded when scripts/create_clean_features.py replaced the
+original feature-engineering pipeline in January 2026. Kept for reference --
+see docs/MODEL_TRAINING_GUIDE.md §5.
+
+Calculate advanced rolling features for shot quality and opponent offense
 
 This module adds:
 1. Shot quality by danger level rolling features (goalie & team)

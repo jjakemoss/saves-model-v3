@@ -1,4 +1,13 @@
-"""Calculate shot quality and Expected Goals (xG) features
+"""ARCHIVED -- not used by the current production pipeline.
+
+Fully functional (genuinely parses data/raw/play_by_play/*.json), but
+superseded when scripts/create_clean_features.py replaced the original
+feature-engineering pipeline in January 2026. No backtest evidence either
+way on whether shot quality would help the current model -- kept here as a
+real, working starting point if that's ever worth exploring. See
+docs/MODEL_TRAINING_GUIDE.md §5.
+
+Calculate shot quality and Expected Goals (xG) features
 
 Expected Goals is a more predictive metric than Corsi/Fenwick for save totals.
 The key relationship: Saves ≈ Shots Against - Expected Goals Against (xGA)

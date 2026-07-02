@@ -1,4 +1,12 @@
 """
+ARCHIVED -- superseded by scripts/optimize_features.py + scripts/tune_hyperparameters.py.
+
+This script produced the archived "Multibook V1" model
+(models/archive/multibook_v1_20260201_112500/), not the current production
+model. It's kept for historical reference -- see docs/MODEL_TRAINING_GUIDE.md
+§8 for why it isn't the training path to use today. Moved to scripts/archive/
+during a repo cleanup; not expected to be run.
+
 Train classifier on multi-book training data with line-relative features.
 
 This uses the same Config #4398 hyperparameters as baseline, but with:
@@ -7,11 +15,11 @@ This uses the same Config #4398 hyperparameters as baseline, but with:
 - Total features: ~96 (90 original + 6 new)
 
 Usage:
-    python scripts/train_production_multibook.py
+    python scripts/archive/train_production_multibook.py
 """
 import sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'src'))
 
 import pandas as pd
 import numpy as np
