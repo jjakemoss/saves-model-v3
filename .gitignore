@@ -14,5 +14,6 @@ __pycache__/
 *.parquet
 .claude/settings.local.json
 claude.md
+HANDOVER.md
 saves_model_v3.egg-info/
 *.log
