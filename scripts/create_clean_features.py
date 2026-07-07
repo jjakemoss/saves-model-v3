@@ -82,6 +82,7 @@ def load_boxscores(boxscores_dir):
                         'game_date': pd.to_datetime(game_date),
                         'season': season,
                         'goalie_id': goalie_id,
+                        'goalie_name': goalie.get('name', {}).get('default', ''),
                         'team_abbrev': team_abbrev,
                         'opponent_team': opponent_team,
                         'is_home': int(is_home),
@@ -358,7 +359,7 @@ def create_clean_features():
 
     # Identify current-game columns
     exclude_cols = exclude_current_game_features(df)
-    feature_cols = [c for c in df.columns if c not in exclude_cols and c not in ['game_id', 'game_date', 'season', 'goalie_id', 'team_abbrev', 'opponent_team']]
+    feature_cols = [c for c in df.columns if c not in exclude_cols and c not in ['game_id', 'game_date', 'season', 'goalie_id', 'goalie_name', 'team_abbrev', 'opponent_team']]
 
     logger.info(f"\nUsable features: {len(feature_cols)}")
     logger.info(f"Target variable: saves")

@@ -1,6 +1,6 @@
 {
   "total_samples": 4755,
-  "num_features": 121,
+  "num_features": 122,
   "over_hit_rate": 0.4792849631966351,
   "date_range": {
     "min": "2024-10-04 00:00:00",
@@ -15,6 +15,7 @@
     "game_date",
     "season",
     "goalie_id",
+    "goalie_name",
     "team_abbrev",
     "opponent_team",
     "is_home",

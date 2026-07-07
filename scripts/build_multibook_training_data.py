@@ -14,6 +14,7 @@ Usage:
 """
 import sys
 import sqlite3
+import unicodedata
 from pathlib import Path
 import json
 import pandas as pd
@@ -23,6 +24,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 from betting.odds_utils import decimal_to_american, american_to_decimal
 from features.feature_engineering import compute_line_relative_features
+
+# Book keys with no reliable odds: PrizePicks lines are a hardcoded -120
+# placeholder, not real quoted odds, and "manual"/"unknown" rows carry no
+# trustworthy price either. Drop them before matching so they never
+# contaminate the training data or a profitability backtest.
+DROPPED_BOOK_KEYS = {'prizepicks', 'manual', 'unknown'}
 
 # Full NHL team name -> abbreviation mapping
 TEAM_NAME_TO_ABBREV = {
@@ -70,6 +77,26 @@ def extract_last_name(full_name):
     if len(parts) >= 2:
         return parts[-1]
     return full_name
+
+
+def normalize_name(name):
+    """
+    Normalize a name for comparison: strip accents/diacritics, lowercase,
+    strip whitespace.
+
+    Names arrive in different scripts from different sources -- e.g. The
+    Odds API gives "Soderblom" while NHL boxscore data gives "A. Söderblom"
+    -- so comparison must be accent-insensitive or real matches get rejected
+    as mismatches.
+    """
+    if name is None:
+        return ''
+    text = str(name).strip()
+    if not text:
+        return ''
+    decomposed = unicodedata.normalize('NFKD', text)
+    stripped = ''.join(ch for ch in decomposed if not unicodedata.combining(ch))
+    return stripped.strip().lower()
 
 
 def parse_odds_cache(cache_dir):
@@ -231,14 +258,19 @@ def build_multibook_data(
     """Build multi-book classification training data."""
 
     # Load base features
-    print("\n[1/5] Loading base training features...")
+    print("\n[1/6] Loading base training features...")
     base_df = pd.read_parquet(base_features_path)
     print(f"  Loaded {len(base_df)} rows, {len(base_df.columns)} columns")
     print(f"  Date range: {base_df['game_date'].min()} to {base_df['game_date'].max()}")
+    if 'goalie_name' in base_df.columns:
+        has_name = base_df['goalie_name'].notna() & (base_df['goalie_name'].astype(str).str.strip() != '')
+        print(f"  goalie_name populated: {has_name.sum()}/{len(base_df)} ({has_name.mean():.1%})")
+    else:
+        print("  [WARNING] base features have no goalie_name column - all name checks will reject")
 
     # Build lookup key: (game_date, team_abbrev) -> row index
     # Each team has one starting goalie per game in the base data
-    print("\n[2/5] Building goalie lookup from base features...")
+    print("\n[2/6] Building goalie lookup from base features...")
     base_df['_game_date_str'] = pd.to_datetime(base_df['game_date']).dt.strftime('%Y-%m-%d')
     base_df['_lookup_key'] = base_df['_game_date_str'] + '_' + base_df['team_abbrev']
     lookup = base_df.set_index('_lookup_key')
@@ -253,7 +285,7 @@ def build_multibook_data(
     print(f"  {len(lookup)} unique (date, team) entries")
 
     # Parse odds cache
-    print("\n[3/5] Parsing odds cache...")
+    print("\n[3/6] Parsing odds cache...")
     odds_records = parse_odds_cache(odds_cache_dir)
     odds_df = pd.DataFrame(odds_records)
 
@@ -264,7 +296,7 @@ def build_multibook_data(
     # Supplement with the live betting tracker DB for dates the raw cache
     # doesn't cover (the cache is a one-time historical backfill and stops
     # being updated once the live daily workflow takes over)
-    print("\n[3b/5] Parsing supplemental odds from betting tracker...")
+    print("\n[3b/6] Parsing supplemental odds from betting tracker...")
     cache_max_date = odds_df['game_date'].max()
     tracker_min_date = (pd.to_datetime(cache_max_date) + pd.Timedelta(days=1)).strftime('%Y-%m-%d')
     db_records = parse_betting_db(min_date=tracker_min_date)
@@ -275,65 +307,144 @@ def build_multibook_data(
 
     # Deduplicate odds: keep one record per (game_date, book, goalie_name, line)
     # Same book might appear in multiple cache files for the same game
+    before_dedup = len(odds_df)
     odds_df = odds_df.drop_duplicates(
         subset=['game_date', 'book_key', 'goalie_name', 'betting_line'],
         keep='last'
     )
-    print(f"  After dedup: {len(odds_df)} unique records")
+    print(f"  After dedup: {len(odds_df)} unique records ({before_dedup - len(odds_df)} duplicates dropped)")
+
+    # Drop book keys with no reliable odds (PrizePicks is a hardcoded -120
+    # placeholder; manual/unknown rows have no trustworthy price)
+    print("\n[4/6] Dropping unreliable-odds book keys...")
+    dropped_book_counts = odds_df.loc[odds_df['book_key'].isin(DROPPED_BOOK_KEYS), 'book_key'].value_counts()
+    for book, count in dropped_book_counts.items():
+        print(f"  Dropping {count} rows for book_key={book!r}")
+    n_before_book_filter = len(odds_df)
+    odds_df = odds_df[~odds_df['book_key'].isin(DROPPED_BOOK_KEYS)].reset_index(drop=True)
+    print(f"  {n_before_book_filter - len(odds_df)} odds records dropped, {len(odds_df)} remain")
 
     # Match odds to base features
-    print("\n[4/5] Matching odds to base features...")
+    print("\n[5/6] Matching odds to base features...")
     matched_rows = []
-    unmatched = 0
+    unmatched_no_key = 0
+    unmatched_name_missing = 0
+    unmatched_name_mismatch = 0
+    unmatched_opponent_mismatch = 0
 
     for _, odds_row in odds_df.iterrows():
-        game_date = odds_row['game_date']
-        goalie_last = odds_row['goalie_last_name'].lower()
+        game_date_dt = pd.to_datetime(odds_row['game_date'])
+        goalie_last_norm = normalize_name(odds_row['goalie_last_name'])
 
-        # Try both home and away team keys
+        matched = False
+        any_key_found = False
+        any_name_missing = False
+        any_name_mismatch = False
+        any_opponent_mismatch = False
+
+        # Try both home and away team keys. For each team, try the odds
+        # record's own date first, then +/-1 day: the odds cache's
+        # commence_time is UTC while the boxscore-derived game_date is
+        # local, so a late game can round to the next calendar day. This
+        # mirrors the +/-1 day tolerance extract_historical_odds.py already
+        # uses when building betting_lines.json. The mandatory name and
+        # opponent checks below are what make this safe -- a wrong-game
+        # candidate on an adjacent date gets rejected unless both the
+        # goalie name AND the opponent match the odds event.
         for team_abbrev in [odds_row['home_team_abbrev'], odds_row['away_team_abbrev']]:
-            key = f"{game_date}_{team_abbrev}"
+            # The odds event knows both teams; the candidate's opponent
+            # must be the event's other team, or the candidate is a
+            # different game (e.g. the same goalie starting on back-to-back
+            # nights against different opponents, reachable via the +/-1
+            # day tolerance).
+            if team_abbrev == odds_row['home_team_abbrev']:
+                expected_opponent = odds_row['away_team_abbrev']
+            else:
+                expected_opponent = odds_row['home_team_abbrev']
 
-            if key not in lookup.index:
-                continue
+            for day_offset in (0, -1, 1):
+                candidate_date = (game_date_dt + pd.Timedelta(days=day_offset)).strftime('%Y-%m-%d')
+                key = f"{candidate_date}_{team_abbrev}"
 
-            base_row = lookup.loc[key]
-
-            # Verify goalie name match (last name)
-            # The base data may not have goalie_name, so we skip name check
-            # if the column doesn't exist - we rely on (date, team) matching
-            if 'goalie_name' in base_row.index:
-                base_name = str(base_row.get('goalie_name', '')).lower()
-                # Check if last names match
-                base_last = extract_last_name(base_name).lower() if base_name else ''
-                if base_last and goalie_last and base_last != goalie_last:
+                if key not in lookup.index:
                     continue
 
-            # Build the expanded row: base features + this bookmaker's odds
-            new_row = base_row.to_dict()
+                any_key_found = True
+                base_row = lookup.loc[key]
 
-            # Override betting columns with this bookmaker's values
-            new_row['betting_line'] = odds_row['betting_line']
-            new_row['odds_over_decimal'] = odds_row['odds_over_decimal']
-            new_row['odds_under_decimal'] = odds_row['odds_under_decimal']
-            new_row['odds_over_american'] = odds_row['odds_over_american']
-            new_row['odds_under_american'] = odds_row['odds_under_american']
-            new_row['book_key'] = odds_row['book_key']
-            new_row['num_books'] = 1  # Per-bookmaker row
+                # Mandatory opponent check: reject candidates from a
+                # different game than the odds event.
+                if base_row.get('opponent_team') != expected_opponent:
+                    any_opponent_mismatch = True
+                    continue
 
-            # Recalculate target: over_hit depends on THIS bookmaker's line
-            actual_saves = new_row.get('saves')
-            if pd.notna(actual_saves) and pd.notna(odds_row['betting_line']):
-                new_row['over_hit'] = int(actual_saves > odds_row['betting_line'])
-                new_row['line_margin'] = actual_saves - odds_row['betting_line']
+                # Mandatory goalie name check: if the name is missing on
+                # either side, or the base data has no goalie_name at all,
+                # REJECT the match rather than silently accepting a (date,
+                # team) match that could belong to the wrong goalie.
+                # Compare last names case-insensitively with accents
+                # stripped, since names arrive in different scripts from
+                # different sources (e.g. "Soderblom" from The Odds API vs
+                # "Söderblom" in NHL boxscore data).
+                base_name = base_row.get('goalie_name', '') if 'goalie_name' in base_row.index else ''
+                if pd.isna(base_name):
+                    base_name = ''
+                base_last_norm = normalize_name(extract_last_name(str(base_name))) if str(base_name).strip() else ''
 
-            matched_rows.append(new_row)
-            break  # Found match, don't check other team
-        else:
-            unmatched += 1
+                if not base_last_norm or not goalie_last_norm:
+                    any_name_missing = True
+                    continue
 
+                if base_last_norm != goalie_last_norm:
+                    any_name_mismatch = True
+                    continue
+
+                # Build the expanded row: base features + this bookmaker's odds
+                new_row = base_row.to_dict()
+
+                # Override betting columns with this bookmaker's values
+                new_row['betting_line'] = odds_row['betting_line']
+                new_row['odds_over_decimal'] = odds_row['odds_over_decimal']
+                new_row['odds_under_decimal'] = odds_row['odds_under_decimal']
+                new_row['odds_over_american'] = odds_row['odds_over_american']
+                new_row['odds_under_american'] = odds_row['odds_under_american']
+                new_row['book_key'] = odds_row['book_key']
+                new_row['num_books'] = 1  # Per-bookmaker row
+
+                # Recalculate target: over_hit depends on THIS bookmaker's line
+                actual_saves = new_row.get('saves')
+                if pd.notna(actual_saves) and pd.notna(odds_row['betting_line']):
+                    new_row['over_hit'] = int(actual_saves > odds_row['betting_line'])
+                    new_row['line_margin'] = actual_saves - odds_row['betting_line']
+
+                matched_rows.append(new_row)
+                matched = True
+                break  # Found match at this offset, don't try other offsets
+
+            if matched:
+                break  # Found match, don't check other team
+
+        if not matched:
+            if not any_key_found:
+                unmatched_no_key += 1
+            elif any_name_missing:
+                unmatched_name_missing += 1
+            elif any_name_mismatch:
+                unmatched_name_mismatch += 1
+            elif any_opponent_mismatch:
+                unmatched_opponent_mismatch += 1
+            else:
+                # Should not happen - defensive catch-all
+                unmatched_no_key += 1
+
+    total_unmatched = (unmatched_no_key + unmatched_name_missing +
+                       unmatched_name_mismatch + unmatched_opponent_mismatch)
     print(f"  Matched: {len(matched_rows)} rows")
-    print(f"  Unmatched: {unmatched} odds records (no base features found)")
+    print(f"  Unmatched: {total_unmatched} odds records")
+    print(f"    - no (date, team) key in base features: {unmatched_no_key}")
+    print(f"    - goalie name missing on one side: {unmatched_name_missing}")
+    print(f"    - goalie name mismatch (wrong goalie): {unmatched_name_mismatch}")
+    print(f"    - opponent mismatch only (wrong game): {unmatched_opponent_mismatch}")
 
     if not matched_rows:
         print("[ERROR] No rows matched")
@@ -346,8 +457,18 @@ def build_multibook_data(
     if '_lookup_key' in result_df.columns:
         result_df = result_df.drop(columns=['_lookup_key'])
 
+    # Deduplicate final output: the same (game, goalie, book, line) should
+    # never appear twice - if it does, keep one copy.
+    n_before_final_dedup = len(result_df)
+    result_df = result_df.drop_duplicates(
+        subset=['game_id', 'goalie_id', 'book_key', 'betting_line'],
+        keep='last'
+    ).reset_index(drop=True)
+    n_final_dupes = n_before_final_dedup - len(result_df)
+    print(f"\n  Deduplicated on (game_id, goalie_id, book_key, betting_line): {n_final_dupes} duplicate rows dropped")
+
     # Compute line-relative features
-    print("\n[5/5] Computing line-relative features...")
+    print("\n[6/6] Computing line-relative features...")
     result_df = compute_line_relative_features(result_df)
 
     # Sort by game_date for chronological splits

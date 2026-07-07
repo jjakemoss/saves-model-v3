@@ -134,12 +134,23 @@ that's the next step.
 
 | Dataset | Rows | Columns | Date range | Notes |
 |---|---|---|---|---|
-| `clean_training_data.parquet` | 10,496 | 113 | 2022-10-07 to 2026-04-16 | All 4 seasons of raw game features, no betting lines required |
-| `classification_training_data.parquet` | 4,755 | 129 | 2024-10-04 to 2026-04-13 | One row per goalie-game, single consensus line, `over_hit` target |
-| `multibook_classification_training_data.parquet` | 6,916 | 137 | 2024-10-04 to 2026-04-13 | One row per (goalie, game, bookmaker, line) — **this is what feeds the production model** |
+| `clean_training_data.parquet` | 10,496 | 114 | 2022-10-07 to 2026-04-16 | All 4 seasons of raw game features, no betting lines required (now carries `goalie_name`) |
+| `classification_training_data.parquet` | 4,755 | 130 | 2024-10-04 to 2026-04-13 | One row per goalie-game, single consensus line, `over_hit` target |
+| `multibook_classification_training_data.parquet` | 13,192 | 138 | 2024-10-04 to 2026-04-13 | One row per (goalie, game, bookmaker, line) — **this is what feeds the production model** |
+
+**Updated 2026-07-07**: the multibook dataset was regenerated after fixing the
+line-misattribution bug and a UTC/local date-shift bug in
+`scripts/build_multibook_training_data.py` (see
+[OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 2).
+Rows went from 6,916 (79.7% home goalies, 1,413 unique goalie-games, ~44% of
+tracker-era rows carrying the opposing goalie's line) to 13,192 clean rows
+(51.4% home, 4,580 unique goalie-games, 2,182 of 2,398 games with both
+goalies present, zero duplicates, zero misattribution). Pre-fix parquets are
+backed up in `data/processed/backup_20260707/`. The production model has NOT
+been retrained on this yet.
 
 Season breakdown of the multibook dataset (the one that matters for
-training): `20242025` = 3,342 rows, `20252026` = 3,574 rows. So in practice,
+training): `20242025` = 7,463 rows, `20252026` = 5,729 rows. So in practice,
 usable betting-line-labeled data is **just under 2 full NHL seasons**.
 
 `data/raw/boxscores/` now shows all 5,248 games (all 4 seasons) as finalized

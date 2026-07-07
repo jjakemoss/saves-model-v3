@@ -35,9 +35,12 @@ Two datasets were used depending on the question:
 
 A note on the multibook parquet: it was deliberately *not* used for same-game
 pairing work. It is 82% home goalies and only 32 of its 1,381 games contain both
-goalies, an artifact of how away-goalie names are matched during its build. This
-is a separate data-quality issue worth investigating on its own (a home-skewed
-training set could bias the model) but it does not affect the analyses here.
+goalies. **Update 2026-07-07: root-caused, and it is worse than a skew** -- the
+builder attaches away goalies' lines to home goalies' features and outcomes
+(~44% of tracker-era rows carry the opposing goalie's line as their label). See
+[OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 2 for
+the full diagnosis and fix. It still does not affect the analyses here, which
+never used that parquet.
 
 ## Executive summary
 
@@ -404,14 +407,21 @@ the data actually supports.
    best-supported, most valuable change. The model's OVER calls are a persistent
    money-loser across every slice tested.
 2. ~~Fix the odds-averaging bug~~ -- **done 2026-07-02**, see section 1 above.
-3. **Re-run the Underdog parlay simulation on UNDER-only, high-confidence legs**
-   (the cross-cutting thread above) before concluding anything about parlays.
+3. ~~Re-run the Underdog parlay simulation on UNDER-only, high-confidence legs~~
+   -- **done 2026-07-07**: strongly positive under real Underdog multipliers
+   (3-leg Power Plays from 65%+ confidence legs +100% ROI on n=15; adaptive
+   nightly rule +59.8% on 39 nights, bootstrap CI barely excluding zero,
+   positive in both chronological halves). Results and the recommended nightly
+   construction rule live in
+   [OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 4.2.
 4. **Do not pursue** hedge-both-directions (structural -4% loser), line-value
    blind betting (single-season artifact), or same-direction same-game parlays
    (disfavored by the negative correlation and not supported by the backtest).
-5. **Separately investigate the multibook home-goalie skew** (82% home, 32 paired
-   games) noted in the methodology section -- it could be biasing the production
-   model and is unrelated to the analyses here.
+5. ~~Separately investigate the multibook home-goalie skew~~ -- **root-caused
+   2026-07-07**: not just a skew but corrupted labels (away goalies' lines
+   attached to home goalies' features/outcomes; ~44% of tracker-era rows).
+   Diagnosis and fix plan in
+   [OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 2.
 
 ## Caveats
 

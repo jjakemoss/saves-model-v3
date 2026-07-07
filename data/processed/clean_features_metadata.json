@@ -1,6 +1,6 @@
 {
   "total_rows": 10496,
-  "total_columns": 113,
+  "total_columns": 114,
   "feature_columns": [
     "is_home",
     "even_strength_saves",
