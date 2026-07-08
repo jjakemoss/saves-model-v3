@@ -1,0 +1,1693 @@
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 659
+INFO:   Wins: 360, Losses: 299
+INFO:   Win rate: 54.6%
+INFO:   Total profit: +24.77 units
+INFO:   ROI: +3.76%
+INFO:   Avg EV when betting: +12.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 478
+INFO:   Wins: 251, Losses: 227
+INFO:   Win rate: 52.5%
+INFO:   Total profit: -3.34 units
+INFO:   ROI: -0.70%
+INFO:   Avg EV when betting: +14.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 332
+INFO:   Wins: 168, Losses: 164
+INFO:   Win rate: 50.6%
+INFO:   Total profit: -15.13 units
+INFO:   ROI: -4.56%
+INFO:   Avg EV when betting: +15.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 178
+INFO:   Wins: 93, Losses: 85
+INFO:   Win rate: 52.2%
+INFO:   Total profit: -2.34 units
+INFO:   ROI: -1.31%
+INFO:   Avg EV when betting: +18.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 979
+INFO:   Wins: 521, Losses: 458
+INFO:   Win rate: 53.2%
+INFO:   Total profit: +6.31 units
+INFO:   ROI: +0.64%
+INFO:   Avg EV when betting: +14.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 749
+INFO:   Wins: 389, Losses: 360
+INFO:   Win rate: 51.9%
+INFO:   Total profit: -12.14 units
+INFO:   ROI: -1.62%
+INFO:   Avg EV when betting: +15.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 567
+INFO:   Wins: 298, Losses: 269
+INFO:   Win rate: 52.6%
+INFO:   Total profit: -3.51 units
+INFO:   ROI: -0.62%
+INFO:   Avg EV when betting: +16.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 339
+INFO:   Wins: 181, Losses: 158
+INFO:   Win rate: 53.4%
+INFO:   Total profit: +2.00 units
+INFO:   ROI: +0.59%
+INFO:   Avg EV when betting: +19.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1016
+INFO:   Wins: 534, Losses: 482
+INFO:   Win rate: 52.6%
+INFO:   Total profit: -6.98 units
+INFO:   ROI: -0.69%
+INFO:   Avg EV when betting: +14.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 820
+INFO:   Wins: 422, Losses: 398
+INFO:   Win rate: 51.5%
+INFO:   Total profit: -20.54 units
+INFO:   ROI: -2.51%
+INFO:   Avg EV when betting: +15.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 632
+INFO:   Wins: 317, Losses: 315
+INFO:   Win rate: 50.2%
+INFO:   Total profit: -33.07 units
+INFO:   ROI: -5.23%
+INFO:   Avg EV when betting: +16.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 396
+INFO:   Wins: 207, Losses: 189
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -4.99 units
+INFO:   ROI: -1.26%
+INFO:   Avg EV when betting: +19.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1218
+INFO:   Wins: 643, Losses: 575
+INFO:   Win rate: 52.8%
+INFO:   Total profit: -7.49 units
+INFO:   ROI: -0.62%
+INFO:   Avg EV when betting: +15.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1017
+INFO:   Wins: 532, Losses: 485
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -14.55 units
+INFO:   ROI: -1.43%
+INFO:   Avg EV when betting: +16.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 835
+INFO:   Wins: 426, Losses: 409
+INFO:   Win rate: 51.0%
+INFO:   Total profit: -32.59 units
+INFO:   ROI: -3.90%
+INFO:   Avg EV when betting: +18.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 562
+INFO:   Wins: 284, Losses: 278
+INFO:   Win rate: 50.5%
+INFO:   Total profit: -29.03 units
+INFO:   ROI: -5.17%
+INFO:   Avg EV when betting: +20.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1301
+INFO:   Wins: 668, Losses: 633
+INFO:   Win rate: 51.3%
+INFO:   Total profit: -46.90 units
+INFO:   ROI: -3.61%
+INFO:   Avg EV when betting: +16.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1119
+INFO:   Wins: 577, Losses: 542
+INFO:   Win rate: 51.6%
+INFO:   Total profit: -32.88 units
+INFO:   ROI: -2.94%
+INFO:   Avg EV when betting: +17.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 961
+INFO:   Wins: 507, Losses: 454
+INFO:   Win rate: 52.8%
+INFO:   Total profit: -7.64 units
+INFO:   ROI: -0.79%
+INFO:   Avg EV when betting: +18.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 685
+INFO:   Wins: 342, Losses: 343
+INFO:   Win rate: 49.9%
+INFO:   Total profit: -42.99 units
+INFO:   ROI: -6.28%
+INFO:   Avg EV when betting: +20.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 526
+INFO:   Wins: 279, Losses: 247
+INFO:   Win rate: 53.0%
+INFO:   Total profit: +2.26 units
+INFO:   ROI: +0.43%
+INFO:   Avg EV when betting: +12.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 352
+INFO:   Wins: 174, Losses: 178
+INFO:   Win rate: 49.4%
+INFO:   Total profit: -20.52 units
+INFO:   ROI: -5.83%
+INFO:   Avg EV when betting: +13.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 237
+INFO:   Wins: 121, Losses: 116
+INFO:   Win rate: 51.1%
+INFO:   Total profit: -6.46 units
+INFO:   ROI: -2.73%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 109
+INFO:   Wins: 57, Losses: 52
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -0.85 units
+INFO:   ROI: -0.78%
+INFO:   Avg EV when betting: +17.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1045
+INFO:   Wins: 537, Losses: 508
+INFO:   Win rate: 51.4%
+INFO:   Total profit: -31.84 units
+INFO:   ROI: -3.05%
+INFO:   Avg EV when betting: +14.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 837
+INFO:   Wins: 442, Losses: 395
+INFO:   Win rate: 52.8%
+INFO:   Total profit: -4.66 units
+INFO:   ROI: -0.56%
+INFO:   Avg EV when betting: +16.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 653
+INFO:   Wins: 340, Losses: 313
+INFO:   Win rate: 52.1%
+INFO:   Total profit: -13.17 units
+INFO:   ROI: -2.02%
+INFO:   Avg EV when betting: +17.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 412
+INFO:   Wins: 208, Losses: 204
+INFO:   Win rate: 50.5%
+INFO:   Total profit: -20.41 units
+INFO:   ROI: -4.95%
+INFO:   Avg EV when betting: +20.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 397
+INFO:   Wins: 219, Losses: 178
+INFO:   Win rate: 55.2%
+INFO:   Total profit: +20.38 units
+INFO:   ROI: +5.13%
+INFO:   Avg EV when betting: +11.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 251
+INFO:   Wins: 130, Losses: 121
+INFO:   Win rate: 51.8%
+INFO:   Total profit: -2.44 units
+INFO:   ROI: -0.97%
+INFO:   Avg EV when betting: +13.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 157
+INFO:   Wins: 84, Losses: 73
+INFO:   Win rate: 53.5%
+INFO:   Total profit: +2.84 units
+INFO:   ROI: +1.81%
+INFO:   Avg EV when betting: +14.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 51
+INFO:   Wins: 33, Losses: 18
+INFO:   Win rate: 64.7%
+INFO:   Total profit: +11.65 units
+INFO:   ROI: +22.84%
+INFO:   Avg EV when betting: +16.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 427
+INFO:   Wins: 219, Losses: 208
+INFO:   Win rate: 51.3%
+INFO:   Total profit: -10.56 units
+INFO:   ROI: -2.47%
+INFO:   Avg EV when betting: +11.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 243
+INFO:   Wins: 136, Losses: 107
+INFO:   Win rate: 56.0%
+INFO:   Total profit: +14.11 units
+INFO:   ROI: +5.81%
+INFO:   Avg EV when betting: +12.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 141
+INFO:   Wins: 84, Losses: 57
+INFO:   Win rate: 59.6%
+INFO:   Total profit: +17.87 units
+INFO:   ROI: +12.67%
+INFO:   Avg EV when betting: +14.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 40
+INFO:   Wins: 25, Losses: 15
+INFO:   Win rate: 62.5%
+INFO:   Total profit: +7.03 units
+INFO:   ROI: +17.58%
+INFO:   Avg EV when betting: +17.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1390
+INFO:   Wins: 737, Losses: 653
+INFO:   Win rate: 53.0%
+INFO:   Total profit: -5.01 units
+INFO:   ROI: -0.36%
+INFO:   Avg EV when betting: +16.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1190
+INFO:   Wins: 630, Losses: 560
+INFO:   Win rate: 52.9%
+INFO:   Total profit: -5.66 units
+INFO:   ROI: -0.48%
+INFO:   Avg EV when betting: +18.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1011
+INFO:   Wins: 528, Losses: 483
+INFO:   Win rate: 52.2%
+INFO:   Total profit: -17.40 units
+INFO:   ROI: -1.72%
+INFO:   Avg EV when betting: +19.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 754
+INFO:   Wins: 395, Losses: 359
+INFO:   Win rate: 52.4%
+INFO:   Total profit: -10.96 units
+INFO:   ROI: -1.45%
+INFO:   Avg EV when betting: +21.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1057
+INFO:   Wins: 564, Losses: 493
+INFO:   Win rate: 53.4%
+INFO:   Total profit: +6.58 units
+INFO:   ROI: +0.62%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 885
+INFO:   Wins: 461, Losses: 424
+INFO:   Win rate: 52.1%
+INFO:   Total profit: -17.46 units
+INFO:   ROI: -1.97%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 718
+INFO:   Wins: 380, Losses: 338
+INFO:   Win rate: 52.9%
+INFO:   Total profit: -2.78 units
+INFO:   ROI: -0.39%
+INFO:   Avg EV when betting: +17.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 457
+INFO:   Wins: 232, Losses: 225
+INFO:   Win rate: 50.8%
+INFO:   Total profit: -21.98 units
+INFO:   ROI: -4.81%
+INFO:   Avg EV when betting: +20.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 594
+INFO:   Wins: 315, Losses: 279
+INFO:   Win rate: 53.0%
+INFO:   Total profit: +4.56 units
+INFO:   ROI: +0.77%
+INFO:   Avg EV when betting: +12.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 381
+INFO:   Wins: 208, Losses: 173
+INFO:   Win rate: 54.6%
+INFO:   Total profit: +13.14 units
+INFO:   ROI: +3.45%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 239
+INFO:   Wins: 137, Losses: 102
+INFO:   Win rate: 57.3%
+INFO:   Total profit: +19.86 units
+INFO:   ROI: +8.31%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 107
+INFO:   Wins: 70, Losses: 37
+INFO:   Win rate: 65.4%
+INFO:   Total profit: +24.72 units
+INFO:   ROI: +23.10%
+INFO:   Avg EV when betting: +17.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1067
+INFO:   Wins: 569, Losses: 498
+INFO:   Win rate: 53.3%
+INFO:   Total profit: +6.60 units
+INFO:   ROI: +0.62%
+INFO:   Avg EV when betting: +14.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 891
+INFO:   Wins: 484, Losses: 407
+INFO:   Win rate: 54.3%
+INFO:   Total profit: +20.73 units
+INFO:   ROI: +2.33%
+INFO:   Avg EV when betting: +16.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 696
+INFO:   Wins: 383, Losses: 313
+INFO:   Win rate: 55.0%
+INFO:   Total profit: +24.47 units
+INFO:   ROI: +3.52%
+INFO:   Avg EV when betting: +17.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 437
+INFO:   Wins: 243, Losses: 194
+INFO:   Win rate: 55.6%
+INFO:   Total profit: +19.62 units
+INFO:   ROI: +4.49%
+INFO:   Avg EV when betting: +19.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 296
+INFO:   Wins: 168, Losses: 128
+INFO:   Win rate: 56.8%
+INFO:   Total profit: +24.99 units
+INFO:   ROI: +8.44%
+INFO:   Avg EV when betting: +10.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 162
+INFO:   Wins: 88, Losses: 74
+INFO:   Win rate: 54.3%
+INFO:   Total profit: +4.76 units
+INFO:   ROI: +2.94%
+INFO:   Avg EV when betting: +12.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 81
+INFO:   Wins: 47, Losses: 34
+INFO:   Win rate: 58.0%
+INFO:   Total profit: +7.71 units
+INFO:   ROI: +9.52%
+INFO:   Avg EV when betting: +13.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 21
+INFO:   Wins: 15, Losses: 6
+INFO:   Win rate: 71.4%
+INFO:   Total profit: +7.12 units
+INFO:   ROI: +33.91%
+INFO:   Avg EV when betting: +16.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 576
+INFO:   Wins: 298, Losses: 278
+INFO:   Win rate: 51.7%
+INFO:   Total profit: -11.10 units
+INFO:   ROI: -1.93%
+INFO:   Avg EV when betting: +11.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 353
+INFO:   Wins: 187, Losses: 166
+INFO:   Win rate: 53.0%
+INFO:   Total profit: +1.58 units
+INFO:   ROI: +0.45%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 231
+INFO:   Wins: 115, Losses: 116
+INFO:   Win rate: 49.8%
+INFO:   Total profit: -12.37 units
+INFO:   ROI: -5.35%
+INFO:   Avg EV when betting: +15.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 103
+INFO:   Wins: 51, Losses: 52
+INFO:   Win rate: 49.5%
+INFO:   Total profit: -6.25 units
+INFO:   ROI: -6.07%
+INFO:   Avg EV when betting: +17.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 244
+INFO:   Wins: 139, Losses: 105
+INFO:   Win rate: 57.0%
+INFO:   Total profit: +22.62 units
+INFO:   ROI: +9.27%
+INFO:   Avg EV when betting: +10.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 127
+INFO:   Wins: 72, Losses: 55
+INFO:   Win rate: 56.7%
+INFO:   Total profit: +10.94 units
+INFO:   ROI: +8.62%
+INFO:   Avg EV when betting: +12.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 47
+INFO:   Wins: 30, Losses: 17
+INFO:   Win rate: 63.8%
+INFO:   Total profit: +9.10 units
+INFO:   ROI: +19.37%
+INFO:   Avg EV when betting: +13.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 8
+INFO:   Wins: 4, Losses: 4
+INFO:   Win rate: 50.0%
+INFO:   Total profit: -0.41 units
+INFO:   ROI: -5.10%
+INFO:   Avg EV when betting: +16.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 610
+INFO:   Wins: 333, Losses: 277
+INFO:   Win rate: 54.6%
+INFO:   Total profit: +21.49 units
+INFO:   ROI: +3.52%
+INFO:   Avg EV when betting: +12.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 419
+INFO:   Wins: 222, Losses: 197
+INFO:   Win rate: 53.0%
+INFO:   Total profit: +2.68 units
+INFO:   ROI: +0.64%
+INFO:   Avg EV when betting: +13.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 274
+INFO:   Wins: 152, Losses: 122
+INFO:   Win rate: 55.5%
+INFO:   Total profit: +13.88 units
+INFO:   ROI: +5.07%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 134
+INFO:   Wins: 77, Losses: 57
+INFO:   Win rate: 57.5%
+INFO:   Total profit: +11.38 units
+INFO:   ROI: +8.50%
+INFO:   Avg EV when betting: +17.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 841
+INFO:   Wins: 452, Losses: 389
+INFO:   Win rate: 53.7%
+INFO:   Total profit: +14.90 units
+INFO:   ROI: +1.77%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 650
+INFO:   Wins: 350, Losses: 300
+INFO:   Win rate: 53.8%
+INFO:   Total profit: +10.41 units
+INFO:   ROI: +1.60%
+INFO:   Avg EV when betting: +15.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 484
+INFO:   Wins: 246, Losses: 238
+INFO:   Win rate: 50.8%
+INFO:   Total profit: -19.88 units
+INFO:   ROI: -4.11%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 277
+INFO:   Wins: 143, Losses: 134
+INFO:   Win rate: 51.6%
+INFO:   Total profit: -7.11 units
+INFO:   ROI: -2.57%
+INFO:   Avg EV when betting: +18.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 974
+INFO:   Wins: 518, Losses: 456
+INFO:   Win rate: 53.2%
+INFO:   Total profit: +7.23 units
+INFO:   ROI: +0.74%
+INFO:   Avg EV when betting: +13.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 757
+INFO:   Wins: 398, Losses: 359
+INFO:   Win rate: 52.6%
+INFO:   Total profit: -4.14 units
+INFO:   ROI: -0.55%
+INFO:   Avg EV when betting: +15.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 531
+INFO:   Wins: 287, Losses: 244
+INFO:   Win rate: 54.0%
+INFO:   Total profit: +11.36 units
+INFO:   ROI: +2.14%
+INFO:   Avg EV when betting: +16.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 321
+INFO:   Wins: 181, Losses: 140
+INFO:   Win rate: 56.4%
+INFO:   Total profit: +20.13 units
+INFO:   ROI: +6.27%
+INFO:   Avg EV when betting: +19.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1324
+INFO:   Wins: 693, Losses: 631
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -21.37 units
+INFO:   ROI: -1.61%
+INFO:   Avg EV when betting: +16.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1141
+INFO:   Wins: 613, Losses: 528
+INFO:   Win rate: 53.7%
+INFO:   Total profit: +11.27 units
+INFO:   ROI: +0.99%
+INFO:   Avg EV when betting: +17.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 973
+INFO:   Wins: 524, Losses: 449
+INFO:   Win rate: 53.9%
+INFO:   Total profit: +12.56 units
+INFO:   ROI: +1.29%
+INFO:   Avg EV when betting: +19.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 718
+INFO:   Wins: 375, Losses: 343
+INFO:   Win rate: 52.2%
+INFO:   Total profit: -12.31 units
+INFO:   ROI: -1.71%
+INFO:   Avg EV when betting: +20.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 840
+INFO:   Wins: 449, Losses: 391
+INFO:   Win rate: 53.5%
+INFO:   Total profit: +10.34 units
+INFO:   ROI: +1.23%
+INFO:   Avg EV when betting: +13.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 635
+INFO:   Wins: 339, Losses: 296
+INFO:   Win rate: 53.4%
+INFO:   Total profit: +5.66 units
+INFO:   ROI: +0.89%
+INFO:   Avg EV when betting: +14.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 455
+INFO:   Wins: 244, Losses: 211
+INFO:   Win rate: 53.6%
+INFO:   Total profit: +4.11 units
+INFO:   ROI: +0.90%
+INFO:   Avg EV when betting: +16.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 250
+INFO:   Wins: 131, Losses: 119
+INFO:   Win rate: 52.4%
+INFO:   Total profit: -3.58 units
+INFO:   ROI: -1.43%
+INFO:   Avg EV when betting: +18.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1432
+INFO:   Wins: 769, Losses: 663
+INFO:   Win rate: 53.7%
+INFO:   Total profit: +9.87 units
+INFO:   ROI: +0.69%
+INFO:   Avg EV when betting: +17.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1204
+INFO:   Wins: 644, Losses: 560
+INFO:   Win rate: 53.5%
+INFO:   Total profit: +5.28 units
+INFO:   ROI: +0.44%
+INFO:   Avg EV when betting: +19.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1064
+INFO:   Wins: 561, Losses: 503
+INFO:   Win rate: 52.7%
+INFO:   Total profit: -9.93 units
+INFO:   ROI: -0.93%
+INFO:   Avg EV when betting: +20.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 870
+INFO:   Wins: 448, Losses: 422
+INFO:   Win rate: 51.5%
+INFO:   Total profit: -26.80 units
+INFO:   ROI: -3.08%
+INFO:   Avg EV when betting: +21.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 982
+INFO:   Wins: 514, Losses: 468
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -9.39 units
+INFO:   ROI: -0.96%
+INFO:   Avg EV when betting: +14.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 805
+INFO:   Wins: 430, Losses: 375
+INFO:   Win rate: 53.4%
+INFO:   Total profit: +7.72 units
+INFO:   ROI: +0.96%
+INFO:   Avg EV when betting: +15.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 623
+INFO:   Wins: 335, Losses: 288
+INFO:   Win rate: 53.8%
+INFO:   Total profit: +10.07 units
+INFO:   ROI: +1.62%
+INFO:   Avg EV when betting: +16.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 349
+INFO:   Wins: 175, Losses: 174
+INFO:   Win rate: 50.1%
+INFO:   Total profit: -18.91 units
+INFO:   ROI: -5.42%
+INFO:   Avg EV when betting: +19.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 862
+INFO:   Wins: 449, Losses: 413
+INFO:   Win rate: 52.1%
+INFO:   Total profit: -8.76 units
+INFO:   ROI: -1.02%
+INFO:   Avg EV when betting: +13.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 634
+INFO:   Wins: 336, Losses: 298
+INFO:   Win rate: 53.0%
+INFO:   Total profit: +2.72 units
+INFO:   ROI: +0.43%
+INFO:   Avg EV when betting: +15.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 474
+INFO:   Wins: 254, Losses: 220
+INFO:   Win rate: 53.6%
+INFO:   Total profit: +5.66 units
+INFO:   ROI: +1.19%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 268
+INFO:   Wins: 142, Losses: 126
+INFO:   Win rate: 53.0%
+INFO:   Total profit: -2.00 units
+INFO:   ROI: -0.75%
+INFO:   Avg EV when betting: +18.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 878
+INFO:   Wins: 456, Losses: 422
+INFO:   Win rate: 51.9%
+INFO:   Total profit: -15.86 units
+INFO:   ROI: -1.81%
+INFO:   Avg EV when betting: +13.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 665
+INFO:   Wins: 345, Losses: 320
+INFO:   Win rate: 51.9%
+INFO:   Total profit: -13.08 units
+INFO:   ROI: -1.97%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 518
+INFO:   Wins: 267, Losses: 251
+INFO:   Win rate: 51.5%
+INFO:   Total profit: -16.53 units
+INFO:   ROI: -3.19%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 295
+INFO:   Wins: 143, Losses: 152
+INFO:   Win rate: 48.5%
+INFO:   Total profit: -25.68 units
+INFO:   ROI: -8.70%
+INFO:   Avg EV when betting: +19.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 327
+INFO:   Wins: 184, Losses: 143
+INFO:   Win rate: 56.3%
+INFO:   Total profit: +24.08 units
+INFO:   ROI: +7.36%
+INFO:   Avg EV when betting: +10.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 172
+INFO:   Wins: 97, Losses: 75
+INFO:   Win rate: 56.4%
+INFO:   Total profit: +12.12 units
+INFO:   ROI: +7.05%
+INFO:   Avg EV when betting: +12.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 84
+INFO:   Wins: 51, Losses: 33
+INFO:   Win rate: 60.7%
+INFO:   Total profit: +12.48 units
+INFO:   ROI: +14.86%
+INFO:   Avg EV when betting: +14.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 26
+INFO:   Wins: 19, Losses: 7
+INFO:   Win rate: 73.1%
+INFO:   Total profit: +9.46 units
+INFO:   ROI: +36.38%
+INFO:   Avg EV when betting: +16.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 889
+INFO:   Wins: 463, Losses: 426
+INFO:   Win rate: 52.1%
+INFO:   Total profit: -11.59 units
+INFO:   ROI: -1.30%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 676
+INFO:   Wins: 346, Losses: 330
+INFO:   Win rate: 51.2%
+INFO:   Total profit: -20.62 units
+INFO:   ROI: -3.05%
+INFO:   Avg EV when betting: +15.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 513
+INFO:   Wins: 263, Losses: 250
+INFO:   Win rate: 51.3%
+INFO:   Total profit: -15.63 units
+INFO:   ROI: -3.05%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 285
+INFO:   Wins: 151, Losses: 134
+INFO:   Win rate: 53.0%
+INFO:   Total profit: -0.39 units
+INFO:   ROI: -0.14%
+INFO:   Avg EV when betting: +18.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1609
+INFO:   Wins: 869, Losses: 740
+INFO:   Win rate: 54.0%
+INFO:   Total profit: +22.82 units
+INFO:   ROI: +1.42%
+INFO:   Avg EV when betting: +18.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1436
+INFO:   Wins: 768, Losses: 668
+INFO:   Win rate: 53.5%
+INFO:   Total profit: +6.56 units
+INFO:   ROI: +0.46%
+INFO:   Avg EV when betting: +19.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1238
+INFO:   Wins: 656, Losses: 582
+INFO:   Win rate: 53.0%
+INFO:   Total profit: -5.60 units
+INFO:   ROI: -0.45%
+INFO:   Avg EV when betting: +21.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 981
+INFO:   Wins: 538, Losses: 443
+INFO:   Win rate: 54.8%
+INFO:   Total profit: +29.51 units
+INFO:   ROI: +3.01%
+INFO:   Avg EV when betting: +23.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 788
+INFO:   Wins: 417, Losses: 371
+INFO:   Win rate: 52.9%
+INFO:   Total profit: -0.65 units
+INFO:   ROI: -0.08%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 609
+INFO:   Wins: 313, Losses: 296
+INFO:   Win rate: 51.4%
+INFO:   Total profit: -19.03 units
+INFO:   ROI: -3.13%
+INFO:   Avg EV when betting: +15.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 465
+INFO:   Wins: 246, Losses: 219
+INFO:   Win rate: 52.9%
+INFO:   Total profit: -1.40 units
+INFO:   ROI: -0.30%
+INFO:   Avg EV when betting: +16.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 238
+INFO:   Wins: 123, Losses: 115
+INFO:   Win rate: 51.7%
+INFO:   Total profit: -6.20 units
+INFO:   ROI: -2.61%
+INFO:   Avg EV when betting: +19.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1421
+INFO:   Wins: 774, Losses: 647
+INFO:   Win rate: 54.5%
+INFO:   Total profit: +31.96 units
+INFO:   ROI: +2.25%
+INFO:   Avg EV when betting: +18.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1250
+INFO:   Wins: 700, Losses: 550
+INFO:   Win rate: 56.0%
+INFO:   Total profit: +65.44 units
+INFO:   ROI: +5.24%
+INFO:   Avg EV when betting: +19.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1101
+INFO:   Wins: 625, Losses: 476
+INFO:   Win rate: 56.8%
+INFO:   Total profit: +73.26 units
+INFO:   ROI: +6.65%
+INFO:   Avg EV when betting: +20.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 872
+INFO:   Wins: 490, Losses: 382
+INFO:   Win rate: 56.2%
+INFO:   Total profit: +49.33 units
+INFO:   ROI: +5.66%
+INFO:   Avg EV when betting: +22.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 451
+INFO:   Wins: 248, Losses: 203
+INFO:   Win rate: 55.0%
+INFO:   Total profit: +21.11 units
+INFO:   ROI: +4.68%
+INFO:   Avg EV when betting: +11.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 256
+INFO:   Wins: 145, Losses: 111
+INFO:   Win rate: 56.6%
+INFO:   Total profit: +19.27 units
+INFO:   ROI: +7.53%
+INFO:   Avg EV when betting: +13.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 147
+INFO:   Wins: 82, Losses: 65
+INFO:   Win rate: 55.8%
+INFO:   Total profit: +7.75 units
+INFO:   ROI: +5.27%
+INFO:   Avg EV when betting: +14.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 52
+INFO:   Wins: 34, Losses: 18
+INFO:   Win rate: 65.4%
+INFO:   Total profit: +12.00 units
+INFO:   ROI: +23.07%
+INFO:   Avg EV when betting: +17.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 774
+INFO:   Wins: 390, Losses: 384
+INFO:   Win rate: 50.4%
+INFO:   Total profit: -35.64 units
+INFO:   ROI: -4.60%
+INFO:   Avg EV when betting: +13.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 575
+INFO:   Wins: 291, Losses: 284
+INFO:   Win rate: 50.6%
+INFO:   Total profit: -25.31 units
+INFO:   ROI: -4.40%
+INFO:   Avg EV when betting: +14.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 382
+INFO:   Wins: 201, Losses: 181
+INFO:   Win rate: 52.6%
+INFO:   Total profit: -2.36 units
+INFO:   ROI: -0.62%
+INFO:   Avg EV when betting: +16.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 200
+INFO:   Wins: 95, Losses: 105
+INFO:   Win rate: 47.5%
+INFO:   Total profit: -21.21 units
+INFO:   ROI: -10.61%
+INFO:   Avg EV when betting: +19.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 912
+INFO:   Wins: 481, Losses: 431
+INFO:   Win rate: 52.7%
+INFO:   Total profit: -3.86 units
+INFO:   ROI: -0.42%
+INFO:   Avg EV when betting: +13.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 705
+INFO:   Wins: 376, Losses: 329
+INFO:   Win rate: 53.3%
+INFO:   Total profit: +4.89 units
+INFO:   ROI: +0.69%
+INFO:   Avg EV when betting: +15.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 514
+INFO:   Wins: 274, Losses: 240
+INFO:   Win rate: 53.3%
+INFO:   Total profit: +2.11 units
+INFO:   ROI: +0.41%
+INFO:   Avg EV when betting: +16.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 288
+INFO:   Wins: 142, Losses: 146
+INFO:   Win rate: 49.3%
+INFO:   Total profit: -21.57 units
+INFO:   ROI: -7.49%
+INFO:   Avg EV when betting: +19.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 958
+INFO:   Wins: 495, Losses: 463
+INFO:   Win rate: 51.7%
+INFO:   Total profit: -23.59 units
+INFO:   ROI: -2.46%
+INFO:   Avg EV when betting: +14.1%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 766
+INFO:   Wins: 378, Losses: 388
+INFO:   Win rate: 49.3%
+INFO:   Total profit: -53.01 units
+INFO:   ROI: -6.92%
+INFO:   Avg EV when betting: +15.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 588
+INFO:   Wins: 298, Losses: 290
+INFO:   Win rate: 50.7%
+INFO:   Total profit: -25.58 units
+INFO:   ROI: -4.35%
+INFO:   Avg EV when betting: +16.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 337
+INFO:   Wins: 165, Losses: 172
+INFO:   Win rate: 49.0%
+INFO:   Total profit: -26.23 units
+INFO:   ROI: -7.78%
+INFO:   Avg EV when betting: +19.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 836
+INFO:   Wins: 449, Losses: 387
+INFO:   Win rate: 53.7%
+INFO:   Total profit: +10.23 units
+INFO:   ROI: +1.22%
+INFO:   Avg EV when betting: +13.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 613
+INFO:   Wins: 317, Losses: 296
+INFO:   Win rate: 51.7%
+INFO:   Total profit: -14.74 units
+INFO:   ROI: -2.40%
+INFO:   Avg EV when betting: +15.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 474
+INFO:   Wins: 235, Losses: 239
+INFO:   Win rate: 49.6%
+INFO:   Total profit: -29.85 units
+INFO:   ROI: -6.30%
+INFO:   Avg EV when betting: +16.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 285
+INFO:   Wins: 143, Losses: 142
+INFO:   Win rate: 50.2%
+INFO:   Total profit: -15.05 units
+INFO:   ROI: -5.28%
+INFO:   Avg EV when betting: +18.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1055
+INFO:   Wins: 552, Losses: 503
+INFO:   Win rate: 52.3%
+INFO:   Total profit: -10.95 units
+INFO:   ROI: -1.04%
+INFO:   Avg EV when betting: +14.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 824
+INFO:   Wins: 439, Losses: 385
+INFO:   Win rate: 53.3%
+INFO:   Total profit: +7.12 units
+INFO:   ROI: +0.86%
+INFO:   Avg EV when betting: +16.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 637
+INFO:   Wins: 322, Losses: 315
+INFO:   Win rate: 50.5%
+INFO:   Total profit: -26.39 units
+INFO:   ROI: -4.14%
+INFO:   Avg EV when betting: +17.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 409
+INFO:   Wins: 212, Losses: 197
+INFO:   Win rate: 51.8%
+INFO:   Total profit: -8.86 units
+INFO:   ROI: -2.17%
+INFO:   Avg EV when betting: +19.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 632
+INFO:   Wins: 331, Losses: 301
+INFO:   Win rate: 52.4%
+INFO:   Total profit: -4.74 units
+INFO:   ROI: -0.75%
+INFO:   Avg EV when betting: +12.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 453
+INFO:   Wins: 236, Losses: 217
+INFO:   Win rate: 52.1%
+INFO:   Total profit: -7.18 units
+INFO:   ROI: -1.59%
+INFO:   Avg EV when betting: +14.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 301
+INFO:   Wins: 160, Losses: 141
+INFO:   Win rate: 53.2%
+INFO:   Total profit: +1.24 units
+INFO:   ROI: +0.41%
+INFO:   Avg EV when betting: +15.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 165
+INFO:   Wins: 89, Losses: 76
+INFO:   Win rate: 53.9%
+INFO:   Total profit: +3.46 units
+INFO:   ROI: +2.10%
+INFO:   Avg EV when betting: +17.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1047
+INFO:   Wins: 576, Losses: 471
+INFO:   Win rate: 55.0%
+INFO:   Total profit: +38.62 units
+INFO:   ROI: +3.69%
+INFO:   Avg EV when betting: +14.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 870
+INFO:   Wins: 478, Losses: 392
+INFO:   Win rate: 54.9%
+INFO:   Total profit: +33.01 units
+INFO:   ROI: +3.79%
+INFO:   Avg EV when betting: +15.8%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 639
+INFO:   Wins: 348, Losses: 291
+INFO:   Win rate: 54.5%
+INFO:   Total profit: +18.25 units
+INFO:   ROI: +2.86%
+INFO:   Avg EV when betting: +17.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 408
+INFO:   Wins: 210, Losses: 198
+INFO:   Win rate: 51.5%
+INFO:   Total profit: -10.29 units
+INFO:   ROI: -2.52%
+INFO:   Avg EV when betting: +20.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1327
+INFO:   Wins: 713, Losses: 614
+INFO:   Win rate: 53.7%
+INFO:   Total profit: +13.68 units
+INFO:   ROI: +1.03%
+INFO:   Avg EV when betting: +16.5%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 1142
+INFO:   Wins: 636, Losses: 506
+INFO:   Win rate: 55.7%
+INFO:   Total profit: +53.56 units
+INFO:   ROI: +4.69%
+INFO:   Avg EV when betting: +17.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 932
+INFO:   Wins: 531, Losses: 401
+INFO:   Win rate: 57.0%
+INFO:   Total profit: +64.49 units
+INFO:   ROI: +6.92%
+INFO:   Avg EV when betting: +19.2%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 677
+INFO:   Wins: 377, Losses: 300
+INFO:   Win rate: 55.7%
+INFO:   Total profit: +32.45 units
+INFO:   ROI: +4.79%
+INFO:   Avg EV when betting: +21.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 729
+INFO:   Wins: 371, Losses: 358
+INFO:   Win rate: 50.9%
+INFO:   Total profit: -26.00 units
+INFO:   ROI: -3.57%
+INFO:   Avg EV when betting: +13.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 563
+INFO:   Wins: 285, Losses: 278
+INFO:   Win rate: 50.6%
+INFO:   Total profit: -25.15 units
+INFO:   ROI: -4.47%
+INFO:   Avg EV when betting: +14.6%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 411
+INFO:   Wins: 211, Losses: 200
+INFO:   Win rate: 51.3%
+INFO:   Total profit: -11.92 units
+INFO:   ROI: -2.90%
+INFO:   Avg EV when betting: +16.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 216
+INFO:   Wins: 103, Losses: 113
+INFO:   Win rate: 47.7%
+INFO:   Total profit: -22.20 units
+INFO:   ROI: -10.28%
+INFO:   Avg EV when betting: +18.4%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 715
+INFO:   Wins: 373, Losses: 342
+INFO:   Win rate: 52.2%
+INFO:   Total profit: -7.94 units
+INFO:   ROI: -1.11%
+INFO:   Avg EV when betting: +12.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 527
+INFO:   Wins: 282, Losses: 245
+INFO:   Win rate: 53.5%
+INFO:   Total profit: +5.40 units
+INFO:   ROI: +1.02%
+INFO:   Avg EV when betting: +14.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 359
+INFO:   Wins: 199, Losses: 160
+INFO:   Win rate: 55.4%
+INFO:   Total profit: +16.61 units
+INFO:   ROI: +4.63%
+INFO:   Avg EV when betting: +15.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 195
+INFO:   Wins: 117, Losses: 78
+INFO:   Win rate: 60.0%
+INFO:   Total profit: +25.60 units
+INFO:   ROI: +13.13%
+INFO:   Avg EV when betting: +17.9%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 287
+INFO:   Wins: 151, Losses: 136
+INFO:   Win rate: 52.6%
+INFO:   Total profit: +2.84 units
+INFO:   ROI: +0.99%
+INFO:   Avg EV when betting: +10.7%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 151
+INFO:   Wins: 87, Losses: 64
+INFO:   Win rate: 57.6%
+INFO:   Total profit: +14.66 units
+INFO:   ROI: +9.71%
+INFO:   Avg EV when betting: +12.3%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 70
+INFO:   Wins: 40, Losses: 30
+INFO:   Win rate: 57.1%
+INFO:   Total profit: +5.70 units
+INFO:   ROI: +8.15%
+INFO:   Avg EV when betting: +14.0%
+INFO:   Games skipped (no odds): 0
+INFO: 
+Evaluating betting profitability on Val set...
+INFO:   Total bets: 16
+INFO:   Wins: 13, Losses: 3
+INFO:   Win rate: 81.2%
+INFO:   Total profit: +8.38 units
+INFO:   ROI: +52.38%
+INFO:   Avg EV when betting: +16.3%
+INFO:   Games skipped (no odds): 0
+================================================================================
+HYPERPARAMETER TUNING (114 engineered features) -- v2 clean selection
+================================================================================
+Loaded 13192 samples with engineered features
+Features: 114
+Train: 7915 | Val: 2638 | Test: 2639
+Target bet rate: 15-35% (Val: 395-923 bets, Test: 395-923 bets)
+
+Fold date boundaries:
+  Train: 2024-10-04 00:00:00 to 2025-10-16 00:00:00  (7915 rows)
+  Val:   2025-10-16 00:00:00 to 2025-12-04 00:00:00  (2638 rows)
+  Test:  2025-12-04 00:00:00 to 2026-04-13 00:00:00  (2639 rows)
+
+Full grid: 15552 combinations (too many)
+Random search: 40 configs x 4 EV thresholds = 160 evaluations
+Total configs to train: 42
+
+Starting search (validation fold only -- test fold is not touched)...
+
+[1/42] Current best: depth=4 lr=0.02 mcw=15 gamma=2.0 alpha=20 lambda=60 est=1000
+  -> Best: EV>=8% | Val: +3.8% (659 bets, 25%)
+[2/42] Config #4398 baseline: depth=4 lr=0.02 mcw=15 gamma=1.0 alpha=10 lambda=40 est=800
+  -> Best: EV>=12% | Val: -0.6% (567 bets, 21%)
+[3/42] Random #1: depth=5 lr=0.01 mcw=20 gamma=2.0 alpha=5 lambda=20 est=1200
+  -> Best: EV>=15% | Val: -1.3% (396 bets, 15%)
+[4/42] Random #2: depth=5 lr=0.05 mcw=20 gamma=0.5 alpha=20 lambda=40 est=600
+  -> Best: EV>=12% | Val: -3.9% (835 bets, 32%)
+[5/42] Random #3: depth=6 lr=0.02 mcw=15 gamma=1.0 alpha=5 lambda=20 est=800
+  -> Best: EV>=15% | Val: -6.3% (685 bets, 26%)
+[6/42] Random #4: depth=6 lr=0.01 mcw=10 gamma=2.0 alpha=20 lambda=60 est=800
+  -> Best: EV>=8% | Val: +0.4% (526 bets, 20%)
+[7/42] Random #5: depth=6 lr=0.05 mcw=15 gamma=1.0 alpha=20 lambda=40 est=1200
+  -> Best: EV>=10% | Val: -0.6% (837 bets, 32%)
+[8/42] Random #6: depth=6 lr=0.01 mcw=20 gamma=0.5 alpha=20 lambda=60 est=600
+  -> Best: EV>=8% | Val: +5.1% (397 bets, 15%)
+[9/42] Random #7: depth=4 lr=0.01 mcw=30 gamma=1.0 alpha=10 lambda=40 est=600
+  -> Best: EV>=8% | Val: -2.5% (427 bets, 16%)
+[10/42] Random #8: depth=4 lr=0.05 mcw=30 gamma=2.0 alpha=5 lambda=60 est=1200
+  -> Best: EV>=15% | Val: -1.5% (754 bets, 29%)
+[11/42] Random #9: depth=6 lr=0.02 mcw=30 gamma=1.0 alpha=10 lambda=40 est=800
+  -> Best: EV>=12% | Val: -0.4% (718 bets, 27%)
+[12/42] Random #10: depth=4 lr=0.01 mcw=20 gamma=1.0 alpha=10 lambda=40 est=800
+  -> Best: EV>=8% | Val: +0.8% (594 bets, 23%)
+[13/42] Random #11: depth=4 lr=0.05 mcw=30 gamma=2.0 alpha=10 lambda=60 est=600
+  -> Best: EV>=15% | Val: +4.5% (437 bets, 17%)
+[14/42] Random #12: depth=3 lr=0.01 mcw=15 gamma=2.0 alpha=5 lambda=40 est=600
+  -> Best: EV>=15% | Val: +33.9% (21 bets, 1%)
+[15/42] Random #13: depth=6 lr=0.01 mcw=10 gamma=0.5 alpha=20 lambda=20 est=600
+  -> Best: EV>=8% | Val: -1.9% (576 bets, 22%)
+[16/42] Random #14: depth=3 lr=0.01 mcw=30 gamma=2.0 alpha=20 lambda=60 est=600
+  -> Best: EV>=12% | Val: +19.4% (47 bets, 2%)
+[17/42] Random #15: depth=5 lr=0.01 mcw=20 gamma=0.5 alpha=10 lambda=60 est=800
+  -> Best: EV>=8% | Val: +3.5% (610 bets, 23%)
+[18/42] Random #16: depth=5 lr=0.01 mcw=30 gamma=1.0 alpha=5 lambda=60 est=1200
+  -> Best: EV>=8% | Val: +1.8% (841 bets, 32%)
+[19/42] Random #17: depth=3 lr=0.05 mcw=30 gamma=1.0 alpha=20 lambda=60 est=600
+  -> Best: EV>=12% | Val: +2.1% (531 bets, 20%)
+[20/42] Random #18: depth=5 lr=0.02 mcw=20 gamma=0.5 alpha=5 lambda=40 est=1200
+  -> Best: EV>=15% | Val: -1.7% (718 bets, 27%)
+[21/42] Random #19: depth=5 lr=0.05 mcw=10 gamma=2.0 alpha=20 lambda=40 est=800
+  -> Best: EV>=8% | Val: +1.2% (840 bets, 32%)
+[22/42] Random #20: depth=5 lr=0.05 mcw=30 gamma=2.0 alpha=5 lambda=20 est=800
+  -> Best: EV>=15% | Val: -3.1% (870 bets, 33%)
+[23/42] Random #21: depth=5 lr=0.01 mcw=20 gamma=2.0 alpha=5 lambda=20 est=1200
+  -> Best: EV>=12% | Val: +1.6% (623 bets, 24%)
+[24/42] Random #22: depth=4 lr=0.02 mcw=15 gamma=0.5 alpha=10 lambda=20 est=600
+  -> Best: EV>=12% | Val: +1.2% (474 bets, 18%)
+[25/42] Random #23: depth=6 lr=0.02 mcw=15 gamma=2.0 alpha=10 lambda=60 est=600
+  -> Best: EV>=8% | Val: -1.8% (878 bets, 33%)
+[26/42] Random #24: depth=3 lr=0.01 mcw=10 gamma=2.0 alpha=10 lambda=20 est=600
+  -> Best: EV>=15% | Val: +36.4% (26 bets, 1%)
+[27/42] Random #25: depth=5 lr=0.02 mcw=30 gamma=2.0 alpha=5 lambda=40 est=600
+  -> Best: EV>=8% | Val: -1.3% (889 bets, 34%)
+[28/42] Random #26: depth=4 lr=0.05 mcw=20 gamma=1.0 alpha=5 lambda=20 est=800
+  -> Best: EV>=15% | Val: +3.0% (981 bets, 37%)
+[29/42] Random #27: depth=6 lr=0.02 mcw=20 gamma=1.0 alpha=20 lambda=20 est=600
+  -> Best: EV>=8% | Val: -0.1% (788 bets, 30%)
+[30/42] Random #28: depth=3 lr=0.05 mcw=10 gamma=1.0 alpha=10 lambda=40 est=1200
+  -> Best: EV>=15% | Val: +5.7% (872 bets, 33%)
+[31/42] Random #29: depth=3 lr=0.01 mcw=20 gamma=1.0 alpha=10 lambda=20 est=800
+  -> Best: EV>=8% | Val: +4.7% (451 bets, 17%)
+[32/42] Random #30: depth=6 lr=0.05 mcw=30 gamma=2.0 alpha=20 lambda=60 est=600
+  -> Best: EV>=10% | Val: -4.4% (575 bets, 22%)
+[33/42] Random #31: depth=6 lr=0.01 mcw=30 gamma=1.0 alpha=10 lambda=40 est=1200
+  -> Best: EV>=10% | Val: +0.7% (705 bets, 27%)
+[34/42] Random #32: depth=6 lr=0.01 mcw=10 gamma=2.0 alpha=10 lambda=20 est=1200
+  -> Best: EV>=12% | Val: -4.4% (588 bets, 22%)
+[35/42] Random #33: depth=5 lr=0.05 mcw=15 gamma=2.0 alpha=20 lambda=60 est=1200
+  -> Best: EV>=8% | Val: +1.2% (836 bets, 32%)
+[36/42] Random #34: depth=3 lr=0.05 mcw=15 gamma=0.5 alpha=20 lambda=20 est=600
+  -> Best: EV>=10% | Val: +0.9% (824 bets, 31%)
+[37/42] Random #35: depth=5 lr=0.02 mcw=15 gamma=2.0 alpha=20 lambda=40 est=600
+  -> Best: EV>=8% | Val: -0.8% (632 bets, 24%)
+[38/42] Random #36: depth=3 lr=0.02 mcw=10 gamma=1.0 alpha=5 lambda=20 est=1200
+  -> Best: EV>=10% | Val: +3.8% (870 bets, 33%)
+[39/42] Random #37: depth=3 lr=0.05 mcw=20 gamma=2.0 alpha=10 lambda=20 est=1200
+  -> Best: EV>=15% | Val: +4.8% (677 bets, 26%)
+[40/42] Random #38: depth=6 lr=0.02 mcw=30 gamma=1.0 alpha=20 lambda=40 est=600
+  -> Best: EV>=12% | Val: -2.9% (411 bets, 16%)
+[41/42] Random #39: depth=3 lr=0.02 mcw=30 gamma=1.0 alpha=10 lambda=40 est=800
+  -> Best: EV>=10% | Val: +1.0% (527 bets, 20%)
+[42/42] Random #40: depth=3 lr=0.01 mcw=30 gamma=0.5 alpha=5 lambda=40 est=600
+  -> Best: EV>=15% | Val: +52.4% (16 bets, 1%)
+
+================================================================================
+TOP 15 CONFIGS (sorted by VALIDATION ROI, filtered to 15-35% validation bet rate)
+================================================================================
+
+  # Label                    EV Depth    LR  MCW  Gam Alpha  Lam   Est |   V ROI V Bets V Bt%
+--------------------------------------------------------------------------------------------------------------
+  1 Random #28              15%     3  0.05   10  1.0    10   40  1200 |   +5.7%    872   33%
+  2 Random #6                8%     6  0.01   20  0.5    20   60   600 |   +5.1%    397   15%
+  3 Random #37              15%     3  0.05   20  2.0    10   20  1200 |   +4.8%    677   26%
+  4 Random #29               8%     3  0.01   20  1.0    10   20   800 |   +4.7%    451   17%
+  5 Random #11              15%     4  0.05   30  2.0    10   60   600 |   +4.5%    437   17%
+  6 Random #36              10%     3  0.02   10  1.0     5   20  1200 |   +3.8%    870   33%
+  7 Current best             8%     4  0.02   15  2.0    20   60  1000 |   +3.8%    659   25%
+  8 Random #15               8%     5  0.01   20  0.5    10   60   800 |   +3.5%    610   23%
+  9 Random #11              12%     4  0.05   30  2.0    10   60   600 |   +3.5%    696   26%
+ 10 Random #36              12%     3  0.02   10  1.0     5   20  1200 |   +2.9%    639   24%
+ 11 Random #11              10%     4  0.05   30  2.0    10   60   600 |   +2.3%    891   34%
+ 12 Random #17              12%     3  0.05   30  1.0    20   60   600 |   +2.1%    531   20%
+ 13 Random #16               8%     5  0.01   30  1.0     5   60  1200 |   +1.8%    841   32%
+ 14 Random #21              12%     5  0.01   20  2.0     5   20  1200 |   +1.6%    623   24%
+ 15 Random #16              10%     5  0.01   30  1.0     5   60  1200 |   +1.6%    650   25%
+
+================================================================================INFO: 
+Evaluating betting profitability on Test set...
+INFO:   Total bets: 844
+INFO:   Wins: 415, Losses: 429
+INFO:   Win rate: 49.2%
+INFO:   Total profit: -59.80 units
+INFO:   ROI: -7.09%
+INFO:   Avg EV when betting: +22.3%
+INFO:   Games skipped (no odds): 0
+
+WINNING CONFIG (selected on validation fold only)
+================================================================================
+  Label: Random #28
+  EV Threshold: 15%
+  max_depth: 3
+  learning_rate: 0.05
+  min_child_weight: 10
+  gamma: 1.0
+  reg_alpha: 10
+  reg_lambda: 40
+  n_estimators: 1200
+  subsample: 0.7
+  colsample_bytree: 0.8
+
+  Val ROI: +5.66% (872 bets, 33.1%)
+  Val Win Rate: 56.2%
+  Val ROI 95% CI (bootstrap, 10000 resamples): [-0.44%, +12.02%]
+  Val OVER/UNDER breakdown:
+    Val OVER: 347 bets | win rate 59.1% | ROI +10.35%
+    Val UNDER: 525 bets | win rate 54.3% | ROI +2.56%
+
+================================================================================
+FINAL TEST-FOLD EVALUATION (single touch -- test fold was not used for selection)
+================================================================================
+
+  Test ROI: -7.09% (844 bets, 32.0%)
+  Test Win Rate: 49.2%
+  Test ROI 95% CI (bootstrap, 10000 resamples): [-13.44%, -0.79%]
+  Test OVER/UNDER breakdown:
+    Test OVER: 368 bets | win rate 48.4% | ROI -8.72%
+    Test UNDER: 476 bets | win rate 49.8% | ROI -5.82%
+
+  WARNING: Test ROI is negative.
+
+Model saved to: models\trained\tuned_v2_clean_20260707_212023
+
+To use this model:
+  1. Update predictor.py default paths to: models\trained\tuned_v2_clean_20260707_212023
+  2. Update EV threshold in predictor.py _determine_recommendation() to: 0.15
+  3. Add engineered features to feature_calculator.py
+  4. Run: python scripts/fetch_and_predict.py -v
+
+================================================================================
+TUNING COMPLETE
+================================================================================

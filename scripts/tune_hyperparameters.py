@@ -2,16 +2,29 @@
 Hyperparameter tuning script for the optimized 114-feature model.
 
 Uses the engineered features from optimize_features.py and searches across
-hyperparameter space to maximize ROI while targeting 20-30% bet rate.
+hyperparameter space to maximize ROI while targeting a 15-35% bet rate.
 
-Current baseline (Config #4398 + high reg):
-  Val: +21.01% (199 bets / 1082 = 18.4%)
-  Test: +10.68% (252 bets / 1082 = 23.3%)
-  Combined: +15.24% (451 bets)
+SELECTION METHODOLOGY (v2, clean):
+  The test fold is NEVER used to pick a config. During the search, every
+  (hyperparameter config, EV threshold) pair is scored ONLY on the
+  validation fold: candidates are filtered to a 15-35% validation bet
+  rate and ranked by validation ROI. Only after a single winner is chosen
+  this way is that one model + EV threshold evaluated on the test fold --
+  exactly once, for the whole script run. This replaces the prior
+  methodology, which filtered by test bet rate and ranked by combined
+  val+test ROI, leaking the test fold into model selection. That leak is
+  why the old headline numbers (from the corrupted, smaller training set)
+  were retired as contaminated. This run also trains on a corrected,
+  regenerated training parquet -- see docs/HISTORICAL_DATA_ANALYSIS.md
+  and HANDOVER/HANDOVER.md for the underlying data bug and fix.
 
-Target: ~20-30% of lines bet on, with best possible ROI.
+  Bootstrap 95% CIs (10,000 resamples, percentile method, numpy seed 42)
+  are reported on ROI for both the winner's validation result and the
+  single test-fold touch, along with an OVER/UNDER recommendation-side
+  breakdown for each, since the live betting record shows those two
+  sides behaving very differently.
 
-Runtime: ~5-10 minutes.
+Runtime: ~10-40 minutes.
 
 Usage:
     python scripts/tune_hyperparameters.py
@@ -93,7 +106,7 @@ def add_all_engineered_features(df):
 
 
 print("=" * 80)
-print("HYPERPARAMETER TUNING (114 engineered features)")
+print("HYPERPARAMETER TUNING (114 engineered features) -- v2 clean selection")
 print("=" * 80)
 
 data_path = 'data/processed/multibook_classification_training_data.parquet'
@@ -131,6 +144,19 @@ EXCLUDED = [
 feature_cols = [c for c in df.columns if c not in EXCLUDED]
 print(f"Features: {len(feature_cols)}")
 
+# Hard-fail guardrails: this training run must use exactly the 114 approved
+# features, with no metadata/identifier columns leaking in as predictors.
+assert len(feature_cols) == 114, (
+    f"Expected exactly 114 feature columns, got {len(feature_cols)}. "
+    f"Feature set must not change for this run."
+)
+_forbidden_cols = [
+    'goalie_name', 'book_key', 'team_abbrev', 'opponent_team',
+    'season', 'game_id', 'goalie_id', 'game_date',
+]
+_leaked = [c for c in _forbidden_cols if c in feature_cols]
+assert not _leaked, f"Forbidden metadata/identifier columns leaked into feature_cols: {_leaked}"
+
 # Chronological split 60/20/20
 n = len(df)
 train_end = int(n * 0.6)
@@ -151,15 +177,85 @@ val_total = len(X_val)
 test_total = len(X_test)
 
 print(f"Train: {len(X_train)} | Val: {val_total} | Test: {test_total}")
-print(f"Target bet rate: 20-30% (Val: {int(val_total*0.2)}-{int(val_total*0.3)} bets, Test: {int(test_total*0.2)}-{int(test_total*0.3)} bets)")
+print(f"Target bet rate: 15-35% (Val: {int(val_total*0.15)}-{int(val_total*0.35)} bets, Test: {int(test_total*0.15)}-{int(test_total*0.35)} bets)")
+
+# Fold date boundaries -- printed so downstream results can be interpreted
+train_dates = df.iloc[train_idx]['game_date']
+val_dates = df.iloc[val_idx]['game_date']
+test_dates = df.iloc[test_idx]['game_date']
+print("\nFold date boundaries:")
+print(f"  Train: {train_dates.min()} to {train_dates.max()}  ({len(train_idx)} rows)")
+print(f"  Val:   {val_dates.min()} to {val_dates.max()}  ({len(val_idx)} rows)")
+print(f"  Test:  {test_dates.min()} to {test_dates.max()}  ({len(test_idx)} rows)")
 
 
 # ============================================================
-# Evaluation function
+# Bootstrap CI + side-breakdown helpers
 # ============================================================
 
-def evaluate(model, ev_threshold):
-    """Evaluate model on val + test with given EV threshold."""
+def bootstrap_roi_ci(bet_results, n_resamples=10000, seed=42, ci_pct=95.0):
+    """
+    Bootstrap a percentile-method confidence interval on ROI by resampling
+    per-bet profits with replacement.
+
+    Args:
+        bet_results: list of dicts with a 'profit' key (one entry per bet)
+        n_resamples: number of bootstrap resamples
+        seed: numpy random seed (fixed for reproducibility)
+        ci_pct: confidence level, e.g. 95.0 for a 95% CI
+
+    Returns:
+        dict with 'lower', 'upper' (ROI percent) and 'n_bets'
+    """
+    n_bets = len(bet_results)
+    if n_bets == 0:
+        return {'lower': 0.0, 'upper': 0.0, 'n_bets': 0}
+
+    profits = np.array([r['profit'] for r in bet_results], dtype=float)
+
+    rng = np.random.RandomState(seed)
+    resample_idx = rng.randint(0, n_bets, size=(n_resamples, n_bets))
+    boot_rois = profits[resample_idx].mean(axis=1) * 100  # ROI = mean profit per bet, as %
+
+    alpha = (100.0 - ci_pct) / 2.0
+    lower = float(np.percentile(boot_rois, alpha))
+    upper = float(np.percentile(boot_rois, 100.0 - alpha))
+    return {'lower': lower, 'upper': upper, 'n_bets': n_bets}
+
+
+def side_breakdown(bet_results):
+    """Split bet_results by recommendation side (OVER/UNDER) and summarize."""
+    breakdown = {}
+    for side in ('OVER', 'UNDER'):
+        side_bets = [r for r in bet_results if r['bet'] == side]
+        n_side = len(side_bets)
+        if n_side == 0:
+            breakdown[side] = {'bets': 0, 'win_rate': 0.0, 'roi': 0.0, 'profit': 0.0}
+            continue
+        wins = sum(1 for r in side_bets if r['won'])
+        profit = sum(r['profit'] for r in side_bets)
+        breakdown[side] = {
+            'bets': n_side,
+            'win_rate': wins / n_side,
+            'roi': (profit / n_side) * 100,
+            'profit': profit,
+        }
+    return breakdown
+
+
+def print_side_breakdown(label, breakdown):
+    for side in ('OVER', 'UNDER'):
+        b = breakdown[side]
+        print(f"    {label} {side}: {b['bets']} bets | win rate {b['win_rate']*100:.1f}% | ROI {b['roi']:+.2f}%")
+
+
+# ============================================================
+# Evaluation function -- VALIDATION FOLD ONLY (search loop)
+# ============================================================
+
+def evaluate_val_only(model, ev_threshold):
+    """Evaluate model on the validation fold only. The test fold is never
+    touched here -- this function is the only thing the search loop calls."""
     trainer = ClassifierTrainer()
     trainer.model = model
     trainer.feature_names = feature_cols
@@ -167,26 +263,13 @@ def evaluate(model, ev_threshold):
     val_m = trainer.evaluate_profitability(
         X_val, y_val, df, val_idx, dataset_name='Val', ev_threshold=ev_threshold
     )
-    test_m = trainer.evaluate_profitability(
-        X_test, y_test, df, test_idx, dataset_name='Test', ev_threshold=ev_threshold
-    )
 
-    val_bets = val_m['total_bets']
-    test_bets = test_m['total_bets']
-    combined_bets = val_bets + test_bets
-    combined_profit = val_m['total_profit'] + test_m['total_profit']
-    combined_roi = (combined_profit / combined_bets) * 100 if combined_bets > 0 else 0
-
-    val_bet_rate = val_bets / val_total * 100
-    test_bet_rate = test_bets / test_total * 100
+    val_bet_rate = val_m['total_bets'] / val_total * 100
 
     return {
-        'val_roi': val_m['roi'], 'val_bets': val_bets, 'val_bet_rate': val_bet_rate,
+        'val_roi': val_m['roi'], 'val_bets': val_m['total_bets'], 'val_bet_rate': val_bet_rate,
         'val_win_rate': val_m['win_rate'], 'val_profit': val_m['total_profit'],
-        'test_roi': test_m['roi'], 'test_bets': test_bets, 'test_bet_rate': test_bet_rate,
-        'test_win_rate': test_m['win_rate'], 'test_profit': test_m['total_profit'],
-        'combined_roi': combined_roi, 'combined_bets': combined_bets,
-        'combined_profit': combined_profit,
+        'val_bet_results': val_m['bet_results'],
     }
 
 
@@ -240,10 +323,11 @@ random_configs.insert(1, {
 })
 
 print(f"Total configs to train: {len(random_configs)}")
-print(f"\nStarting search...\n")
+print(f"\nStarting search (validation fold only -- test fold is not touched)...\n")
 
 # ============================================================
-# Search Loop
+# Search Loop -- VALIDATION FOLD ONLY. Test fold is never referenced
+# anywhere in this loop, directly or indirectly.
 # ============================================================
 
 all_results = []
@@ -265,7 +349,7 @@ for i, config in enumerate(random_configs):
     model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
 
     for ev_thresh in EV_THRESHOLDS:
-        metrics = evaluate(model, ev_thresh)
+        metrics = evaluate_val_only(model, ev_thresh)
 
         result = {
             'config_idx': i,
@@ -277,51 +361,46 @@ for i, config in enumerate(random_configs):
         }
         all_results.append(result)
 
-    # Print quick summary for best EV threshold
+    # Print quick summary for best EV threshold (validation-only selection)
     best_ev = max(
         [r for r in all_results if r['config_idx'] == i],
-        key=lambda r: r['combined_roi'] if 20 <= r['test_bet_rate'] <= 35 else r['combined_roi'] - 50
+        key=lambda r: r['val_roi'] if 15 <= r['val_bet_rate'] <= 35 else r['val_roi'] - 50
     )
-    print(f"  -> Best: EV>={best_ev['ev_threshold']*100:.0f}% | Val: {best_ev['val_roi']:+.1f}% ({best_ev['val_bets']} bets, {best_ev['val_bet_rate']:.0f}%) | Test: {best_ev['test_roi']:+.1f}% ({best_ev['test_bets']} bets, {best_ev['test_bet_rate']:.0f}%) | Comb: {best_ev['combined_roi']:+.1f}%")
+    print(f"  -> Best: EV>={best_ev['ev_threshold']*100:.0f}% | Val: {best_ev['val_roi']:+.1f}% ({best_ev['val_bets']} bets, {best_ev['val_bet_rate']:.0f}%)")
 
 
 # ============================================================
-# Results Analysis
+# Results Analysis -- VALIDATION FOLD ONLY. This is where the winner
+# is chosen. The test fold has not been referenced anywhere above.
 # ============================================================
 
 print("\n" + "=" * 80)
-print("TOP 15 CONFIGS (sorted by combined ROI, filtered to 15-35% test bet rate)")
+print("TOP 15 CONFIGS (sorted by VALIDATION ROI, filtered to 15-35% validation bet rate)")
 print("=" * 80)
 
-# Filter to configs in the target bet rate range
-in_range = [r for r in all_results if 15 <= r['test_bet_rate'] <= 35]
+# Filter to configs in the target bet rate range (validation only)
+in_range = [r for r in all_results if 15 <= r['val_bet_rate'] <= 35]
+fallback_used = False
 if not in_range:
-    print("No configs in target range! Showing all:")
+    print("No configs in target validation bet rate range! Showing all:")
     in_range = all_results
+    fallback_used = True
 
-in_range_sorted = sorted(in_range, key=lambda r: r['combined_roi'], reverse=True)
+in_range_sorted = sorted(in_range, key=lambda r: r['val_roi'], reverse=True)
 
-print(f"\n{'#':>3} {'Label':<22} {'EV':>4} {'Depth':>5} {'LR':>5} {'MCW':>4} {'Gam':>4} {'Alpha':>5} {'Lam':>4} {'Est':>5} | {'V ROI':>7} {'V Bt%':>5} | {'T ROI':>7} {'T Bt%':>5} | {'C ROI':>7} {'C Bets':>6}")
-print("-" * 140)
+print(f"\n{'#':>3} {'Label':<22} {'EV':>4} {'Depth':>5} {'LR':>5} {'MCW':>4} {'Gam':>4} {'Alpha':>5} {'Lam':>4} {'Est':>5} | {'V ROI':>7} {'V Bets':>6} {'V Bt%':>5}")
+print("-" * 110)
 
 for rank, r in enumerate(in_range_sorted[:15], 1):
-    print(f"{rank:>3} {r['label']:<22} {r['ev_threshold']*100:>3.0f}% {r['max_depth']:>5} {r['learning_rate']:>5} {r['min_child_weight']:>4} {r['gamma']:>4} {r['reg_alpha']:>5} {r['reg_lambda']:>4} {r['n_estimators']:>5} | {r['val_roi']:>+6.1f}% {r['val_bet_rate']:>4.0f}% | {r['test_roi']:>+6.1f}% {r['test_bet_rate']:>4.0f}% | {r['combined_roi']:>+6.1f}% {r['combined_bets']:>6}")
-
-# Also show top by test ROI specifically
-print("\n" + "=" * 80)
-print("TOP 10 BY TEST ROI (15-35% test bet rate)")
-print("=" * 80)
-by_test = sorted(in_range, key=lambda r: r['test_roi'], reverse=True)
-for rank, r in enumerate(by_test[:10], 1):
-    print(f"{rank:>3} {r['label']:<22} EV>={r['ev_threshold']*100:.0f}% | Val: {r['val_roi']:>+6.1f}% ({r['val_bet_rate']:.0f}%) | Test: {r['test_roi']:>+6.1f}% ({r['test_bet_rate']:.0f}%) | Comb: {r['combined_roi']:>+6.1f}% ({r['combined_bets']} bets)")
+    print(f"{rank:>3} {r['label']:<22} {r['ev_threshold']*100:>3.0f}% {r['max_depth']:>5} {r['learning_rate']:>5} {r['min_child_weight']:>4} {r['gamma']:>4} {r['reg_alpha']:>5} {r['reg_lambda']:>4} {r['n_estimators']:>5} | {r['val_roi']:>+6.1f}% {r['val_bets']:>6} {r['val_bet_rate']:>4.0f}%")
 
 # ============================================================
-# Save Best Model
+# Select winner -- based on VALIDATION ROI ONLY
 # ============================================================
 
 best = in_range_sorted[0]
 print("\n" + "=" * 80)
-print("BEST CONFIG")
+print("WINNING CONFIG (selected on validation fold only)")
 print("=" * 80)
 print(f"  Label: {best['label']}")
 print(f"  EV Threshold: {best['ev_threshold']*100:.0f}%")
@@ -335,11 +414,57 @@ print(f"  n_estimators: {best['n_estimators']}")
 print(f"  subsample: {best['subsample']}")
 print(f"  colsample_bytree: {best['colsample_bytree']}")
 print(f"\n  Val ROI: {best['val_roi']:+.2f}% ({best['val_bets']} bets, {best['val_bet_rate']:.1f}%)")
-print(f"  Test ROI: {best['test_roi']:+.2f}% ({best['test_bets']} bets, {best['test_bet_rate']:.1f}%)")
-print(f"  Combined ROI: {best['combined_roi']:+.2f}% ({best['combined_bets']} bets)")
+print(f"  Val Win Rate: {best['val_win_rate']*100:.1f}%")
+
+val_roi_ci = bootstrap_roi_ci(best['val_bet_results'], n_resamples=10000, seed=42, ci_pct=95.0)
+print(f"  Val ROI 95% CI (bootstrap, 10000 resamples): [{val_roi_ci['lower']:+.2f}%, {val_roi_ci['upper']:+.2f}%]")
+
+val_breakdown = side_breakdown(best['val_bet_results'])
+print("  Val OVER/UNDER breakdown:")
+print_side_breakdown("Val", val_breakdown)
+
+# ============================================================
+# SINGLE TEST-FOLD TOUCH -- the only place in this script that
+# evaluates on the test fold. Uses the winning model + EV threshold,
+# both chosen entirely from validation-fold performance above.
+# ============================================================
+
+print("\n" + "=" * 80)
+print("FINAL TEST-FOLD EVALUATION (single touch -- test fold was not used for selection)")
+print("=" * 80)
+
+test_trainer = ClassifierTrainer()
+test_trainer.model = best['model']
+test_trainer.feature_names = feature_cols
+
+test_m = test_trainer.evaluate_profitability(
+    X_test, y_test, df, test_idx, dataset_name='Test', ev_threshold=best['ev_threshold']
+)
+test_bet_rate = test_m['total_bets'] / test_total * 100
+
+print(f"\n  Test ROI: {test_m['roi']:+.2f}% ({test_m['total_bets']} bets, {test_bet_rate:.1f}%)")
+print(f"  Test Win Rate: {test_m['win_rate']*100:.1f}%")
+
+test_roi_ci = bootstrap_roi_ci(test_m['bet_results'], n_resamples=10000, seed=42, ci_pct=95.0)
+print(f"  Test ROI 95% CI (bootstrap, 10000 resamples): [{test_roi_ci['lower']:+.2f}%, {test_roi_ci['upper']:+.2f}%]")
+
+test_breakdown = side_breakdown(test_m['bet_results'])
+print("  Test OVER/UNDER breakdown:")
+print_side_breakdown("Test", test_breakdown)
+
+if test_roi_ci['lower'] < 0 < test_roi_ci['upper']:
+    print("\n  WARNING: Test ROI 95% CI spans zero -- result is not statistically distinguishable from breakeven.")
+if test_m['roi'] < 0:
+    print("\n  WARNING: Test ROI is negative.")
+if fallback_used:
+    print("\n  WARNING: No configs fell in the 15-35% validation bet rate range; fallback to all configs was used.")
+
+# ============================================================
+# Save Best Model
+# ============================================================
 
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-model_dir = Path('models/trained') / f'tuned_v1_{timestamp}'
+model_dir = Path('models/trained') / f'tuned_v2_clean_{timestamp}'
 model_dir.mkdir(parents=True, exist_ok=True)
 
 model_path = model_dir / 'classifier_model.json'
@@ -351,8 +476,10 @@ with open(feature_path, 'w') as f:
     json.dump(feature_cols, f, indent=2)
 
 metadata = {
-    'config_name': f'Tuned V1 ({best["label"]})',
+    'config_name': f'Tuned V2 Clean ({best["label"]})',
     'trained_date': datetime.now().isoformat(),
+    'selection_method': 'validation_only_test_touched_once',
+    'training_data': 'multibook_classification_training_data.parquet (13192 rows, regenerated 2026-07-07 post-corruption-fix)',
     'ev_threshold': best['ev_threshold'],
     'hyperparameters': {
         'max_depth': best['max_depth'],
@@ -366,14 +493,23 @@ metadata = {
         'colsample_bytree': best['colsample_bytree'],
     },
     'num_features': len(feature_cols),
+    'fold_boundaries': {
+        'train': {'start': str(train_dates.min()), 'end': str(train_dates.max()), 'rows': int(len(train_idx))},
+        'val': {'start': str(val_dates.min()), 'end': str(val_dates.max()), 'rows': int(len(val_idx))},
+        'test': {'start': str(test_dates.min()), 'end': str(test_dates.max()), 'rows': int(len(test_idx))},
+    },
     'val_roi': best['val_roi'],
     'val_bets': best['val_bets'],
     'val_bet_rate': best['val_bet_rate'],
-    'test_roi': best['test_roi'],
-    'test_bets': best['test_bets'],
-    'test_bet_rate': best['test_bet_rate'],
-    'combined_roi': best['combined_roi'],
-    'combined_bets': best['combined_bets'],
+    'val_win_rate': best['val_win_rate'],
+    'val_roi_ci_95': val_roi_ci,
+    'val_breakdown': val_breakdown,
+    'test_roi': test_m['roi'],
+    'test_bets': test_m['total_bets'],
+    'test_bet_rate': test_bet_rate,
+    'test_win_rate': test_m['win_rate'],
+    'test_roi_ci_95': test_roi_ci,
+    'test_breakdown': test_breakdown,
     'features': feature_cols,
 }
 with open(metadata_path, 'w') as f:

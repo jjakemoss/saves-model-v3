@@ -1,0 +1,170 @@
+================================================================================
+PROBABILITY CALIBRATION -- tuned_v2_clean_20260707_212023
+Run timestamp: 2026-07-07T22:05:33.770004
+================================================================================
+
+Modeling frame: 13192 rows, 114 features (verified against saved model).
+Train: 7915 | Val: 2638 | Test: 2639
+  CAL-FIT:    rows 7915..9234  (n=1319)
+  CAL-SELECT: rows 9234..10553 (n=1319)
+
+Raw probabilities computed for all folds (train/val/test).
+Test outcomes/odds will not be inspected until step 6.
+
+================================================================================
+STEP 3: CALIBRATOR FIT (CAL-FIT) + SELECTION (CAL-SELECT)
+================================================================================
+
+Calibrator        Brier    LogLoss
+Raw             0.26469    0.72587
+Isotonic        0.24918    0.79128
+Platt           0.24844    0.68997
+
+Chosen calibrator (lower CAL-SELECT Brier): platt
+
+================================================================================
+STEP 4: DIAGNOSTICS ON CAL-SELECT (before any test contact)
+================================================================================
+
+--- 4a. Reliability tables (CAL-SELECT) ---
+
+  RAW P(over) deciles:
+  bin                         n  mean_pred  actual_rate
+  (0.119, 0.265]            134     0.2132       0.3582
+  (0.265, 0.331]            131     0.2947       0.6183
+  (0.331, 0.389]            133     0.3639       0.5789
+  (0.389, 0.44]             132     0.4158       0.5303
+  (0.44, 0.492]             132     0.4648       0.3333
+  (0.492, 0.537]            129     0.5159       0.4496
+  (0.537, 0.585]            132     0.5604       0.4848
+  (0.585, 0.65]             134     0.6219       0.5224
+  (0.65, 0.74]              132     0.6916       0.6515
+  (0.74, 0.96]              130     0.7964       0.5692
+
+  CALIBRATED (platt) P(over) deciles:
+  bin                         n  mean_pred  actual_rate
+  (0.452, 0.495]            134     0.4818       0.3582
+  (0.495, 0.508]            131     0.5010       0.6183
+  (0.508, 0.519]            133     0.5144       0.5789
+  (0.519, 0.528]            132     0.5238       0.5303
+  (0.528, 0.537]            132     0.5322       0.3333
+  (0.537, 0.544]            129     0.5409       0.4496
+  (0.544, 0.553]            132     0.5485       0.4848
+  (0.553, 0.564]            134     0.5592       0.5224
+  (0.564, 0.582]            132     0.5723       0.6515
+  (0.582, 0.667]            130     0.5968       0.5692
+
+  Inversion check (doc 1.3): P(over)>=0.6 bucket actual over-rate
+    Raw:        n=379, actual over rate=58.6%
+    Calibrated: n=34, actual over rate=64.7%
+
+--- 4b. Probability compression (quantiles, CAL-SELECT) ---
+  quantile        raw   calibrated
+       1%      0.1576       0.4669
+       5%      0.2192       0.4841
+      25%      0.3668       0.5150
+      50%      0.4922       0.5369
+      75%      0.6206       0.5590
+      95%      0.7846       0.5923
+      99%      0.8783       0.6201
+
+--- 4c. Discrimination: AUC (calibration cannot fix this) ---
+  Model AUC on CAL-SELECT:          0.5423
+  Market (vig-free) AUC on CAL-SELECT: 0.4753
+  Model AUC on CAL-FIT (reference):  0.5388
+  --> Model AUC > market AUC: there is at least discrimination headroom over the market.
+
+--- 4d. Blend check: calibrated model prob + market prob -> logistic regression ---
+  Blend coefficients: model=+0.9685, market=-0.0643, intercept=-0.3543
+  Blend AUC on CAL-SELECT:   0.5437  (model alone: 0.5423, market alone: 0.4753)
+  Blend Brier on CAL-SELECT: 0.24973  (calibrated model alone: 0.24844)
+
+================================================================================
+STEP 5: THRESHOLD SWEEP ON CAL-SELECT (calibrated probabilities)
+================================================================================
+
+--- Arm: both ---
+   thresh   bets  bet_rate  hit_rate       roi
+    0.02    434     32.9%     58.3%   +11.94%
+    0.03    327     24.8%     56.3%    +8.61%
+    0.05    133     10.1%     63.9%   +24.11%
+    0.08     35      2.7%     68.6%   +33.02%
+    0.10      8      0.6%     62.5%   +17.95%
+    0.12      4      0.3%    100.0%   +87.76%
+    0.15      0      0.0%      0.0%    +0.00%
+
+--- Arm: under_only ---
+   thresh   bets  bet_rate  hit_rate       roi
+    0.02      8      0.6%    100.0%   +95.72%
+    0.03      1      0.1%    100.0%  +100.00%
+    0.05      0      0.0%      0.0%    +0.00%
+    0.08      0      0.0%      0.0%    +0.00%
+    0.10      0      0.0%      0.0%    +0.00%
+    0.12      0      0.0%      0.0%    +0.00%
+    0.15      0      0.0%      0.0%    +0.00%
+
+================================================================================
+PRE-REGISTERED POLICIES (chosen from CAL-SELECT only, before touching test)
+================================================================================
+  Policy A (both sides):  EV threshold = 0.05  (CAL-SELECT: 133 bets, +24.11% ROI)
+  Policy B (UNDER only):  EV threshold = 0.02  (CAL-SELECT: 8 bets, +95.72% ROI)
+
+================================================================================
+STEP 6: SINGLE TEST-FOLD TOUCH
+================================================================================
+
+--- Policy A_both (arm=both, threshold=0.05) ---
+  Bets: 238 | Bet rate: 9.0% | Hit rate: 46.6% | ROI: -8.80%
+  Row-level bootstrap 95% CI:     [-21.47%, +3.75%]
+  Cluster (goalie-night) bootstrap 95% CI: [-27.10%, +9.66%]  (n_clusters=149)
+  Unique goalie-nights among bets: 149
+  OVER/UNDER breakdown:
+    OVER: 234 bets | hit rate 45.7% | ROI -10.60%
+    UNDER: 4 bets | hit rate 100.0% | ROI +96.43%
+
+--- Policy B_under_only (arm=under_only, threshold=0.02) ---
+  Bets: 25 | Bet rate: 0.9% | Hit rate: 52.0% | ROI: +2.80%
+  Row-level bootstrap 95% CI:     [-36.71%, +41.96%]
+  Cluster (goalie-night) bootstrap 95% CI: [-54.57%, +50.71%]  (n_clusters=18)
+  Unique goalie-nights among bets: 18
+
+--- Test-fold reliability + Brier (calibrated vs raw, single touch) ---
+  Brier raw (test):        0.27579
+  Brier calibrated (test): 0.25040
+
+  RAW P(over) deciles (TEST):
+  bin                         n  mean_pred  actual_rate
+  (0.0742, 0.263]           265     0.2056       0.4679
+  (0.263, 0.332]            266     0.3033       0.5113
+  (0.332, 0.394]            261     0.3662       0.5249
+  (0.394, 0.443]            264     0.4158       0.4962
+  (0.443, 0.493]            265     0.4686       0.5396
+  (0.493, 0.537]            262     0.5151       0.4962
+  (0.537, 0.59]             265     0.5626       0.5811
+  (0.59, 0.655]             266     0.6236       0.5226
+  (0.655, 0.712]            261     0.6820       0.5747
+  (0.712, 0.926]            264     0.7748       0.4773
+
+  CALIBRATED (platt) P(over) deciles (TEST):
+  bin                         n  mean_pred  actual_rate
+  (0.431, 0.494]            265     0.4797       0.4679
+  (0.494, 0.509]            266     0.5028       0.5113
+  (0.509, 0.52]             261     0.5149       0.5249
+  (0.52, 0.528]             264     0.5238       0.4962
+  (0.528, 0.537]            265     0.5329       0.5396
+  (0.537, 0.544]            262     0.5408       0.4962
+  (0.544, 0.554]            265     0.5489       0.5811
+  (0.554, 0.565]            266     0.5595       0.5226
+  (0.565, 0.576]            261     0.5704       0.5747
+  (0.576, 0.642]            264     0.5915       0.4773
+
+================================================================================
+STEP 7: SAVING ARTIFACTS
+================================================================================
+  Saved calibrator to: models\trained\tuned_v2_clean_20260707_212023\calibrator.pkl
+  Calibrator type: platt (see calibration_metadata.json 'calibrator_type' / 'calibrator_usage')
+  Saved metadata to: models\trained\tuned_v2_clean_20260707_212023\calibration_metadata.json
+
+================================================================================
+CALIBRATION COMPLETE
+================================================================================

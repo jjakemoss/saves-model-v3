@@ -228,6 +228,48 @@ the section 2 fix, a retrain gets: clean labels, ~2x effective sample, balanced
 home/away, and three more months of the most recent season. This is the
 mandatory first project; everything else layers on top.
 
+**Done 2026-07-07, and the result is the most important honest number in this
+repo: there is no demonstrable backtest edge on the clean data.** The full
+retrain (same 42-config random search, same seed, same 60/20/20 chronological
+split, now with the leak-free selection described in 3.3) was run on the
+regenerated 13,192-row parquet. Fold boundaries: train 2024-10-04 to
+2025-10-16 (7,915 rows), val 2025-10-16 to 2025-12-04 (2,638), test
+2025-12-04 to 2026-04-13 (2,639). The winner (selected on validation only:
+depth 3, lr 0.05, mcw 10, gamma 1.0, alpha 10, lambda 40, 1,200 trees, EV
+threshold 0.15):
+
+- Validation: +5.66% ROI (872 bets, 33.1% bet rate, 56.2% win rate),
+  bootstrap 95% CI [-0.44%, +12.02%] -- **spans zero**.
+- Single-touch test: **-7.09% ROI** (844 book-row bets, 32.0% bet rate,
+  49.2% win rate), row bootstrap 95% CI [-13.44%, -0.79%]. OVER -8.72%
+  (368 bets), UNDER -5.82% (476 bets): both sides lose. Important precision
+  caveat: multibook rows on the same goalie-night are correlated. Deduping
+  to one bet per goalie-game still loses (-6.8% ROI on 448 bets), but the
+  wider bootstrap CI spans zero (about [-15.7%, +1.9%]). The conclusion is
+  still bad, just not "statistically proven negative" in the independent-bet
+  sense.
+- The top 10 validation configs span +2.9% to +5.7% ROI -- all inside one
+  CI half-width of each other, so the "winner" is a noise draw, not a
+  discovery. The production config ranked 7th on validation (+3.8%).
+- Every number above was independently re-derived (raw booster + reimplemented
+  odds math + fresh bootstrap seed) and reproduced exactly. Model artifacts:
+  `models/trained/tuned_v2_clean_20260707_212023/` (includes the full tuning
+  log). **Not deployed** -- the production model dir and `predictor.py` are
+  untouched.
+
+What this means: the old +23.31% headline is now fully explained as
+selection leakage on corrupted labels. The raw XGBoost-vs-market pipeline, on
+clean labels with honest selection, loses at the books' own odds. The live
+UNDER edge (section 1.2) was measured on Underdog lines during Feb-Apr 2026
+and is NOT reproduced by this backtest, whose test window (Dec 2025-Apr 2026)
+overlaps it. The venue analysis (done 2026-07-07, see 4.3) has since ruled
+out soft Underdog lines as the explanation, and the calibration layer (done
+2026-07-07, see 3.2) found no pre-registered bettable pocket. Model
+probabilities remain grossly overconfident: at a 0.15 probability-edge
+threshold the model still bets a third of all lines, claiming an average
++22.3% edge on test bets that resolve at a 49% win rate. The remaining
+planning assumption is zero proven prior edge.
+
 ### 3.2 Add a probability calibration layer
 
 The raw XGBoost score is not a trustworthy probability past ~0.65 (section
@@ -245,6 +287,64 @@ consequences worth spelling out:
 Validate it the same way everything else is validated: fit on one chronological
 fold, check on a later one.
 
+**Implemented 2026-07-07 -- verdict: no pre-registered +EV pocket is
+demonstrated after calibration.** Protocol (pre-registered, leak-free):
+validation fold split
+chronologically (CAL-FIT rows 7915-9234, CAL-SELECT 9234-10553); isotonic and
+Platt fit on CAL-FIT only; Platt chosen by CAL-SELECT Brier (raw 0.26469,
+isotonic 0.24918 but with log-loss *worse* than raw -- it overfit 1,319
+points -- Platt 0.24844); betting policies pre-registered on CAL-SELECT;
+exactly one test-fold touch. Artifacts: `calibrator.pkl`,
+`calibration_metadata.json`, run log in the `tuned_v2_clean_20260707_212023`
+model dir; repeatable script `scripts/calibrate_model.py`. The repo's global
+ignore rules normally hide `*.pkl` and `*.log`, so `.gitignore` now has narrow
+exceptions for this calibrator and the two run logs. All headline numbers
+were independently re-derived from scratch in a second pass (Platt refit
+agrees with the saved artifact to within 0.0007).
+
+The findings, in order of importance:
+
+1. **The model carries almost no information.** Discrimination was only
+   weakly positive inside validation: AUC 0.539 on CAL-FIT and 0.542 on
+   CAL-SELECT. It did not meaningfully survive the final test fold (test AUC
+   0.513; market vig-free implied probability AUC 0.522). Calibration
+   compresses the raw 0.16-0.88 probability range down to 0.467-0.620
+   (1st-99th percentile). The wild raw-score confidence that drove live
+   betting bands was miscalibration, not knowledge. (Market implied-prob AUC
+   is a limited comparator because books price saves props mostly by moving
+   the *line*, not the odds, so implied probability is nearly constant by
+   construction -- beating or losing to it on AUC is not the same as beating
+   the market price.)
+2. **Calibration makes the probabilities much less wrong, but not good enough
+   to bet.** Test Brier improves 0.27579 -> 0.25040 because Platt scaling
+   pulls the model back toward base rates. The calibrated reliability tables
+   are better than raw, but still noisy; the top calibrated decile on test
+   overpredicts badly. The probabilities became more honest, and that honesty
+   reveals there is little to bet on.
+3. **Pre-registered test results.** Policy A (both sides, calibrated edge >=
+   0.05): -8.80% ROI on 238 bets across 149 goalie-nights (row bootstrap CI
+   [-21.5%, +3.8%], cluster CI [-27.1%, +9.7%]); the bet mix collapsed to 98%
+   OVER and lost -10.6% on that side. Policy B (UNDER-only, edge >= 0.02): 25
+   bets on 18 nights in 4+ months, +2.80%, CI roughly +/-45pp -- uninformative.
+   Post-hoc autopsy: the CAL-SELECT pocket that selected policy A (+24.1%) was
+   133 bets on only 52 goalie-nights, all OVER, cluster CI already spanning
+   zero -- fragile before the test fold ever saw it.
+4. **The calibrated UNDER pool barely exists**: 8 qualifying UNDER bets in ~7
+   weeks of CAL-SELECT, 25 in 4+ months of test. The live "65-70% confidence
+   UNDER band" (section 4.2) was a raw-score artifact of the corrupted-data
+   model. After honest calibration, that band is nearly empty.
+
+Combined with the venue analysis (4.3), both offseason diagnostics now point
+the same way: Underdog's lines are not soft, and the current feature/model
+stack has no demonstrated calibrated edge over the market. The live +32.6%
+UNDER run is left without a demonstrated skill explanation -- a favorable
+variance draw is the leading candidate, with "something the old model/window
+carried that neither test can see" as the unprovable remainder. Planning
+assumption for next season: zero proven prior edge. Any real edge now has to
+come from new information the market underweights (roadmap items 7-9), and
+in-season CLV tracking (item 6) is the arbiter of whether live betting resumes
+at meaningful stakes.
+
 ### 3.3 Select models honestly (this is why 3.1's results can be trusted)
 
 Change `tune_hyperparameters.py` to rank candidates by **validation ROI only**,
@@ -255,6 +355,19 @@ average) -- `CURRENT_HISTORICAL_DATA.md` section 6 already makes this case.
 Also worth adding to the harness: a bootstrap CI on the backtest ROI, since a
 ~1,000-row test fold carries roughly +/-2pp of standard error on hit rate, and
 single-number ROI comparisons inside that noise band are coin flips.
+
+**Implemented 2026-07-07.** The search loop in `tune_hyperparameters.py` now
+never touches the test fold (the old version leaked it two ways: candidates
+were filtered by *test* bet rate and ranked by combined val+test ROI). New
+flow: filter to 15-35% validation bet rate, rank by validation ROI, then one
+single test-fold evaluation of the winner -- verified from the run log: 168
+validation evaluations, exactly 1 test evaluation. Added `bootstrap_roi_ci()`
+(10,000 resamples, percentile method), OVER/UNDER side breakdowns, fold-date
+printing, and hard asserts that `feature_cols` is exactly the 114 approved
+features with no identifier columns. `ClassifierTrainer.evaluate_profitability`
+now also returns per-bet `bet_results` (backward compatible). Walk-forward
+remains future work pending a third season of data. Results of the first
+honest run are in 3.1.
 
 ### 3.4 Give the model the market's own information
 
@@ -359,6 +472,14 @@ them. Cheapest implementation: in `predictor.py`'s
 if a post-retrain model shows a *live* (not backtest) OVER record above water
 on 50+ bets.
 
+**Caveat added 2026-07-07 after the clean retrain (3.1)**: on the clean-data
+backtest, UNDER bets also lose at sharp-book odds (-5.82% on the test window,
+which overlaps the live record's Feb-Apr 2026 period). "UNDER only" still
+stands as a description of the live record, but its causal story -- model
+skill vs. Underdog's soft lines vs. a favorable variance draw on n=168 -- is
+now an open question. Roadmap items 3-4 (venue discrepancy analysis,
+calibration) are designed to answer it before this rule gets automated.
+
 ### 4.2 The UNDER-only Underdog parlay question, answered
 
 This was the open thread in `HISTORICAL_DATA_ANALYSIS.md`. Simulation on the
@@ -426,9 +547,59 @@ been moving toward per-leg pricing on some markets, and if goalie saves become
 odds-adjusted rather than flat-multiplier, the EV table above must be recomputed
 with the actual multipliers shown at ticket time.
 
+**Caveat added 2026-07-07**: the confidence tiers above are the *raw,
+uncalibrated* probabilities of the model trained on corrupted data -- the same
+probabilities section 1.3 shows are inverted past 0.6 and the clean retrain
+(3.1) shows are grossly overconfident. The observed 73-81% leg hit rates are
+real, but the tier labels attached to them are not trustworthy probability
+statements. After the calibration layer (3.2) exists, re-derive the leg-pool
+threshold from calibrated probabilities; until then the nightly rule's "65%+
+confidence" gate should be treated as an empirical filter that happened to
+work on one sample, not a validated one. **Resolved 2026-07-07: calibration
+confirmed the fear -- the calibrated-probability UNDER pool is nearly empty
+(25 qualifying bets in 4+ months of test data at even a 2-point edge
+threshold; see 3.2). The nightly rule above should not be automated on the
+current model.**
+
 ### 4.3 Underdog vs. BetOnline (venue allocation)
 
-Keep both, with defined jobs. Underdog parlays offer the highest EV per dollar
+**Venue discrepancy analysis (roadmap item 3), done 2026-07-07 -- the
+soft-line hypothesis is dead in its cleanest form.** On the 248 goalie-nights
+(Jan-Mar 2026) where `betting.db` holds both an Underdog line and a sharp-book
+line, Underdog's total matched the sharp number exactly on 95.2% of nights
+(mean gap -0.04, median 0.00, range [-1.0, +1.0]); the few deviations sat
+*below* consensus -- the unhelpful direction for UNDER bettors -- and March
+had zero deviations at all. Zero of the model's 137 live Underdog UNDER
+recommendations landed on a night with a favorable gap, so an inflated line
+cannot explain any part of the live hit rate; legs at zero gap hit 60-70%
+(n=20 all-tier / n=10 at the 65%+ tier), statistically indistinguishable from
+legs with no sharp comparison (68-73%). The mechanical fade-the-gap strategy
+is untestable at this sample size (one UNDER-qualifying night in 3.5 months).
+
+Caveats, honestly stated: coverage is thin and lopsided -- BetOnline was
+tracked only in Jan-Feb, BetMGM only in March, never both at once, and April
+has no sharp rows whatsoever -- so "sharp consensus" here is always a single
+book, and intraday line movement can't be reconstructed (the tracker stores
+no fetch timestamp; 60 of 1,479 deduped goalie-night-book groups showed real
+line movement across re-fetches). This rules out "Underdog quotes inflated
+totals" as a strategy; it cannot rule out subtler venue effects. All headline
+numbers were independently re-derived in a second pass from scratch (note for
+future queries: the db's `confidence_pct` column is NOT P(side) -- the 65%+
+tier must be computed as `1 - prob_over >= 0.65`).
+
+Useful context that fell out of verification: the monthly base rate of UNDER
+at quoted lines was 48% / 45% / 56% / 56% for Jan / Feb / Mar / Apr 2026 --
+the late-season league-wide saves decline gave every UNDER a ~4-point
+tailwind in Mar-Apr (enough to nudge blind 3-leg parlays past their 55.0%
+per-leg breakeven, and no more). That explains only a small slice of the live
+legs' 68-73% hit rate. What remains on the table for the live profit: model
+selection skill that neither completed diagnostic can see, and/or a favorable
+variance draw. The calibration layer (3.2) was the next and last cheap
+discriminator between those two -- **it has since reported (2026-07-07): no
+calibrated model edge survives, leaving the variance draw as the leading
+explanation for the live run (see 3.2).**
+
+Keep both venues, with defined jobs. Underdog parlays offer the highest EV per dollar
 *when 2-3 qualifying legs exist* (at 65% legs: +26.8% for 2-leg, +64.8% for
 3-leg, vs +19.2% for a -120 single). BetOnline singles are the outlet for
 1-leg nights (~a third of action nights) and the hedge against Underdog
@@ -444,17 +615,21 @@ take the UNDER at the higher number.
 
 ### 4.4 Staking
 
-- Baseline: **2-3% of bankroll per ticket** (roughly quarter-Kelly for a 3-leg
-  Power Play at 65% true legs), hard cap ~8% of bankroll exposed per night.
+- If betting continues before a new edge is demonstrated, size it as data
+  collection, not income. Baseline: **token stakes / <=1% of bankroll per
+  ticket**, hard cap ~3% exposed per night, until CLV and next-season results
+  show the edge is real. The old 2-3% ticket guidance only makes sense if a
+  65% true-leg pool is re-established.
 - Expect long losing streaks by construction: a +EV 3-leg ticket at 65% legs
   still loses 72.5% of the time. The bankroll math only works if a 10-ticket
   losing streak (a 4% probability event over any given 10-ticket stretch) is
   boring rather than ruinous.
 - Scale stakes with the bankroll (re-anchor the percentage monthly), not with
   recent results.
-- The $100 -> $1,800 run included real edge *and* a strongly favorable variance
-  draw. Planning assumption for next season should be the regressed edge from
-  section 3.7, not last season's realized multiple.
+- The $100 -> $1,800 run may have included some model/window-specific signal,
+  but the completed diagnostics did not demonstrate it. Planning assumption
+  for next season should be zero proven prior edge, not last season's realized
+  multiple.
 
 ### 4.5 Tracking upgrades (do these before opening night)
 
@@ -474,22 +649,37 @@ take the UNDER at the higher number.
 
 ## 5. Prioritized offseason roadmap
 
+Reordered 2026-07-07 after the clean retrain came back with no backtest edge
+(3.1). The old ordering assumed the model had an edge and the remaining work
+was policy plumbing; the honest sequence now runs two cheap diagnostics that
+determine where (and whether) the live edge is real, then a decision gate,
+then the plumbing.
+
 | # | Project | Effort | Sections |
 |---|---|---|---|
 | 1 | ~~Fix multibook matching bug, dedupe, drop placeholder-odds rows, regenerate parquets~~ **done 2026-07-07** (see 2.3) | ~a day | 2.3 |
-| 2 | Retrain + honest selection (val-only ranking, test touched once, bootstrap CIs) | 1-2 days | 3.1, 3.3 |
-| 3 | Calibration layer on the retrained model | half day | 3.2 |
-| 4 | UNDER-only policy + adaptive parlay rule in the daily workflow | half day | 4.1, 4.2 |
-| 5 | `tickets` table + CLV capture in the tracker | ~a day | 4.5 |
-| 6 | Market-anchor feature experiment (implied prob as feature) | 1-2 days | 3.4 |
-| 7 | New context features (game total/moneyline, opponent rest, special teams, season normalization) | 2-3 days | 3.6 |
-| 8 | Distributional saves model prototype, head-to-head vs classifier | ~a week | 3.5 |
-| 9 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
-| 10 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
+| 2 | ~~Retrain + honest selection (val-only ranking, test touched once, bootstrap CIs)~~ **done 2026-07-07** (see 3.1/3.3 -- result: no backtest edge on clean data) | 1-2 days | 3.1, 3.3 |
+| 3 | ~~**Venue discrepancy analysis**: from `betting.db` (Jan-Apr 2026), for every goalie-night quoted at both Underdog and a sharp book, measure the line gap and test whether "UNDER at Underdog when its line sits above sharp consensus" reproduces the live ROI *without any model*.~~ **done 2026-07-07 -- result: Underdog lines are NOT soft.** 95.2% exact match with sharp consensus on 248 checkable nights; zero of the 137 live UNDER legs sat on a favorable gap. Soft lines do not explain the live profit (see 4.3). | half day | 4.3, 3.1 |
+| 4 | ~~**Calibration layer** -- the decisive model-edge test: fit on validation, check whether any honest +EV pockets survive, one pre-registered test touch.~~ **done 2026-07-07 -- result: no demonstrated edge.** Validation AUC was only ~0.54 and test AUC fell to 0.513; calibrated probs compress to 0.467-0.620; pre-registered test policies lose or are uninformative; the calibrated UNDER pool barely exists (see 3.2). | half day | 3.2 |
+| 5 | **Strategy decision gate -- inputs now resolved** (item 3: lines not soft; item 4: no calibrated model edge). The honest planning assumption for next season is **zero proven prior edge**. The gate is now a user decision: bet small-or-nothing while CLV (item 6) accumulates evidence, and treat items 7-9 as the only remaining paths to a real model edge. The UNDER-only + parlay automation (4.1/4.2) should NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2 |
+| 6 | `tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude | ~a day | 4.5 |
+| 7 | Market-anchor feature experiment (implied prob as feature) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49% | 1-2 days | 3.4 |
+| 8 | New context features (game total/moneyline, opponent rest, special teams, season normalization) | 2-3 days | 3.6 |
+| 9 | Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required) | ~a week | 3.5 |
+| 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
+| 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
 
-Items 1-5 are the "must happen before opening night" set. Items 6-8 are where
-the next real accuracy gains live. If only one thing gets done this offseason,
-it is item 1 -- every other number in this repo is built on that data.
+Items 5-6 are the "must happen before opening night" set if any betting
+continues: make the strategy decision consciously, then build tickets + CLV so
+next season measures the thing actually being bet. Items 7-9 are where
+model-side gains live, if any exist -- and none of them should be evaluated
+except through the item-2 honest harness, preferably with full-date/game-level
+fold boundaries so multibook rows from the same goalie-night cannot straddle
+folds. If only one thing gets done next, it is item 6: the tracker must be
+able to represent tickets and CLV before more real money produces another
+ambiguous record. Do not respond to the item-2 result by running more
+hyperparameter searches against the test fold -- that road leads straight back
+to the retired +23.31%.
 
 ## 6. Appendix: what was checked and found sound
 

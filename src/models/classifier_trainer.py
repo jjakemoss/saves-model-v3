@@ -506,7 +506,8 @@ class ClassifierTrainer:
                 'total_profit': 0.0,
                 'roi': 0.0,
                 'avg_ev': 0.0,
-                'skipped_no_odds': skipped_no_odds
+                'skipped_no_odds': skipped_no_odds,
+                'bet_results': []
             }
 
         total_bets = len(results)
@@ -533,7 +534,11 @@ class ClassifierTrainer:
             'total_profit': total_profit,
             'roi': roi,
             'avg_ev': avg_ev,
-            'skipped_no_odds': skipped_no_odds
+            'skipped_no_odds': skipped_no_odds,
+            # Per-bet grading detail (bet side, profit, won, ev) -- needed by callers
+            # that want bootstrap CIs or side (OVER/UNDER) breakdowns. Existing callers
+            # that only read the aggregate keys above are unaffected.
+            'bet_results': results
         }
 
     def test_ev_thresholds(self, X, y, df, split_idx, dataset_name='Test', thresholds=[0.01, 0.02, 0.03, 0.05, 0.07, 0.10]):

@@ -14,6 +14,9 @@ __pycache__/
 *.parquet
 .claude/settings.local.json
 claude.md
+AGENTS.md
 HANDOVER/
 saves_model_v3.egg-info/
 *.log
+!models/trained/tuned_v2_clean_20260707_212023/calibrator.pkl
+!models/trained/tuned_v2_clean_20260707_212023/*_run.log
