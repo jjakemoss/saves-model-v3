@@ -8,16 +8,17 @@ Every number below was computed fresh from the repo's data during this analysis,
 not carried over from earlier docs. Where a finding is statistically thin, it says
 so.
 
-The one-paragraph version: **the model has a real, live-verified edge on UNDER
-recommendations (+32.6% ROI on 168 out-of-sample bets from the current model),
-its OVER recommendations are a persistent money-loser that should be suppressed,
-and the single highest-impact offseason project is fixing a newly root-caused
-training-data corruption bug -- roughly 44% of recent training rows attach one
-goalie's betting line to the other goalie's stats and outcome.** On the betting
-side, UNDER-only Underdog parlays built from 65%+ confidence legs backtest
-strongly positive under real Underdog multipliers, and an adaptive nightly
-construction rule (3-leg when the night gives you 3+ qualifying legs, smaller
-otherwise) is the recommended default for next season.
+The one-paragraph version after the full offseason audit: **the current model
+stack has no demonstrated tradable edge.** The old +23.31% backtest was
+contaminated by test-set selection and corrupted multibook labels; the clean
+retrain failed its single test touch; calibration compressed the model's raw
+confidence and found no pre-registered bettable pocket; and venue analysis did
+not show that Underdog was simply hanging softer saves totals. The live Feb-Apr
+2026 UNDER run remains genuinely odd and worth respecting, but it is not enough
+to scale without CLV or a repeatable mechanism. The offseason priority is now
+to turn the system into an edge-detection platform: ticket-level tracking, CLV,
+market-aware features, better hockey-context features, and a distributional
+saves model evaluated through the honest harness.
 
 ## Table of contents
 
@@ -444,10 +445,10 @@ blind UNDER printed money; by 2025-26 the market adjusted (24.0 line vs 24.1
 actual, 51% over rate) and that free edge vanished -- exactly Agent C's
 "single-season artifact." The lesson for next season: any component of the
 UNDER edge that was just "the market lags a declining-shots environment" decays
-as books adjust. The part that survives -- the model's *selection* among unders
-(69% hit vs a 51.6% blind-under base rate in the same window) -- is real skill,
-but assume the blended edge regresses from the observed +32.6% toward something
-like half that, and size accordingly.
+as books adjust. The live model's *selection* among unders (69% hit vs a 51.6%
+blind-under base rate in the same window) remains an interesting anomaly, but
+the clean retrain/calibration work did not demonstrate a repeatable mechanism.
+Do not size next season as if +32.6% is a known prior edge.
 
 ### 3.8 Early-season handling
 
@@ -457,6 +458,153 @@ played before a goalie is bettable; seed early-season windows with the
 goalie's previous-season averages; or add a `games_played_this_season` feature
 and let the model learn its own caution. At minimum, expect October to be the
 noisiest month and stake down accordingly.
+
+### 3.9 Codex-authored: where an NHL saves edge can still exist
+
+Authored by Codex, 2026-07-08. The clean retrain and calibration results kill
+one thesis: "rolling goalie form plus line-relative features can reliably beat
+posted saves lines by itself." They do **not** prove NHL goalie saves are
+unbeatable. They say the edge, if it exists, is more likely to live in places
+where the book's number is stale, mechanically constrained, or missing a piece
+of hockey context the model currently does not see.
+
+The useful mental model: a saves line is mostly a team shot-volume and game
+environment price, with a goalie name attached. Books are not asking "how many
+saves has this goalie made recently?" in isolation. They are pricing expected
+shots against, goalie start probability, opponent pace, favorite/underdog game
+script, injuries, rest, and market demand, then rounding to a half-save line
+with juice. A model that mostly sees goalie rolling saves is trying to infer
+the market's real inputs through shadows.
+
+Places where a real edge is still plausible:
+
+- **Starter/news timing**: goalie confirmations, surprise backups, beat-writer
+  hints, morning-skate absences, illness, travel, and back-to-back deployment.
+  These are not all equally visible to every book at every minute. A stale line
+  after a starter or lineup update is a more believable edge than a generic
+  65% model score.
+- **Game environment mismatches**: moneyline, total, team total, opponent shot
+  rate, score-state expectations, and pace matter more than goalie saves
+  rolling averages. Big favorites can face fewer third-period shots when they
+  control play; underdogs can face volume but also get pulled into lower-event
+  defensive shells. The model currently has no explicit market view of expected
+  game state.
+- **Opponent and team style**: shot attempts, unblocked attempts, shots on goal
+  share, rebound volume, high-danger creation, power-play shot volume, and
+  penalty rates. Saves lines are shot-volume props first and save-percentage
+  props second.
+- **Book timing and copy behavior**: smaller books and fantasy apps may copy a
+  market number, move late, or round differently. The current venue analysis
+  says Underdog was not broadly hanging inflated totals, but it cannot rule out
+  timing-specific staleness because the tracker has no fetch timestamp or
+  closing line.
+- **Line-shopping and thresholds**: the difference between 24.5 and 25.5 is
+  enormous on a saves distribution. Even without a strong model, always taking
+  the better side of a one-save spread can be the difference between a
+  breakeven process and a losing one.
+- **Parlay/ticket economics**: the edge may be in payout structure rather than
+  the straight-bet line. That only matters if the legs have a proven edge after
+  calibration or CLV. Without that, parlay multipliers amplify variance, not
+  skill.
+
+Places where hope is weaker:
+
+- **Generic confidence bands from the current classifier**: calibration showed
+  those bands mostly describe overconfidence.
+- **More random hyperparameter search on the same 114 features**: the honest
+  harness already answered that question well enough.
+- **Blind UNDER as a permanent edge**: the market adjusted to the league-wide
+  saves decline. Any future UNDER edge must be selected, timed, or priced, not
+  assumed.
+
+The practical conclusion: future work should be built around **market error
+detection**, not standalone saves prediction. The question is not "what is the
+goalie's true saves mean?" The betting question is "when is this particular
+book's line or price wrong relative to the information available before puck
+drop?"
+
+### 3.10 Codex-authored: next model/data experiments worth doing
+
+Authored by Codex, 2026-07-08. The next experiments should be small,
+pre-registered, and designed to answer one business question: can we beat the
+closing market or a clean chronological holdout? If an experiment cannot be
+judged by CLV, chronological ROI, calibration, and cluster-aware uncertainty,
+do not trust it.
+
+Recommended experiment order:
+
+1. **Market-anchored residual model**
+
+   Add the no-vig market probability, book, line, line-open-to-current move,
+   and game market context (moneyline, total, team total if available). Train
+   the model to predict residual disagreement rather than rediscover the base
+   over probability from scratch. This should answer: "does our hockey context
+   improve on the market, or does the model collapse to the market?" Either
+   answer is useful.
+
+2. **Distributional saves model**
+
+   Build a model for saves as a count distribution, preferably decomposed into
+   shots against and save rate:
+
+   - shots against: team/opponent pace, moneyline, total, rest, score-state
+     proxies, home/away, special teams
+   - save rate: goalie quality, opponent shot quality, team defensive quality
+   - pricing layer: convert the distribution into P(over line) for any posted
+     line
+
+   This trains on all goalie-games, not only games with archived prop lines,
+   and produces coherent probabilities across 22.5, 23.5, 24.5, etc. It should
+   be compared head-to-head against the classifier on the same chronological
+   windows.
+
+3. **Game-context feature pack**
+
+   Add features that map directly to how saves happen:
+
+   - favorite/underdog status and moneyline-implied win probability
+   - game total and team totals
+   - opponent shots for, attempts for, unblocked attempts, and high-danger
+     chances
+   - goalie's team shots against, attempts against, penalty kill volume, and
+     penalties taken
+   - opponent rest, travel, and back-to-back status
+   - confirmed starter status, backup/third-string flag, and prior-night usage
+
+   Prioritize features available before puck drop and reproducible historically.
+   Do not add a feature just because it sounds hockey-smart; make it survive
+   the honest harness.
+
+4. **Timing/CLV dataset**
+
+   Add fetch timestamps and repeated snapshots. For each line, record:
+
+   - first seen line/odds
+   - bet-time line/odds
+   - closing line/odds
+   - book and venue
+   - whether the goalie was confirmed at each snapshot
+
+   This is the fastest path to knowing whether the process is real. P/L can
+   lie for months; CLV starts talking in weeks.
+
+5. **Policy model, not only probability model**
+
+   Separate "predict over probability" from "decide whether to bet." The policy
+   should know book, line availability, CLV history, edge threshold, max
+   exposure, same-game correlation, and ticket construction rules. The current
+   system mixes probability estimation and betting policy too tightly.
+
+Evaluation rules for all future experiments:
+
+- Split by full date or game before multibook row expansion so the same
+  goalie-night cannot straddle folds.
+- Report row-level and `(game_id, goalie_id)` cluster bootstrap CIs.
+- Pre-register thresholds on validation; touch test once.
+- Compare against market-only baselines and blind direction baselines.
+- Track calibration and CLV, not only ROI.
+- Treat small positive pockets as hypotheses until they repeat in a later
+  chronological slice.
 
 ---
 
@@ -596,8 +744,8 @@ legs' 68-73% hit rate. What remains on the table for the live profit: model
 selection skill that neither completed diagnostic can see, and/or a favorable
 variance draw. The calibration layer (3.2) was the next and last cheap
 discriminator between those two -- **it has since reported (2026-07-07): no
-calibrated model edge survives, leaving the variance draw as the leading
-explanation for the live run (see 3.2).**
+pre-registered calibrated edge was demonstrated, leaving the variance draw as
+the leading explanation for the live run (see 3.2).**
 
 Keep both venues, with defined jobs. Underdog parlays offer the highest EV per dollar
 *when 2-3 qualifying legs exist* (at 65% legs: +26.8% for 2-leg, +64.8% for
@@ -645,15 +793,74 @@ take the UNDER at the higher number.
 3. Keep logging *every* line every night (already the habit) -- the 1,755
    graded no-bet lines are what made this entire analysis possible.
 
+### 4.6 Codex-authored: opening-night operating plan under zero proven edge
+
+Authored by Codex, 2026-07-08. The right next-season stance is not "never bet
+again" and not "run back the parlay machine." It is a controlled measurement
+program. The goal of October and November should be to answer whether the
+process beats the close, not to maximize income.
+
+Default operating rules:
+
+1. **No meaningful scaling until CLV is positive.** Bet sizes should stay
+   token-small until there is repeated evidence that the process beats closing
+   lines. A profitable week without CLV is not enough evidence to scale.
+2. **Every ticket must be representable in the database.** If a bet cannot be
+   recorded as a ticket with stake, payout structure, legs, bet-time line, and
+   close, do not treat its result as evidence.
+3. **Separate straight-bet evidence from parlay evidence.** A parlay win can
+   hide bad leg selection. Track leg CLV and ticket P/L separately.
+4. **Require a reason code for every bet.** Examples: market-anchor model edge,
+   stale starter news, line-shop gap, closing-line move still pending, or
+   manual hockey-context override. "Model liked it" is not specific enough
+   anymore.
+5. **One goalie per game per ticket.** Same-game goalie saves can share pace
+   and score-state shocks. Keep same-game exposure explicit and limited.
+6. **Prefer line advantage over price heroics.** In saves props, a full save of
+   line value usually matters more than a few cents of juice. Track both, but
+   prioritize the better number.
+7. **Review weekly by CLV first, P/L second.** If CLV is negative after a few
+   weeks, cut stakes further or pause. If CLV is positive and P/L is bad, keep
+   collecting. If both are positive, then consider cautious scaling.
+
+Suggested opening-night thresholds, pending implementation:
+
+- No automated UNDER-only parlay rule from raw model confidence.
+- Straight bets only when the process has either a calibrated/model edge plus
+  a line-shop advantage, or a documented news/timing reason.
+- Parlays only when every leg individually has a reason code and the ticket
+  payout table is stored.
+- Max exposure per night: low enough that a 10-ticket losing streak changes
+  nothing about the project. The point is information, not fast bankroll
+  recovery.
+
+What would count as evidence that hope is back:
+
+- Positive CLV on a meaningful sample, ideally by both line movement and
+  no-vig probability movement.
+- A model or policy that beats a market-only baseline on a later chronological
+  slice.
+- Edge concentrated in explainable buckets: stale starters, specific books,
+  line-shop gaps, rest/context mismatches, or early market openers.
+- Repeatability across months, not only a single hot parlay cluster.
+
+What would count as evidence to stop:
+
+- Negative CLV despite positive short-term P/L.
+- Positive ROI concentrated in a few tickets with no leg-level CLV.
+- Any model improvement that only appears after changing thresholds post-test.
+- A strategy whose explanation depends on "the model is confident" without
+  calibrated probabilities or market movement support.
+
 ---
 
 ## 5. Prioritized offseason roadmap
 
 Reordered 2026-07-07 after the clean retrain came back with no backtest edge
 (3.1). The old ordering assumed the model had an edge and the remaining work
-was policy plumbing; the honest sequence now runs two cheap diagnostics that
-determine where (and whether) the live edge is real, then a decision gate,
-then the plumbing.
+was policy plumbing; the honest sequence now records the completed diagnostics,
+then moves to a decision gate, tracking infrastructure, and new model-edge
+experiments.
 
 | # | Project | Effort | Sections |
 |---|---|---|---|
@@ -661,11 +868,11 @@ then the plumbing.
 | 2 | ~~Retrain + honest selection (val-only ranking, test touched once, bootstrap CIs)~~ **done 2026-07-07** (see 3.1/3.3 -- result: no backtest edge on clean data) | 1-2 days | 3.1, 3.3 |
 | 3 | ~~**Venue discrepancy analysis**: from `betting.db` (Jan-Apr 2026), for every goalie-night quoted at both Underdog and a sharp book, measure the line gap and test whether "UNDER at Underdog when its line sits above sharp consensus" reproduces the live ROI *without any model*.~~ **done 2026-07-07 -- result: Underdog lines are NOT soft.** 95.2% exact match with sharp consensus on 248 checkable nights; zero of the 137 live UNDER legs sat on a favorable gap. Soft lines do not explain the live profit (see 4.3). | half day | 4.3, 3.1 |
 | 4 | ~~**Calibration layer** -- the decisive model-edge test: fit on validation, check whether any honest +EV pockets survive, one pre-registered test touch.~~ **done 2026-07-07 -- result: no demonstrated edge.** Validation AUC was only ~0.54 and test AUC fell to 0.513; calibrated probs compress to 0.467-0.620; pre-registered test policies lose or are uninformative; the calibrated UNDER pool barely exists (see 3.2). | half day | 3.2 |
-| 5 | **Strategy decision gate -- inputs now resolved** (item 3: lines not soft; item 4: no calibrated model edge). The honest planning assumption for next season is **zero proven prior edge**. The gate is now a user decision: bet small-or-nothing while CLV (item 6) accumulates evidence, and treat items 7-9 as the only remaining paths to a real model edge. The UNDER-only + parlay automation (4.1/4.2) should NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2 |
-| 6 | `tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude | ~a day | 4.5 |
-| 7 | Market-anchor feature experiment (implied prob as feature) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49% | 1-2 days | 3.4 |
-| 8 | New context features (game total/moneyline, opponent rest, special teams, season normalization) | 2-3 days | 3.6 |
-| 9 | Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required) | ~a week | 3.5 |
+| 5 | **Strategy decision gate -- inputs now resolved** (item 3: lines not soft; item 4: no calibrated model edge). The honest planning assumption for next season is **zero proven prior edge**. The gate is now a user decision: bet small-or-nothing while CLV (item 6) accumulates evidence, and treat items 7-9 as the only remaining paths to a real model edge. The UNDER-only + parlay automation (4.1/4.2) should NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6 |
+| 6 | `tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude | ~a day | 4.5, 4.6 |
+| 7 | Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49% | 1-2 days | 3.4, 3.9, 3.10 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization) | 2-3 days | 3.6, 3.9, 3.10 |
+| 9 | Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required) | ~a week | 3.5, 3.10 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
 
@@ -705,6 +912,7 @@ fixing:
   offset, `predictor.py:147`) -- fine for display, but nobody should ever
   analyze it as a real regression output.
 - **Blind UNDER is not the edge**: the graded-lines base rate is 51.6% under,
-  which loses to vig. The model's UNDER *selection* (69%) is the edge. The
-  system is doing something real; the offseason work is about doing it on
-  clean data with honest probabilities.
+  which loses to vig. The live model's UNDER *selection* (69%) was real in
+  the database, but the clean retrain/calibration work did not demonstrate a
+  repeatable mechanism. Treat it as an unresolved live anomaly unless CLV or a
+  later model explains it.
