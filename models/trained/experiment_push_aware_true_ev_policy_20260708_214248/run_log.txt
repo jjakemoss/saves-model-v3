@@ -1,0 +1,232 @@
+================================================================================
+PUSH-AWARE TRUE-EV POLICY AUDIT
+Run timestamp: 2026-07-08T21:42:48.696150
+================================================================================
+Source artifact: models\trained\experiment_game_context_distributional_20260708_210813
+Output directory: models\trained\experiment_push_aware_true_ev_policy_20260708_214248
+Protocol caveat: this reuses an already-touched test fold. Positive ROI here would be post-hoc policy sensitivity, not independent edge proof.
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+
+[clean_training_data] Fold boundaries (date-based split):
+  train: 2022-10-07 to 2025-10-15  (n=7992)
+  val  : 2025-10-16 to 2025-12-03  (n=730)
+  test : 2025-12-04 to 2026-04-16  (n=1774)
+  [clean_training_data] Fold date-disjointness verified.
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+[multibook_classification_training_data] Fold boundaries (date-based split):
+  train: 2024-10-04 to 2025-10-15  (n=7844)
+  val  : 2025-10-16 to 2025-12-03  (n=2676)
+  test : 2025-12-04 to 2026-04-13  (n=2672)
+  [multibook_classification_training_data] Fold date-disjointness verified.
+Pre-registered policy grid: 20 policies.
+  - old_prob_edge_0.05: {'name': 'old_prob_edge_0.05', 'family': 'probability_edge', 'min_true_ev': None, 'min_prob_edge': 0.05, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - old_prob_edge_0.10: {'name': 'old_prob_edge_0.10', 'family': 'probability_edge', 'min_true_ev': None, 'min_prob_edge': 0.1, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - old_prob_edge_0.12: {'name': 'old_prob_edge_0.12', 'family': 'probability_edge', 'min_true_ev': None, 'min_prob_edge': 0.12, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - old_prob_edge_0.15: {'name': 'old_prob_edge_0.15', 'family': 'probability_edge', 'min_true_ev': None, 'min_prob_edge': 0.15, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.00: {'name': 'true_ev_0.00', 'family': 'true_ev', 'min_true_ev': 0.0, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.02: {'name': 'true_ev_0.02', 'family': 'true_ev', 'min_true_ev': 0.02, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.04: {'name': 'true_ev_0.04', 'family': 'true_ev', 'min_true_ev': 0.04, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.06: {'name': 'true_ev_0.06', 'family': 'true_ev', 'min_true_ev': 0.06, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.00_cond_edge_0.00: {'name': 'true_ev_0.00_cond_edge_0.00', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.0, 'min_prob_edge': None, 'min_conditional_edge': 0.0, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.00_cond_edge_0.02: {'name': 'true_ev_0.00_cond_edge_0.02', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.0, 'min_prob_edge': None, 'min_conditional_edge': 0.02, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.00_cond_edge_0.04: {'name': 'true_ev_0.00_cond_edge_0.04', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.0, 'min_prob_edge': None, 'min_conditional_edge': 0.04, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.02_cond_edge_0.00: {'name': 'true_ev_0.02_cond_edge_0.00', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.02, 'min_prob_edge': None, 'min_conditional_edge': 0.0, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.02_cond_edge_0.02: {'name': 'true_ev_0.02_cond_edge_0.02', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.02, 'min_prob_edge': None, 'min_conditional_edge': 0.02, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.02_cond_edge_0.04: {'name': 'true_ev_0.02_cond_edge_0.04', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.02, 'min_prob_edge': None, 'min_conditional_edge': 0.04, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.04_cond_edge_0.00: {'name': 'true_ev_0.04_cond_edge_0.00', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.04, 'min_prob_edge': None, 'min_conditional_edge': 0.0, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.04_cond_edge_0.02: {'name': 'true_ev_0.04_cond_edge_0.02', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.04, 'min_prob_edge': None, 'min_conditional_edge': 0.02, 'book_filter': None, 'line_shop': False}
+  - true_ev_0.04_cond_edge_0.04: {'name': 'true_ev_0.04_cond_edge_0.04', 'family': 'true_ev_plus_conditional_edge', 'min_true_ev': 0.04, 'min_prob_edge': None, 'min_conditional_edge': 0.04, 'book_filter': None, 'line_shop': False}
+  - line_shop_true_ev_0.00: {'name': 'line_shop_true_ev_0.00', 'family': 'true_ev', 'min_true_ev': 0.0, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': True}
+  - line_shop_true_ev_0.02: {'name': 'line_shop_true_ev_0.02', 'family': 'true_ev', 'min_true_ev': 0.02, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': True}
+  - line_shop_true_ev_0.04: {'name': 'line_shop_true_ev_0.04', 'family': 'true_ev', 'min_true_ev': 0.04, 'min_prob_edge': None, 'min_conditional_edge': None, 'book_filter': None, 'line_shop': True}
+
+================================================================================
+VARIANT: control
+================================================================================
+[control VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999982, max_sum=1.000000, rows below 0.999: 0
+[control VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[control VAL] p_over+p_under+p_push: min=0.999982, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+[control TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999974, max_sum=1.000000, rows below 0.999: 0
+[control TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[control TEST] p_over+p_under+p_push: min=0.999974, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+
+--- Legacy probability-edge replay audit ---
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    839     31.4%     52.8%    -0.85%
+   0.10    282     10.5%     55.0%    +3.80%
+   0.12    167      6.2%     58.1%   +10.31%
+   0.15     67      2.5%     44.8%   -14.96%
+
+VAL sweep winner: EV threshold=0.05  bets=839  bet_rate=31.4%  roi=-0.85%
+Legacy replay matched source artifact: threshold=0.05, test bets=888, ROI=+1.06%.
+
+--- VAL policy sweep ---
+policy                               bets  bet_rate      win     push       roi    avg_ev      cond
+old_prob_edge_0.05                    839     31.4%    52.8%     0.0%    -0.85%   +0.172   +0.126
+old_prob_edge_0.10                    282     10.5%    55.0%     0.0%    +3.80%   +0.251   +0.167
+old_prob_edge_0.12                    167      6.2%    58.1%     0.0%   +10.31%   +0.281   +0.183
+old_prob_edge_0.15                     67      2.5%    44.8%     0.0%   -14.96%   +0.326   +0.206
+true_ev_0.00                         1821     68.0%    51.6%     0.0%    -2.87%   +0.102   +0.088
+true_ev_0.02                         1565     58.5%    51.4%     0.0%    -3.29%   +0.118   +0.096
+true_ev_0.04                         1334     49.9%    52.5%     0.0%    -1.17%   +0.133   +0.104
+true_ev_0.06                         1117     41.7%    53.4%     0.0%    +0.53%   +0.149   +0.113
+true_ev_0.00_cond_edge_0.00          1821     68.0%    51.6%     0.0%    -2.87%   +0.102   +0.088
+true_ev_0.00_cond_edge_0.02          1821     68.0%    51.6%     0.0%    -2.87%   +0.102   +0.088
+true_ev_0.00_cond_edge_0.04          1668     62.3%    52.0%     0.0%    -2.32%   +0.111   +0.093
+true_ev_0.02_cond_edge_0.00          1565     58.5%    51.4%     0.0%    -3.29%   +0.118   +0.096
+true_ev_0.02_cond_edge_0.02          1565     58.5%    51.4%     0.0%    -3.29%   +0.118   +0.096
+true_ev_0.02_cond_edge_0.04          1565     58.5%    51.4%     0.0%    -3.29%   +0.118   +0.096
+true_ev_0.04_cond_edge_0.00          1334     49.9%    52.5%     0.0%    -1.17%   +0.133   +0.104
+true_ev_0.04_cond_edge_0.02          1334     49.9%    52.5%     0.0%    -1.17%   +0.133   +0.104
+true_ev_0.04_cond_edge_0.04          1334     49.9%    52.5%     0.0%    -1.17%   +0.133   +0.104
+line_shop_true_ev_0.00                497     75.4%    50.7%     0.0%    -3.40%   +0.108   +0.090
+line_shop_true_ev_0.02                437     66.3%    51.3%     0.0%    -2.16%   +0.122   +0.097
+line_shop_true_ev_0.04                372     56.4%    52.2%     0.0%    -0.39%   +0.138   +0.105
+Completed control VAL policy sweep across 20 policies.
+
+VAL policy winner: old_prob_edge_0.05  bets=839  bet_rate=31.4%  ROI=-0.85%
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: control, selected policy=old_prob_edge_0.05
+--------------------------------------------------------------------------------
+control TEST: 888 bets, 33.2% bet rate, 53.6% win rate, 0.0% push rate, +1.06% ROI
+control TEST ROI 95% CI (cluster): [-8.83%, +10.91%] (n_clusters=474)
+control TEST side breakdown: OVER 470 bets (+2.22%), UNDER 418 bets (-0.24%)
+
+================================================================================
+VARIANT: context_shots
+================================================================================
+[context_shots VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999991, max_sum=1.000000, rows below 0.999: 0
+[context_shots VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[context_shots VAL] p_over+p_under+p_push: min=0.999991, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+[context_shots TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999968, max_sum=1.000000, rows below 0.999: 0
+[context_shots TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[context_shots TEST] p_over+p_under+p_push: min=0.999988, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+
+--- Legacy probability-edge replay audit ---
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    875     32.7%     53.0%    -0.17%
+   0.10    336     12.6%     57.1%    +7.73%
+   0.12    207      7.7%     59.9%   +12.73%
+   0.15    104      3.9%     65.4%   +22.58%
+
+VAL sweep winner: EV threshold=0.05  bets=875  bet_rate=32.7%  roi=-0.17%
+Legacy replay matched source artifact: threshold=0.05, test bets=758, ROI=-1.68%.
+
+--- VAL policy sweep ---
+policy                               bets  bet_rate      win     push       roi    avg_ev      cond
+old_prob_edge_0.05                    875     32.7%    53.0%     0.0%    -0.17%   +0.182   +0.131
+old_prob_edge_0.10                    336     12.6%    57.1%     0.0%    +7.73%   +0.258   +0.171
+old_prob_edge_0.12                    207      7.7%    59.9%     0.0%   +12.73%   +0.290   +0.188
+old_prob_edge_0.15                    104      3.9%    65.4%     0.0%   +22.58%   +0.327   +0.209
+true_ev_0.00                         1887     70.5%    51.7%     0.0%    -2.72%   +0.108   +0.092
+true_ev_0.02                         1655     61.8%    51.2%     0.0%    -3.78%   +0.122   +0.099
+true_ev_0.04                         1428     53.4%    50.8%     0.0%    -4.31%   +0.137   +0.107
+true_ev_0.06                         1208     45.1%    51.5%     0.0%    -2.95%   +0.153   +0.115
+true_ev_0.00_cond_edge_0.00          1887     70.5%    51.7%     0.0%    -2.72%   +0.108   +0.092
+true_ev_0.00_cond_edge_0.02          1887     70.5%    51.7%     0.0%    -2.72%   +0.108   +0.092
+true_ev_0.00_cond_edge_0.04          1745     65.2%    51.4%     0.0%    -3.43%   +0.117   +0.096
+true_ev_0.02_cond_edge_0.00          1655     61.8%    51.2%     0.0%    -3.78%   +0.122   +0.099
+true_ev_0.02_cond_edge_0.02          1655     61.8%    51.2%     0.0%    -3.78%   +0.122   +0.099
+true_ev_0.02_cond_edge_0.04          1655     61.8%    51.2%     0.0%    -3.78%   +0.122   +0.099
+true_ev_0.04_cond_edge_0.00          1428     53.4%    50.8%     0.0%    -4.31%   +0.137   +0.107
+true_ev_0.04_cond_edge_0.02          1428     53.4%    50.8%     0.0%    -4.31%   +0.137   +0.107
+true_ev_0.04_cond_edge_0.04          1428     53.4%    50.8%     0.0%    -4.31%   +0.137   +0.107
+line_shop_true_ev_0.00                500     75.9%    51.4%     0.0%    -2.09%   +0.115   +0.094
+line_shop_true_ev_0.02                445     67.5%    50.6%     0.0%    -3.79%   +0.128   +0.100
+line_shop_true_ev_0.04                392     59.5%    51.3%     0.0%    -2.29%   +0.142   +0.107
+Completed context_shots VAL policy sweep across 20 policies.
+
+VAL policy winner: old_prob_edge_0.05  bets=875  bet_rate=32.7%  ROI=-0.17%
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: context_shots, selected policy=old_prob_edge_0.05
+--------------------------------------------------------------------------------
+context_shots TEST: 758 bets, 28.4% bet rate, 52.0% win rate, 0.0% push rate, -1.68% ROI
+context_shots TEST ROI 95% CI (cluster): [-11.65%, +8.55%] (n_clusters=462)
+context_shots TEST side breakdown: OVER 185 bets (+6.66%), UNDER 573 bets (-4.37%)
+
+================================================================================
+VARIANT: context_both
+================================================================================
+[context_both VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999991, max_sum=1.000000, rows below 0.999: 0
+[context_both VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[context_both VAL] p_over+p_under+p_push: min=0.999991, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+[context_both TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999968, max_sum=1.000000, rows below 0.999: 0
+[context_both TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[context_both TEST] p_over+p_under+p_push: min=0.999988, max=1.000000, mean=1.000000, below .999=0, above 1.001=0.
+
+--- Legacy probability-edge replay audit ---
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    886     33.1%     52.9%    -0.41%
+   0.10    340     12.7%     55.6%    +4.54%
+   0.12    205      7.7%     56.6%    +6.76%
+   0.15    106      4.0%     64.2%   +20.26%
+
+VAL sweep winner: EV threshold=0.05  bets=886  bet_rate=33.1%  roi=-0.41%
+Legacy replay matched source artifact: threshold=0.05, test bets=747, ROI=-1.35%.
+
+--- VAL policy sweep ---
+policy                               bets  bet_rate      win     push       roi    avg_ev      cond
+old_prob_edge_0.05                    886     33.1%    52.9%     0.0%    -0.41%   +0.180   +0.130
+old_prob_edge_0.10                    340     12.7%    55.6%     0.0%    +4.54%   +0.258   +0.171
+old_prob_edge_0.12                    205      7.7%    56.6%     0.0%    +6.76%   +0.293   +0.189
+old_prob_edge_0.15                    106      4.0%    64.2%     0.0%   +20.26%   +0.329   +0.209
+true_ev_0.00                         1878     70.2%    51.7%     0.0%    -2.71%   +0.109   +0.092
+true_ev_0.02                         1664     62.2%    50.8%     0.0%    -4.37%   +0.122   +0.099
+true_ev_0.04                         1435     53.6%    50.9%     0.0%    -4.12%   +0.136   +0.106
+true_ev_0.06                         1223     45.7%    51.6%     0.0%    -2.68%   +0.152   +0.114
+true_ev_0.00_cond_edge_0.00          1878     70.2%    51.7%     0.0%    -2.71%   +0.109   +0.092
+true_ev_0.00_cond_edge_0.02          1878     70.2%    51.7%     0.0%    -2.71%   +0.109   +0.092
+true_ev_0.00_cond_edge_0.04          1750     65.4%    51.9%     0.0%    -2.42%   +0.116   +0.096
+true_ev_0.02_cond_edge_0.00          1664     62.2%    50.8%     0.0%    -4.37%   +0.122   +0.099
+true_ev_0.02_cond_edge_0.02          1664     62.2%    50.8%     0.0%    -4.37%   +0.122   +0.099
+true_ev_0.02_cond_edge_0.04          1664     62.2%    50.8%     0.0%    -4.37%   +0.122   +0.099
+true_ev_0.04_cond_edge_0.00          1435     53.6%    50.9%     0.0%    -4.12%   +0.136   +0.106
+true_ev_0.04_cond_edge_0.02          1435     53.6%    50.9%     0.0%    -4.12%   +0.136   +0.106
+true_ev_0.04_cond_edge_0.04          1435     53.6%    50.9%     0.0%    -4.12%   +0.136   +0.106
+line_shop_true_ev_0.00                502     76.2%    51.2%     0.0%    -2.40%   +0.115   +0.093
+line_shop_true_ev_0.02                448     68.0%    50.9%     0.0%    -2.99%   +0.128   +0.100
+line_shop_true_ev_0.04                393     59.6%    50.4%     0.0%    -3.84%   +0.141   +0.107
+Completed context_both VAL policy sweep across 20 policies.
+
+VAL policy winner: old_prob_edge_0.05  bets=886  bet_rate=33.1%  ROI=-0.41%
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: context_both, selected policy=old_prob_edge_0.05
+--------------------------------------------------------------------------------
+context_both TEST: 747 bets, 28.0% bet rate, 52.1% win rate, 0.0% push rate, -1.35% ROI
+context_both TEST ROI 95% CI (cluster): [-11.24%, +8.81%] (n_clusters=465)
+context_both TEST side breakdown: OVER 191 bets (+9.38%), UNDER 556 bets (-5.03%)
+
+================================================================================
+HEAD-TO-HEAD POLICY SUMMARY
+================================================================================
+variant          selected_policy                          roi   bets    push                cluster_ci
+control          old_prob_edge_0.05                    +1.06%    888    0.0% [-8.83%, +10.91%]
+context_shots    old_prob_edge_0.05                    -1.68%    758    0.0% [-11.65%, +8.55%]
+context_both     old_prob_edge_0.05                    -1.35%    747    0.0% [-11.24%, +8.81%]
+No result above is independent proof of edge because this is a post-hoc policy audit.
+
+Saved metadata to: models\trained\experiment_push_aware_true_ev_policy_20260708_214248\metadata.json
+Wall-clock time: 42.7s (0.7 min)
+
+================================================================================
+POLICY AUDIT COMPLETE
+================================================================================

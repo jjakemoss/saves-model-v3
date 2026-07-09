@@ -25,9 +25,11 @@ distributional-model experiments (roadmap items 7 and 9) both came back clean
 negatives on a bettable edge, though each produced a real methodological gain.
 The first current-data game-context slice (roadmap item 8) improved
 distributional prediction quality but still lost under the pre-registered
-probability-edge betting policy; the next offline model/policy question is
-push-aware true expected profit or timing-safe game-market ingestion, not
-another generic retrain.
+probability-edge betting policy. A follow-up push-aware true-EV policy audit
+did not rescue the result: validation selection still preferred the old
+probability-edge rule, and true-EV policies were mostly too broad and negative.
+The next offline model question is timing-safe game-market ingestion, not
+another generic retrain or another policy threshold sweep.
 
 ## Table of contents
 
@@ -933,20 +935,70 @@ artifact excludes current-game outcomes, and the experiment keeps validation
 selection separate from the single test touch. Two caveats carry forward. First,
 the AUC/Brier improvement is a single chronological-split observation, not a
 confidence-tested delta, so the precise wording is "improved on this split."
-Second, the betting policy still uses the repo's existing probability-edge
-semantics (`model_prob - implied_prob`) and ignores push probability in
-selection even though the distributional model computes `p_push`. Therefore the
-fair betting conclusion is narrower: no edge was demonstrated under this
-pre-registered probability-edge policy. A push-aware, true expected-profit
-policy remains an open experiment, not something this run falsified.
+Second, this run itself used the repo's existing probability-edge semantics
+(`model_prob - implied_prob`) and ignored push probability in selection even
+though the distributional model computes `p_push`. That caveat was investigated
+in section 3.13. It did not change the conclusion.
 
 What this changes: item 8 is now partially implemented and no longer purely
 speculative. Game-context features do improve the hockey model in the direction
 we wanted, but the first current-data slice does not beat the market as a
 betting policy. The next item-8 work should add genuinely missing market/game
 environment data (moneyline, game total, team totals, and timing-safe line
-movement) or build a push-aware/true-EV policy layer; another small tweak to the
-same current-data context pack is unlikely to turn -1.68% into a durable edge.
+movement); another small tweak to the same current-data context pack is
+unlikely to turn -1.68% into a durable edge.
+
+### 3.13 Codex-authored: push-aware true-EV policy audit did not rescue the distributional model
+
+Authored by Codex, 2026-07-09. This was the next sub-agent wave after 3.12.
+The question was deliberately policy-only: keep the same saved game-context
+distributional models, same date folds, same validation-only selection, and
+same single test fold, but replace the repo's historical "EV" convention
+(`model_prob - implied_prob`) with true expected profit per $1 stake.
+
+Correct policy math:
+
+- `OVER EV = P(over) * profit_if_over_wins - P(under)`.
+- `UNDER EV = P(under) * profit_if_under_wins - P(over)`.
+- `P(push)` contributes 0 profit and should be counted as a zero-profit bet
+  if an integer line ever pushes.
+- For probability-edge guardrails on true-EV rules, compare conditional
+  non-push model probability to no-vig market probability:
+  `P(side) / (P(over) + P(under)) - fair_market_probability(side)`.
+
+New files:
+
+- `src/experiments/policies.py`
+- `scripts/experiment_push_aware_true_ev_policy.py`
+
+The policy grid compared 20 rules: four legacy probability-edge thresholds,
+four pure true-EV thresholds, nine true-EV plus conditional no-vig edge
+guardrails, and three line-shop true-EV variants. The script first replayed the
+old probability-edge policy and required it to exactly match the 3.12 artifact
+before interpreting the new policies. That replay passed for all three
+variants.
+
+Result: the true-EV layer did **not** find a better honest policy. On
+validation, pure true-EV policies selected far more rows than the old rule
+(roughly 42-70% of all book rows before line-shopping) and were mostly negative
+ROI. The line-shop variants were also negative on validation. The validation
+selector therefore chose the old 5-point probability-edge rule for every
+variant, and the single test results exactly matched section 3.12:
+
+| Variant | Selected policy | Test ROI | Bets | Push rate | Cluster ROI CI |
+|---|---:|---:|---:|---:|---:|
+| `control` | `old_prob_edge_0.05` | +1.06% | 888 | 0.0% | [-8.83%, +10.91%] |
+| `context_shots` | `old_prob_edge_0.05` | -1.68% | 758 | 0.0% | [-11.65%, +8.55%] |
+| `context_both` | `old_prob_edge_0.05` | -1.35% | 747 | 0.0% | [-11.24%, +8.81%] |
+
+Important caveat: this audit reuses an already-inspected chronological test
+fold and was motivated by the 3.12 result. A positive ROI here would have been
+post-hoc policy sensitivity, not independent edge proof. Since the result was
+negative, the useful conclusion is narrower but still important: the missing
+edge is not hiding in the obvious push-aware true-EV conversion on top of the
+current distributional probabilities. The next real path is new timing-safe
+information, especially game-market/pace context and in-season CLV evidence,
+not more threshold shopping.
 
 ---
 
@@ -1227,7 +1279,7 @@ experiments.
 | 5 | **Strategy decision gate -- resolved 2026-07-08 by the user.** Inputs: item 3 (lines not soft), item 4 (no calibrated edge on the reconstructed frame), and 3.11 (the live run survived night-clustered re-testing and independent re-grading against archived lines; the reconstructed-frame backtests never tested the live system). Decision: proceed as a **measurement program**, not a scale-up -- build item 6 immediately, add a shadow run of the exact live system alongside it, keep stakes token-sized until CLV is demonstrably positive, and run items 7 and 9 through the honest harness rather than treat either as a substitute for shadow-run evidence. The UNDER-only + parlay automation (4.1/4.2) should still NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6, 3.11 |
 | 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08; live DB migration applied 2026-07-09.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Remaining operational note: a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
 | 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
-| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals) or a push-aware true-EV policy layer, not another small tweak to the same current-data feature pack. | 2-3 days | 3.6, 3.9, 3.10, 3.12 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals), not another small tweak to the same current-data feature pack or another threshold sweep. | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13 |
 | 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
@@ -1235,20 +1287,21 @@ experiments.
 Items 5-6 were the "must happen before opening night" set if any betting
 continues: make the strategy decision consciously, then build tickets + CLV so
 next season measures the thing actually being bet. They are now done, including
-the live DB migration. Items 7-9 and the first current-data item-8 slice have
-now been evaluated through the honest harness. The remaining offline work is
-not more hyperparameter search against the test fold; it is either a
-push-aware true-EV policy layer on top of the distributional probabilities or
-timing-safe game-market ingestion (moneyline, totals, team totals, movement)
-that can feed the shot-volume model without leaking closing information.
+the live DB migration. Items 7-9, the first current-data item-8 slice, and the
+push-aware true-EV policy audit have now been evaluated through the honest
+harness. The remaining offline work is not more hyperparameter search or
+threshold selection against the same test fold; it is timing-safe game-market
+ingestion (moneyline, totals, team totals, movement) that can feed the
+shot-volume model without leaking closing information.
 
 **Update 2026-07-09:** items 6, 7, and 9 are now done (see above), and the
 item-6 migration has been applied to the live `data/betting.db`. Item 8 now
 has a first current-data implementation (3.12): it improves hockey prediction
-quality but still does not produce a demonstrated betting edge. The in-season
-measurement program (CLV capture, the shadow run) remains the load-bearing next
-step; the next offline model step should be timing-safe game-market ingestion
-or push-aware true-EV policy modeling, not another generic retrain.
+quality but still does not produce a demonstrated betting edge. The obvious
+push-aware true-EV policy follow-up is also complete and negative (3.13). The
+in-season measurement program (CLV capture, the shadow run) remains the
+load-bearing next step; the next offline model step should be timing-safe
+game-market ingestion, not another generic retrain or threshold sweep.
 
 ## 6. Codex-authored live implementation log
 
@@ -1283,7 +1336,19 @@ explicitly says the result survived the honest harness and uncertainty checks.
 - **2026-07-09 audit:** independent Codex review found no blocking leakage or
   protocol issue. Carry-forward caveat: the experiment tested the existing
   probability-edge betting rule, not a push-aware true expected-profit policy;
-  that policy layer remains open.
+  that policy layer was then tested in 3.13 and did not change the conclusion.
+- **2026-07-09 policy wave kickoff:** launched the next Codex sub-agent wave
+  for the push-aware true-EV policy layer. Scope is policy math and harness
+  evaluation only: compare the old probability-edge rule with true expected
+  profit rules that use `P(over)`, `P(under)`, `P(push)`, actual American odds,
+  validation-only selection, one test touch, and goalie-night cluster CIs.
+- **2026-07-09 policy audit result:** added `src/experiments/policies.py` and
+  `scripts/experiment_push_aware_true_ev_policy.py`, then ran the audit against
+  the saved game-context distributional artifact. Legacy-policy replay matched
+  the source artifact exactly. True-EV and line-shop policies did not win
+  validation selection; all three variants selected `old_prob_edge_0.05`, so
+  test results matched 3.12. No demonstrated edge, and the obvious policy-math
+  caveat is now closed.
 
 ## 7. Appendix: what was checked and found sound
 
