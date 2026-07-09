@@ -1000,12 +1000,13 @@ current distributional probabilities. The next real path is new timing-safe
 information, especially game-market/pace context and in-season CLV evidence,
 not more threshold shopping.
 
-### 3.14 Claude-authored: pace/xG ingestion and distributional experiment design (pre-registered, not yet run)
+### 3.14 Claude-authored/Codex-authored: pace/xG ingestion and distributional experiment design
 
-Authored by Claude, 2026-07-09. Status: **design only, nothing built or run** --
-awaiting user go-ahead. This section doubles as the pre-registration for the
-experiment, so the interpretation rules below are written before any result
-exists.
+Authored by Claude, 2026-07-09; Component 2 and Component 3 completion authored
+by Codex, 2026-07-09. Status: Components 1-3 are implemented and verified;
+Component 4 is not built. This section doubled as the pre-registration for the
+experiment; the Component 3 interpretation rules below were written before any
+pace/xG model result existed.
 
 **Motivation and hypothesis.** The distributional shots-against submodel
 currently forecasts shot volume from shots-on-goal rolling averages, which are
@@ -1103,6 +1104,43 @@ artifact metadata):
 6. League-relative z-scores of families 1-3 against the season-to-date league
    distribution (same pattern as the game-context builder).
 
+*Codex-authored Component 2 completion, 2026-07-09:* implemented
+`src/features/pace_features.py` and `scripts/build_pace_features.py`. The CLI
+builds `data/processed/pace_features.parquet` plus
+`data/processed/pace_features_metadata.json`; the feature computation lives in
+the importable module so any future live path can reuse the exact same
+definitions.
+
+Final artifact:
+
+- Rows: 10,496, exactly matching `clean_training_data.parquet`.
+- Generated features: 45 across the six pre-registered families.
+- Key: unique on `(game_id, goalie_id, team_abbrev, opponent_team, game_date)`.
+- Join coverage: team side 100.00%, opponent side 100.00%, goalie side 99.99%.
+  The single goalie miss is the known upstream MoneyPuck gap for Spencer
+  Knight, `game_id=2025020964`, CHI @ WPG on 2026-03-03.
+- Early-season null behavior is intentional and visible in metadata. October
+  monthly mean null rates are about 12% because shifted same-season rolling/EMA
+  features have no prior games yet; prior-season baseline columns are populated
+  for the 2022-23 opening rows from the 2021-22 fetch.
+
+Independent verification by Codex:
+
+- Recomputed representative features directly from raw MoneyPuck rows for
+  `game_id=2022020286`, goalie `8474889` (SEA vs LAK, 2022-11-19):
+  opponent rolling-5 Corsi For matched exactly (58.2), team season-to-date
+  Corsi Against matched exactly (53.0), and goalie rolling-10 xG-per-shot
+  matched to floating precision.
+- Mutated that current game's team and goalie MoneyPuck rows in temporary
+  parquet copies by adding huge values to the current-game attempts/xG/shots
+  columns; the row's generated features were unchanged. This is the leakage
+  check that matters most for Component 2: game N does not feed game N.
+- Compile and builder reruns passed with the bundled Python runtime.
+
+This component is plumbing, not edge evidence. It only establishes that the
+pace/xG feature artifact exists and appears timing-safe enough to feed the
+pre-registered Component 3 experiment.
+
 **Component 3 -- experiment, `scripts/experiment_pace_distributional.py`.**
 Reuses `src/experiments/harness.py` and `src/experiments/distributional_saves.py`
 unchanged; same date folds (train < 2025-10-16, val 2025-10-16 to 2025-12-03,
@@ -1134,6 +1172,43 @@ Pre-registered interpretation rules:
   experiment so far), the out-modeling route is treated as close to
   conclusively dead -- the saves market prices at full-analytics sharpness --
   and remaining effort moves to the timing/price/CLV families per 3.13.
+
+*Codex-authored Component 3 completion, 2026-07-09:* implemented and ran
+`scripts/experiment_pace_distributional.py`. The final canonical artifact is
+`models/trained/experiment_pace_distributional_20260709_100802/`; an earlier
+same-result background artifact exists from the sub-agent wave and is not the
+one cited here.
+
+Integrity/verification:
+
+- The control reproduction gate passed exactly: test Brier 0.25487, +1.06%
+  ROI, 888 bets, selected threshold 0.05.
+- The script used the pre-registered folds, validation-only submodel selection,
+  validation-only EV-threshold selection, and one test touch per variant.
+- Pace feature coverage was 100.00% by artifact key; source flags remained
+  team 100.00%, opponent 100.00%, goalie 99.99% because of the known Spencer
+  Knight MoneyPuck gap.
+- Codex independently reloaded the saved models and regraded the test fold with
+  separate summary code. Brier, ROI, bet counts, side counts, and the de-vigged
+  market Brier reproduced.
+
+Single-touch test results:
+
+| Variant | Selected threshold | Test Brier | Test ROI | Bets | Night AUC | Cluster ROI CI |
+|---|---:|---:|---:|---:|---:|---:|
+| `control` | 0.05 | 0.25487 | +1.06% | 888 | 0.5202 | [-8.83%, +10.91%] |
+| `pace_shots` | 0.05 | 0.24904 | +9.02% | 616 | 0.5408 | [-3.12%, +21.15%] |
+| `pace_context_shots` | 0.10 | 0.25116 | +3.77% | 357 | 0.5458 | [-11.64%, +18.63%] |
+| `pace_both` | 0.10 | 0.25136 | +0.89% | 352 | 0.5448 | [-14.49%, +16.18%] |
+
+The important result is `pace_shots`: it is the first repo model to beat the
+de-vigged market Brier benchmark on this shared test fold (0.24904 vs 0.24961,
+a 0.00057 improvement) and it produced a positive selected-policy ROI. The
+honest interpretation is still not "proven edge." The cluster CI crosses zero,
+the Dec 2025-Apr 2026 test fold is worn from prior experiments, and the
+positive policy result is mostly OVER-heavy (508 OVER bets, 108 UNDER bets).
+This is the strongest offline hypothesis so far and justifies next-season
+shadow/CLV confirmation; it does not justify scaling stakes by itself.
 
 **Component 4 -- live-season path (documented now, built only if justified).**
 MoneyPuck updates nightly around 03:40 ET (verified from its update-timestamp
@@ -1428,7 +1503,7 @@ experiments.
 | 5 | **Strategy decision gate -- resolved 2026-07-08 by the user.** Inputs: item 3 (lines not soft), item 4 (no calibrated edge on the reconstructed frame), and 3.11 (the live run survived night-clustered re-testing and independent re-grading against archived lines; the reconstructed-frame backtests never tested the live system). Decision: proceed as a **measurement program**, not a scale-up -- build item 6 immediately, add a shadow run of the exact live system alongside it, keep stakes token-sized until CLV is demonstrably positive, and run items 7 and 9 through the honest harness rather than treat either as a substitute for shadow-run evidence. The UNDER-only + parlay automation (4.1/4.2) should still NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6, 3.11 |
 | 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08; live DB migration applied 2026-07-09.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Remaining operational note: a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
 | 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
-| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals), not another small tweak to the same current-data feature pack or another threshold sweep. **Pace/xG (shot-attempt) ingestion from MoneyPuck + NHL stats API designed and pre-registered 2026-07-09 (see 3.14) -- awaiting go-ahead.** | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13, 3.14 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. **Pace/xG Component 3 is now done (see 3.14): `pace_shots` is the first repo model to beat the de-vigged market Brier on this worn test fold (0.24904 vs 0.24961) and selected +9.02% ROI, but the cluster CI still crosses zero. Treat as the strongest offline hypothesis so far, not proven edge.** | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13, 3.14 |
 | 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
@@ -1436,21 +1511,22 @@ experiments.
 Items 5-6 were the "must happen before opening night" set if any betting
 continues: make the strategy decision consciously, then build tickets + CLV so
 next season measures the thing actually being bet. They are now done, including
-the live DB migration. Items 7-9, the first current-data item-8 slice, and the
-push-aware true-EV policy audit have now been evaluated through the honest
-harness. The remaining offline work is not more hyperparameter search or
-threshold selection against the same test fold; it is timing-safe game-market
-ingestion (moneyline, totals, team totals, movement) that can feed the
-shot-volume model without leaking closing information.
+the live DB migration. Items 7-9, the first current-data item-8 slice, the
+push-aware true-EV policy audit, and the pace/xG experiment have now been
+evaluated through the honest harness. The remaining work is not hyperparameter
+search or threshold selection against the same test fold. It is either
+next-season confirmation/integration of the `pace_shots` hypothesis or
+additional timing-safe information such as game-market ingestion (moneyline,
+totals, team totals, movement).
 
 **Update 2026-07-09:** items 6, 7, and 9 are now done (see above), and the
-item-6 migration has been applied to the live `data/betting.db`. Item 8 now
-has a first current-data implementation (3.12): it improves hockey prediction
-quality but still does not produce a demonstrated betting edge. The obvious
-push-aware true-EV policy follow-up is also complete and negative (3.13). The
-in-season measurement program (CLV capture, the shadow run) remains the
-load-bearing next step; the next offline model step should be timing-safe
-game-market ingestion, not another generic retrain or threshold sweep.
+item-6 migration has been applied to the live `data/betting.db`. Item 8 now has
+two current-data implementations: game-context features improved prediction but
+not betting policy (3.12), while pace/xG produced the first model Brier below
+the de-vigged market benchmark on the worn test fold (3.14). The in-season
+measurement program (CLV capture, the shadow run) remains the load-bearing next
+step; the new question is how to confirm `pace_shots` without mistaking a worn
+test-fold win for bankroll-ready proof.
 
 ## 6. Codex-authored live implementation log
 
@@ -1506,8 +1582,21 @@ explicitly says the result survived the honest harness and uncertainty checks.
   per-season cross-check (totalShotAttempts = Corsi For, verified exactly);
   Natural Stat Trick found Cloudflare-gated behind manual access-key approval
   and skipped per user decision. Full ingestion/builder/experiment design
-  pre-registered in section 3.14. No code built yet -- awaiting user
-  go-ahead.
+  pre-registered in section 3.14.
+- **2026-07-09 Codex Component 2:** implemented the importable MoneyPuck
+  pace/xG feature builder (`src/features/pace_features.py`) and CLI
+  (`scripts/build_pace_features.py`). Built `pace_features.parquet`: 10,496
+  rows, 45 generated features, unique goalie-game keys, 100% team/opponent
+  coverage, 99.99% goalie coverage with only the known Spencer Knight upstream
+  gap. Independent recomputation and current-game mutation tests found no
+  leakage. This is ready for the Component 3 experiment gate.
+- **2026-07-09 Codex Component 3:** added and ran
+  `scripts/experiment_pace_distributional.py`. Final artifact:
+  `models/trained/experiment_pace_distributional_20260709_100802/`. Control
+  gate reproduced 3.12 exactly. `pace_shots` improved test Brier to 0.24904,
+  beating the de-vigged market benchmark 0.24961 by 0.00057, and selected
+  +9.02% ROI on 616 bets; cluster CI was [-3.12%, +21.15%], so this is a
+  promising next-season confirmation hypothesis, not proof of a tradable edge.
 
 ## 7. Appendix: what was checked and found sound
 
