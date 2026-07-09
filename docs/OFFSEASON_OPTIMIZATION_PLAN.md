@@ -1000,6 +1000,155 @@ current distributional probabilities. The next real path is new timing-safe
 information, especially game-market/pace context and in-season CLV evidence,
 not more threshold shopping.
 
+### 3.14 Claude-authored: pace/xG ingestion and distributional experiment design (pre-registered, not yet run)
+
+Authored by Claude, 2026-07-09. Status: **design only, nothing built or run** --
+awaiting user go-ahead. This section doubles as the pre-registration for the
+experiment, so the interpretation rules below are written before any result
+exists.
+
+**Motivation and hypothesis.** The distributional shots-against submodel
+currently forecasts shot volume from shots-on-goal rolling averages, which are
+noisy. Shot attempts (Corsi/Fenwick), score-adjusted pace, and xG are better
+predictors of future shot volume. The specific market hypothesis being tested:
+saves prop lines are plausibly set from simpler inputs (goalie rolling saves
+plus game total) than a full pace model, so pace/xG features may carry
+information the prop market specifically does not price -- even though they
+could never beat the game-total market itself. Prior probability is low given
+six straight negative experiments; the bar below reflects that.
+
+**Data sources (verified 2026-07-09 by live fetches, three research passes).**
+
+- Primary, team level: MoneyPuck game-by-game file
+  `https://moneypuck.com/moneypuck/playerData/careers/gameByGame/all_teams.csv`
+  (126 MB, 2008-present, one row per team per situation per game; situations
+  `all/5on5/5on4/4on5/other`). Verified columns include
+  `shotAttemptsFor/Against` (Corsi), `unblockedShotAttemptsFor/Against`
+  (Fenwick), `xGoalsFor/Against`, `scoreAdjustedShotsAttemptsFor`,
+  `scoreVenueAdjustedxGoalsFor`, and danger-tier xG splits. `gameId` is full
+  NHL format (e.g. `2024021038`) and joins directly to the repo's `game_id`.
+- Primary, goalie level: MoneyPuck per-season goalie game logs
+  `https://peter-tanner.com/moneypuck/downloads/seasonPlayersSummary/goalies/{YEAR}.zip`
+  (per-situation shots faced, `xOnGoal`/`ongoal`, xG faced, rebounds, freezes;
+  `gameId` also NHL format).
+- Cross-check: NHL stats API
+  `https://api.nhle.com/stats/rest/en/team/realtime?isAggregate=false&isGame=true&limit=-1&cayenneExp=gameTypeId=2 and seasonId={S}`
+  -- one row per team-game with `shots`, `missedShots`, `shotAttemptsBlocked`,
+  `totalShotAttempts`; verified that `totalShotAttempts` equals Corsi For
+  exactly and reconciles with boxscore SOG. No auth; one call retrieves a full
+  season. Note the field trap: `blockedShots` is the team's defensive blocks,
+  `shotAttemptsBlocked` is its own blocked attempts.
+- Rejected for now: Natural Stat Trick. All parameterized requests sit behind
+  an active Cloudflare challenge; the sanctioned path needs a free account plus
+  manually approved access key (~180 req/hr). User decision 2026-07-09: skip.
+  Its unique value (score-and-venue-adjusted 5v5 rates, HD/MD/LD splits beyond
+  MoneyPuck's) can be revisited if this experiment shows promise.
+- ToS: MoneyPuck explicitly permits pulling the listed download files with
+  attribution; add a credit line to README when built. Known joins gotcha:
+  Coyotes are `ARI` through 2023-24 and `UTA` from 2024-25.
+- The 126 MB CSV must never be committed (GitHub hard-blocks files over
+  100 MB): cache under `data/raw/moneypuck/` with a `.gitignore` entry.
+
+**Component 1 -- ingestion, `scripts/fetch_pace_data.py`.** Download
+`all_teams.csv` plus per-season goalie zips into `data/raw/moneypuck/`
+(gitignored). Cross-validate against the NHL realtime report joined on
+`(gameId, team)`: require
+`|MoneyPuck shotAttemptsFor(all) - NHL totalShotAttempts| <= 2` on at least
+99% of joined rows, print the diff distribution, hard-fail otherwise. Emit
+normalized `team_games.parquet` and `goalie_games.parquet` with a
+`playoffGame` flag preserved.
+
+*Amendment 2026-07-09, made during Component 1 implementation, before any
+experiment ran:* (1) Season scope extended from 2023-2025 to **2021-2025**.
+The original spec assumed the training frame started at 2024-25; in fact
+`clean_training_data.parquet` starts at 2022-23, and a 2023+ fetch would have
+left a third of the distributional train fold with all-null pace features.
+2021-22 is fetched only to supply prior-season baselines for 2022-23 rows.
+(2) The NHL realtime report's `totalShotAttempts`/`shotAttemptsBlocked`
+fields turned out to be 100% null for seasonId=20212022 (populated from
+2022-23 on), so for seasons where Corsi is unavailable from the NHL side the
+cross-check falls back to Fenwick:
+`|MoneyPuck unblockedShotAttemptsFor - NHL (shots + missedShots)| <= 2`, same
+bars. Both amendments are data-scope/validation-mechanics changes; no feature
+definitions, folds, variants, or interpretation rules changed.
+
+**Component 2 -- feature builder, `scripts/build_pace_features.py`.** Same
+contract as `build_game_context_features.py`: one row per clean goalie-game
+keyed on `(game_id, goalie_id, team_abbrev, opponent_team, game_date)`;
+output `data/processed/pace_features.parquet` plus a visible metadata JSON;
+strictly prior-only (shifted) aggregates computed from regular-season games
+only; early-season nulls left missing for XGBoost; assert unique keys and
+report join coverage (expect ~100%). Hard requirement from the 3.11
+reconstruction-infidelity lesson: the feature computation lives in an
+importable module (`src/features/pace_features.py`) so a future live path
+runs the identical code -- no separate live reimplementation, ever.
+
+Pre-registered feature families (~35-45 features; exact list recorded in the
+artifact metadata):
+
+1. Opponent offense pace: rolling-5/10 and EMA-5 of opponent
+   `shotAttemptsFor`, `unblockedShotAttemptsFor`, `xGoalsFor` (situations
+   `all` and `5on5`), score-adjusted attempts; season-to-date means;
+   prior-season per-game baseline.
+2. Team shot suppression: the same transforms of team `shotAttemptsAgainst`,
+   `unblockedShotAttemptsAgainst`, `xGoalsAgainst`.
+3. Combined pace: sums/means of opponent-offense and team-defense EMAs (the
+   expected attempt environment at the goalie's net).
+4. Special-teams volume: opponent 5on4 attempts/xG per game, team 4on5
+   attempts-against/xG-against per game (season-to-date and EMA-5); team 4on5
+   ice time per game as a penalty-taking proxy.
+5. Goalie workload quality (goalie file): rolling xG-per-shot-faced,
+   high-danger share of shots faced, rebound rate. Used only by the
+   save-rate-submodel variant.
+6. League-relative z-scores of families 1-3 against the season-to-date league
+   distribution (same pattern as the game-context builder).
+
+**Component 3 -- experiment, `scripts/experiment_pace_distributional.py`.**
+Reuses `src/experiments/harness.py` and `src/experiments/distributional_saves.py`
+unchanged; same date folds (train < 2025-10-16, val 2025-10-16 to 2025-12-03,
+test >= 2025-12-04); validation-only selection over the same policy grid as
+3.12; exactly one test touch per variant; goalie-night cluster bootstrap CIs.
+Pre-registered variants:
+
+- `control`: exact re-run of the 3.12 control. Must reproduce test Brier
+  0.25487 / +1.06% ROI / 888 bets before any new variant is interpreted
+  (harness integrity check).
+- `pace_shots` (primary): families 1-4 and 6 added to the shots submodel only.
+- `pace_context_shots` (primary): pace families plus the 3.12 game-context
+  features in the shots submodel -- the best-available combined model.
+- `pace_both` (secondary): `pace_context_shots` plus family 5 in the save-rate
+  submodel.
+
+Pre-registered interpretation rules:
+
+- An edge claim requires the test cluster CI to exclude zero, and even then it
+  is a hypothesis for next-season confirmation, not proof: this test fold has
+  been inspected by 3.5, 3.12, and 3.13 and is worn as an independent arbiter.
+- Brier/night-AUC improvements vs `control` are single-split observations.
+- Named benchmark: the de-vigged market's Brier on this test fold is 0.24961
+  (3.4 baseline D). No repo model has ever beaten it. If any variant does,
+  that is reported prominently regardless of ROI, because it would be the
+  first evidence the model knows something the market consensus does not.
+- Negative-result disposition, decided now: if pace features improve
+  prediction quality but produce no bettable edge (the pattern of every
+  experiment so far), the out-modeling route is treated as close to
+  conclusively dead -- the saves market prices at full-analytics sharpness --
+  and remaining effort moves to the timing/price/CLV families per 3.13.
+
+**Component 4 -- live-season path (documented now, built only if justified).**
+MoneyPuck updates nightly around 03:40 ET (verified from its update-timestamp
+file). The morning fetch workflow would re-download `all_teams.csv` once per
+day (within stated ToS), run the shared builder module, and hand features to
+`fetch_and_predict.py`. Fallback if MoneyPuck is stale or down: the NHL
+realtime report supplies attempt counts with xG features null for the day, or
+the previous-day cache is reused with a staleness flag. Post-game latency
+(whether last night's games are reliably present by the morning fetch) is an
+opening-week verification task.
+
+**Effort estimate.** Ingestion plus cross-check about half a day; builder plus
+leakage checks half a day; experiment reusing the harness half a day; a
+verification pass on top. Roughly 1.5-2 days total.
+
 ---
 
 ## 4. Betting strategy for next season
@@ -1279,7 +1428,7 @@ experiments.
 | 5 | **Strategy decision gate -- resolved 2026-07-08 by the user.** Inputs: item 3 (lines not soft), item 4 (no calibrated edge on the reconstructed frame), and 3.11 (the live run survived night-clustered re-testing and independent re-grading against archived lines; the reconstructed-frame backtests never tested the live system). Decision: proceed as a **measurement program**, not a scale-up -- build item 6 immediately, add a shadow run of the exact live system alongside it, keep stakes token-sized until CLV is demonstrably positive, and run items 7 and 9 through the honest harness rather than treat either as a substitute for shadow-run evidence. The UNDER-only + parlay automation (4.1/4.2) should still NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6, 3.11 |
 | 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08; live DB migration applied 2026-07-09.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Remaining operational note: a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
 | 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
-| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals), not another small tweak to the same current-data feature pack or another threshold sweep. | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals), not another small tweak to the same current-data feature pack or another threshold sweep. **Pace/xG (shot-attempt) ingestion from MoneyPuck + NHL stats API designed and pre-registered 2026-07-09 (see 3.14) -- awaiting go-ahead.** | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13, 3.14 |
 | 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
@@ -1349,6 +1498,16 @@ explicitly says the result survived the honest harness and uncertainty checks.
   validation selection; all three variants selected `old_prob_edge_0.05`, so
   test results matched 3.12. No demonstrated edge, and the obvious policy-math
   caveat is now closed.
+- **2026-07-09 (Claude) pace/xG endpoint research + design:** three parallel
+  research passes verified the exact data endpoints for shot-attempt/pace/xG
+  ingestion. MoneyPuck game-by-game team and goalie files confirmed as primary
+  source (NHL-format gameId join, nightly updates, ToS permits listed
+  downloads); NHL stats API `team/realtime` report confirmed as a one-call-
+  per-season cross-check (totalShotAttempts = Corsi For, verified exactly);
+  Natural Stat Trick found Cloudflare-gated behind manual access-key approval
+  and skipped per user decision. Full ingestion/builder/experiment design
+  pre-registered in section 3.14. No code built yet -- awaiting user
+  go-ahead.
 
 ## 7. Appendix: what was checked and found sound
 
