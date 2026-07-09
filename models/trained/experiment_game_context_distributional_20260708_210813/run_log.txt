@@ -1,0 +1,251 @@
+================================================================================
+GAME-CONTEXT DISTRIBUTIONAL SAVES EXPERIMENT
+Run timestamp: 2026-07-08T21:08:13.092103
+================================================================================
+Output directory: models\trained\experiment_game_context_distributional_20260708_210813
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+
+[clean_training_data] Fold boundaries (date-based split):
+  train: 2022-10-07 to 2025-10-15  (n=7992)
+  val  : 2025-10-16 to 2025-12-03  (n=730)
+  test : 2025-12-04 to 2026-04-16  (n=1774)
+  [clean_training_data] Fold date-disjointness verified.
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+[multibook_classification_training_data] Fold boundaries (date-based split):
+  train: 2024-10-04 to 2025-10-15  (n=7844)
+  val  : 2025-10-16 to 2025-12-03  (n=2676)
+  test : 2025-12-04 to 2026-04-13  (n=2672)
+  [multibook_classification_training_data] Fold date-disjointness verified.
+
+================================================================================
+VARIANT: control
+================================================================================
+No-context distributional setup from scripts/experiment_distributional.py.
+Shots feature count: 104
+Save-rate feature count: 104
+
+--- control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.4949           1.9465
+depth2                  5.4880           1.9337
+depth4_mcw20            5.5094           1.9635
+more_trees_lowlr        5.4864           1.9455
+shallow_highreg         5.4890           1.9336
+deep_reg                5.4978           1.9530
+control shots winner: more_trees_lowlr  val_mae=5.4864  val_poisson_deviance=1.9455
+
+--- control: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 28.9488
+  mean(residual^2)   = 45.2172
+  NB2 dispersion alpha = 0.019261  (Var = mean + alpha*mean^2)
+
+--- control: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.33070
+depth2                             0.33038
+depth4_mcw20                       0.33090
+more_trees_lowlr                   0.33065
+shallow_highreg                    0.33038
+deep_reg                           0.33100
+control save-rate winner: depth2  val_weighted_logloss=0.33038
+Saved control shots model to: models\trained\experiment_game_context_distributional_20260708_210813\control_shots_model.json
+Saved control save-rate model to: models\trained\experiment_game_context_distributional_20260708_210813\control_save_rate_model.json
+control shots top-10 features by gain: [{'feature': 'opp_shots_rolling_10', 'gain': 35.54629898071289}, {'feature': 'team_shots_against_rolling_10', 'gain': 29.7457332611084}, {'feature': 'opp_shots_rolling_5', 'gain': 18.323476791381836}, {'feature': 'team_shots_against_rolling_5', 'gain': 15.174909591674805}, {'feature': 'shots_against_rolling_10', 'gain': 12.522788047790527}, {'feature': 'is_home', 'gain': 12.340583801269531}, {'feature': 'opp_vs_team_shots_10', 'gain': 11.5250825881958}, {'feature': 'even_strength_shots_against_rolling_10', 'gain': 10.58523178100586}, {'feature': 'even_strength_shots_against_rolling_std_5', 'gain': 10.518080711364746}, {'feature': 'saves_rolling_10', 'gain': 9.994013786315918}]
+control save-rate top-10 features by gain: [{'feature': 'saves_rolling_10', 'gain': 13.092796325683594}, {'feature': 'short_handed_saves_rolling_std_3', 'gain': 11.294633865356445}, {'feature': 'even_strength_goals_against_rolling_std_3', 'gain': 10.267721176147461}, {'feature': 'power_play_shots_against_rolling_5', 'gain': 10.109846115112305}, {'feature': 'power_play_goals_against_rolling_5', 'gain': 10.056117057800293}, {'feature': 'save_percentage_rolling_10', 'gain': 9.979641914367676}, {'feature': 'short_handed_shots_against_rolling_5', 'gain': 9.95822525024414}, {'feature': 'team_goals_against_rolling_5', 'gain': 9.74106216430664}, {'feature': 'goals_against_rolling_std_10', 'gain': 9.582889556884766}, {'feature': 'even_strength_saves_rolling_5', 'gain': 9.506667137145996}]
+[control VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999982, max_sum=1.000000, rows below 0.999: 0
+
+--- control: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4864  naive(shots_against_rolling_5)=6.2089
+Mean pmf log-loss at actual saves value: 3.4808
+Central 50% coverage: 48.5%; central 80% coverage: 78.9%
+PIT histogram frequencies: [0.134, 0.089, 0.086, 0.089, 0.089, 0.086, 0.088, 0.103, 0.133, 0.103]
+[control VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[control VAL] fold-wide AUC row-level=0.5114 one-per-goalie-night=0.5115  Brier=0.25508  (n=2676)
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    839     31.4%     52.8%    -0.85%
+   0.10    282     10.5%     55.0%    +3.80%
+   0.12    167      6.2%     58.1%   +10.31%
+   0.15     67      2.5%     44.8%   -14.96%
+
+VAL sweep winner: EV threshold=0.05  bets=839  bet_rate=31.4%  roi=-0.85%
+control VAL winner ROI 95% CI (row): [-7.18%, +5.40%]
+control VAL winner ROI 95% CI (cluster): [-13.33%, +11.71%] (n_clusters=238)
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: control, EV threshold=0.05
+--------------------------------------------------------------------------------
+[control TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999974, max_sum=1.000000, rows below 0.999: 0
+[control TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[control TEST] fold-wide AUC row-level=0.5159 one-per-goalie-night=0.5202  Brier=0.25487  (n=2672)
+control TEST: 888 bets, 33.2% bet rate, 53.6% hit rate, +1.06% ROI
+control TEST ROI 95% CI (row): [-5.29%, +7.39%]
+control TEST ROI 95% CI (cluster): [-8.83%, +10.91%] (n_clusters=474)
+control TEST side breakdown: OVER 470 bets (+2.22%), UNDER 418 bets (-0.24%)
+control TEST goalie-nights: 1307 total, 474 with a bet
+control TEST AUC row-level=0.5159 one-per-goalie-night=0.5202; Brier=0.25487
+
+================================================================================
+VARIANT: context_shots
+================================================================================
+Context columns added to shots-against model only; save-rate model matches control.
+Shots feature count: 136
+Save-rate feature count: 104
+
+--- context_shots: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.4976           1.9286
+depth2                  5.4850           1.9198
+depth4_mcw20            5.4972           1.9329
+more_trees_lowlr        5.4821           1.9241
+shallow_highreg         5.4839           1.9199
+deep_reg                5.4947           1.9254
+context_shots shots winner: more_trees_lowlr  val_mae=5.4821  val_poisson_deviance=1.9241
+
+--- context_shots: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 28.9493
+  mean(residual^2)   = 43.7973
+  NB2 dispersion alpha = 0.017564  (Var = mean + alpha*mean^2)
+
+--- context_shots: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.33070
+depth2                             0.33038
+depth4_mcw20                       0.33090
+more_trees_lowlr                   0.33065
+shallow_highreg                    0.33038
+deep_reg                           0.33100
+context_shots save-rate winner: depth2  val_weighted_logloss=0.33038
+Saved context_shots shots model to: models\trained\experiment_game_context_distributional_20260708_210813\context_shots_shots_model.json
+Saved context_shots save-rate model to: models\trained\experiment_game_context_distributional_20260708_210813\context_shots_save_rate_model.json
+context_shots shots top-10 features by gain: [{'feature': 'ctx_opponent_s2d_shots_for_avg', 'gain': 46.68833541870117}, {'feature': 'ctx_team_s2d_shots_against_avg', 'gain': 29.48298454284668}, {'feature': 'team_shots_against_rolling_10', 'gain': 27.569883346557617}, {'feature': 'opp_shots_rolling_10', 'gain': 25.580453872680664}, {'feature': 'ctx_goalie_s2d_shots_against_avg', 'gain': 18.030868530273438}, {'feature': 'ctx_opponent_s2d_shots_for_ema5', 'gain': 16.170820236206055}, {'feature': 'even_strength_shots_against_rolling_10', 'gain': 12.688485145568848}, {'feature': 'is_home', 'gain': 12.272058486938477}, {'feature': 'ctx_opponent_is_3_in_4', 'gain': 12.250434875488281}, {'feature': 'team_shots_against_rolling_5', 'gain': 12.06525993347168}]
+context_shots save-rate top-10 features by gain: [{'feature': 'saves_rolling_10', 'gain': 13.092796325683594}, {'feature': 'short_handed_saves_rolling_std_3', 'gain': 11.294633865356445}, {'feature': 'even_strength_goals_against_rolling_std_3', 'gain': 10.267721176147461}, {'feature': 'power_play_shots_against_rolling_5', 'gain': 10.109846115112305}, {'feature': 'power_play_goals_against_rolling_5', 'gain': 10.056117057800293}, {'feature': 'save_percentage_rolling_10', 'gain': 9.979641914367676}, {'feature': 'short_handed_shots_against_rolling_5', 'gain': 9.95822525024414}, {'feature': 'team_goals_against_rolling_5', 'gain': 9.74106216430664}, {'feature': 'goals_against_rolling_std_10', 'gain': 9.582889556884766}, {'feature': 'even_strength_saves_rolling_5', 'gain': 9.506667137145996}]
+[context_shots VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999991, max_sum=1.000000, rows below 0.999: 0
+
+--- context_shots: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4821  naive(shots_against_rolling_5)=6.2089
+Mean pmf log-loss at actual saves value: 3.4801
+Central 50% coverage: 47.3%; central 80% coverage: 78.2%
+PIT histogram frequencies: [0.129, 0.097, 0.074, 0.099, 0.073, 0.088, 0.086, 0.096, 0.144, 0.115]
+[context_shots VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[context_shots VAL] fold-wide AUC row-level=0.5170 one-per-goalie-night=0.5184  Brier=0.25468  (n=2676)
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    875     32.7%     53.0%    -0.17%
+   0.10    336     12.6%     57.1%    +7.73%
+   0.12    207      7.7%     59.9%   +12.73%
+   0.15    104      3.9%     65.4%   +22.58%
+
+VAL sweep winner: EV threshold=0.05  bets=875  bet_rate=32.7%  roi=-0.17%
+context_shots VAL winner ROI 95% CI (row): [-6.29%, +6.07%]
+context_shots VAL winner ROI 95% CI (cluster): [-12.69%, +11.84%] (n_clusters=252)
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: context_shots, EV threshold=0.05
+--------------------------------------------------------------------------------
+[context_shots TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999968, max_sum=1.000000, rows below 0.999: 0
+[context_shots TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[context_shots TEST] fold-wide AUC row-level=0.5360 one-per-goalie-night=0.5356  Brier=0.25223  (n=2672)
+context_shots TEST: 758 bets, 28.4% bet rate, 52.0% hit rate, -1.68% ROI
+context_shots TEST ROI 95% CI (row): [-8.34%, +5.00%]
+context_shots TEST ROI 95% CI (cluster): [-11.65%, +8.55%] (n_clusters=462)
+context_shots TEST side breakdown: OVER 185 bets (+6.66%), UNDER 573 bets (-4.37%)
+context_shots TEST goalie-nights: 1307 total, 462 with a bet
+context_shots TEST AUC row-level=0.5360 one-per-goalie-night=0.5356; Brier=0.25223
+
+================================================================================
+VARIANT: context_both
+================================================================================
+Context columns added to shots-against and save-rate models; secondary diagnostic.
+Shots feature count: 136
+Save-rate feature count: 136
+
+--- context_both: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.4976           1.9286
+depth2                  5.4850           1.9198
+depth4_mcw20            5.4972           1.9329
+more_trees_lowlr        5.4821           1.9241
+shallow_highreg         5.4839           1.9199
+deep_reg                5.4947           1.9254
+context_both shots winner: more_trees_lowlr  val_mae=5.4821  val_poisson_deviance=1.9241
+
+--- context_both: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 28.9493
+  mean(residual^2)   = 43.7973
+  NB2 dispersion alpha = 0.017564  (Var = mean + alpha*mean^2)
+
+--- context_both: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.33061
+depth2                             0.33058
+depth4_mcw20                       0.33104
+more_trees_lowlr                   0.33069
+shallow_highreg                    0.33058
+deep_reg                           0.33131
+context_both save-rate winner: shallow_highreg  val_weighted_logloss=0.33058
+Saved context_both shots model to: models\trained\experiment_game_context_distributional_20260708_210813\context_both_shots_model.json
+Saved context_both save-rate model to: models\trained\experiment_game_context_distributional_20260708_210813\context_both_save_rate_model.json
+context_both shots top-10 features by gain: [{'feature': 'ctx_opponent_s2d_shots_for_avg', 'gain': 46.68833541870117}, {'feature': 'ctx_team_s2d_shots_against_avg', 'gain': 29.48298454284668}, {'feature': 'team_shots_against_rolling_10', 'gain': 27.569883346557617}, {'feature': 'opp_shots_rolling_10', 'gain': 25.580453872680664}, {'feature': 'ctx_goalie_s2d_shots_against_avg', 'gain': 18.030868530273438}, {'feature': 'ctx_opponent_s2d_shots_for_ema5', 'gain': 16.170820236206055}, {'feature': 'even_strength_shots_against_rolling_10', 'gain': 12.688485145568848}, {'feature': 'is_home', 'gain': 12.272058486938477}, {'feature': 'ctx_opponent_is_3_in_4', 'gain': 12.250434875488281}, {'feature': 'team_shots_against_rolling_5', 'gain': 12.06525993347168}]
+context_both save-rate top-10 features by gain: [{'feature': 'saves_rolling_std_10', 'gain': 15.43612003326416}, {'feature': 'even_strength_shots_against_rolling_10', 'gain': 14.74213695526123}, {'feature': 'team_goals_against_rolling_10', 'gain': 13.642040252685547}, {'feature': 'saves_rolling_5', 'gain': 13.148653984069824}, {'feature': 'even_strength_goals_against_rolling_std_3', 'gain': 11.15906047821045}, {'feature': 'goals_against_rolling_std_3', 'gain': 11.149177551269531}, {'feature': 'power_play_goals_against_rolling_3', 'gain': 11.125874519348145}, {'feature': 'power_play_saves_rolling_std_5', 'gain': 11.068439483642578}, {'feature': 'expected_workload_diff', 'gain': 11.056594848632812}, {'feature': 'saves_rolling_std_3', 'gain': 10.87630844116211}]
+[context_both VAL clean_training_data] pmf normalization check: n=730, min_sum=0.999991, max_sum=1.000000, rows below 0.999: 0
+
+--- context_both: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4821  naive(shots_against_rolling_5)=6.2089
+Mean pmf log-loss at actual saves value: 3.4802
+Central 50% coverage: 46.7%; central 80% coverage: 78.1%
+PIT histogram frequencies: [0.129, 0.097, 0.077, 0.099, 0.073, 0.088, 0.088, 0.09, 0.144, 0.116]
+[context_both VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[context_both VAL] fold-wide AUC row-level=0.5154 one-per-goalie-night=0.5172  Brier=0.25488  (n=2676)
+
+--- VAL EV threshold sweep (probabilities fixed; only threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    886     33.1%     52.9%    -0.41%
+   0.10    340     12.7%     55.6%    +4.54%
+   0.12    205      7.7%     56.6%    +6.76%
+   0.15    106      4.0%     64.2%   +20.26%
+
+VAL sweep winner: EV threshold=0.05  bets=886  bet_rate=33.1%  roi=-0.41%
+context_both VAL winner ROI 95% CI (row): [-6.80%, +5.87%]
+context_both VAL winner ROI 95% CI (cluster): [-12.62%, +11.71%] (n_clusters=254)
+
+--------------------------------------------------------------------------------
+SINGLE TEST TOUCH: context_both, EV threshold=0.05
+--------------------------------------------------------------------------------
+[context_both TEST clean_training_data] pmf normalization check: n=1774, min_sum=0.999968, max_sum=1.000000, rows below 0.999: 0
+[context_both TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[context_both TEST] fold-wide AUC row-level=0.5382 one-per-goalie-night=0.5375  Brier=0.25204  (n=2672)
+context_both TEST: 747 bets, 28.0% bet rate, 52.1% hit rate, -1.35% ROI
+context_both TEST ROI 95% CI (row): [-8.01%, +5.56%]
+context_both TEST ROI 95% CI (cluster): [-11.24%, +8.81%] (n_clusters=465)
+context_both TEST side breakdown: OVER 191 bets (+9.38%), UNDER 556 bets (-5.03%)
+context_both TEST goalie-nights: 1307 total, 465 with a bet
+context_both TEST AUC row-level=0.5382 one-per-goalie-night=0.5375; Brier=0.25204
+
+================================================================================
+HEAD-TO-HEAD SUMMARY (single-touch test results)
+================================================================================
+variant          role            roi   bets   auc_row  auc_night     brier
+control          primary      +1.06%    888    0.5159     0.5202   0.25487
+context_shots    primary      -1.68%    758    0.5360     0.5356   0.25223
+context_both     secondary    -1.35%    747    0.5382     0.5375   0.25204
+Do not interpret any point estimate as an edge without the CI/chronological context above.
+
+Saved metadata to: models\trained\experiment_game_context_distributional_20260708_210813\metadata.json
+Wall-clock time: 124.7s (2.1 min)
+
+================================================================================
+EXPERIMENT COMPLETE
+================================================================================

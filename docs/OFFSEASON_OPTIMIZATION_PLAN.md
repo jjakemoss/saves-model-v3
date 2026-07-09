@@ -18,12 +18,16 @@ not show that Underdog was simply hanging softer saves totals. The live Feb-Apr
 to scale without CLV or a repeatable mechanism. The offseason priority is now
 to turn the system into an edge-detection platform: ticket-level tracking, CLV,
 market-aware features, better hockey-context features, and a distributional
-saves model evaluated through the honest harness. As of 2026-07-08, the
-platform pieces (tickets, CLV, snapshots, shadow-run logging) are implemented,
-and the market-anchoring and distributional-model experiments (roadmap items 7
-and 9) both came back clean negatives on a bettable edge -- though each
-produced a real methodological gain (better calibration, coherent line pricing
-across any line) worth carrying forward.
+saves model evaluated through the honest harness. As of 2026-07-09, the
+platform pieces (tickets, CLV, snapshots, shadow-run logging) are implemented
+and the live DB migration has been applied. The market-anchoring and
+distributional-model experiments (roadmap items 7 and 9) both came back clean
+negatives on a bettable edge, though each produced a real methodological gain.
+The first current-data game-context slice (roadmap item 8) improved
+distributional prediction quality but still lost under the pre-registered
+probability-edge betting policy; the next offline model/policy question is
+push-aware true expected profit or timing-safe game-market ingestion, not
+another generic retrain.
 
 ## Table of contents
 
@@ -32,7 +36,8 @@ across any line) worth carrying forward.
 3. [Model training improvements, ranked](#3-model-training-improvements-ranked)
 4. [Betting strategy for next season](#4-betting-strategy-for-next-season)
 5. [Prioritized offseason roadmap](#5-prioritized-offseason-roadmap)
-6. [Appendix: what was checked and found sound](#6-appendix-what-was-checked-and-found-sound)
+6. [Codex-authored live implementation log](#6-codex-authored-live-implementation-log)
+7. [Appendix: what was checked and found sound](#7-appendix-what-was-checked-and-found-sound)
 
 ---
 
@@ -868,6 +873,81 @@ token-stake shadow run of the exact live system: same
 reconstruction), every recommendation logged with fetch timestamps and
 closing lines (roadmap items 6/4.6).
 
+### 3.12 Codex-authored: first game-context distributional slice improved prediction quality, not betting edge
+
+Authored by Codex, 2026-07-09. This section records the first implementation
+slice of roadmap item 8. It deliberately used only data already present in the
+repo: `clean_training_data.parquet` plus `data/raw/schedules/*.json`. No
+moneyline, game total, team total, starter timestamp, injury, play-by-play, or
+xG data was introduced, because those require separate timing-safe ingestion.
+
+The new builder, `scripts/build_game_context_features.py`, creates
+`data/processed/game_context_features.parquet` (generated artifact) plus
+`game_context_features_metadata.json`. The artifact has 10,496 rows, one per
+clean goalie-game, with 32 generated context features:
+
+- team and opponent rest, back-to-back, games-in-last-4-days, and 3-in-4 flags
+  from schedule history;
+- prior-only season-to-date team shots against, opponent shots for, and goalie
+  shots against;
+- shifted EMA-5 versions of the same shot-volume contexts;
+- relative/z versions of existing rolling shot-volume columns against
+  season-to-date baselines.
+
+Leakage guardrails held in the implementation checks: output keys are unique
+on `(game_id, goalie_id, team_abbrev, opponent_team, game_date)`, schedule
+coverage is 100% for team and opponent, current-game outcome columns and
+betting-line columns are not emitted as features, and all season-to-date/EMA
+features use prior rows only. Early-season nulls remain intentionally and are
+handled by XGBoost as missing values.
+
+The paired experiment, `scripts/experiment_game_context_distributional.py`,
+reran the distributional architecture through the same honest date folds and
+single-touch betting harness:
+
+| Variant | Role | Test ROI | Bets | Row AUC | Goalie-night AUC | Brier | Cluster ROI CI |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `control` | primary | +1.06% | 888 | 0.5159 | 0.5202 | 0.25487 | [-8.83%, +10.91%] |
+| `context_shots` | primary | -1.68% | 758 | 0.5360 | 0.5356 | 0.25223 | [-11.65%, +8.55%] |
+| `context_both` | secondary | -1.35% | 747 | 0.5382 | 0.5375 | 0.25204 | [-11.24%, +8.81%] |
+
+The hockey read is encouraging but not tradable: the context features improved
+shots-model validation MAE slightly (5.4864 -> 5.4821), reduced test Brier, and
+lifted one-per-goalie-night AUC by roughly 1.5-1.7 points. The top context
+features are exactly the right kind of signal -- opponent season-to-date shots
+for, team season-to-date shots against, goalie season-to-date shots against,
+opponent EMA shots for, and opponent 3-in-4. That says the model is learning
+shot-volume context rather than random noise.
+
+The betting read is still negative: both context variants selected the 5-point
+EV threshold on validation, then lost on the single test touch, mostly because
+the added context shifted the bet mix toward UNDERs that did not win enough at
+available prices. The OVER subset was positive in both context variants
+(`context_shots` +6.66%, `context_both` +9.38%), but those are small,
+post-test side slices and must be treated as hypotheses only. This is not a
+demonstrated edge.
+
+Independent Codex audit after the run found no blocking leakage or protocol
+issue: date folds are disjoint, context joins have 100% coverage, the feature
+artifact excludes current-game outcomes, and the experiment keeps validation
+selection separate from the single test touch. Two caveats carry forward. First,
+the AUC/Brier improvement is a single chronological-split observation, not a
+confidence-tested delta, so the precise wording is "improved on this split."
+Second, the betting policy still uses the repo's existing probability-edge
+semantics (`model_prob - implied_prob`) and ignores push probability in
+selection even though the distributional model computes `p_push`. Therefore the
+fair betting conclusion is narrower: no edge was demonstrated under this
+pre-registered probability-edge policy. A push-aware, true expected-profit
+policy remains an open experiment, not something this run falsified.
+
+What this changes: item 8 is now partially implemented and no longer purely
+speculative. Game-context features do improve the hockey model in the direction
+we wanted, but the first current-data slice does not beat the market as a
+betting policy. The next item-8 work should add genuinely missing market/game
+environment data (moneyline, game total, team totals, and timing-safe line
+movement) or build a push-aware/true-EV policy layer; another small tweak to the
+same current-data context pack is unlikely to turn -1.68% into a durable edge.
+
 ---
 
 ## 4. Betting strategy for next season
@@ -1145,33 +1225,67 @@ experiments.
 | 3 | ~~**Venue discrepancy analysis**: from `betting.db` (Jan-Apr 2026), for every goalie-night quoted at both Underdog and a sharp book, measure the line gap and test whether "UNDER at Underdog when its line sits above sharp consensus" reproduces the live ROI *without any model*.~~ **done 2026-07-07 -- result: Underdog lines are NOT soft.** 95.2% exact match with sharp consensus on 248 checkable nights; zero of the 137 live UNDER legs sat on a favorable gap. Soft lines do not explain the live profit (see 4.3). | half day | 4.3, 3.1 |
 | 4 | ~~**Calibration layer** -- the decisive model-edge test: fit on validation, check whether any honest +EV pockets survive, one pre-registered test touch.~~ **done 2026-07-07 -- result: no demonstrated edge.** Validation AUC was only ~0.54 and test AUC fell to 0.513; calibrated probs compress to 0.467-0.620; pre-registered test policies lose or are uninformative; the calibrated UNDER pool barely exists (see 3.2). | half day | 3.2 |
 | 5 | **Strategy decision gate -- resolved 2026-07-08 by the user.** Inputs: item 3 (lines not soft), item 4 (no calibrated edge on the reconstructed frame), and 3.11 (the live run survived night-clustered re-testing and independent re-grading against archived lines; the reconstructed-frame backtests never tested the live system). Decision: proceed as a **measurement program**, not a scale-up -- build item 6 immediately, add a shadow run of the exact live system alongside it, keep stakes token-sized until CLV is demonstrably positive, and run items 7 and 9 through the honest harness rather than treat either as a substitute for shadow-run evidence. The UNDER-only + parlay automation (4.1/4.2) should still NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6, 3.11 |
-| 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Two open operational notes: the migration has **not yet been applied** to the live `data/betting.db` (one command, a user decision, since the db is git-tracked), and a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
+| 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08; live DB migration applied 2026-07-09.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Remaining operational note: a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
 | 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
-| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **Case strengthened 2026-07-08**: the distributional experiment (3.5) showed the shots-against submodel is where the saves signal actually lives, and these features feed directly into a shots-against forecast. | 2-3 days | 3.6, 3.9, 3.10 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. Remaining item-8 upside likely requires new timing-safe game-market ingestion (moneyline/totals/team totals) or a push-aware true-EV policy layer, not another small tweak to the same current-data feature pack. | 2-3 days | 3.6, 3.9, 3.10, 3.12 |
 | 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
 
-Items 5-6 are the "must happen before opening night" set if any betting
+Items 5-6 were the "must happen before opening night" set if any betting
 continues: make the strategy decision consciously, then build tickets + CLV so
-next season measures the thing actually being bet. Items 7-9 are where
-model-side gains live, if any exist -- and none of them should be evaluated
-except through the item-2 honest harness, preferably with full-date/game-level
-fold boundaries so multibook rows from the same goalie-night cannot straddle
-folds. If only one thing gets done next, it is item 6: the tracker must be
-able to represent tickets and CLV before more real money produces another
-ambiguous record. Do not respond to the item-2 result by running more
-hyperparameter searches against the test fold -- that road leads straight back
-to the retired +23.31%.
+next season measures the thing actually being bet. They are now done, including
+the live DB migration. Items 7-9 and the first current-data item-8 slice have
+now been evaluated through the honest harness. The remaining offline work is
+not more hyperparameter search against the test fold; it is either a
+push-aware true-EV policy layer on top of the distributional probabilities or
+timing-safe game-market ingestion (moneyline, totals, team totals, movement)
+that can feed the shot-volume model without leaking closing information.
 
-**Update 2026-07-08:** items 6, 7, and 9 are now done (see above); the
-migration in item 6 still needs to be applied to the live database before any
-of this generates real CLV/shadow-run data, and what remains on the model
-side is item 8, whose case 3.5 just strengthened -- the in-season measurement
-program (CLV capture, the shadow run) is now the load-bearing next step, not
-another offline backtest.
+**Update 2026-07-09:** items 6, 7, and 9 are now done (see above), and the
+item-6 migration has been applied to the live `data/betting.db`. Item 8 now
+has a first current-data implementation (3.12): it improves hockey prediction
+quality but still does not produce a demonstrated betting edge. The in-season
+measurement program (CLV capture, the shadow run) remains the load-bearing next
+step; the next offline model step should be timing-safe game-market ingestion
+or push-aware true-EV policy modeling, not another generic retrain.
 
-## 6. Appendix: what was checked and found sound
+## 6. Codex-authored live implementation log
+
+Authored by Codex, started 2026-07-09. Purpose: concise, observable trail for
+the next edge-search phase. This is not evidence of an edge unless the entry
+explicitly says the result survived the honest harness and uncertainty checks.
+
+- **2026-07-09 kickoff:** applied `scripts/add_tracking_tables.py` to the live
+  `data/betting.db`; verified `line_snapshots`, `tickets`, `ticket_legs`, and
+  `bets.model_version` exist. The database is now schema-ready for CLV/ticket
+  tracking.
+- **2026-07-09 kickoff:** launched parallel Codex sub-agents for (a) data/source
+  inventory for hockey-context features and (b) experiment-harness architecture.
+  Working hypothesis: if an edge exists, it is more likely in shot-volume/game
+  context and timing/line-shopping behavior than in another generic retrain of
+  the existing 114-feature classifier.
+- **2026-07-09 agent synthesis:** both sub-agents converged on the same next
+  slice: a small, pregame-safe game-context feature pack built from existing
+  repo data, evaluated first in the distributional shots-against model. Do not
+  start with moneyline/totals, confirmed-starter timestamps, or xG unless new
+  ingestion is built; current historical odds caches are goalie-saves props
+  only, and postgame starter/shot-quality data can leak if used naively.
+- **2026-07-09 implementation:** added `scripts/build_game_context_features.py`
+  and generated 32 pregame-safe schedule/season-to-date shot-volume context
+  features with 100% schedule coverage and unique goalie-game keys.
+- **2026-07-09 experiment:** added and ran
+  `scripts/experiment_game_context_distributional.py`. Result: context improved
+  test row AUC/Brier (`control` 0.5159/0.25487 -> `context_shots`
+  0.5360/0.25223; `context_both` 0.5382/0.25204), but both context betting
+  policies lost on the single test touch and cluster CIs spanned zero. No
+  demonstrated edge.
+- **2026-07-09 audit:** independent Codex review found no blocking leakage or
+  protocol issue. Carry-forward caveat: the experiment tested the existing
+  probability-edge betting rule, not a push-aware true expected-profit policy;
+  that policy layer remains open.
+
+## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need
 fixing:
