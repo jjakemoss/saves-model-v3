@@ -1,0 +1,129 @@
+================================================================================
+DISTRIBUTIONAL SAVES MODEL PROTOTYPE (roadmap item 9)
+Run timestamp: 2026-07-08T19:03:38.399777
+================================================================================
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features (identifiers + current-game outcomes excluded): 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Final feature set: 104 features.
+No infinities or NaNs found in the feature matrix.
+Note: 1 row(s) with shots_against==0 present (valid Poisson/NB target=0; excluded from save-rate model training only, since saves/shots_against is undefined there).
+
+[clean_training_data] Fold boundaries (date-based split):
+  Train: 2022-10-07 to 2025-10-15  (n=7992)
+  Val:   2025-10-16 to 2025-12-03  (n=730)
+  Test:  2025-12-04 to 2026-04-16  (n=1774)
+  [clean_training_data] Fold date-disjointness verified.
+
+--- Shots model (count:poisson) -- config search, selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.4949           1.9465
+depth2                  5.4880           1.9337
+depth4_mcw20            5.5094           1.9635
+more_trees_lowlr        5.4864           1.9455
+shallow_highreg         5.4890           1.9336
+deep_reg                5.4978           1.9530
+
+Shots model winner (VAL MAE): more_trees_lowlr  val_mae=5.4864  val_poisson_deviance=1.9455
+
+--- Dispersion fit on TRAIN residuals (method of moments) ---
+  mean(predicted mu) = 28.9488
+  mean(residual^2)   = 45.2172   (empirical Var(Y|mu) estimate)
+  TRAIN variance > TRAIN mean: overdispersion detected.
+  NB2 method-of-moments dispersion alpha = 0.019261  (Var = mean + alpha*mean^2)
+
+Save-rate model: dropped 1 TRAIN / 0 VAL row(s) with shots_against==0 (save rate undefined).
+
+--- Save-rate model (binary:logistic, sample_weight=shots_against) -- config search, selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.33070
+depth2                             0.33038
+depth4_mcw20                       0.33090
+more_trees_lowlr                   0.33065
+shallow_highreg                    0.33038
+deep_reg                           0.33100
+
+Save-rate model winner (VAL weighted log-loss): depth2  val_weighted_logloss=0.33038
+
+Saved shots model to: models\trained\experiment_distributional_20260708_190338\shots_model.json
+Saved save-rate model to: models\trained\experiment_distributional_20260708_190338\save_rate_model.json
+
+Shots model top-5 features by gain: [{'feature': 'opp_shots_rolling_10', 'gain': 35.54629898071289}, {'feature': 'team_shots_against_rolling_10', 'gain': 29.7457332611084}, {'feature': 'opp_shots_rolling_5', 'gain': 18.323476791381836}, {'feature': 'team_shots_against_rolling_5', 'gain': 15.174909591674805}, {'feature': 'shots_against_rolling_10', 'gain': 12.522788047790527}]
+Save-rate model top-5 features by gain: [{'feature': 'saves_rolling_10', 'gain': 13.092796325683594}, {'feature': 'short_handed_saves_rolling_std_3', 'gain': 11.294633865356445}, {'feature': 'even_strength_goals_against_rolling_std_3', 'gain': 10.267721176147461}, {'feature': 'power_play_shots_against_rolling_5', 'gain': 10.109846115112305}, {'feature': 'power_play_goals_against_rolling_5', 'gain': 10.056117057800293}]
+[VAL+TEST (clean_training_data)] pmf normalization check: n=2504, min_sum=0.999974, max_sum=1.000000, rows below 0.999: 0
+
+--- Intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4864  naive(shots_against_rolling_5)=6.2089  (model beats naive)
+Mean pmf log-loss at actual saves value: 3.4808
+Empirical coverage: central 50% interval hit 48.5% of the time (nominal 50%)
+Empirical coverage: central 80% interval hit 78.9% of the time (nominal 80%)
+PIT histogram (10 bins, randomized for discreteness), frequencies: [0.134, 0.089, 0.086, 0.089, 0.089, 0.086, 0.088, 0.103, 0.133, 0.103]  (nominal 0.100 each)
+PIT bin frequency min=0.086  max=0.134
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+[multibook_classification_training_data] Fold boundaries (date-based split):
+  Train: 2024-10-04 to 2025-10-15  (n=7844)
+  Val:   2025-10-16 to 2025-12-03  (n=2676)
+  Test:  2025-12-04 to 2026-04-13  (n=2672)
+  [multibook_classification_training_data] Fold date-disjointness verified.
+[VAL betting frame] join coverage: 2676/2676 rows matched a distribution prediction (100.00%)
+[TEST betting frame] join coverage: 2672/2672 rows matched a distribution prediction (100.00%)
+[VAL] fold-wide AUC row-level=0.5114 one-per-goalie-night=0.5115  Brier=0.25508  (n=2676)
+
+--- VAL EV threshold sweep (probabilities fixed; only the threshold varies) ---
+ thresh   bets  bet_rate  hit_rate       roi
+   0.05    839     31.4%     52.8%    -0.85%
+   0.10    282     10.5%     55.0%    +3.80%
+   0.12    167      6.2%     58.1%   +10.31%
+   0.15     67      2.5%     44.8%   -14.96%
+
+VAL sweep winner: EV threshold=0.05  bets=839  bet_rate=31.4%  roi=-0.85%
+
+VAL winner ROI 95% CI (row bootstrap):     [-7.18%, +5.40%]
+VAL winner ROI 95% CI (cluster bootstrap):  [-13.33%, +11.71%]  (n_clusters=238)
+VAL winner side breakdown: OVER 471 bets (+4.87%), UNDER 368 bets (-8.17%)
+VAL goalie-nights: 659 total, 238 with a bet
+
+================================================================================
+SINGLE TEST TOUCH -- EV threshold=0.05 (selected on VAL only)
+================================================================================
+[TEST] fold-wide AUC row-level=0.5159 one-per-goalie-night=0.5202  Brier=0.25487  (n=2672)
+
+TEST: 888 bets, 33.2% bet rate, 53.6% hit rate, +1.06% ROI
+TEST ROI 95% CI (row bootstrap):     [-5.29%, +7.39%]
+TEST ROI 95% CI (cluster bootstrap):  [-8.83%, +10.91%]  (n_clusters=474)
+TEST side breakdown: OVER 470 bets (+2.22%), UNDER 418 bets (-0.24%)
+TEST goalie-nights: 1307 total, 474 with a bet
+TEST AUC row-level=0.5159  one-per-goalie-night=0.5202
+TEST Brier=0.25487
+
+--- Line-sensitivity demonstration (VAL only, illustrative, no selection) ---
+Goalie-night: goalie_id=8480193, game_id=2025020064, game_date=2025-10-16
+VAL median betting_line=23.50; this goalie-night's own quoted line=23.5
+Predicted mu(shots)=22.81, q(save rate)=0.8984
+  line   P(over)  P(under)   P(push)
+  22.5    0.3360    0.6640    0.0000
+  23.5    0.2738    0.7262    0.0000
+  24.5    0.2190    0.7810    0.0000
+  25.5    0.1718    0.8282    0.0000
+  26.5    0.1323    0.8677    0.0000
+  27.5    0.1001    0.8999    0.0000
+
+================================================================================
+HEAD-TO-HEAD COMPARISON (test fold, all single-touch numbers)
+================================================================================
+model                          test_roi   bets   auc_row  auc_night     brier
+distributional (this exp)        +1.06%    888    0.5159     0.5202   0.25487
+classifier_control_A             -5.97%    843    0.5067     0.5019   0.27668
+market_anchored_B                -3.10%    516    0.5243     0.5214   0.26368
+market_baseline_D                   n/a      0    0.5218     0.5170   0.24961
+
+Wall-clock time: 28.6s (0.5 min)
+
+Saved metadata to: models\trained\experiment_distributional_20260708_190338\metadata.json
+
+================================================================================
+EXPERIMENT COMPLETE
+================================================================================

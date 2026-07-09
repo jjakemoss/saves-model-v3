@@ -1,0 +1,269 @@
+================================================================================
+MARKET-ANCHORED RESIDUAL MODEL EXPERIMENT (roadmap item 7)
+Run timestamp: 2026-07-08T18:44:52.853320
+================================================================================
+Raw parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+Feature set A (control): 114 features.
+Market feature per-row recomputation spot-check passed on 200 rows.
+Book identities (8): ['book_betmgm', 'book_betonline', 'book_betonlineag', 'book_bovada', 'book_draftkings', 'book_fanatics', 'book_underdog', 'book_williamhill_us']
+Feature set B (anchored): 126 features (114 + 4 market + 8 book).
+Feature set C (market-only): 13 features (4 market + 8 book + betting_line).
+No infinities found in any feature matrix (A/B/C).
+
+Fold boundaries (date-based split):
+  Train: 2024-10-04 to 2025-10-15  (n=7844)
+  Val:   2025-10-16 to 2025-12-03  (n=2676)
+  Test:  2025-12-04 to 2026-04-13  (n=2672)
+  Fold date-disjointness verified.
+
+================================================================================
+FEATURE SET A: 114 features
+================================================================================
+
+config                thresh   bets  bet_rate  hit_rate       roi
+v2_winner               0.05   1786     66.7%     51.9%    -2.41%
+v2_winner               0.10   1290     48.2%     51.8%    -2.66%
+v2_winner               0.12   1092     40.8%     52.5%    -1.46%
+v2_winner               0.15    848     31.7%     55.1%    +3.47%
+max_depth_4             0.05   1887     70.5%     52.1%    -2.03%
+max_depth_4             0.10   1370     51.2%     50.1%    -5.71%
+max_depth_4             0.12   1182     44.2%     51.1%    -3.97%
+max_depth_4             0.15    919     34.3%     53.0%    -0.57%
+max_depth_6_mcw_30      0.05   1813     67.8%     52.2%    -1.75%
+max_depth_6_mcw_30      0.10   1290     48.2%     51.7%    -2.82%
+max_depth_6_mcw_30      0.12   1090     40.7%     51.3%    -3.54%
+max_depth_6_mcw_30      0.15    859     32.1%     50.9%    -4.45%
+n_estimators_600        0.05   1540     57.5%     52.2%    -1.69%
+n_estimators_600        0.10    917     34.3%     53.7%    +0.93%
+n_estimators_600        0.12    720     26.9%     52.6%    -0.58%
+n_estimators_600        0.15    510     19.1%     54.3%    +2.54%
+reg_lambda_10           0.05   1839     68.7%     50.7%    -4.63%
+reg_lambda_10           0.10   1384     51.7%     51.7%    -2.71%
+reg_lambda_10           0.12   1181     44.1%     52.2%    -1.71%
+reg_lambda_10           0.15    958     35.8%     52.4%    -1.42%
+lr_002_est_2400         0.05   1698     63.5%     52.6%    -1.21%
+lr_002_est_2400         0.10   1196     44.7%     54.8%    +3.22%
+lr_002_est_2400         0.12    995     37.2%     52.9%    -0.75%
+lr_002_est_2400         0.15    767     28.7%     54.5%    +2.57%
+
+Winner for set A: config=v2_winner, threshold=0.15
+  Val: 848 bets, 31.7% bet rate, +3.47% ROI
+  Val ROI 95% CI (row bootstrap):     [-2.68%, +9.83%]
+  Val ROI 95% CI (cluster bootstrap):  [-9.24%, +16.11%]  (n_clusters=227)
+  Val AUC row-level=0.5260  one-per-goalie-night=0.5276
+  Val Brier=0.27114
+  Val goalie-nights: 659 total, 227 with a bet
+  Val side breakdown: OVER 306 bets (+9.34%), UNDER 542 bets (+0.15%)
+
+--- SINGLE TEST TOUCH: feature set A, config=v2_winner, threshold=0.15 ---
+  Test: 843 bets, 31.5% bet rate, 49.8% hit rate, -5.97% ROI
+  Test ROI 95% CI (row bootstrap):     [-12.34%, +0.41%]
+  Test ROI 95% CI (cluster bootstrap):  [-16.09%, +4.54%]  (n_clusters=440)
+  Test AUC row-level=0.5067  one-per-goalie-night=0.5019
+  Test Brier=0.27668
+  Test goalie-nights: 1307 total, 440 with a bet
+  Test side breakdown: OVER 373 bets (-8.55%), UNDER 470 bets (-3.92%)
+
+================================================================================
+FEATURE SET B: 126 features
+================================================================================
+
+config                thresh   bets  bet_rate  hit_rate       roi
+v2_winner               0.05   1753     65.5%     51.2%    -4.66%
+v2_winner               0.10   1287     48.1%     50.3%    -6.14%
+v2_winner               0.12   1129     42.2%     50.9%    -5.12%
+v2_winner               0.15    876     32.7%     49.9%    -7.24%
+max_depth_4             0.05   1830     68.4%     53.3%    -0.47%
+max_depth_4             0.10   1367     51.1%     50.8%    -5.31%
+max_depth_4             0.12   1188     44.4%     50.9%    -5.28%
+max_depth_4             0.15    910     34.0%     50.0%    -7.13%
+max_depth_6_mcw_30      0.05   1767     66.0%     50.9%    -5.19%
+max_depth_6_mcw_30      0.10   1256     46.9%     51.4%    -4.37%
+max_depth_6_mcw_30      0.12   1070     40.0%     52.1%    -3.24%
+max_depth_6_mcw_30      0.15    818     30.6%     51.8%    -4.04%
+n_estimators_600        0.05   1485     55.5%     52.8%    -1.56%
+n_estimators_600        0.10    959     35.8%     53.1%    -1.08%
+n_estimators_600        0.12    767     28.7%     52.2%    -2.87%
+n_estimators_600        0.15    512     19.1%     52.5%    -2.54%
+reg_lambda_10           0.05   1807     67.5%     51.1%    -4.59%
+reg_lambda_10           0.10   1342     50.1%     51.2%    -4.41%
+reg_lambda_10           0.12   1169     43.7%     51.2%    -4.47%
+reg_lambda_10           0.15    929     34.7%     50.7%    -5.40%
+lr_002_est_2400         0.05   1653     61.8%     52.3%    -2.51%
+lr_002_est_2400         0.10   1172     43.8%     50.3%    -6.36%
+lr_002_est_2400         0.12    993     37.1%     49.2%    -8.56%
+lr_002_est_2400         0.15    754     28.2%     51.3%    -4.88%
+
+Winner for set B: config=n_estimators_600, threshold=0.15
+  Val: 512 bets, 19.1% bet rate, -2.54% ROI
+  Val ROI 95% CI (row bootstrap):     [-10.56%, +5.66%]
+  Val ROI 95% CI (cluster bootstrap):  [-18.66%, +13.45%]  (n_clusters=141)
+  Val AUC row-level=0.5230  one-per-goalie-night=0.5286
+  Val Brier=0.26437
+  Val goalie-nights: 659 total, 141 with a bet
+  Val side breakdown: OVER 163 bets (-3.78%), UNDER 349 bets (-1.96%)
+
+--- SINGLE TEST TOUCH: feature set B, config=n_estimators_600, threshold=0.15 ---
+  Test: 516 bets, 19.3% bet rate, 51.7% hit rate, -3.10% ROI
+  Test ROI 95% CI (row bootstrap):     [-11.07%, +4.79%]
+  Test ROI 95% CI (cluster bootstrap):  [-16.04%, +10.19%]  (n_clusters=271)
+  Test AUC row-level=0.5243  one-per-goalie-night=0.5214
+  Test Brier=0.26368
+  Test goalie-nights: 1307 total, 271 with a bet
+  Test side breakdown: OVER 194 bets (-5.93%), UNDER 322 bets (-1.39%)
+
+================================================================================
+FEATURE SET C: 13 features
+================================================================================
+
+config                thresh   bets  bet_rate  hit_rate       roi
+v2_winner               0.05    137      5.1%     37.2%   -31.84%
+v2_winner               0.10      1      0.0%    100.0%   +81.30%
+v2_winner               0.12      0      0.0%      0.0%    +0.00%
+v2_winner               0.15      0      0.0%      0.0%    +0.00%
+max_depth_4             0.05    142      5.3%     35.9%   -34.37%
+max_depth_4             0.10      1      0.0%    100.0%   +81.30%
+max_depth_4             0.12      0      0.0%      0.0%    +0.00%
+max_depth_4             0.15      0      0.0%      0.0%    +0.00%
+max_depth_6_mcw_30      0.05    150      5.6%     35.3%   -35.41%
+max_depth_6_mcw_30      0.10      0      0.0%      0.0%    +0.00%
+max_depth_6_mcw_30      0.12      0      0.0%      0.0%    +0.00%
+max_depth_6_mcw_30      0.15      0      0.0%      0.0%    +0.00%
+n_estimators_600        0.05    112      4.2%     34.8%   -36.24%
+n_estimators_600        0.10      0      0.0%      0.0%    +0.00%
+n_estimators_600        0.12      0      0.0%      0.0%    +0.00%
+n_estimators_600        0.15      0      0.0%      0.0%    +0.00%
+reg_lambda_10           0.05    166      6.2%     35.5%   -34.97%
+reg_lambda_10           0.10      1      0.0%    100.0%   +81.30%
+reg_lambda_10           0.12      0      0.0%      0.0%    +0.00%
+reg_lambda_10           0.15      0      0.0%      0.0%    +0.00%
+lr_002_est_2400         0.05    148      5.5%     35.1%   -35.77%
+lr_002_est_2400         0.10      0      0.0%      0.0%    +0.00%
+lr_002_est_2400         0.12      0      0.0%      0.0%    +0.00%
+lr_002_est_2400         0.15      0      0.0%      0.0%    +0.00%
+
+WARNING: Feature set C: no config landed in the pre-registered 15-35% val bet-rate band; widened to 10-40% per protocol fallback.
+WARNING: Feature set C: no config landed in the pre-registered 15-35% val bet-rate band; widened to 10-40% per protocol fallback. Even the widened 10-40% band was empty; fell back to ALL 24 evaluations.
+
+Winner for set C: config=v2_winner, threshold=0.10
+  Val: 1 bets, 0.0% bet rate, +81.30% ROI
+  Val ROI 95% CI (row bootstrap):     [+81.30%, +81.30%]
+  Val ROI 95% CI (cluster bootstrap):  [+81.30%, +81.30%]  (n_clusters=1)
+  Val AUC row-level=0.4797  one-per-goalie-night=0.4908
+  Val Brier=0.25606
+  Val goalie-nights: 659 total, 1 with a bet
+  Val side breakdown: OVER 0 bets (+0.00%), UNDER 1 bets (+81.30%)
+
+--- SINGLE TEST TOUCH: feature set C, config=v2_winner, threshold=0.10 ---
+  Test: 10 bets, 0.4% bet rate, 50.0% hit rate, -9.28% ROI
+  Test ROI 95% CI (row bootstrap):     [-63.80%, +45.25%]
+  Test ROI 95% CI (cluster bootstrap):  [-63.80%, +45.31%]  (n_clusters=10)
+  Test AUC row-level=0.5422  one-per-goalie-night=0.5487
+  Test Brier=0.25146
+  Test goalie-nights: 1307 total, 10 with a bet
+  Test side breakdown: OVER 0 bets (+0.00%), UNDER 10 bets (-9.28%)
+
+================================================================================
+FEATURE SET D: no-model market baseline (probability = fair_prob_over)
+================================================================================
+
+  [val] AUC row-level=0.4877 one-per-goalie-night=0.5052  Brier=0.25076
+  [val] betting-rule performance at all 4 thresholds (no selection):
+     thresh   bets  bet_rate  hit_rate       roi
+       0.05      0      0.0%      0.0%    +0.00%
+       0.10      0      0.0%      0.0%    +0.00%
+       0.12      0      0.0%      0.0%    +0.00%
+       0.15      0      0.0%      0.0%    +0.00%
+
+  [test] AUC row-level=0.5218 one-per-goalie-night=0.5170  Brier=0.24961
+  [test] betting-rule performance at all 4 thresholds (no selection):
+     thresh   bets  bet_rate  hit_rate       roi
+       0.05      0      0.0%      0.0%    +0.00%
+       0.10      0      0.0%      0.0%    +0.00%
+       0.12      0      0.0%      0.0%    +0.00%
+       0.15      0      0.0%      0.0%    +0.00%
+
+================================================================================
+ANCHORING DIAGNOSTICS -- feature set B (validation fold only, never test)
+================================================================================
+
+Correlation(model B prob, fair_prob_over) on val: 0.3251
+Disagreement (model - market) quantiles on val:
+  p  1: -0.3097
+  p  5: -0.2444
+  p 10: -0.2020
+  p 25: -0.1286
+  p 50: -0.0255
+  p 75: +0.0661
+  p 90: +0.1522
+  p 95: +0.1924
+  p 99: +0.2510
+
+Val bets bucketed by |model - market| disagreement magnitude (winner B threshold=0.15):
+  [0.05, 0.10)   n=   0  hit_rate=   0.0%  roi=  +0.00%
+  [0.10, 0.15)   n=   0  hit_rate=   0.0%  roi=  +0.00%
+  >=0.15         n= 512  hit_rate=  52.5%  roi=  -2.54%
+
+Top-20 features by gain (model B winner):
+   1. fair_prob_over                      gain=       11.87  <-- market/book
+   2. line_vs_opp_implied_saves           gain=        8.78
+   3. es_saves_proportion_10              gain=        8.44
+   4. power_play_shots_against_rolling_10 gain=        8.42
+   5. shots_against_rolling_10            gain=        8.34
+   6. betting_line                        gain=        8.13
+   7. power_play_goals_against_rolling_3  gain=        7.77
+   8. shots_against_rolling_std_3         gain=        7.72
+   9. saves_rolling_5                     gain=        7.68
+  10. power_play_shots_against_rolling_3  gain=        7.66
+  11. goalie_days_rest                    gain=        7.59
+  12. shots_against_rolling_std_5         gain=        7.48
+  13. even_strength_saves_rolling_10      gain=        7.19
+  14. impl_prob_over                      gain=        7.10  <-- market/book
+  15. line_z_score_10                     gain=        7.09
+  16. power_play_shots_against_rolling_std_3 gain=        7.08
+  17. even_strength_saves_rolling_5       gain=        7.07
+  18. short_handed_shots_against_rolling_std_5 gain=        7.04
+  19. save_percentage_rolling_3           gain=        7.01
+  20. line_vs_rolling_5                   gain=        6.96
+
+Market/book features in top 20 by gain: 2/20
+
+================================================================================
+SUMMARY -- ANSWERING THE FOUR PROTOCOL QUESTIONS
+================================================================================
+
+1) Does B beat D (market) on test AUC/Brier?
+   B row-AUC=0.5243 vs D row-AUC=0.5218  (B beats D)
+   B Brier=0.26368 vs D Brier=0.24961  (B does NOT beat D -- lower Brier is better)
+
+2) Does B beat A (control)?
+   B row-AUC=0.5243 vs A row-AUC=0.5067  (B beats A)
+   B Brier=0.26368 vs A Brier=0.27668  (B beats A -- lower Brier is better)
+   B test ROI=-3.10% vs A test ROI=-5.97%
+
+3) Does the betting sim for B/C survive its single test touch with a cluster CI excluding zero?
+   B: test ROI=-3.10%, cluster CI=[-16.04%, +10.19%]  (SPANS ZERO -- not distinguishable from breakeven)
+   C: test ROI=-9.28%, cluster CI=[-63.80%, +45.31%]  (SPANS ZERO -- not distinguishable from breakeven)
+
+4) Does model B collapse to the market or maintain disagreement, and do val disagreements resolve in the model's favor?
+   Correlation(model B, fair_prob_over) on val: 0.3251
+   Disagreement p50=-0.0255, p5=-0.2444, p95=+0.1924
+   Bucket [0.05, 0.10): n=0, hit_rate=0.0%, roi=+0.00%
+   Bucket [0.10, 0.15): n=0, hit_rate=0.0%, roi=+0.00%
+   Bucket >=0.15: n=512, hit_rate=52.5%, roi=-2.54%
+   Market/book features in top-20 gain: 2/20
+
+================================================================================
+SANITY CHECK vs v2 clean retrain (date-based split will NOT match exactly)
+================================================================================
+  v2 (row-index split): val +5.66% ROI (CI spans zero), test -7.09% ROI (CI negative)
+  A  (date-based split): val +3.47% ROI, test -5.97% ROI
+
+Wall-clock time: 121.3s (2.0 min)
+
+Saved metadata to: models\trained\experiment_market_anchor_20260708_184452\metadata.json
+
+================================================================================
+EXPERIMENT COMPLETE
+================================================================================

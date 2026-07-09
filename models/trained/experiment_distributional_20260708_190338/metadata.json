@@ -1,0 +1,911 @@
+{
+  "timestamp": "2026-07-08T19:04:07.040445",
+  "wall_clock_seconds": 28.64066743850708,
+  "data_paths": {
+    "clean": "data\\processed\\clean_training_data.parquet",
+    "multibook": "data\\processed\\multibook_classification_training_data.parquet"
+  },
+  "cap": 70,
+  "fold_boundaries_clean_training_data": {
+    "train": {
+      "start": "2022-10-07",
+      "end": "2025-10-15",
+      "rows": 7992
+    },
+    "val": {
+      "start": "2025-10-16",
+      "end": "2025-12-03",
+      "rows": 730
+    },
+    "test": {
+      "start": "2025-12-04",
+      "end": "2026-04-16",
+      "rows": 1774
+    }
+  },
+  "fold_boundaries_multibook": {
+    "train": {
+      "rows": 7844
+    },
+    "val": {
+      "start": "2025-10-16",
+      "end": "2025-12-03",
+      "rows": 2676
+    },
+    "test": {
+      "start": "2025-12-04",
+      "end": "2026-04-13",
+      "rows": 2672
+    }
+  },
+  "feature_cols": {
+    "base_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back"
+    ],
+    "engineered_cols": [
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance"
+    ],
+    "all_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance"
+    ],
+    "n_features": 104
+  },
+  "shots_model": {
+    "configs": [
+      {
+        "name": "base",
+        "params": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "depth2",
+        "params": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "depth4_mcw20",
+        "params": {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "min_child_weight": 20,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "more_trees_lowlr",
+        "params": {
+          "max_depth": 3,
+          "learning_rate": 0.03,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 800,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "shallow_highreg",
+        "params": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        }
+      },
+      {
+        "name": "deep_reg",
+        "params": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        }
+      }
+    ],
+    "val_evaluations": [
+      {
+        "config": "base",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.494922596134551,
+        "val_poisson_deviance": 1.9464914277522962
+      },
+      {
+        "config": "depth2",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.48799855741736,
+        "val_poisson_deviance": 1.9336575515674779
+      },
+      {
+        "config": "depth4_mcw20",
+        "hyperparams": {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "min_child_weight": 20,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.509438671477853,
+        "val_poisson_deviance": 1.9635497329328682
+      },
+      {
+        "config": "more_trees_lowlr",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.03,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 800,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.486408993969225,
+        "val_poisson_deviance": 1.94548275469338
+      },
+      {
+        "config": "shallow_highreg",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        },
+        "val_mae": 5.48903123515926,
+        "val_poisson_deviance": 1.933556102945349
+      },
+      {
+        "config": "deep_reg",
+        "hyperparams": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.497783302934202,
+        "val_poisson_deviance": 1.9529877035972105
+      }
+    ],
+    "winner": {
+      "config": "more_trees_lowlr",
+      "hyperparams": {
+        "max_depth": 3,
+        "learning_rate": 0.03,
+        "min_child_weight": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "n_estimators": 800,
+        "reg_lambda": 1.0
+      },
+      "val_mae": 5.486408993969225,
+      "val_poisson_deviance": 1.94548275469338
+    },
+    "top5_features": [
+      {
+        "feature": "opp_shots_rolling_10",
+        "gain": 35.54629898071289
+      },
+      {
+        "feature": "team_shots_against_rolling_10",
+        "gain": 29.7457332611084
+      },
+      {
+        "feature": "opp_shots_rolling_5",
+        "gain": 18.323476791381836
+      },
+      {
+        "feature": "team_shots_against_rolling_5",
+        "gain": 15.174909591674805
+      },
+      {
+        "feature": "shots_against_rolling_10",
+        "gain": 12.522788047790527
+      }
+    ],
+    "model_path": "models\\trained\\experiment_distributional_20260708_190338\\shots_model.json"
+  },
+  "dispersion": {
+    "alpha": 0.019261334509975657,
+    "method": "negative_binomial",
+    "diagnostics": {
+      "train_mean": 28.94879722595215,
+      "train_var": 45.21724082669743,
+      "mean_mu2": 844.6166381835938
+    }
+  },
+  "save_rate_model": {
+    "configs": [
+      {
+        "name": "base",
+        "params": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "depth2",
+        "params": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "depth4_mcw20",
+        "params": {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "min_child_weight": 20,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "more_trees_lowlr",
+        "params": {
+          "max_depth": 3,
+          "learning_rate": 0.03,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 800,
+          "reg_lambda": 1.0
+        }
+      },
+      {
+        "name": "shallow_highreg",
+        "params": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        }
+      },
+      {
+        "name": "deep_reg",
+        "params": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        }
+      }
+    ],
+    "val_evaluations": [
+      {
+        "config": "base",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.33070308199268117
+      },
+      {
+        "config": "depth2",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.33038358525436395
+      },
+      {
+        "config": "depth4_mcw20",
+        "hyperparams": {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "min_child_weight": 20,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.3309019282405775
+      },
+      {
+        "config": "more_trees_lowlr",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.03,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 800,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.3306509436529693
+      },
+      {
+        "config": "shallow_highreg",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        },
+        "val_weighted_logloss": 0.33038494937191415
+      },
+      {
+        "config": "deep_reg",
+        "hyperparams": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.33100147185115314
+      }
+    ],
+    "winner": {
+      "config": "depth2",
+      "hyperparams": {
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "n_estimators": 400,
+        "reg_lambda": 1.0
+      },
+      "val_weighted_logloss": 0.33038358525436395
+    },
+    "top5_features": [
+      {
+        "feature": "saves_rolling_10",
+        "gain": 13.092796325683594
+      },
+      {
+        "feature": "short_handed_saves_rolling_std_3",
+        "gain": 11.294633865356445
+      },
+      {
+        "feature": "even_strength_goals_against_rolling_std_3",
+        "gain": 10.267721176147461
+      },
+      {
+        "feature": "power_play_shots_against_rolling_5",
+        "gain": 10.109846115112305
+      },
+      {
+        "feature": "power_play_goals_against_rolling_5",
+        "gain": 10.056117057800293
+      }
+    ],
+    "model_path": "models\\trained\\experiment_distributional_20260708_190338\\save_rate_model.json"
+  },
+  "intrinsic_quality_val": {
+    "naive_baseline_col": "shots_against_rolling_5",
+    "shots_mae_model": 5.486408993969225,
+    "shots_mae_naive": 6.208949771689497,
+    "mean_pmf_logloss_at_actual": 3.48080871559711,
+    "coverage_50pct_nominal_actual": 48.49315068493151,
+    "coverage_80pct_nominal_actual": 78.9041095890411,
+    "pit_histogram_10bins": [
+      0.13424657534246576,
+      0.08904109589041095,
+      0.0863013698630137,
+      0.08904109589041095,
+      0.08904109589041095,
+      0.0863013698630137,
+      0.08767123287671233,
+      0.10273972602739725,
+      0.13287671232876713,
+      0.10273972602739725
+    ],
+    "pit_bin_freq_min": 0.0863013698630137,
+    "pit_bin_freq_max": 0.13424657534246576,
+    "n_val_rows": 730
+  },
+  "join_coverage": {
+    "val_pct": 100.0,
+    "test_pct": 100.0,
+    "val_n_rows": 2676,
+    "test_n_rows": 2672
+  },
+  "val_fold_wide_auc": {
+    "row_level": 0.511404418817305,
+    "one_per_goalie_night": 0.5114680591947448,
+    "n_rows": 2676,
+    "n_goalie_nights": 659
+  },
+  "val_fold_wide_brier": 0.25508153600817757,
+  "ev_thresholds": [
+    0.05,
+    0.1,
+    0.12,
+    0.15
+  ],
+  "val_betting_sweep": [
+    {
+      "threshold": 0.05,
+      "summary": {
+        "bets": 839,
+        "bet_rate": 31.352765321375188,
+        "hit_rate": 52.80095351609059,
+        "roi": -0.8476678267413807,
+        "profit": -7.111933066360185
+      }
+    },
+    {
+      "threshold": 0.1,
+      "summary": {
+        "bets": 282,
+        "bet_rate": 10.538116591928251,
+        "hit_rate": 54.96453900709219,
+        "roi": 3.801428978825091,
+        "profit": 10.720029720286757
+      }
+    },
+    {
+      "threshold": 0.12,
+      "summary": {
+        "bets": 167,
+        "bet_rate": 6.240657698056801,
+        "hit_rate": 58.08383233532935,
+        "roi": 10.314723025185712,
+        "profit": 17.22558745206014
+      }
+    },
+    {
+      "threshold": 0.15,
+      "summary": {
+        "bets": 67,
+        "bet_rate": 2.5037369207772797,
+        "hit_rate": 44.776119402985074,
+        "roi": -14.960678021249606,
+        "profit": -10.023654274237236
+      }
+    }
+  ],
+  "val_winner": {
+    "threshold": 0.05,
+    "summary": {
+      "bets": 839,
+      "bet_rate": 31.352765321375188,
+      "hit_rate": 52.80095351609059,
+      "roi": -0.8476678267413807,
+      "profit": -7.111933066360185
+    },
+    "roi_ci_row": {
+      "lower": -7.176279972894038,
+      "upper": 5.403712449436186,
+      "n_bets": 839
+    },
+    "roi_ci_cluster": {
+      "lower": -13.331293582153183,
+      "upper": 11.712680720988597,
+      "n_clusters": 238
+    },
+    "side_breakdown": {
+      "OVER": {
+        "bets": 471,
+        "hit_rate": 55.838641188959656,
+        "roi": 4.871870169370406,
+        "profit": 22.946508497734612
+      },
+      "UNDER": {
+        "bets": 368,
+        "hit_rate": 48.91304347826087,
+        "roi": -8.168054772851848,
+        "profit": -30.058441564094796
+      }
+    },
+    "goalie_nights_total": 659,
+    "goalie_nights_bet": 238
+  },
+  "selection_deviation": null,
+  "test_single_touch": {
+    "threshold": 0.05,
+    "summary": {
+      "bets": 888,
+      "bet_rate": 33.23353293413174,
+      "hit_rate": 53.6036036036036,
+      "roi": 1.0603292571794367,
+      "profit": 9.415723803753398
+    },
+    "roi_ci_row": {
+      "lower": -5.288694403029175,
+      "upper": 7.394997888208347,
+      "n_bets": 888
+    },
+    "roi_ci_cluster": {
+      "lower": -8.826917555448324,
+      "upper": 10.906968196134764,
+      "n_clusters": 474
+    },
+    "side_breakdown": {
+      "OVER": {
+        "bets": 470,
+        "hit_rate": 54.680851063829785,
+        "roi": 2.2174083517818715,
+        "profit": 10.421819253374796
+      },
+      "UNDER": {
+        "bets": 418,
+        "hit_rate": 52.39234449760766,
+        "roi": -0.24069269129698537,
+        "profit": -1.0060954496213987
+      }
+    },
+    "auc": {
+      "row_level": 0.5158889931824919,
+      "one_per_goalie_night": 0.5201824289187784,
+      "n_rows": 2672,
+      "n_goalie_nights": 1307
+    },
+    "brier": 0.2548664906544775,
+    "goalie_nights_total": 1307,
+    "goalie_nights_bet": 474
+  },
+  "line_sensitivity_demo_val": {
+    "goalie_id": 8480193,
+    "game_id": 2025020064,
+    "game_date": "2025-10-16",
+    "mu": 22.808202743530273,
+    "q": 0.8984435200691223,
+    "val_median_line": 23.5,
+    "own_line": 23.5,
+    "rows": [
+      {
+        "line": 22.5,
+        "p_over": 0.3359505805617837,
+        "p_under": 0.6640494192105946,
+        "p_push": 0.0
+      },
+      {
+        "line": 23.5,
+        "p_over": 0.2738381097528047,
+        "p_under": 0.7261618900195738,
+        "p_push": 0.0
+      },
+      {
+        "line": 24.5,
+        "p_over": 0.2189677447936187,
+        "p_under": 0.7810322549787597,
+        "p_push": 0.0
+      },
+      {
+        "line": 25.5,
+        "p_over": 0.1718128535032342,
+        "p_under": 0.8281871462691442,
+        "p_push": 0.0
+      },
+      {
+        "line": 26.5,
+        "p_over": 0.13233390552674504,
+        "p_under": 0.8676660942456333,
+        "p_push": 0.0
+      },
+      {
+        "line": 27.5,
+        "p_over": 0.10009176778874983,
+        "p_under": 0.8999082319836286,
+        "p_push": 0.0
+      }
+    ]
+  },
+  "head_to_head": {
+    "distributional_this_experiment": {
+      "test_roi_pct": 1.0603292571794367,
+      "test_bets": 888,
+      "test_auc_row": 0.5158889931824919,
+      "test_auc_night": 0.5201824289187784,
+      "test_brier": 0.2548664906544775
+    },
+    "classifier_control_A": {
+      "description": "114-feature classifier, standard EV betting rule",
+      "test_roi_pct": -5.97,
+      "test_bets": 843,
+      "test_auc_row": 0.5067,
+      "test_auc_night": 0.5019,
+      "test_brier": 0.27668,
+      "source": "models/trained/experiment_market_anchor_20260708_184452/metadata.json (results.A.test)"
+    },
+    "market_anchored_B": {
+      "description": "114 features + per-row market features + book one-hots",
+      "test_roi_pct": -3.1,
+      "test_bets": 516,
+      "test_auc_row": 0.5243,
+      "test_auc_night": 0.5214,
+      "test_brier": 0.26368,
+      "source": "models/trained/experiment_market_anchor_20260708_184452/metadata.json (results.B.test)"
+    },
+    "market_baseline_D": {
+      "description": "no-model market probability (fair_prob_over), zero bets by EV construction",
+      "test_roi_pct": null,
+      "test_bets": 0,
+      "test_auc_row": 0.5218,
+      "test_auc_night": 0.517,
+      "test_brier": 0.24961,
+      "source": "models/trained/experiment_market_anchor_20260708_184452/metadata.json (baseline_D.test)"
+    }
+  },
+  "touch_count_audit": {
+    "shots_model_val_evaluations": 6,
+    "save_rate_model_val_evaluations": 6,
+    "betting_val_evaluations": 4,
+    "betting_test_evaluations": 1
+  }
+}

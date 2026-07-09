@@ -34,6 +34,7 @@ from betting import (
 )
 from betting.db_manager import DEFAULT_DB_PATH
 from betting.excel_export import DEFAULT_XLSX_PATH
+from betting.tracking_db import insert_line_snapshots, utc_now_iso
 from data.api_client import RateLimitError
 
 
@@ -88,6 +89,7 @@ def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_X
         print(f"    {game['away_team']} @ {game['home_team']} (ID: {game['game_id']})")
 
     # Step 2: Fetch betting lines from all sources
+    fetched_at_utc = utc_now_iso()
     print(f"\n[2/6] Fetching betting lines...")
 
     # Fetch Underdog lines
@@ -170,6 +172,7 @@ def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_X
                     'betting_line': line['line'],
                     'line_over': line['line_over'],
                     'line_under': line['line_under'],
+                    'scheduled_start_utc': line.get('game_time'),
                 })
                 found = True
                 break
@@ -186,6 +189,7 @@ def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_X
                     'betting_line': line['line'],
                     'line_over': line['line_over'],
                     'line_under': line['line_under'],
+                    'scheduled_start_utc': line.get('game_time'),
                 })
                 found = True
                 break
@@ -200,6 +204,19 @@ def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_X
     if not matched_lines:
         print(f"\n[WARNING] No lines could be matched to today's games")
         return 0
+
+    # Snapshot every matched line for this fetch run -- the CLV backbone.
+    # Recorded regardless of whether the line is new or unchanged since
+    # the last fetch, so line-move history and closing lines can be
+    # reconstructed later. Never let a missing/un-migrated tracking
+    # schema (scripts/add_tracking_tables.py not yet run) block the core
+    # fetch/predict/append flow -- that must keep working unchanged.
+    try:
+        snap_count = insert_line_snapshots(db_path, matched_lines, fetched_at_utc=fetched_at_utc)
+        print(f"  Recorded {snap_count} line snapshot(s) at {fetched_at_utc}")
+    except Exception as e:
+        print(f"  [WARNING] Could not record line snapshots: {e}")
+        print(f"  [WARNING] Run scripts/add_tracking_tables.py to enable CLV tracking")
 
     # Steps 4+5: Check for new lines, predict only new ones, append new rows
     print(f"\n[4/6] Checking for new lines and generating predictions...")
@@ -322,6 +339,7 @@ def fetch_and_predict(date=None, db_path=DEFAULT_DB_PATH, tracker_file=DEFAULT_X
             'betting_line': betting_line,
             'line_over': line_over_odds,
             'line_under': line_under_odds,
+            'model_version': predictor.model_path.parent.name,
         })
         predictions_list.append(pred_entry)
 

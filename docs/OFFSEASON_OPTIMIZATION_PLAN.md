@@ -18,7 +18,12 @@ not show that Underdog was simply hanging softer saves totals. The live Feb-Apr
 to scale without CLV or a repeatable mechanism. The offseason priority is now
 to turn the system into an edge-detection platform: ticket-level tracking, CLV,
 market-aware features, better hockey-context features, and a distributional
-saves model evaluated through the honest harness.
+saves model evaluated through the honest harness. As of 2026-07-08, the
+platform pieces (tickets, CLV, snapshots, shadow-run logging) are implemented,
+and the market-anchoring and distributional-model experiments (roadmap items 7
+and 9) both came back clean negatives on a bettable edge -- though each
+produced a real methodological gain (better calibration, coherent line pricing
+across any line) worth carrying forward.
 
 ## Table of contents
 
@@ -337,14 +342,24 @@ The findings, in order of importance:
 
 Combined with the venue analysis (4.3), both offseason diagnostics now point
 the same way: Underdog's lines are not soft, and the current feature/model
-stack has no demonstrated calibrated edge over the market. The live +32.6%
-UNDER run is left without a demonstrated skill explanation -- a favorable
-variance draw is the leading candidate, with "something the old model/window
-carried that neither test can see" as the unprovable remainder. Planning
-assumption for next season: zero proven prior edge. Any real edge now has to
-come from new information the market underweights (roadmap items 7-9), and
-in-season CLV tracking (item 6) is the arbiter of whether live betting resumes
-at meaningful stakes.
+stack -- when scored on the reconstructed historical frame -- has no
+demonstrated calibrated edge over the market.
+
+**Revised 2026-07-08, see 3.11.** That reconstructed-frame result does not
+settle the live run. Graded night-clustered rather than flat, and re-checked
+against an independent archived line source, the live UNDER run is too
+extreme to comfortably attribute to a favorable variance draw (roughly a
+1-in-750 event even clustered by night) and it survived re-grading against
+archived market lines intact. A favorable variance draw is no longer the
+leading candidate; the leading hypothesis is now live-pipeline selection
+behavior that the historical reconstruction does not capture (3.11) -- itself
+an unproven mechanism, not a demonstrated edge. Planning assumption for next
+season is still zero *proven* prior edge, but the honest next step is
+measurement (CLV, shadow run), not dismissal. Any real edge now has to come
+from new information the market underweights (roadmap items 7-9) or from
+confirming the live-pipeline divergence, and in-season CLV tracking plus a
+shadow run of the live system (item 6, 4.6) are the arbiters of whether live
+betting resumes at meaningful stakes.
 
 ### 3.3 Select models honestly (this is why 3.1's results can be trusted)
 
@@ -389,6 +404,51 @@ the honest conclusion is that the non-market features carry less standalone
 edge than hoped, and the UNDER filter is doing the real work. Run the
 experiment; either result is informative.
 
+**Done 2026-07-08 -- roadmap item 7 executed.**
+
+Design: four feature sets through an identical honest harness (24 validation
+evaluations per set -- 6 pre-registered configs x 4 EV thresholds -- selection
+on validation only via the 15-35% bet-rate band ranked by val ROI, exactly
+one test touch per set, audited from the run log). A (control) = the standard
+114 features; B (anchored) = 114 + market features recomputed per-row from
+that row's own odds (impl_prob_over/under, market_vig, fair_prob_over -- the
+12 contaminated precomputed columns stay dropped) + 8 book one-hots; C =
+market features + book one-hots + betting_line only; D = no-model baseline,
+probability = fair_prob_over directly. Folds were split by date (train <
+2025-10-16, val through 2025-12-03, test from 2025-12-04; 7,844/2,676/2,672
+rows), which also fixed the known fold-straddle problem. Every headline
+number below was independently verified by from-scratch reproduction.
+
+Test fold, single touch each:
+
+- A: 843 bets, -5.97% ROI, cluster CI [-16.09%, +4.54%], AUC 0.5067 row /
+  0.5019 per-night, Brier 0.27668. Sanity-consistent with the v2 clean
+  retrain on the row-index split (same signs, similar magnitudes).
+- B: 516 bets, -3.10% ROI, cluster CI [-16.04%, +10.19%] -- not
+  distinguishable from zero -- AUC 0.5243/0.5214, Brier 0.26368.
+- C: degenerate. No config landed in the bet-rate band even after the
+  pre-registered fallback widening; its nominal validation winner was a
+  single bet. Test: 10 bets, -9.28%, uninformative.
+- D: AUC 0.5218/0.5170, Brier 0.24961, zero bets at every threshold. Nuance:
+  not strictly "by construction" -- a handful of rows carry negative vig
+  where the de-vigged probability exceeds the implied price by up to +0.47%,
+  but that never reaches the lowest 5% threshold.
+
+Anchoring diagnostics (validation only): corr(model B, fair_prob_over) =
+0.325 -- the model does not collapse to the market; disagreement quantiles p5
+-0.244 / p50 -0.026 / p95 +0.192. But B's acted-upon large disagreements hit
+only 52.5% (val ROI -2.54%) -- the disagreements did not resolve in the
+model's favor. fair_prob_over ranked first by gain; only 2 of the top-20 gain
+features were market/book features.
+
+Verdict, stated plainly: market anchoring improves discrimination and
+calibration over the unanchored control (test AUC 0.524 vs 0.507, Brier
+0.264 vs 0.277, ROI -3.10% vs -5.97%) but produces no edge distinguishable
+from zero, and a model with only market information has no standalone signal.
+A clean negative on the trading question; the anchoring direction remains
+correct for any future model build. Artifacts:
+`models/trained/experiment_market_anchor_20260708_184452/`.
+
 ### 3.5 Prototype a distributional model (the structural upgrade)
 
 The current architecture answers "P(over this exact line)" per row. The
@@ -412,6 +472,70 @@ This is the biggest-effort item (a week-scale project done properly, with the
 same chronological evaluation harness), so treat it as the offseason stretch
 goal: build it, backtest it against the fixed-and-retrained classifier, and
 keep whichever wins. Do not switch production to it on aesthetics.
+
+**Done 2026-07-08 -- roadmap item 9 executed (prototype).**
+
+Architecture: a shots-against XGBoost (`count:poisson`) feeds a negative-
+binomial (NB2) distribution, with dispersion `alpha` fit by method-of-moments
+on train residuals (alpha = 0.0193); a separate save-rate XGBoost
+(`binary:logistic`, per-shot weighted) supplies q; the saves pmf is the
+NB(shots) distribution thinned by Binomial(q), capped at 70 saves, with pmf
+normalization asserted in code. P(over line) is priced directly from that pmf
+for any posted line. Trained on all goalie-games in
+`clean_training_data.parquet` (10,496 rows, 2022-10-07 onward; train/val/test
+7,992/730/1,774 rows using the same date boundaries as the classifier
+experiments above), i.e. no betting odds are required to train either
+submodel. The betting evaluation joins the priced pmf to the multibook odds
+frame by `(game_id, goalie_id)`, with 100% join coverage on both val and test.
+
+Intrinsic quality (validation fold): shots-against MAE 5.4864 vs. a naive
+rolling-5 baseline at 6.2089 (about 12% better); central 50%/80% predictive-
+interval coverage lands at 48.5%/78.9% (close to nominal, i.e. well
+calibrated); the PIT histogram is roughly flat with mild excess in the outer
+bins.
+
+Key mechanism finding: the save-rate submodel is nearly uninformative game-
+to-game -- its correlation with actual per-game save rate is only 0.008, and
+its predictions are confined to a 0.875-0.922 range against an actual
+per-game save-rate standard deviation of 0.082. In practice the model is
+doing "forecast shots against, then apply a near-league-average save rate" --
+which lines up with 3.11's variance decomposition (saves vs. shots-against
+R^2 = 0.959): almost all the achievable signal in a saves total is a
+shots-against forecast, not a save-rate forecast.
+
+Betting result (single test touch, at the only validation-in-band threshold,
+0.05 -- thresholds 0.10/0.12/0.15 all fell below the 15-35% bet-rate band on
+validation): 888 bets, 53.6% hit rate, +1.06% ROI, row bootstrap CI [-5.29%,
++7.39%], cluster CI [-8.83%, +10.91%] -- the cluster CI spans zero, not
+distinguishable from breakeven. OVER: 470 bets, +2.22% ROI; UNDER: 418 bets,
+-0.24% ROI. AUC 0.5159 row-level / 0.5202 per-night; Brier 0.25487.
+
+Head-to-head, test fold, all single-touch numbers:
+
+| Model | Test ROI | Bets | Brier |
+|---|---|---|---|
+| Distributional (this experiment) | +1.06% | 888 | 0.25487 |
+| Classifier control A (3.4) | -5.97% | 843 | 0.27668 |
+| Market-anchored B (3.4) | -3.10% | 516 | 0.26368 |
+| Market baseline D (3.4) | no bets | 0 | 0.24961 |
+
+The distributional prototype is the best-calibrated model the project has
+produced and the only one of the four with a positive point-estimate test
+ROI -- but the confidence interval spans zero, so this is not a discovered
+edge. It also has a capability none of the classifiers have: it prices any
+line coherently from one fitted distribution (3.9/3.11 already established
+that one full save of line movement shifts win probability 5-6 points, which
+matters directly for line shopping).
+
+Honest next steps if this is pursued further: repeat the evaluation on a
+later chronological slice before trusting the +1.06% point estimate; because
+the leverage is entirely in the shots-against submodel, roadmap item 8's
+game-context features (moneyline, totals, opponent pace/attempts) feed
+exactly the submodel that carries the signal, strengthening that item's case;
+the save-rate side needs genuinely new information (opponent shot quality)
+rather than more tuning, since its near-zero game-to-game correlation is a
+data problem, not a hyperparameter problem. Artifacts:
+`models/trained/experiment_distributional_20260708_190338/`.
 
 ### 3.6 Feature additions worth testing (in rough priority order)
 
@@ -606,6 +730,144 @@ Evaluation rules for all future experiments:
 - Treat small positive pockets as hypotheses until they repeat in a later
   chronological slice.
 
+### 3.11 Claude-authored: the live run survived re-testing; the offseason backtests never tested the live system
+
+Authored by Claude, 2026-07-08. Four additional diagnostics were run after
+3.9/3.10, reading only `data/betting.db`, the historical multibook odds
+archive parquet, and the saved model files (nothing was modified). They
+target the question 3.2 and 4.3 left open: is the live Feb-Apr 2026 UNDER run
+better explained by a favorable variance draw, or by something the
+reconstructed-feature backtests cannot see?
+
+**A. The anomaly, clustered by night, is more extreme than the flat-bet
+numbers suggested.** Grading every goalie-night in `betting.db` once (dedup
+on the latest row id) gives a blind-UNDER base rate of 52.0% (n=1,004). All
+148 graded live UNDER recommendations, already deduplicated to one per
+goalie-night and spanning 56 distinct calendar nights, hit 64.9% --
+naive z=3.1, night-clustered bootstrap 95% CI [56.6%, 72.6%], with roughly
+0.13% of night-level resamples landing at or below the 52.0% base rate. The
+65%+ confidence tier (correctly defined as `1 - prob_over >= 0.65` --
+`betting.db`'s `confidence_pct` column is not `P(side)`) is tighter still:
+n=101 across 38 nights, 72.3% hit, CI [64.5%, 79.6%], with fewer than 1 in
+20,000 resamples at or below base. Night-clustering is the conservative test
+here (it treats correlated same-night legs as one draw), and the anomaly
+survives it.
+
+**E. The picks were re-graded against an independent line source, not just
+re-summed from the tracker.** 137 of the 148 live UNDER recs were matched to
+the historical multibook odds archive (accent-stripped last name + team +
+date +/-1, because `betting.db` stores bare last names like `Bobrovsky` while
+the archive stores `F. Lastname`-style short names). The live-fetched line
+and the archived all-book median line agree almost exactly: mean gap -0.036,
+identical on 92.7% of nights, live line higher (UNDER-favorable) on only
+2.2% -- which rules out "the live line was soft relative to the wider
+market" as an explanation (the same result holds against the archived
+Underdog-only line). Re-grading the same picks against the archived median
+line instead of the live-logged line still hits 66.4% (vs. 67.2%
+live-graded on those same rows). Restricting further to the 123 of 137
+matches where the archived actual-saves value exactly equals the live
+actual-saves value (14 excluded as name/date matching noise -- see the
+honesty caveats below), the re-graded hit rate is 65.0%, night-clustered 95%
+CI [56.4%, 73.5%] -- the entire interval sits above the 52.0% base rate. Soft
+or stale live lines and tracker grading artifacts are both ruled out for the
+matched set: the selection itself performed against an independent line.
+
+**F. The central new fact: the offseason backtests scored a different
+model-input combination than the one that produced the live record.** For
+the matched live UNDER recs, the correlation between the live-logged
+`prob_over` (what `predictor.py` actually output at bet time) and the old
+production model (`tuned_v1_20260201_155204`) re-scored on the reconstructed
+clean historical frame is 0.408 (125 pairs), mean absolute difference 0.060
+(mean live 0.304 vs. mean reconstructed 0.331). The pairs are range-restricted
+to UNDER recs only, which mechanically attenuates the correlation number --
+the 0.060 mean absolute difference is the cleaner statement of how far apart
+the two probability streams run on the same goalie-nights.
+
+The implication has to be stated carefully: every offseason backtest in this
+document -- the clean v2 retrain (3.1), the calibration layer (3.2), the
+venue analysis (4.3) -- was run on the *reconstructed* historical feature
+frame. They test reconstructed models, not the (old production model + live
+feature pipeline) combination that actually generated the live picks. That
+combination has never been backtested, and cannot be from data currently on
+disk. "The clean retrain failed its single test touch" (3.1) remains true
+and stands as a finding about that retrain; it does not, by itself, falsify
+the live system, because the live system was never the thing under test.
+
+Two facts rule out the simplest alternative explanations for the gap: v1 and
+v2 have identical feature name lists (114 features, verified by set
+comparison), so this is not a feature-set difference, and market-anchor
+features (implied probability, vig, line movement) were in *neither* model,
+so this is not the market-anchoring experiment from 3.4/3.10 showing up
+early. The v2 test fold (2025-12-04 to 2026-04-13) fully contains the live
+betting window, so the live success and the backtest failure happened on the
+same calendar dates -- whatever is driving the divergence is in the pipeline
+or the model artifact, not the time period.
+
+**G. The old production model, scored on the clean frame over its own true
+out-of-sample window, is directionally consistent with the live UNDER edge --
+and not statistically distinguishable from zero.** Scoring
+`tuned_v1_20260201_155204` on the clean frame restricted to
+`game_date >= 2026-02-02` (the day after it was trained -- genuinely never
+seen), using archived lines/odds and its live EV rule (0.12 threshold,
+probability-edge semantics): 864 rows scored, 219 bets across 174
+goalie-nights, 53.0% hit, +1.36% ROI overall. OVER: n=49, 42.9% hit, -17.53%
+ROI. UNDER: n=170 across 138 goalie-nights, 55.9% hit, +6.80% ROI,
+night-clustered 95% CI [-10.53%, +23.84%]. One-row-per-goalie-night AUC on
+this window is 0.5221 (n=666). Stated plainly: this is directionally
+positive on UNDER, in the same window where the clean v2 classifier lost
+-5.82% (3.1) -- but the confidence interval spans zero. It is interesting,
+not evidence.
+
+**B/C, briefly -- these confirm Codex's 3.9 framing empirically rather than
+only conceptually.** On `clean_training_data.parquet` (10,496 goalie-games),
+saves correlates with shots-against at 0.979 (R^2=0.959) and with save
+percentage at only 0.559 (R^2=0.312); a saves line is a shot-volume prop
+first, and the current 114 features are goalie-form-centric rather than
+shot-volume-centric. Separately, on 4,580 unique goalie-games with lines, one
+full save of line movement shifts win probability by 5.3-6.4 points (e.g.
+P(saves>22.5)=61.3% vs. P(saves>23.5)=54.9%) -- more than the entire vig at
+typical prices -- and 10.6% of the 3,771 goalie-nights quoted by 2+ books
+show a cross-book line spread of at least 1.0 save. Both numbers say the
+same thing 3.9 argued qualitatively: line-level and shot-volume information
+dominate goalie-form information, and neither the v1 nor v2 model exploits
+it directly.
+
+Honesty caveats that apply to all of the above:
+
+- **Project-level survivorship.** This record is being studied because it
+  won. That alone should keep the prior on "real, durable edge" modest
+  regardless of what any individual test shows.
+- **The 65%+ tier was the live parlay rule, not a hypothesis chosen in
+  advance of seeing results.** Its prominence in this and earlier sections is
+  partly post-hoc; treat the tighter CI as suggestive, not as a
+  pre-registered confirmation.
+- **14 of 137 archive matches had disagreeing saves values** (name/date
+  matching noise, not a systematic bias toward either outcome) -- the
+  headline re-grading numbers were recomputed excluding them and the result
+  held (65.0%, CI [56.4%, 73.5%]).
+- **None of this proves a mechanism.** A correlation of 0.41 between live and
+  reconstructed probabilities says the two pipelines disagree, not why, or
+  which one (if either) is right. The arbiter is CLV plus a zero-stake
+  shadow run of the exact live system next season -- not another backtest on
+  reconstructed features.
+
+**What this changes.** Sections 3.2 and 4.3 named a favorable variance draw
+as the leading explanation for the live run. That is no longer the
+best-supported reading. At the "all UNDER recs" level the anomaly is roughly
+a 1-in-750 event even after the conservative night-clustered adjustment, and
+the picks were independently re-graded against archived market lines with
+the anomaly intact -- ruling out both a soft live line and a base-rate
+artifact of the tracker. The leading hypothesis is now that some property of
+the live (old model + live feature pipeline) selection behavior is not
+captured by the reconstructed-feature backtests (F, correlation 0.41) -- this
+is still an unproven mechanism, not a bankable edge, and G shows the plainest
+direct test of it (old model, clean frame, true OOS window) lands with a CI
+that spans zero. The decisive next-season tests are CLV capture and a
+token-stake shadow run of the exact live system: same
+`tuned_v1_20260201_155204` model file, same live feature pipeline (not a
+reconstruction), every recommendation logged with fetch timestamps and
+closing lines (roadmap items 6/4.6).
+
 ---
 
 ## 4. Betting strategy for next season
@@ -627,6 +889,13 @@ stands as a description of the live record, but its causal story -- model
 skill vs. Underdog's soft lines vs. a favorable variance draw on n=168 -- is
 now an open question. Roadmap items 3-4 (venue discrepancy analysis,
 calibration) are designed to answer it before this rule gets automated.
+
+**Update 2026-07-08, see 3.11**: the live record has since been re-graded
+night-clustered and against an independent archived line source, and it
+survives both -- a favorable variance draw is now the least-supported of the
+three candidate explanations above, though none is proven. Automation
+decisions should still wait on CLV and the shadow run (4.6), not on this
+finding alone.
 
 ### 4.2 The UNDER-only Underdog parlay question, answered
 
@@ -743,9 +1012,16 @@ per-leg breakeven, and no more). That explains only a small slice of the live
 legs' 68-73% hit rate. What remains on the table for the live profit: model
 selection skill that neither completed diagnostic can see, and/or a favorable
 variance draw. The calibration layer (3.2) was the next and last cheap
-discriminator between those two -- **it has since reported (2026-07-07): no
-pre-registered calibrated edge was demonstrated, leaving the variance draw as
-the leading explanation for the live run (see 3.2).**
+discriminator between those two on the reconstructed frame -- it reported
+(2026-07-07) no pre-registered calibrated edge.
+
+**That is no longer the final word.** 3.11 (2026-07-08) re-graded the live
+picks against an independent archived line source and re-tested the anomaly
+night-clustered rather than flat: it survives both, with a favorable variance
+draw now the least-supported of the candidate explanations. The leading
+hypothesis is live-pipeline selection behavior that the reconstructed-frame
+diagnostics in 3.2 and this section could not see -- see 3.11 for the full
+finding and its caveats.
 
 Keep both venues, with defined jobs. Underdog parlays offer the highest EV per dollar
 *when 2-3 qualifying legs exist* (at 65% legs: +26.8% for 2-leg, +64.8% for
@@ -868,11 +1144,11 @@ experiments.
 | 2 | ~~Retrain + honest selection (val-only ranking, test touched once, bootstrap CIs)~~ **done 2026-07-07** (see 3.1/3.3 -- result: no backtest edge on clean data) | 1-2 days | 3.1, 3.3 |
 | 3 | ~~**Venue discrepancy analysis**: from `betting.db` (Jan-Apr 2026), for every goalie-night quoted at both Underdog and a sharp book, measure the line gap and test whether "UNDER at Underdog when its line sits above sharp consensus" reproduces the live ROI *without any model*.~~ **done 2026-07-07 -- result: Underdog lines are NOT soft.** 95.2% exact match with sharp consensus on 248 checkable nights; zero of the 137 live UNDER legs sat on a favorable gap. Soft lines do not explain the live profit (see 4.3). | half day | 4.3, 3.1 |
 | 4 | ~~**Calibration layer** -- the decisive model-edge test: fit on validation, check whether any honest +EV pockets survive, one pre-registered test touch.~~ **done 2026-07-07 -- result: no demonstrated edge.** Validation AUC was only ~0.54 and test AUC fell to 0.513; calibrated probs compress to 0.467-0.620; pre-registered test policies lose or are uninformative; the calibrated UNDER pool barely exists (see 3.2). | half day | 3.2 |
-| 5 | **Strategy decision gate -- inputs now resolved** (item 3: lines not soft; item 4: no calibrated model edge). The honest planning assumption for next season is **zero proven prior edge**. The gate is now a user decision: bet small-or-nothing while CLV (item 6) accumulates evidence, and treat items 7-9 as the only remaining paths to a real model edge. The UNDER-only + parlay automation (4.1/4.2) should NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6 |
-| 6 | `tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude | ~a day | 4.5, 4.6 |
-| 7 | Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49% | 1-2 days | 3.4, 3.9, 3.10 |
-| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization) | 2-3 days | 3.6, 3.9, 3.10 |
-| 9 | Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required) | ~a week | 3.5, 3.10 |
+| 5 | **Strategy decision gate -- resolved 2026-07-08 by the user.** Inputs: item 3 (lines not soft), item 4 (no calibrated edge on the reconstructed frame), and 3.11 (the live run survived night-clustered re-testing and independent re-grading against archived lines; the reconstructed-frame backtests never tested the live system). Decision: proceed as a **measurement program**, not a scale-up -- build item 6 immediately, add a shadow run of the exact live system alongside it, keep stakes token-sized until CLV is demonstrably positive, and run items 7 and 9 through the honest harness rather than treat either as a substitute for shadow-run evidence. The UNDER-only + parlay automation (4.1/4.2) should still NOT be built on the current model's raw confidence bands. | half day | 4.1, 4.2, 3.2, 4.6, 3.11 |
+| 6 | ~~`tickets` table + CLV capture in the tracker -- unconditional; CLV is the real-time edge detector next season regardless of what items 3-5 conclude. Scope now explicitly includes: line/odds snapshots with fetch timestamps (not just the bet-time line), closing-line capture at puck drop, and a shadow-run log of the exact live system (`tuned_v1_20260201_155204`, live feature pipeline, every recommendation logged whether or not staked) so 3.11's open question can be settled by next season's data instead of another reconstruction.~~ **implemented 2026-07-08.** `line_snapshots`/`tickets`/`ticket_legs` tables plus an idempotent migration (`scripts/add_tracking_tables.py`); snapshot capture wired into `scripts/fetch_and_predict.py`; closing-line + CLV computation (`scripts/compute_closing_clv.py`, wired into the update-results workflow with a graceful no-op if the migration has not been run); phone-first ticket recording (`scripts/record_ticket.py` + `.github/workflows/record_ticket.yml`, `reason_code` required); a CLV report (`scripts/clv_report.py`); and `model_version` tagging on recommendations for shadow-run attribution. Two open operational notes: the migration has **not yet been applied** to the live `data/betting.db` (one command, a user decision, since the db is git-tracked), and a pre-puck-drop closing-fetch cron exists commented-out in `fetch_predictions.yml` pending a deliberate usage/cost decision. | ~a day | 4.5, 4.6, 3.11 |
+| 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
+| 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **Case strengthened 2026-07-08**: the distributional experiment (3.5) showed the shots-against submodel is where the saves signal actually lives, and these features feed directly into a shots-against forecast. | 2-3 days | 3.6, 3.9, 3.10 |
+| 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
 | 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
 
@@ -887,6 +1163,13 @@ able to represent tickets and CLV before more real money produces another
 ambiguous record. Do not respond to the item-2 result by running more
 hyperparameter searches against the test fold -- that road leads straight back
 to the retired +23.31%.
+
+**Update 2026-07-08:** items 6, 7, and 9 are now done (see above); the
+migration in item 6 still needs to be applied to the live database before any
+of this generates real CLV/shadow-run data, and what remains on the model
+side is item 8, whose case 3.5 just strengthened -- the in-season measurement
+program (CLV capture, the shadow run) is now the load-bearing next step, not
+another offline backtest.
 
 ## 6. Appendix: what was checked and found sound
 
@@ -913,6 +1196,30 @@ fixing:
   analyze it as a real regression output.
 - **Blind UNDER is not the edge**: the graded-lines base rate is 51.6% under,
   which loses to vig. The live model's UNDER *selection* (69%) was real in
-  the database, but the clean retrain/calibration work did not demonstrate a
-  repeatable mechanism. Treat it as an unresolved live anomaly unless CLV or a
-  later model explains it.
+  the database, and it has since survived night-clustered re-testing and
+  independent re-grading against archived market lines (3.11) -- too extreme
+  to comfortably call a variance draw, though the clean retrain/calibration
+  work still did not demonstrate the mechanism on reconstructed features.
+  Treat it as an unresolved live anomaly whose leading explanation is now
+  live-pipeline selection behavior that neither backtest could see (3.11),
+  pending CLV or a shadow run.
+
+Two things surfaced by the 2026-07-08 diagnostics (3.11) are not "found
+sound" -- they are gotchas that will silently mislead any future analysis
+that forgets them:
+
+- **Reconstruction infidelity**: a backtest run on reconstructed historical
+  features does not speak for the live pipeline. Correlation between the
+  live-logged `prob_over` and the same old model re-scored on the
+  reconstructed frame is only 0.408 (mean absolute difference 0.060) for the
+  same goalie-nights (3.11). Any future "does the live system have an edge"
+  question must be answered with shadow-run/CLV data collected from the
+  actual live pipeline, not by reconstructing historical features and
+  backtesting a model on them.
+- **Cross-source goalie/line matching needs care**: `betting.db` stores bare
+  goalie last names (e.g. `Bobrovsky`) while the historical multibook odds
+  archive parquet stores `F. Lastname`-style short names. Joining the two
+  requires accent-stripped last-token matching plus team and a +/-1-day date
+  tolerance (mirroring the UTC/local fix in 2.3), and even after matching,
+  `betting.db`'s `confidence_pct` column is **not** `P(side)` -- for UNDER
+  tiers use `1 - prob_over`.

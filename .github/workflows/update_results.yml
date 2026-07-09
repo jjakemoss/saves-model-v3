@@ -30,6 +30,11 @@ jobs:
         env:
           TZ: America/New_York
 
+      - name: Compute closing lines and CLV
+        run: python scripts/compute_closing_clv.py
+        env:
+          TZ: America/New_York
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"

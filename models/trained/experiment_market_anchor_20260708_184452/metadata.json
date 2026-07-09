@@ -1,0 +1,2715 @@
+{
+  "timestamp": "2026-07-08T18:46:54.160052",
+  "wall_clock_seconds": 121.30774760246277,
+  "data_path": "data\\processed\\multibook_classification_training_data.parquet",
+  "n_rows_modeling_frame": 13192,
+  "fold_boundaries": {
+    "train": {
+      "start": "2024-10-04",
+      "end": "2025-10-15",
+      "rows": 7844
+    },
+    "val": {
+      "start": "2025-10-16",
+      "end": "2025-12-03",
+      "rows": 2676
+    },
+    "test": {
+      "start": "2025-12-04",
+      "end": "2026-04-13",
+      "rows": 2672
+    }
+  },
+  "book_columns": [
+    "book_betmgm",
+    "book_betonline",
+    "book_betonlineag",
+    "book_bovada",
+    "book_draftkings",
+    "book_fanatics",
+    "book_underdog",
+    "book_williamhill_us"
+  ],
+  "market_feature_columns": [
+    "impl_prob_over",
+    "impl_prob_under",
+    "market_vig",
+    "fair_prob_over"
+  ],
+  "ev_thresholds": [
+    0.05,
+    0.1,
+    0.12,
+    0.15
+  ],
+  "configs": [
+    {
+      "name": "v2_winner",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 40,
+        "n_estimators": 1200,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    },
+    {
+      "name": "max_depth_4",
+      "params": {
+        "max_depth": 4,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 40,
+        "n_estimators": 1200,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    },
+    {
+      "name": "max_depth_6_mcw_30",
+      "params": {
+        "max_depth": 6,
+        "learning_rate": 0.05,
+        "min_child_weight": 30,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 40,
+        "n_estimators": 1200,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    },
+    {
+      "name": "n_estimators_600",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 40,
+        "n_estimators": 600,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    },
+    {
+      "name": "reg_lambda_10",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "min_child_weight": 10,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 10,
+        "n_estimators": 1200,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    },
+    {
+      "name": "lr_002_est_2400",
+      "params": {
+        "max_depth": 3,
+        "learning_rate": 0.02,
+        "min_child_weight": 10,
+        "gamma": 1.0,
+        "reg_alpha": 10,
+        "reg_lambda": 40,
+        "n_estimators": 2400,
+        "subsample": 0.7,
+        "colsample_bytree": 0.8
+      }
+    }
+  ],
+  "results": {
+    "A": {
+      "feature_set": "A",
+      "n_features": 114,
+      "val_evaluations": [
+        {
+          "feature_set": "A",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1786,
+          "bet_rate": 66.74140508221225,
+          "hit_rate": 51.903695408734606,
+          "roi": -2.406389761005539,
+          "profit": -42.97812113155892
+        },
+        {
+          "feature_set": "A",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1290,
+          "bet_rate": 48.20627802690583,
+          "hit_rate": 51.78294573643411,
+          "roi": -2.655410969995072,
+          "profit": -34.25480151293643
+        },
+        {
+          "feature_set": "A",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1092,
+          "bet_rate": 40.80717488789238,
+          "hit_rate": 52.472527472527474,
+          "roi": -1.4617811306698645,
+          "profit": -15.96264994691492
+        },
+        {
+          "feature_set": "A",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 848,
+          "bet_rate": 31.689088191330345,
+          "hit_rate": 55.07075471698113,
+          "roi": 3.4654490098353143,
+          "profit": 29.387007603403465
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1887,
+          "bet_rate": 70.51569506726457,
+          "hit_rate": 52.093269740328566,
+          "roi": -2.0287884863441503,
+          "profit": -38.28323873731412
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1370,
+          "bet_rate": 51.195814648729446,
+          "hit_rate": 50.14598540145986,
+          "roi": -5.711247050552819,
+          "profit": -78.24408459257363
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1182,
+          "bet_rate": 44.17040358744394,
+          "hit_rate": 51.09983079526227,
+          "roi": -3.9686524625215727,
+          "profit": -46.90947210700499
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 919,
+          "bet_rate": 34.342301943198805,
+          "hit_rate": 52.9923830250272,
+          "roi": -0.5718002632958077,
+          "profit": -5.254844419688472
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1813,
+          "bet_rate": 67.75037369207773,
+          "hit_rate": 52.23386651958081,
+          "roi": -1.7541653192138642,
+          "profit": -31.803017237347362
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1290,
+          "bet_rate": 48.20627802690583,
+          "hit_rate": 51.70542635658914,
+          "roi": -2.817124789324636,
+          "profit": -36.3409097822878
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1090,
+          "bet_rate": 40.732436472346784,
+          "hit_rate": 51.28440366972477,
+          "roi": -3.5412434110666933,
+          "profit": -38.599553180626955
+        },
+        {
+          "feature_set": "A",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 859,
+          "bet_rate": 32.10014947683109,
+          "hit_rate": 50.87310826542492,
+          "roi": -4.450275599218887,
+          "profit": -38.22786739729025
+        },
+        {
+          "feature_set": "A",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1540,
+          "bet_rate": 57.548579970104626,
+          "hit_rate": 52.2077922077922,
+          "roi": -1.6921194200117384,
+          "profit": -26.058639068180774
+        },
+        {
+          "feature_set": "A",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 917,
+          "bet_rate": 34.267563527653216,
+          "hit_rate": 53.653217011995636,
+          "roi": 0.928853873011966,
+          "profit": 8.517590015519728
+        },
+        {
+          "feature_set": "A",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 720,
+          "bet_rate": 26.905829596412556,
+          "hit_rate": 52.63888888888889,
+          "roi": -0.5805390142282648,
+          "profit": -4.179880902443506
+        },
+        {
+          "feature_set": "A",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 510,
+          "bet_rate": 19.05829596412556,
+          "hit_rate": 54.31372549019608,
+          "roi": 2.5433635312756206,
+          "profit": 12.971154009505666
+        },
+        {
+          "feature_set": "A",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1839,
+          "bet_rate": 68.72197309417041,
+          "hit_rate": 50.73409461663948,
+          "roi": -4.634220646402995,
+          "profit": -85.22331768735108
+        },
+        {
+          "feature_set": "A",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1384,
+          "bet_rate": 51.71898355754858,
+          "hit_rate": 51.73410404624278,
+          "roi": -2.7060835766449185,
+          "profit": -37.45219670076567
+        },
+        {
+          "feature_set": "A",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1181,
+          "bet_rate": 44.13303437967115,
+          "hit_rate": 52.243861134631665,
+          "roi": -1.7086289615497445,
+          "profit": -20.178908035902484
+        },
+        {
+          "feature_set": "A",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 958,
+          "bet_rate": 35.799701046337816,
+          "hit_rate": 52.4008350730689,
+          "roi": -1.4150087748723494,
+          "profit": -13.555784063277107
+        },
+        {
+          "feature_set": "A",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1698,
+          "bet_rate": 63.45291479820629,
+          "hit_rate": 52.591283863368666,
+          "roi": -1.2121476673838867,
+          "profit": -20.582267392178398
+        },
+        {
+          "feature_set": "A",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1196,
+          "bet_rate": 44.69357249626308,
+          "hit_rate": 54.84949832775919,
+          "roi": 3.22361483411771,
+          "profit": 38.554433416047814
+        },
+        {
+          "feature_set": "A",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 995,
+          "bet_rate": 37.18236173393124,
+          "hit_rate": 52.8643216080402,
+          "roi": -0.7458647595123873,
+          "profit": -7.421354357148253
+        },
+        {
+          "feature_set": "A",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 767,
+          "bet_rate": 28.66218236173393,
+          "hit_rate": 54.49804432855281,
+          "roi": 2.5677943666817455,
+          "profit": 19.69498279244899
+        }
+      ],
+      "selection_deviation": null,
+      "winner": {
+        "config": "v2_winner",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "gamma": 1.0,
+          "reg_alpha": 10,
+          "reg_lambda": 40,
+          "n_estimators": 1200,
+          "subsample": 0.7,
+          "colsample_bytree": 0.8
+        },
+        "threshold": 0.15,
+        "val_summary": {
+          "feature_set": "A",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 848,
+          "bet_rate": 31.689088191330345,
+          "hit_rate": 55.07075471698113,
+          "roi": 3.4654490098353143,
+          "profit": 29.387007603403465
+        },
+        "val_roi_ci_row": {
+          "lower": -2.6797866787634326,
+          "upper": 9.832011474020057,
+          "n_bets": 848
+        },
+        "val_roi_ci_cluster": {
+          "lower": -9.242428068811664,
+          "upper": 16.106207068680153,
+          "n_clusters": 227
+        },
+        "val_side_breakdown": {
+          "OVER": {
+            "bets": 306,
+            "hit_rate": 58.82352941176471,
+            "roi": 9.341383523816518,
+            "profit": 28.584633582878542
+          },
+          "UNDER": {
+            "bets": 542,
+            "hit_rate": 52.952029520295206,
+            "roi": 0.14803948718171964,
+            "profit": 0.8023740205249204
+          }
+        },
+        "val_auc": {
+          "row_level": 0.526028293629599,
+          "one_per_goalie_night": 0.5275953057534044,
+          "n_rows": 2676,
+          "n_goalie_nights": 659
+        },
+        "val_brier": 0.27114036679267883,
+        "val_goalie_nights_total": 659,
+        "val_goalie_nights_bet": 227
+      },
+      "test": {
+        "summary": {
+          "bets": 843,
+          "bet_rate": 31.549401197604794,
+          "hit_rate": 49.8220640569395,
+          "roi": -5.965594435183723,
+          "profit": -50.28996108859879
+        },
+        "roi_ci_row": {
+          "lower": -12.341711072959543,
+          "upper": 0.4082926128290853,
+          "n_bets": 843
+        },
+        "roi_ci_cluster": {
+          "lower": -16.092874944292394,
+          "upper": 4.536606901730479,
+          "n_clusters": 440
+        },
+        "side_breakdown": {
+          "OVER": {
+            "bets": 373,
+            "hit_rate": 48.525469168900806,
+            "roi": -8.54762863220172,
+            "profit": -31.88265479811242
+          },
+          "UNDER": {
+            "bets": 470,
+            "hit_rate": 50.851063829787236,
+            "roi": -3.9164481469119923,
+            "profit": -18.407306290486364
+          }
+        },
+        "auc": {
+          "row_level": 0.5067091600722171,
+          "one_per_goalie_night": 0.5019114278084638,
+          "n_rows": 2672,
+          "n_goalie_nights": 1307
+        },
+        "brier": 0.2766824960708618,
+        "goalie_nights_total": 1307,
+        "goalie_nights_bet": 440
+      }
+    },
+    "B": {
+      "feature_set": "B",
+      "n_features": 126,
+      "val_evaluations": [
+        {
+          "feature_set": "B",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1753,
+          "bet_rate": 65.50822122571002,
+          "hit_rate": 51.169423844837425,
+          "roi": -4.6632585402708395,
+          "profit": -81.74692221094782
+        },
+        {
+          "feature_set": "B",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1287,
+          "bet_rate": 48.09417040358744,
+          "hit_rate": 50.349650349650354,
+          "roi": -6.141778786145393,
+          "profit": -79.0446929776912
+        },
+        {
+          "feature_set": "B",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1129,
+          "bet_rate": 42.1898355754858,
+          "hit_rate": 50.93002657218778,
+          "roi": -5.116318400052374,
+          "profit": -57.76323473659131
+        },
+        {
+          "feature_set": "B",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 876,
+          "bet_rate": 32.73542600896861,
+          "hit_rate": 49.885844748858446,
+          "roi": -7.237124483493688,
+          "profit": -63.39721047540471
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1830,
+          "bet_rate": 68.38565022421524,
+          "hit_rate": 53.333333333333336,
+          "roi": -0.46976750074899437,
+          "profit": -8.596745263706596
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1367,
+          "bet_rate": 51.083707025411066,
+          "hit_rate": 50.841258229700074,
+          "roi": -5.309231226074161,
+          "profit": -72.57719086043377
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1188,
+          "bet_rate": 44.39461883408072,
+          "hit_rate": 50.92592592592593,
+          "roi": -5.282779798428642,
+          "profit": -62.759424005332264
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 910,
+          "bet_rate": 34.005979073243644,
+          "hit_rate": 50.0,
+          "roi": -7.132444511200213,
+          "profit": -64.90524505192194
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1767,
+          "bet_rate": 66.03139013452915,
+          "hit_rate": 50.93378607809848,
+          "roi": -5.191286687465017,
+          "profit": -91.73003576750686
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1256,
+          "bet_rate": 46.93572496263079,
+          "hit_rate": 51.433121019108285,
+          "roi": -4.367557130984631,
+          "profit": -54.85651756516696
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1070,
+          "bet_rate": 39.98505231689089,
+          "hit_rate": 52.149532710280376,
+          "roi": -3.2361550918404562,
+          "profit": -34.626859482692886
+        },
+        {
+          "feature_set": "B",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 818,
+          "bet_rate": 30.568011958146485,
+          "hit_rate": 51.83374083129584,
+          "roi": -4.036373630654205,
+          "profit": -33.017536298751395
+        },
+        {
+          "feature_set": "B",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1485,
+          "bet_rate": 55.493273542600896,
+          "hit_rate": 52.794612794612796,
+          "roi": -1.5564216532059192,
+          "profit": -23.1128615501079
+        },
+        {
+          "feature_set": "B",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 959,
+          "bet_rate": 35.837070254110614,
+          "hit_rate": 53.07612095933264,
+          "roi": -1.0761009926660197,
+          "profit": -10.319808519667129
+        },
+        {
+          "feature_set": "B",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 767,
+          "bet_rate": 28.66218236173393,
+          "hit_rate": 52.15123859191656,
+          "roi": -2.8677865646530063,
+          "profit": -21.99592295088856
+        },
+        {
+          "feature_set": "B",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 512,
+          "bet_rate": 19.13303437967115,
+          "hit_rate": 52.5390625,
+          "roi": -2.538314815639855,
+          "profit": -12.996171856076057
+        },
+        {
+          "feature_set": "B",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1807,
+          "bet_rate": 67.52615844544096,
+          "hit_rate": 51.134477033757605,
+          "roi": -4.594474687456765,
+          "profit": -83.02215760234374
+        },
+        {
+          "feature_set": "B",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1342,
+          "bet_rate": 50.14947683109118,
+          "hit_rate": 51.19225037257824,
+          "roi": -4.408721802945239,
+          "profit": -59.165046595525105
+        },
+        {
+          "feature_set": "B",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 1169,
+          "bet_rate": 43.68460388639761,
+          "hit_rate": 51.24037639007699,
+          "roi": -4.467679206204889,
+          "profit": -52.227169920535154
+        },
+        {
+          "feature_set": "B",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 929,
+          "bet_rate": 34.71599402092676,
+          "hit_rate": 50.699677072120565,
+          "roi": -5.401741682181295,
+          "profit": -50.18218022746423
+        },
+        {
+          "feature_set": "B",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 1653,
+          "bet_rate": 61.77130044843049,
+          "hit_rate": 52.26860254083484,
+          "roi": -2.5144897518878646,
+          "profit": -41.56451559870641
+        },
+        {
+          "feature_set": "B",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1172,
+          "bet_rate": 43.796711509716,
+          "hit_rate": 50.34129692832765,
+          "roi": -6.355405400974712,
+          "profit": -74.48535129942363
+        },
+        {
+          "feature_set": "B",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 993,
+          "bet_rate": 37.10762331838565,
+          "hit_rate": 49.244712990936556,
+          "roi": -8.55634544752209,
+          "profit": -84.96451029389436
+        },
+        {
+          "feature_set": "B",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 754,
+          "bet_rate": 28.176382660687594,
+          "hit_rate": 51.326259946949605,
+          "roi": -4.879918032715059,
+          "profit": -36.794581966671544
+        }
+      ],
+      "selection_deviation": null,
+      "winner": {
+        "config": "n_estimators_600",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "gamma": 1.0,
+          "reg_alpha": 10,
+          "reg_lambda": 40,
+          "n_estimators": 600,
+          "subsample": 0.7,
+          "colsample_bytree": 0.8
+        },
+        "threshold": 0.15,
+        "val_summary": {
+          "feature_set": "B",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 512,
+          "bet_rate": 19.13303437967115,
+          "hit_rate": 52.5390625,
+          "roi": -2.538314815639855,
+          "profit": -12.996171856076057
+        },
+        "val_roi_ci_row": {
+          "lower": -10.555659972489675,
+          "upper": 5.662631395406101,
+          "n_bets": 512
+        },
+        "val_roi_ci_cluster": {
+          "lower": -18.660839774961175,
+          "upper": 13.452096689541756,
+          "n_clusters": 141
+        },
+        "val_side_breakdown": {
+          "OVER": {
+            "bets": 163,
+            "hit_rate": 52.14723926380368,
+            "roi": -3.775594710456344,
+            "profit": -6.154219378043841
+          },
+          "UNDER": {
+            "bets": 349,
+            "hit_rate": 52.72206303724928,
+            "roi": -1.9604448361123825,
+            "profit": -6.841952478032215
+          }
+        },
+        "val_auc": {
+          "row_level": 0.5230154890704041,
+          "one_per_goalie_night": 0.5285824999077389,
+          "n_rows": 2676,
+          "n_goalie_nights": 659
+        },
+        "val_brier": 0.2643660008907318,
+        "val_goalie_nights_total": 659,
+        "val_goalie_nights_bet": 141
+      },
+      "test": {
+        "summary": {
+          "bets": 516,
+          "bet_rate": 19.311377245508982,
+          "hit_rate": 51.74418604651163,
+          "roi": -3.0956744625879424,
+          "profit": -15.973680226953784
+        },
+        "roi_ci_row": {
+          "lower": -11.0683812520217,
+          "upper": 4.794815361740278,
+          "n_bets": 516
+        },
+        "roi_ci_cluster": {
+          "lower": -16.041525017711695,
+          "upper": 10.18534054288381,
+          "n_clusters": 271
+        },
+        "side_breakdown": {
+          "OVER": {
+            "bets": 194,
+            "hit_rate": 50.51546391752577,
+            "roi": -5.926837766597794,
+            "profit": -11.49806526719972
+          },
+          "UNDER": {
+            "bets": 322,
+            "hit_rate": 52.484472049689444,
+            "roi": -1.3899425340851126,
+            "profit": -4.475614959754063
+          }
+        },
+        "auc": {
+          "row_level": 0.5243075827936513,
+          "one_per_goalie_night": 0.5213864410432273,
+          "n_rows": 2672,
+          "n_goalie_nights": 1307
+        },
+        "brier": 0.2636812627315521,
+        "goalie_nights_total": 1307,
+        "goalie_nights_bet": 271
+      }
+    },
+    "C": {
+      "feature_set": "C",
+      "n_features": 13,
+      "val_evaluations": [
+        {
+          "feature_set": "C",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 137,
+          "bet_rate": 5.119581464872945,
+          "hit_rate": 37.22627737226277,
+          "roi": -31.837137974695274,
+          "profit": -43.61687902533252
+        },
+        {
+          "feature_set": "C",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1,
+          "bet_rate": 0.03736920777279522,
+          "hit_rate": 100.0,
+          "roi": 81.30081300813008,
+          "profit": 0.8130081300813008
+        },
+        {
+          "feature_set": "C",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 142,
+          "bet_rate": 5.306427503736921,
+          "hit_rate": 35.91549295774648,
+          "roi": -34.374248025535465,
+          "profit": -48.811432196260355
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1,
+          "bet_rate": 0.03736920777279522,
+          "hit_rate": 100.0,
+          "roi": 81.30081300813008,
+          "profit": 0.8130081300813008
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_4",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 150,
+          "bet_rate": 5.605381165919283,
+          "hit_rate": 35.333333333333336,
+          "roi": -35.414796565147675,
+          "profit": -53.12219484772152
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "max_depth_6_mcw_30",
+          "hyperparams": {
+            "max_depth": 6,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 112,
+          "bet_rate": 4.185351270553064,
+          "hit_rate": 34.82142857142857,
+          "roi": -36.24471015062722,
+          "profit": -40.594075368702484
+        },
+        {
+          "feature_set": "C",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "n_estimators_600",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 600,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 166,
+          "bet_rate": 6.203288490284006,
+          "hit_rate": 35.54216867469879,
+          "roi": -34.970239746519596,
+          "profit": -58.05059797922254
+        },
+        {
+          "feature_set": "C",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1,
+          "bet_rate": 0.03736920777279522,
+          "hit_rate": 100.0,
+          "roi": 81.30081300813008,
+          "profit": 0.8130081300813008
+        },
+        {
+          "feature_set": "C",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "reg_lambda_10",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 10,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.05,
+          "bets": 148,
+          "bet_rate": 5.5306427503736915,
+          "hit_rate": 35.13513513513514,
+          "roi": -35.77059895431637,
+          "profit": -52.94048645238822
+        },
+        {
+          "feature_set": "C",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.12,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        },
+        {
+          "feature_set": "C",
+          "config": "lr_002_est_2400",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.02,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 2400,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.15,
+          "bets": 0,
+          "bet_rate": 0.0,
+          "hit_rate": 0.0,
+          "roi": 0.0,
+          "profit": 0.0
+        }
+      ],
+      "selection_deviation": "Feature set C: no config landed in the pre-registered 15-35% val bet-rate band; widened to 10-40% per protocol fallback. Even the widened 10-40% band was empty; fell back to ALL 24 evaluations.",
+      "winner": {
+        "config": "v2_winner",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "gamma": 1.0,
+          "reg_alpha": 10,
+          "reg_lambda": 40,
+          "n_estimators": 1200,
+          "subsample": 0.7,
+          "colsample_bytree": 0.8
+        },
+        "threshold": 0.1,
+        "val_summary": {
+          "feature_set": "C",
+          "config": "v2_winner",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "gamma": 1.0,
+            "reg_alpha": 10,
+            "reg_lambda": 40,
+            "n_estimators": 1200,
+            "subsample": 0.7,
+            "colsample_bytree": 0.8
+          },
+          "threshold": 0.1,
+          "bets": 1,
+          "bet_rate": 0.03736920777279522,
+          "hit_rate": 100.0,
+          "roi": 81.30081300813008,
+          "profit": 0.8130081300813008
+        },
+        "val_roi_ci_row": {
+          "lower": 81.30081300813008,
+          "upper": 81.30081300813008,
+          "n_bets": 1
+        },
+        "val_roi_ci_cluster": {
+          "lower": 81.30081300813008,
+          "upper": 81.30081300813008,
+          "n_clusters": 1
+        },
+        "val_side_breakdown": {
+          "OVER": {
+            "bets": 0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "UNDER": {
+            "bets": 1,
+            "hit_rate": 100.0,
+            "roi": 81.30081300813008,
+            "profit": 0.8130081300813008
+          }
+        },
+        "val_auc": {
+          "row_level": 0.4797112472630569,
+          "one_per_goalie_night": 0.49082001697604904,
+          "n_rows": 2676,
+          "n_goalie_nights": 659
+        },
+        "val_brier": 0.2560576796531677,
+        "val_goalie_nights_total": 659,
+        "val_goalie_nights_bet": 1
+      },
+      "test": {
+        "summary": {
+          "bets": 10,
+          "bet_rate": 0.37425149700598803,
+          "hit_rate": 50.0,
+          "roi": -9.277578438099567,
+          "profit": -0.9277578438099567
+        },
+        "roi_ci_row": {
+          "lower": -63.80327868852459,
+          "upper": 45.25134718173514,
+          "n_bets": 10
+        },
+        "roi_ci_cluster": {
+          "lower": -63.80327868852459,
+          "upper": 45.31258549632667,
+          "n_clusters": 10
+        },
+        "side_breakdown": {
+          "OVER": {
+            "bets": 0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "UNDER": {
+            "bets": 10,
+            "hit_rate": 50.0,
+            "roi": -9.277578438099567,
+            "profit": -0.9277578438099567
+          }
+        },
+        "auc": {
+          "row_level": 0.5422313304470453,
+          "one_per_goalie_night": 0.5487191559734461,
+          "n_rows": 2672,
+          "n_goalie_nights": 1307
+        },
+        "brier": 0.2514570355415344,
+        "goalie_nights_total": 1307,
+        "goalie_nights_bet": 10
+      }
+    }
+  },
+  "feature_cols": {
+    "A": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "betting_line",
+      "line_vs_rolling_3",
+      "line_z_score_3",
+      "line_vs_rolling_5",
+      "line_z_score_5",
+      "line_vs_rolling_10",
+      "line_z_score_10",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "volatility_vs_line_5",
+      "saves_cv_10",
+      "volatility_vs_line_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "line_vs_opp_implied_saves",
+      "rest_x_performance"
+    ],
+    "B": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "betting_line",
+      "line_vs_rolling_3",
+      "line_z_score_3",
+      "line_vs_rolling_5",
+      "line_z_score_5",
+      "line_vs_rolling_10",
+      "line_z_score_10",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "volatility_vs_line_5",
+      "saves_cv_10",
+      "volatility_vs_line_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "line_vs_opp_implied_saves",
+      "rest_x_performance",
+      "impl_prob_over",
+      "impl_prob_under",
+      "market_vig",
+      "fair_prob_over",
+      "book_betmgm",
+      "book_betonline",
+      "book_betonlineag",
+      "book_bovada",
+      "book_draftkings",
+      "book_fanatics",
+      "book_underdog",
+      "book_williamhill_us"
+    ],
+    "C": [
+      "impl_prob_over",
+      "impl_prob_under",
+      "market_vig",
+      "fair_prob_over",
+      "book_betmgm",
+      "book_betonline",
+      "book_betonlineag",
+      "book_bovada",
+      "book_draftkings",
+      "book_fanatics",
+      "book_underdog",
+      "book_williamhill_us",
+      "betting_line"
+    ]
+  },
+  "baseline_D": {
+    "val": {
+      "auc": {
+        "row_level": 0.4876548837131264,
+        "one_per_goalie_night": 0.5052450455770012,
+        "n_rows": 2676,
+        "n_goalie_nights": 659
+      },
+      "brier": 0.25076456321199936,
+      "goalie_nights_total": 659,
+      "threshold_results": {
+        "0.05": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.1": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.12": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.15": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        }
+      }
+    },
+    "test": {
+      "auc": {
+        "row_level": 0.5217667361292003,
+        "one_per_goalie_night": 0.516966264236155,
+        "n_rows": 2672,
+        "n_goalie_nights": 1307
+      },
+      "brier": 0.24961020706819548,
+      "goalie_nights_total": 1307,
+      "threshold_results": {
+        "0.05": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.1": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.12": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        },
+        "0.15": {
+          "summary": {
+            "bets": 0,
+            "bet_rate": 0.0,
+            "hit_rate": 0.0,
+            "roi": 0.0,
+            "profit": 0.0
+          },
+          "roi_ci_row": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_bets": 0
+          },
+          "roi_ci_cluster": {
+            "lower": 0.0,
+            "upper": 0.0,
+            "n_clusters": 0
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            },
+            "UNDER": {
+              "bets": 0,
+              "hit_rate": 0.0,
+              "roi": 0.0,
+              "profit": 0.0
+            }
+          },
+          "goalie_nights_bet": 0
+        }
+      }
+    }
+  },
+  "anchoring_diagnostics_B": {
+    "correlation_model_vs_market_val": 0.32514984807345687,
+    "disagreement_quantiles_val": {
+      "p1": -0.30967398453857964,
+      "p5": -0.24442826925180372,
+      "p10": -0.2020358494272802,
+      "p25": -0.12860987280295744,
+      "p50": -0.025491333296543295,
+      "p75": 0.06610672175884247,
+      "p90": 0.15218351811778785,
+      "p95": 0.19242096733925912,
+      "p99": 0.25102286806955987
+    },
+    "disagreement_buckets_val": {
+      "[0.05, 0.10)": {
+        "bets": 0,
+        "bet_rate": 0.0,
+        "hit_rate": 0.0,
+        "roi": 0.0,
+        "profit": 0.0
+      },
+      "[0.10, 0.15)": {
+        "bets": 0,
+        "bet_rate": 0.0,
+        "hit_rate": 0.0,
+        "roi": 0.0,
+        "profit": 0.0
+      },
+      ">=0.15": {
+        "bets": 512,
+        "bet_rate": 100.0,
+        "hit_rate": 52.5390625,
+        "roi": -2.538314815639855,
+        "profit": -12.996171856076057
+      }
+    },
+    "top20_gain_features": [
+      {
+        "feature": "fair_prob_over",
+        "gain": 11.870800971984863,
+        "is_market_or_book": true
+      },
+      {
+        "feature": "line_vs_opp_implied_saves",
+        "gain": 8.777347564697266,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "es_saves_proportion_10",
+        "gain": 8.43935775756836,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "power_play_shots_against_rolling_10",
+        "gain": 8.424500465393066,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "shots_against_rolling_10",
+        "gain": 8.339408874511719,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "betting_line",
+        "gain": 8.127501487731934,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "power_play_goals_against_rolling_3",
+        "gain": 7.765231132507324,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "shots_against_rolling_std_3",
+        "gain": 7.715014457702637,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "saves_rolling_5",
+        "gain": 7.676632881164551,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "power_play_shots_against_rolling_3",
+        "gain": 7.662448883056641,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "goalie_days_rest",
+        "gain": 7.5877299308776855,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "shots_against_rolling_std_5",
+        "gain": 7.476231098175049,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "even_strength_saves_rolling_10",
+        "gain": 7.1862688064575195,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "impl_prob_over",
+        "gain": 7.100861549377441,
+        "is_market_or_book": true
+      },
+      {
+        "feature": "line_z_score_10",
+        "gain": 7.085489273071289,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "power_play_shots_against_rolling_std_3",
+        "gain": 7.0774312019348145,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "even_strength_saves_rolling_5",
+        "gain": 7.07159948348999,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "short_handed_shots_against_rolling_std_5",
+        "gain": 7.0417304039001465,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "save_percentage_rolling_3",
+        "gain": 7.005435943603516,
+        "is_market_or_book": false
+      },
+      {
+        "feature": "line_vs_rolling_5",
+        "gain": 6.956263065338135,
+        "is_market_or_book": false
+      }
+    ],
+    "market_or_book_in_top20": 2
+  },
+  "protocol_deviations": [
+    "Feature set C: no config landed in the pre-registered 15-35% val bet-rate band; widened to 10-40% per protocol fallback. Even the widened 10-40% band was empty; fell back to ALL 24 evaluations."
+  ],
+  "touch_count_audit": {
+    "A": {
+      "val_evaluations": 24,
+      "test_evaluations": 1
+    },
+    "B": {
+      "val_evaluations": 24,
+      "test_evaluations": 1
+    },
+    "C": {
+      "val_evaluations": 24,
+      "test_evaluations": 1
+    }
+  }
+}

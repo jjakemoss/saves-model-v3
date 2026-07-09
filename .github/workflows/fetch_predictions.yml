@@ -2,6 +2,12 @@ name: Fetch Predictions
 
 on:
   workflow_dispatch:
+  # Uncomment to auto-fetch a closing snapshot ~30 min before typical NHL
+  # puck drop (7pm ET), which would tighten CLV closing-line quality on
+  # nights nobody manually re-fetches late -- raises Actions minutes/API
+  # usage, so left disabled pending a deliberate decision.
+  # schedule:
+  #   - cron: '30 22 * * *'  # 22:30 UTC = 6:30pm EST / 5:30pm EDT
 
 permissions:
   contents: write

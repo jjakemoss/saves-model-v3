@@ -1,0 +1,124 @@
+name: Record Ticket
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Game date (YYYY-MM-DD) for all legs. Leave blank for today.'
+        required: false
+      book:
+        description: 'Sportsbook/venue the ticket was placed at'
+        required: true
+        type: choice
+        options:
+          - Underdog
+          - BetOnline
+          - BetMGM
+          - Caesars
+          - PrizePicks
+          - Other
+      ticket_type:
+        description: 'Free text: straight, parlay_2, parlay_3, flex_2, flex_3, etc.'
+        required: true
+      stake:
+        description: 'Units/dollars wagered'
+        required: true
+      payout_multiplier:
+        description: 'Total payout multiple if won (e.g. 3 for a 3x parlay). Provide this OR potential_payout.'
+        required: false
+      potential_payout:
+        description: 'Total payout amount if won, stake included. Alternative to payout_multiplier.'
+        required: false
+      reason_code:
+        description: 'Required. e.g. market-anchor model edge, stale starter news, line-shop gap, closing-line move still pending, manual hockey-context override'
+        required: true
+      legs:
+        description: >-
+          Legs separated by ';'. Each leg: GoalieLastName:TEAM:SIDE:LINE[:ODDS[:BOOK]].
+          SIDE=OVER/UNDER. ODDS/BOOK optional -- auto-matched from the most recent
+          line_snapshots row if omitted. Max 3 legs.
+          Example: Shesterkin:NYR:OVER:24.5;Hellebuyck:WPG:UNDER:26.5:-110
+        required: true
+      model_version:
+        description: 'Optional model version attribution (only if reason_code cites a model edge)'
+        required: false
+      notes:
+        description: 'Optional notes'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  record-ticket:
+    runs-on: ubuntu-latest
+    env:
+      TICKET_DATE: ${{ inputs.date }}
+      BOOK: ${{ inputs.book }}
+      TICKET_TYPE: ${{ inputs.ticket_type }}
+      STAKE: ${{ inputs.stake }}
+      PAYOUT_MULTIPLIER: ${{ inputs.payout_multiplier }}
+      POTENTIAL_PAYOUT: ${{ inputs.potential_payout }}
+      REASON_CODE: ${{ inputs.reason_code }}
+      LEGS: ${{ inputs.legs }}
+      MODEL_VERSION: ${{ inputs.model_version }}
+      NOTES: ${{ inputs.notes }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Record ticket
+        run: |
+          ARGS=(--book "$BOOK" --ticket_type "$TICKET_TYPE" --stake "$STAKE" --reason_code "$REASON_CODE" --legs "$LEGS")
+          if [ -n "$TICKET_DATE" ]; then ARGS+=(--date "$TICKET_DATE"); fi
+          if [ -n "$PAYOUT_MULTIPLIER" ]; then ARGS+=(--payout_multiplier "$PAYOUT_MULTIPLIER"); fi
+          if [ -n "$POTENTIAL_PAYOUT" ]; then ARGS+=(--potential_payout "$POTENTIAL_PAYOUT"); fi
+          if [ -n "$MODEL_VERSION" ]; then ARGS+=(--model_version "$MODEL_VERSION"); fi
+          if [ -n "$NOTES" ]; then ARGS+=(--notes "$NOTES"); fi
+          python scripts/record_ticket.py "${ARGS[@]}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/betting.db
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "Record ticket: $BOOK ($TICKET_TYPE) - ${STAKE}u - $REASON_CODE"
+
+          # Direct push to main -- retry a few times in case another workflow
+          # (fetch_predictions, record_bet, update_results, or another
+          # record_ticket run) pushed in between our checkout and our push.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $attempt), rebasing onto latest main..."
+            git fetch origin main
+
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "::error::Rebase conflict against main (likely a concurrent update to data/betting.db). Re-run this workflow."
+              exit 1
+            fi
+          done
+
+          echo "::error::Failed to push after 5 attempts"
+          exit 1

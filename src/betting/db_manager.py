@@ -161,48 +161,57 @@ class BettingDB:
             predictions_df: pd.DataFrame with game_id, goalie_name, book,
                              betting_line, line_over, line_under (match key)
                              plus predicted_saves, prob_over, confidence_pct,
-                             confidence_bucket, recommendation, recommended_ev
+                             confidence_bucket, recommendation, recommended_ev,
+                             and optionally model_version (requires
+                             scripts/add_tracking_tables.py to have been run;
+                             silently ignored on older databases)
         """
         if len(predictions_df) == 0:
             return
 
         conn = self._connect()
         total_updated = 0
+        has_model_version = 'model_version' in predictions_df.columns and \
+            any(row[1] == 'model_version' for row in conn.execute("PRAGMA table_info(bets)").fetchall())
+
+        set_clause = "predicted_saves = ?, prob_over = ?, confidence_pct = ?, confidence_bucket = ?, recommendation = ?, ev = ?"
+        if has_model_version:
+            set_clause += ", model_version = ?"
+
+        query = f"""
+            UPDATE bets
+            SET {set_clause}
+            WHERE game_id = ?
+              AND lower(goalie_name) = lower(?)
+              AND book = ?
+              AND betting_line IS ?
+              AND line_over IS ?
+              AND line_under IS ?
+              AND predicted_saves IS NULL
+        """
+
         try:
             cur = conn.cursor()
             for _, pred in predictions_df.iterrows():
-                cur.execute(
-                    """
-                    UPDATE bets
-                    SET predicted_saves = ?,
-                        prob_over = ?,
-                        confidence_pct = ?,
-                        confidence_bucket = ?,
-                        recommendation = ?,
-                        ev = ?
-                    WHERE game_id = ?
-                      AND lower(goalie_name) = lower(?)
-                      AND book = ?
-                      AND betting_line IS ?
-                      AND line_over IS ?
-                      AND line_under IS ?
-                      AND predicted_saves IS NULL
-                    """,
-                    (
-                        _float_or_none(pred.get('predicted_saves')),
-                        _float_or_none(pred.get('prob_over')),
-                        _float_or_none(pred.get('confidence_pct')),
-                        _clean_or_none(pred.get('confidence_bucket')),
-                        _clean_or_none(pred.get('recommendation')),
-                        _float_or_none(pred.get('recommended_ev')),
-                        _int_or_none(pred.get('game_id')),
-                        pred.get('goalie_name', ''),
-                        pred.get('book', ''),
-                        _float_or_none(pred.get('betting_line')),
-                        _int_or_none(pred.get('line_over')),
-                        _int_or_none(pred.get('line_under')),
-                    )
-                )
+                params = [
+                    _float_or_none(pred.get('predicted_saves')),
+                    _float_or_none(pred.get('prob_over')),
+                    _float_or_none(pred.get('confidence_pct')),
+                    _clean_or_none(pred.get('confidence_bucket')),
+                    _clean_or_none(pred.get('recommendation')),
+                    _float_or_none(pred.get('recommended_ev')),
+                ]
+                if has_model_version:
+                    params.append(_clean_or_none(pred.get('model_version')))
+                params.extend([
+                    _int_or_none(pred.get('game_id')),
+                    pred.get('goalie_name', ''),
+                    pred.get('book', ''),
+                    _float_or_none(pred.get('betting_line')),
+                    _int_or_none(pred.get('line_over')),
+                    _int_or_none(pred.get('line_under')),
+                ])
+                cur.execute(query, params)
                 total_updated += cur.rowcount
             conn.commit()
         finally:

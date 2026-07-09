@@ -9,7 +9,8 @@ An XGBoost classifier that predicts NHL goalie saves over/under betting lines. A
 - **EV-based recommendations** with 12% minimum threshold
 - **Boxscore-powered inference** fetching real situation-specific stats from NHL API
 - **SQLite-backed betting tracker** (`data/betting.db`) as the single source of truth, with a read-only `betting_tracker.xlsx` snapshot regenerated after every write
-- **Phone-first GitHub Actions workflow** for fetching predictions, recording bets, and updating results without needing a PC
+- **Line-snapshot and closing-line-value (CLV) tracking** -- every fetched line is snapshotted with a UTC timestamp, tickets record real stake/payout/reason economics, and CLV is computed per leg plus a rec-level shadow run of every recommendation
+- **Phone-first GitHub Actions workflow** for fetching predictions, recording bets/tickets, and updating results (with CLV) without needing a PC
 
 ## Quick Start
 
@@ -52,11 +53,15 @@ ALL LINES FOR 2026-02-01:
 
 | Script | Description |
 |--------|-------------|
-| `fetch_and_predict.py` | Main script - fetches lines from Underdog/BetOnline and generates predictions |
+| `fetch_and_predict.py` | Main script - fetches lines from Underdog/BetOnline and generates predictions; also snapshots every matched line to `line_snapshots` for CLV |
 | `record_bet.py` | Record a bet you placed, independent of the model's recommendation |
+| `record_ticket.py` | Record a ticket (1-3 legs) with full ticket economics -- stake, payout, required reason code |
 | `update_betting_results.py` | Update actual saves and P/L after games complete |
+| `compute_closing_clv.py` | Compute closing lines/CLV for ticket legs, settle completed tickets, summarize shadow-run CLV |
+| `clv_report.py` | Print the CLV report -- per-leg and aggregate CLV, straight vs parlay, by reason_code, plus rec-level shadow CLV |
 | `betting_dashboard.py` | Display performance metrics and refresh the Excel snapshot |
 | `init_betting_tracker.py` | Create a new betting database and its Excel snapshot |
+| `add_tracking_tables.py` | Idempotent migration: add `line_snapshots`/`tickets`/`ticket_legs` and `bets.model_version` -- run once before the season's first fetch |
 | `migrate_to_sqlite.py` | One-off: fold an existing xlsx/CSV history into `data/betting.db` |
 | `optimize_features.py` | Test feature engineering configurations |
 | `tune_hyperparameters.py` | Hyperparameter tuning with randomized search |
@@ -74,29 +79,42 @@ Retired one-off scripts (superseded, kept for reference) live in `scripts/archiv
 ### Daily Workflow
 
 ```bash
-# Fetch lines and predictions (run multiple times as lines update)
+# One-time, before the season's first fetch: add the ticket/CLV tracking tables
+python scripts/add_tracking_tables.py
+
+# Fetch lines and predictions (run multiple times as lines update) --
+# also snapshots every matched line to line_snapshots for later CLV
 python scripts/fetch_and_predict.py --verbose
 
-# Right after placing a bet on your sportsbook app
+# Right after placing a single line against the model's recommendation
 python scripts/record_bet.py --goalie_name Shesterkin --book Underdog \
     --bet_selection OVER --bet_amount 2
 
-# After games complete, update results
-python scripts/update_betting_results.py
+# Or, to record full ticket economics (stake, payout, required reason) for
+# a straight bet or a 2-3 leg parlay:
+python scripts/record_ticket.py --book Underdog --ticket_type straight \
+    --stake 2 --payout_multiplier 1.91 --reason_code "market-anchor model edge" \
+    --legs "Shesterkin:NYR:OVER:24.5"
 
-# View performance
+# After games complete, update results, then compute closing lines/CLV
+python scripts/update_betting_results.py
+python scripts/compute_closing_clv.py
+
+# View performance and CLV
 python scripts/betting_dashboard.py
+python scripts/clv_report.py
 ```
 
-`data/betting.db` (SQLite) is the source of truth for all of the above. `betting_tracker.xlsx` is a read-only snapshot regenerated after every write -- open it to browse, but never edit it directly; edits won't persist.
+`data/betting.db` (SQLite) is the source of truth for all of the above. `betting_tracker.xlsx` is a read-only snapshot regenerated after every write -- open it to browse, but never edit it directly; edits won't persist. (The xlsx snapshot covers the original `bets` table only -- `line_snapshots`/`tickets`/`ticket_legs` are queried directly from `data/betting.db`, e.g. via `clv_report.py`.)
 
 ### GitHub Actions (phone-first workflow)
 
-All three daily steps are available as `workflow_dispatch` Actions, and all three commit directly to `main` (each pushes with a fetch/rebase retry loop, so a rare race between two runs fails loudly and cleanly instead of overwriting anything -- see the "Concurrent writes" note below). The full loop -- fetch, bet, record, check results -- works from a phone without ever needing a PC:
+All four daily steps are available as `workflow_dispatch` Actions, and all four commit directly to `main` (each pushes with a fetch/rebase retry loop, so a rare race between two runs fails loudly and cleanly instead of overwriting anything -- see the "Concurrent writes" note below). The full loop -- fetch, bet/ticket, check results -- works from a phone without ever needing a PC:
 
-1. **Fetch Predictions** -- fetches lines, runs predictions, commits directly to `main`
-2. **Record Bet** -- fill in goalie/book/side/amount, commits directly to `main`
-3. **Update Betting Results** -- fetches completed game results, commits directly to `main`
+1. **Fetch Predictions** -- fetches lines, runs predictions, snapshots every line to `line_snapshots`, commits directly to `main`
+2. **Record Bet** -- fill in goalie/book/side/amount against the model's recommendation, commits directly to `main`
+3. **Record Ticket** -- fill in book/stake/payout/reason plus a compact 1-3 leg string (syntax documented on the workflow's `legs` input), commits directly to `main`
+4. **Update Betting Results** -- fetches completed game results, then computes closing lines/CLV and settles completed tickets, commits directly to `main`
 
 **Concurrent writes:** `data/betting.db` is a single SQLite file, so git can't merge two commits that both touch it -- a genuine collision (e.g. `record_bet` and `fetch_predictions` racing within the same few seconds) makes the losing workflow run fail with a clear "rebase conflict" error rather than silently overwriting data. Just re-run the failed workflow; it'll start from the now-current `main` and won't conflict.
 
@@ -115,16 +133,18 @@ Deep-dive reference material lives in `docs/` and is kept up to date across sess
 ```
 saves-model-v3/
 ├── .github/workflows/
-│   ├── fetch_predictions.yml        # Fetch lines + predictions, direct commit
+│   ├── fetch_predictions.yml        # Fetch lines + predictions, snapshot every line, direct commit
 │   ├── record_bet.yml               # Record a placed bet, direct commit
-│   └── update_results.yml           # Update completed game results, direct commit
+│   ├── record_ticket.yml            # Record a 1-3 leg ticket with stake/payout/reason, direct commit
+│   └── update_results.yml           # Update results, compute closing lines/CLV, direct commit
 ├── models/trained/
 │   └── tuned_v1_20260201_155204/    # Active production model (114 features)
 ├── src/
 │   ├── betting/                     # Betting module
 │   │   ├── predictor.py            # XGBoost prediction interface
 │   │   ├── feature_calculator.py   # Real-time feature calculation (114 features)
-│   │   ├── db_manager.py           # SQLite read/write layer (source of truth)
+│   │   ├── db_manager.py           # SQLite read/write layer for `bets` (source of truth)
+│   │   ├── tracking_db.py          # Schema + storage for line_snapshots/tickets/ticket_legs and CLV math
 │   │   ├── excel_export.py         # Regenerates the read-only xlsx snapshot
 │   │   ├── nhl_fetcher.py          # NHL API data fetching + boxscore caching
 │   │   ├── odds_fetcher.py         # Underdog + BetOnline line fetching
@@ -209,18 +229,26 @@ A bet is recommended when EV >= 12%.
 
 ## Betting Tracker
 
-`data/betting.db` (SQLite, single `bets` table) is the source of truth for every line, prediction, bet, and result. It's committed to git, so full history lives in `git log`. Nothing hand-edits it directly -- all writes go through `fetch_and_predict.py`, `record_bet.py`, or `update_betting_results.py`.
+`data/betting.db` (SQLite) is the source of truth for every line, prediction, bet, ticket, and result. It's committed to git, so full history lives in `git log`. Nothing hand-edits it directly -- all writes go through the scripts in the table above.
 
-`betting_tracker.xlsx` is a read-only snapshot regenerated from the database after every write, for browsing:
+Four tables:
+
+- **`bets`** -- the original recommendation log: one row per (game, goalie, book, line), whether or not it was ever staked. `predicted_saves`/`prob_over`/`recommendation`/`ev` are written for every line the model sees (this is also the "shadow run" log -- see `model_version` below), and `bet_amount`/`bet_selection`/`bet_placed_at` are filled in independently by `record_bet.py` for a single line you actually bet. `model_version` (added by `add_tracking_tables.py`) attributes each recommendation row to the model that produced it, so future model swaps stay comparable.
+- **`line_snapshots`** -- the CLV backbone. One row per (fetch run, book, goalie, market line), appended by `fetch_and_predict.py` on every run regardless of whether the line changed. Carries a UTC fetch timestamp and, when the book reports one, the scheduled game start in UTC -- both needed to reconstruct closing lines and line-move history after the fact.
+- **`tickets`** / **`ticket_legs`** -- actual ticket economics, independent of `bets`' one-row-per-line model: stake, payout multiplier/potential payout, status, actual payout, and a *required* `reason_code` per ticket (`record_ticket.py` enforces this). Each leg auto-matches the nearest `line_snapshots` row at bet time and, once `compute_closing_clv.py` runs, is filled in with `closing_line`/`closing_odds`/`result` plus two independently-computed CLV columns: `clv_saves` (pure line movement, signed so positive = the bettor got the better number for their side) and `clv_prob_novig` (de-vigged implied-probability movement for that side). American odds are never arithmetically averaged anywhere in this pipeline -- see the odds-averaging bug in `docs/HISTORICAL_DATA_ANALYSIS.md` section 1.
+
+`betting_tracker.xlsx` is a read-only snapshot of the `bets` table, regenerated from the database after every write to `bets`, for browsing:
 
 - **Summary** - Overall performance metrics
 - **Settings** - Configuration reference
 - **Date sheets** - One sheet per date with all lines, predictions, bets, and results
 
-Columns tracked:
+`line_snapshots`/`tickets`/`ticket_legs` are not part of the xlsx snapshot -- query `data/betting.db` directly, or run `clv_report.py` for a formatted view.
+
+Columns tracked in `bets`:
 - Game info (date, teams, goalie)
 - Book and line info (book, line, over/under odds)
-- Predictions (predicted saves, prob_over, recommendation, EV)
+- Predictions (predicted saves, prob_over, recommendation, EV, model_version)
 - Your bet (bet_amount, bet_selection, bet_placed_at, notes) -- independent of the model's recommendation
 - Results (actual saves, result, profit/loss)
 
