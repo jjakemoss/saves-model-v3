@@ -1504,6 +1504,50 @@ reviewed).** Credit figures assume `regions=us`; the probe revisits that.
   (which the CLV rule already capped) -- nothing here justifies scaling
   beyond that, and the in-season shadow run remains the final arbiter.
 
+**Follow-up diagnostics (2026-07-10, Claude, zero credits, read-only
+analysis of the existing artifacts). Three measurements that qualify the
+results above; none is an edge claim.**
+
+1. **Fresh-origin CLV (Origin A, 2023-24 bettime bets).** The same CLV
+   machinery applied to Origin A's 3,328 bettime-pass bets (2,723 OVER /
+   605 UNDER, 970 goalie-nights): probability CLV **+0.037%**, cluster
+   95% CI [+0.013%, +0.061%] (n=3,272, 98.3% coverage); price CLV +0.070%
+   CI [-0.016%, +0.157%]. Positive sign but ~9x smaller than the frozen
+   model's +0.33%. By side: UNDER bets +0.084% CI [+0.035%, +0.138%] vs
+   OVER +0.026% CI [-0.001%, +0.055%] -- the UNDER selection carries ~3x
+   the CLV, echoing the live-record UNDER concentration. Read: the recipe's
+   front-running of the close generalizes in sign but not magnitude,
+   consistent with CLV scaling with training-data volume (Origin A trained
+   on one season). Origin B cannot be CLV-audited: 2024-25 has essentially
+   no bettime snapshots (21 events) -- only a closing pass was ever bought.
+2. **Unconditional bettime->close drift baseline (honesty check on the
+   +0.33%).** Mean drift of the consensus de-vigged OVER probability from
+   the bettime to the closing snapshot, all quoted goalie/lines: 2023-24
+   **-0.006%** CI [-0.023%, +0.010%] (no drift); 2025-26 audit window
+   **+0.128%** CI [+0.095%, +0.161%] (the whole market drifted toward
+   OVER). Given the frozen policy's 762/231 OVER-heavy mix, drift alone
+   would produce ~+0.07% CLV with zero selection skill. Net selection
+   component of the +0.33% is therefore ~+0.26% -- still clearly positive
+   (the CI margin is far wider than the drift correction), but the honest
+   headline is "+0.26% selection + +0.07% market drift", not +0.33% of
+   pure skill. Any future CLV audit must report this baseline alongside
+   the bet-level number.
+3. **Cross-book dispersion characterization (raw material for a
+   stale-book strategy, descriptive only).** Same-line price dispersion is
+   tiny: mean absolute deviation of a book's de-vigged prob from the
+   same-line consensus is ~0.35-0.55 prob points, and only ~0.4% (bettime)
+   to ~1.0-2.4% (closing) of quotes sit >=3 points from the leave-one-out
+   consensus -- against a typical ~3.5-point half-vig, same-line price
+   shopping across us books is dead as a standalone edge. Line dispersion
+   is the real raw material: ~11% of bettime goalie-nights (16-18% at
+   closing) have books posting lines >=1 full save apart (a save is worth
+   5-6 prob points per 3.9/3.11), i.e. roughly 150-200 candidate nights
+   per season. Exploiting it requires translating prices across lines
+   (a distribution shape), which is exactly what the distributional model
+   prices coherently. Caveat: closing-snapshot outliers (BetOnline is the
+   most frequent) may be stale/suspended boards rather than bettable
+   prices; bettime snapshots are the trustworthy pool.
+
 **Open decisions for the user (all resolved 2026-07-09).**
 
 1. Back up the paid archive: RESOLVED -- local folder copy at
@@ -1930,6 +1974,44 @@ explicitly says the result survived the honest harness and uncertainty checks.
   negative). Full results + synthesis in 3.15. Net posture for next season
   unchanged by the good CLV news: shadow run + token stakes, in-season
   shadow is the arbiter.
+- **2026-07-10 (Claude) three zero-credit follow-up diagnostics** (full
+  numbers in 3.15 "Follow-up diagnostics"): (1) Origin A's bettime bets
+  also show positive but ~9x smaller CLV (+0.037% CI [+0.013%, +0.061%]),
+  UNDER side ~3x OVER -- the CLV effect generalizes in sign, scales with
+  training data; (2) drift baseline -- the 2025-26 audit window drifted
+  +0.128% toward OVER market-wide, so ~+0.07% of the frozen policy's
+  +0.33% CLV is mix-times-drift, net selection ~+0.26% (2023-24 drift is
+  zero); (3) cross-book dispersion -- same-line price shopping is dead
+  (deviation ~0.4 prob pts vs ~3.5-pt half-vig), but ~11% of bettime
+  goalie-nights have books >=1 full save apart in line, the raw material
+  for a cross-line/stale-book strategy requiring distribution-shape
+  translation. These motivate the next experiment family: model the LINE
+  (movement prediction, cross-line outlier pricing) rather than another
+  attempt to out-predict outcomes.
+- **2026-07-10 (Claude) reviewed and merged the Codex-authored
+  `docs/BREAKTHROUGH_MODEL_PLAN.md`**, now the single canonical plan for the
+  next research program. Claude verified Codex's section 3.1 market-data
+  claims exactly (audit bettime lead time median 1.67h -- the +0.33% CLV is
+  a late-window result; movement frequencies match to the decimal); Codex's
+  section 2 shots-bias diagnostics remain unverified and are step 0 of the
+  merged execution sequence. Additions in the merge: Claude's three
+  diagnostics as section 3.4, mandatory drift-baseline and side-split
+  reporting for the movement model, Component G (cross-line outlier
+  pricing, no purchase needed), and an alternate-lines probe. Budget
+  ceiling 41,340 of 52,265 credits, all purchases probe-gated; nothing
+  executed yet.
+- **2026-07-10 (Claude) operational constraints added to
+  `docs/BREAKTHROUGH_MODEL_PLAN.md` as section 1a** after user review: one
+  early-evening decision window (the 22:30Z anchor -- the same window the
+  CLV evidence comes from), venues limited to Underdog/PrizePicks (line and
+  ticket-construction levers only) and BetOnline (straight bets); the six
+  sharp books in the data are consensus instruments, not executable venues.
+  Component F reframed as anchor validation, Component G's deployed form is
+  a venue-relative bet-time filter (`scripts/check_venue_value.py`, to be
+  wired into the daily workflow before opening night), Gate C now requires
+  value to survive at the user's real window and venues, and the sequence
+  gained a deployment step. 2026-27 is explicitly framed as a measurement
+  season.
 
 ## 7. Appendix: what was checked and found sound
 
