@@ -1,0 +1,1186 @@
+{
+  "timestamp": "2026-07-09T22:26:39.432905",
+  "wiring_gate": {
+    "observed": {
+      "val_brier": 0.25327,
+      "test_brier": 0.24904,
+      "test_roi": 9.02,
+      "test_bets": 616
+    },
+    "expected": {
+      "val_brier": 0.25327,
+      "test_brier": 0.24904,
+      "test_roi": 9.02,
+      "test_bets": 616
+    },
+    "passed": true
+  },
+  "frame_2023_24": {
+    "closing_path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\multibook_frame_2023_24.parquet",
+    "closing_rows": 8880,
+    "closing_goalie_nights": 2298,
+    "closing_events": 1160,
+    "closing_books": {
+      "williamhill_us": 2249,
+      "draftkings": 2174,
+      "fanduel": 2035,
+      "bovada": 1594,
+      "betmgm": 828
+    },
+    "bettime_path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\multibook_frame_2023_24_bettime.parquet",
+    "bettime_rows": 7660,
+    "bettime_goalie_nights": 1973,
+    "bettime_events": 1124,
+    "base_goalie_night_universe": 2624
+  },
+  "origin_a": {
+    "origin": "A",
+    "shots_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance",
+      "opp_off_all_corsi_s2d_mean",
+      "opp_off_all_corsi_roll5",
+      "opp_off_all_corsi_roll10",
+      "opp_off_all_corsi_ema5",
+      "opp_off_all_corsi_prior_season_mean",
+      "opp_off_all_fenwick_s2d_mean",
+      "opp_off_all_fenwick_ema5",
+      "opp_off_all_xgf_s2d_mean",
+      "opp_off_all_xgf_ema5",
+      "opp_off_5v5_corsi_ema5",
+      "opp_off_5v5_xgf_ema5",
+      "opp_off_all_score_adj_corsi_ema5",
+      "team_def_all_corsi_against_s2d_mean",
+      "team_def_all_corsi_against_roll5",
+      "team_def_all_corsi_against_roll10",
+      "team_def_all_corsi_against_ema5",
+      "team_def_all_corsi_against_prior_season_mean",
+      "team_def_all_fenwick_against_s2d_mean",
+      "team_def_all_fenwick_against_ema5",
+      "team_def_all_xga_s2d_mean",
+      "team_def_all_xga_ema5",
+      "team_def_5v5_corsi_against_ema5",
+      "team_def_5v5_xga_ema5",
+      "team_def_all_score_adj_corsi_against_ema5",
+      "combined_all_corsi_ema5",
+      "combined_all_fenwick_ema5",
+      "combined_all_xg_ema5",
+      "combined_5v5_corsi_ema5",
+      "combined_5v5_xg_ema5",
+      "opp_pp_corsi_s2d_mean",
+      "opp_pp_corsi_ema5",
+      "opp_pp_xgf_s2d_mean",
+      "opp_pp_xgf_ema5",
+      "team_pk_corsi_against_s2d_mean",
+      "team_pk_corsi_against_ema5",
+      "team_pk_xga_ema5",
+      "team_pk_icetime_minutes_s2d_mean",
+      "opp_off_all_corsi_ema5_prior_league_z",
+      "team_def_all_corsi_against_ema5_prior_league_z",
+      "combined_all_corsi_ema5_prior_league_z",
+      "combined_all_xg_ema5_prior_league_z"
+    ],
+    "rate_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance"
+    ],
+    "shots_model": {
+      "winner": {
+        "config": "shallow_highreg",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        },
+        "val_mae": 5.984600943013241,
+        "val_poisson_deviance": 2.071468346887384
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.014484827142013,
+          "val_poisson_deviance": 2.0918067740104243
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.990882263685528,
+          "val_poisson_deviance": 2.0717152390919202
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.097384457839163,
+          "val_poisson_deviance": 2.1462659589148467
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.059100873846757,
+          "val_poisson_deviance": 2.099825849376161
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 5.984600943013241,
+          "val_poisson_deviance": 2.071468346887384
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.018568726589805,
+          "val_poisson_deviance": 2.1071685822902175
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_a_pace_shots_shots_model.json"
+    },
+    "save_rate_model": {
+      "winner": {
+        "config": "depth2",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.3207419963767144
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32159031174354247
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3207419963767144
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32195435071716955
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32149965379143575
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_weighted_logloss": 0.32081782938732123
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3221297411245098
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_a_pace_shots_save_rate_model.json"
+    },
+    "dispersion": {
+      "alpha": 0.012962625150880053,
+      "method": "negative_binomial",
+      "diagnostics": {
+        "train_mean": 30.514137268066406,
+        "train_var": 42.69895981287012,
+        "mean_mu2": 939.9965209960938
+      }
+    },
+    "test_idx_n": 2624,
+    "price_passes": {
+      "closing": {
+        "join_coverage_pct": 100.0,
+        "fold_wide_auc": {
+          "row_level": 0.5182473509528231,
+          "one_per_goalie_night": 0.514055701504686,
+          "n_rows": 8880,
+          "n_goalie_nights": 2298
+        },
+        "fold_wide_brier": 0.26337854444380937,
+        "paired_brier_delta_vs_market": {
+          "model_brier_mean": 0.26337854444380937,
+          "market_brier_mean": 0.25000163479156506,
+          "delta_mean": 0.013376909652244327,
+          "delta_ci95_lower": 0.009016920746499162,
+          "delta_ci95_upper": 0.01775636059674997,
+          "n_rows": 8880,
+          "n_clusters": 2298,
+          "devig_failures": 0
+        },
+        "policy_roi": {
+          "summary": {
+            "bets": 3895,
+            "bet_rate": 43.86261261261261,
+            "hit_rate": 49.34531450577664,
+            "roi": -8.302500705199247,
+            "profit": -323.38240246751064
+          },
+          "roi_ci_row": {
+            "lower": -11.238685903626378,
+            "upper": -5.4499417650004975,
+            "n_bets": 3895
+          },
+          "roi_ci_cluster": {
+            "lower": -13.85505265989407,
+            "upper": -2.6019964956118207,
+            "n_clusters": 1154
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 3163,
+              "hit_rate": 48.2137211508062,
+              "roi": -10.583525960428577,
+              "profit": -334.75692612835593
+            },
+            "UNDER": {
+              "bets": 732,
+              "hit_rate": 54.23497267759563,
+              "roi": 1.5538966749788679,
+              "profit": 11.374523660845313
+            }
+          },
+          "goalie_nights_total": 2298,
+          "goalie_nights_bet": 1154
+        },
+        "ev_threshold": 0.05
+      },
+      "bettime": {
+        "join_coverage_pct": 100.0,
+        "fold_wide_auc": {
+          "row_level": 0.5249420028771757,
+          "one_per_goalie_night": 0.5225606264509314,
+          "n_rows": 7660,
+          "n_goalie_nights": 1973
+        },
+        "fold_wide_brier": 0.261576831683148,
+        "paired_brier_delta_vs_market": {
+          "model_brier_mean": 0.261576831683148,
+          "market_brier_mean": 0.24966227194013552,
+          "delta_mean": 0.011914559743012478,
+          "delta_ci95_lower": 0.007098063716005992,
+          "delta_ci95_upper": 0.016675883108204764,
+          "n_rows": 7660,
+          "n_clusters": 1973,
+          "devig_failures": 0
+        },
+        "policy_roi": {
+          "summary": {
+            "bets": 3328,
+            "bet_rate": 43.44647519582245,
+            "hit_rate": 50.270432692307686,
+            "roi": -6.542143987374163,
+            "profit": -217.72255189981215
+          },
+          "roi_ci_row": {
+            "lower": -9.634498373105583,
+            "upper": -3.390344177856121,
+            "n_bets": 3328
+          },
+          "roi_ci_cluster": {
+            "lower": -12.73956050497713,
+            "upper": -0.5137310701610857,
+            "n_clusters": 970
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 2723,
+              "hit_rate": 49.24715387440323,
+              "roi": -8.582094782150241,
+              "profit": -233.6904409179511
+            },
+            "UNDER": {
+              "bets": 605,
+              "hit_rate": 54.87603305785124,
+              "roi": 2.6393204988659407,
+              "profit": 15.967889018138942
+            }
+          },
+          "goalie_nights_total": 1973,
+          "goalie_nights_bet": 970
+        },
+        "ev_threshold": 0.05
+      }
+    },
+    "predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_a_test_predictions.parquet",
+    "fold_boundaries": {
+      "pool_date_range": [
+        "2022-10-07",
+        "2023-04-14"
+      ],
+      "train": {
+        "start": "2022-10-07",
+        "end": "2023-02-24",
+        "rows": 1864
+      },
+      "val": {
+        "start": "2023-02-25",
+        "end": "2023-04-14",
+        "rows": 760
+      },
+      "val_window_days": 49,
+      "test_season": 20232024,
+      "test_rows": 2624
+    }
+  },
+  "origin_b": {
+    "origin": "B",
+    "shots_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance",
+      "opp_off_all_corsi_s2d_mean",
+      "opp_off_all_corsi_roll5",
+      "opp_off_all_corsi_roll10",
+      "opp_off_all_corsi_ema5",
+      "opp_off_all_corsi_prior_season_mean",
+      "opp_off_all_fenwick_s2d_mean",
+      "opp_off_all_fenwick_ema5",
+      "opp_off_all_xgf_s2d_mean",
+      "opp_off_all_xgf_ema5",
+      "opp_off_5v5_corsi_ema5",
+      "opp_off_5v5_xgf_ema5",
+      "opp_off_all_score_adj_corsi_ema5",
+      "team_def_all_corsi_against_s2d_mean",
+      "team_def_all_corsi_against_roll5",
+      "team_def_all_corsi_against_roll10",
+      "team_def_all_corsi_against_ema5",
+      "team_def_all_corsi_against_prior_season_mean",
+      "team_def_all_fenwick_against_s2d_mean",
+      "team_def_all_fenwick_against_ema5",
+      "team_def_all_xga_s2d_mean",
+      "team_def_all_xga_ema5",
+      "team_def_5v5_corsi_against_ema5",
+      "team_def_5v5_xga_ema5",
+      "team_def_all_score_adj_corsi_against_ema5",
+      "combined_all_corsi_ema5",
+      "combined_all_fenwick_ema5",
+      "combined_all_xg_ema5",
+      "combined_5v5_corsi_ema5",
+      "combined_5v5_xg_ema5",
+      "opp_pp_corsi_s2d_mean",
+      "opp_pp_corsi_ema5",
+      "opp_pp_xgf_s2d_mean",
+      "opp_pp_xgf_ema5",
+      "team_pk_corsi_against_s2d_mean",
+      "team_pk_corsi_against_ema5",
+      "team_pk_xga_ema5",
+      "team_pk_icetime_minutes_s2d_mean",
+      "opp_off_all_corsi_ema5_prior_league_z",
+      "team_def_all_corsi_against_ema5_prior_league_z",
+      "combined_all_corsi_ema5_prior_league_z",
+      "combined_all_xg_ema5_prior_league_z"
+    ],
+    "rate_feature_cols": [
+      "is_home",
+      "saves_rolling_3",
+      "saves_rolling_std_3",
+      "saves_rolling_5",
+      "saves_rolling_std_5",
+      "saves_rolling_10",
+      "saves_rolling_std_10",
+      "shots_against_rolling_3",
+      "shots_against_rolling_std_3",
+      "shots_against_rolling_5",
+      "shots_against_rolling_std_5",
+      "shots_against_rolling_10",
+      "shots_against_rolling_std_10",
+      "goals_against_rolling_3",
+      "goals_against_rolling_std_3",
+      "goals_against_rolling_5",
+      "goals_against_rolling_std_5",
+      "goals_against_rolling_10",
+      "goals_against_rolling_std_10",
+      "save_percentage_rolling_3",
+      "save_percentage_rolling_std_3",
+      "save_percentage_rolling_5",
+      "save_percentage_rolling_std_5",
+      "save_percentage_rolling_10",
+      "save_percentage_rolling_std_10",
+      "even_strength_saves_rolling_3",
+      "even_strength_saves_rolling_std_3",
+      "even_strength_saves_rolling_5",
+      "even_strength_saves_rolling_std_5",
+      "even_strength_saves_rolling_10",
+      "even_strength_saves_rolling_std_10",
+      "even_strength_shots_against_rolling_3",
+      "even_strength_shots_against_rolling_std_3",
+      "even_strength_shots_against_rolling_5",
+      "even_strength_shots_against_rolling_std_5",
+      "even_strength_shots_against_rolling_10",
+      "even_strength_shots_against_rolling_std_10",
+      "even_strength_goals_against_rolling_3",
+      "even_strength_goals_against_rolling_std_3",
+      "even_strength_goals_against_rolling_5",
+      "even_strength_goals_against_rolling_std_5",
+      "even_strength_goals_against_rolling_10",
+      "even_strength_goals_against_rolling_std_10",
+      "power_play_saves_rolling_3",
+      "power_play_saves_rolling_std_3",
+      "power_play_saves_rolling_5",
+      "power_play_saves_rolling_std_5",
+      "power_play_saves_rolling_10",
+      "power_play_saves_rolling_std_10",
+      "power_play_shots_against_rolling_3",
+      "power_play_shots_against_rolling_std_3",
+      "power_play_shots_against_rolling_5",
+      "power_play_shots_against_rolling_std_5",
+      "power_play_shots_against_rolling_10",
+      "power_play_shots_against_rolling_std_10",
+      "power_play_goals_against_rolling_3",
+      "power_play_goals_against_rolling_std_3",
+      "power_play_goals_against_rolling_5",
+      "power_play_goals_against_rolling_std_5",
+      "power_play_goals_against_rolling_10",
+      "power_play_goals_against_rolling_std_10",
+      "short_handed_saves_rolling_3",
+      "short_handed_saves_rolling_std_3",
+      "short_handed_saves_rolling_5",
+      "short_handed_saves_rolling_std_5",
+      "short_handed_saves_rolling_10",
+      "short_handed_saves_rolling_std_10",
+      "short_handed_shots_against_rolling_3",
+      "short_handed_shots_against_rolling_std_3",
+      "short_handed_shots_against_rolling_5",
+      "short_handed_shots_against_rolling_std_5",
+      "short_handed_shots_against_rolling_10",
+      "short_handed_shots_against_rolling_std_10",
+      "short_handed_goals_against_rolling_3",
+      "short_handed_goals_against_rolling_std_3",
+      "short_handed_goals_against_rolling_5",
+      "short_handed_goals_against_rolling_std_5",
+      "short_handed_goals_against_rolling_10",
+      "short_handed_goals_against_rolling_std_10",
+      "opp_goals_rolling_5",
+      "opp_shots_rolling_5",
+      "opp_goals_rolling_10",
+      "opp_shots_rolling_10",
+      "team_goals_against_rolling_5",
+      "team_shots_against_rolling_5",
+      "team_goals_against_rolling_10",
+      "team_shots_against_rolling_10",
+      "goalie_days_rest",
+      "goalie_is_back_to_back",
+      "save_efficiency_3",
+      "save_efficiency_5",
+      "save_efficiency_10",
+      "es_saves_proportion_5",
+      "es_saves_proportion_10",
+      "opp_vs_team_shots_5",
+      "opp_vs_team_shots_10",
+      "saves_cv_5",
+      "saves_cv_10",
+      "saves_momentum",
+      "shots_against_momentum",
+      "goals_against_momentum",
+      "save_pct_momentum",
+      "expected_workload_diff",
+      "rest_x_performance"
+    ],
+    "shots_model": {
+      "winner": {
+        "config": "deep_reg",
+        "hyperparams": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.5909613000022045,
+        "val_poisson_deviance": 1.9527972076745619
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.606631999545627,
+          "val_poisson_deviance": 1.9590356630651216
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.62621820502811,
+          "val_poisson_deviance": 1.9580286411151417
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.6218455076217655,
+          "val_poisson_deviance": 1.9696673134054632
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.616335890028211,
+          "val_poisson_deviance": 1.9607797463810093
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 5.626607126659817,
+          "val_poisson_deviance": 1.9573515561126908
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.5909613000022045,
+          "val_poisson_deviance": 1.9527972076745619
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_b_pace_shots_shots_model.json"
+    },
+    "save_rate_model": {
+      "winner": {
+        "config": "base",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.319117493220247
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.319117493220247
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.31913854303482275
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.319539459826623
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3192676229892156
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_weighted_logloss": 0.3191816151122197
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.31958598924140397
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_b_pace_shots_save_rate_model.json"
+    },
+    "dispersion": {
+      "alpha": 0.0,
+      "method": "poisson_fallback",
+      "diagnostics": {
+        "train_mean": 29.89011001586914,
+        "train_var": 28.406639066826305
+      }
+    },
+    "test_idx_n": 2624,
+    "price_passes": {
+      "closing": {
+        "join_coverage_pct": 100.0,
+        "fold_wide_auc": {
+          "row_level": 0.5576789352667221,
+          "one_per_goalie_night": 0.5579277533039648,
+          "n_rows": 7463,
+          "n_goalie_nights": 2510
+        },
+        "fold_wide_brier": 0.2643924370567806,
+        "paired_brier_delta_vs_market": {
+          "model_brier_mean": 0.2643924370567806,
+          "market_brier_mean": 0.24880496259776322,
+          "delta_mean": 0.01558747445901743,
+          "delta_ci95_lower": 0.009818005804070913,
+          "delta_ci95_upper": 0.021410764101056464,
+          "n_rows": 7463,
+          "n_clusters": 2510,
+          "devig_failures": 0
+        },
+        "policy_roi": {
+          "summary": {
+            "bets": 4376,
+            "bet_rate": 58.63593729063379,
+            "hit_rate": 52.239488117001834,
+            "roi": -3.001126530861868,
+            "profit": -131.32929699051533
+          },
+          "roi_ci_row": {
+            "lower": -5.775196085895229,
+            "upper": -0.25027103935296857,
+            "n_bets": 4376
+          },
+          "roi_ci_cluster": {
+            "lower": -7.858078436899038,
+            "upper": 1.804578808501615,
+            "n_clusters": 1566
+          },
+          "side_breakdown": {
+            "OVER": {
+              "bets": 3504,
+              "hit_rate": 49.31506849315068,
+              "roi": -8.403113474967784,
+              "profit": -294.44509616287115
+            },
+            "UNDER": {
+              "bets": 872,
+              "hit_rate": 63.99082568807339,
+              "roi": 18.705940272059156,
+              "profit": 163.11579917235585
+            }
+          },
+          "goalie_nights_total": 2510,
+          "goalie_nights_bet": 1566
+        },
+        "ev_threshold": 0.05
+      }
+    },
+    "predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_rolling_origin_20260709_222639\\origin_b_test_predictions.parquet",
+    "fold_boundaries": {
+      "pool_date_range": [
+        "2022-10-07",
+        "2024-04-18"
+      ],
+      "train": {
+        "start": "2022-10-07",
+        "end": "2024-02-29",
+        "rows": 4528
+      },
+      "val": {
+        "start": "2024-03-01",
+        "end": "2024-04-18",
+        "rows": 720
+      },
+      "val_window_days": 49,
+      "test_season": 20242025,
+      "test_rows": 2624
+    }
+  },
+  "fixed_ev_threshold": 0.05,
+  "caveat": "Origin A trains on roughly one season (2022-23) plus 2021-22 pace-feature priors -- it tests the mechanism, not the production model. Small training data may honestly produce a weaker model; report whatever comes out.",
+  "design_notes": [
+    "EV threshold fixed at 0.05 for both origins' test evaluation (the frozen production pace_shots threshold), not reselected via a validation sweep. Necessary because no betting-line odds exist anywhere for the 2022-23 season (the vendor's historical props archive starts 2023-05-03), so Origin A's validation window has no market data to sweep against. The same fixed threshold is applied to Origin B so both origins are evaluated identically.",
+    "Validation windows are the last 49 days of each origin's training-pool seasons (matching the length of the production experiment's Oct16-Dec3 validation window), used only for shots/save-rate hyperparameter config selection (val MAE / weighted log-loss) -- no market data is touched during selection for either origin. This places val inside the training-pool seasons rather than inside the test season, which is required so the test season is touched exactly once.",
+    "PRIMARY metrics use the 2023-24 / 2024-25 CLOSING pass for both origins. Origin A additionally reports a SECONDARY descriptive policy-ROI line on the 2023-24 BETTIME pass (realistic execution prices) per the task design.",
+    "PMF cap widened from the production CAP=70 to ORIGIN_CAP=90 for both origins' distributional predictions (the wiring gate still uses CAP=70 exactly, to reproduce the frozen artifact bit-for-bit). Origin A's smaller training pool produced a wider shots model; one 2023-24 test-fold goalie-night (mu=42.47) lost >0.1% of its PMF mass above shots=70 and failed the harness's own normalization assert. The wider cap was chosen by checking PMF-sum normalization only, before any grading/ROI number was computed, and applied identically to both origins."
+  ],
+  "wall_clock_seconds": 65.6379885673523
+}

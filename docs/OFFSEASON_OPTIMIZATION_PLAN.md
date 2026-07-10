@@ -1210,6 +1210,35 @@ positive policy result is mostly OVER-heavy (508 OVER bets, 108 UNDER bets).
 This is the strongest offline hypothesis so far and justifies next-season
 shadow/CLV confirmation; it does not justify scaling stakes by itself.
 
+*Claude-authored independent verification, 2026-07-09 (after the Codex run):*
+reloaded the saved `pace_shots` models from the canonical artifact and rebuilt
+the test-fold probabilities with an independent pmf implementation
+(scipy nbinom/binom convolution instead of the harness's gammaln matrix) and
+independent de-vig, grading, and bootstrap code. All headline numbers
+reproduced exactly: test Brier 0.24904, market Brier 0.24961, 616 bets,
++9.02% ROI, 508 OVER / 108 UNDER, cluster ROI CI matching to bootstrap noise.
+Two statistics were then added that the original run did not compute, and they
+change the headline's strength:
+
+- **Paired Brier delta vs the market, test fold:** -0.00057 with a
+  goalie-night cluster bootstrap 95% CI of **[-0.00485, +0.00395]**
+  (n=2,672 rows, 1,307 clusters). 40.5% of bootstrap resamples had the model
+  at or behind the market.
+- **Same statistic on the validation fold:** the model was *behind* the market
+  there: model Brier 0.25327 vs market 0.25076, paired delta +0.00251, cluster
+  CI [-0.00422, +0.00904] (n=2,676 rows, 659 clusters).
+
+So the accurate claim is **market parity, not market superiority**: across the
+only two out-of-sample folds available, the point estimates go in opposite
+directions and both CIs span zero. The genuinely new and robust finding is the
+within-model improvement -- pace features improved the distributional model's
+Brier on both folds (val 0.25508 -> 0.25327, test 0.25487 -> 0.24904 vs
+control), making it the first repo model to reach market-level calibration.
+The betting-policy ROI did not replicate across folds (+0.98% val,
++9.02% test at the same threshold), so the +9.02% should be treated as
+consistent with both edge and noise. Confirmation has to come from in-season
+CLV/shadow evidence, not from further work on this test fold.
+
 **Component 4 -- live-season path (documented now, built only if justified).**
 MoneyPuck updates nightly around 03:40 ET (verified from its update-timestamp
 file). The morning fetch workflow would re-download `all_teams.csv` once per
@@ -1223,6 +1252,268 @@ opening-week verification task.
 **Effort estimate.** Ingestion plus cross-check about half a day; builder plus
 leakage checks half a day; experiment reusing the harness half a day; a
 verification pass on top. Roughly 1.5-2 days total.
+
+### 3.15 Claude-authored: The Odds API historical acquisition plan (cache-first, written 2026-07-09, EXECUTED same day)
+
+Authored by Claude, 2026-07-09, after the user purchased Odds API credits.
+`src/betting/odds_archive.py` and
+`scripts/fetch_historical_odds_snapshots.py` implement this contract (built
+by a Sonnet sub-agent, line-by-line reviewed, then hardened with request
+pacing, 401/403 fast-abort, and a consecutive-failure abort). The API key
+lives in `.env` as `API_KEY` (`.env` is gitignored; the key must never be
+printed to logs or committed). This section is the contract for every
+historical Odds API fetch: what we buy, why, in what order, and the caching
+rules that guarantee we never pay for the same data twice.
+
+**EXECUTION ACTUALS (2026-07-09, user authorized probe + blanket Phases 1-3).**
+All phases run to convergence (dry-run shows 0 planned / 0 estimated except
+the two dead events below). Full per-run log in
+`data/raw/betting_lines/cache/fetch_log.jsonl`. Starting balance 100,000.
+
+| Phase | Runs | Fetched | Est. credits | Notes |
+|---|---|---|---|---|
+| Probe | 2 | 12 | 102 | 2023-24 coverage confirmed; 10 cr/odds call and 1 cr/events call confirmed via `x-requests-remaining` deltas |
+| phase1-bettime | 2 | 881 | 7,973 | 1 permanent 404 (see dead events) |
+| phase1-closing | 1 | 538 | 5,380 | same dead event's closing call |
+| phase2 | 2 | 2,808 | 26,370 | 1 dead event (2 calls, bettime+closing) |
+| phase3 | 1 | 580 | 11,600 | zero failures |
+| **Total** | 8 | 4,819 | **51,425 est / 47,735 actual** | **remaining: 52,265** |
+
+Actual spend ran ~3,690 credits under the call-count estimate: the API does
+not charge the full 10 credits for event-odds responses with zero bookmakers
+(330 such files in 2023-24 alone). Cache after execution: 7,071 files
+(from 2,254). Backup at `s:\Documents\odds-api-backup\betting_lines`
+re-synced after each phase and after completion (7,074 files incl. log).
+
+Dead events (permanent 404s, do NOT retry -- each retry costs 10 credits):
+- `40c02a07bc44ff52fe319ce9b7bf1594` LAK@CBJ commence 2026-01-27T00:00:00Z:
+  present in the 2026-01-25 events list, absent from 2026-01-26 -- game
+  removed/postponed; both phase1 anchors 404.
+- `c9b4e903f451775cc210c14503de80cd` CHI@BUF commence 2024-01-18T00:30:00Z:
+  present in events lists but no odds record exists (postponed game); both
+  phase2 anchors 404. These two are why converged dry-runs still show 1
+  planned call (phase1-bettime, phase1-closing) or 2 (phase2).
+
+Data quality spot-checks (2026-07-09): 2023-24 = 1,312 events, every event
+has both bettime+closing snapshots; books williamhill_us/draftkings/fanduel/
+bovada (+betmgm from ~Feb 2024, barstool trace); 99.9% of goalie-book quotes
+have both Over and Under; 14.2% of bettime and 11.0% of closing snapshots
+have no bookmakers (prop not yet posted -- real market behavior, higher than
+2025-26's ~3%). Phase1 2025-26 window: 5 books (dk/betmgm/fanduel/bovada/
+betonlineag), 99.8% both-sides. Phase3 bulk files: h2h+totals, wide book
+coverage incl. betrivers/unibet_us, proper snapshot envelopes. Region
+decision: stayed `us`-only (probe showed the us books are the ones with
+saves props; us2 would roughly double saves-pass cost -- not purchased).
+
+**Why these purchases (context from 3.14).** The pace_shots result is market
+parity with an unproven +9.02% fold ROI, and the Dec 2025-Apr 2026 test fold
+is worn. The three highest-value things money can buy now are: (a) a
+higher-power evaluation of the *frozen* pace_shots policy via closing-line
+value (CLV), (b) fresh out-of-sample season folds (2023-24, and 2024-25 which
+we hold odds for but have never used as an evaluation fold), and (c)
+timing-safe game-market features (totals/moneylines), the remaining
+pre-registered item-8 upside.
+
+**Inventory: what we already hold (audited 2026-07-09 -- never re-buy).**
+
+- `data/raw/betting_lines/cache/`: 1,976 `odds_*.json` files, exactly one
+  snapshot per event, market `player_total_saves`, `regions=us`, six books
+  (BetMGM, BetOnline, Bovada, DraftKings, Caesars, Fanatics). Snapshot timing
+  measured on a 494-file sample: median snapshot-minus-commence = 0 minutes,
+  range [-30, +3] -- these are **closing lines**. Coverage: the full 2024-25
+  regular season (1,311 events) plus 2025-10-07 through **2026-01-03** (665
+  events). Each file preserves the full API envelope
+  (`timestamp`/`previous_timestamp`/`next_timestamp`/`data`). Plus 275
+  `events_*.json` daily event-list responses for those same dates.
+- `data/betting.db`: **bet-time** lines 2026-01-04 through 2026-04-13 (1,789
+  rows; Underdog/BetOnline/PrizePicks/BetMGM), with real outcomes.
+- `multibook_classification_training_data.parquet` is derived from both, which
+  means the shared test fold is a mix: Dec 2025-Jan 3 rows are closing
+  lines, Jan 4-Apr rows are bet-time lines. (Relevant when interpreting the
+  pace_shots +9.02%: part of it was earned against the close, part against
+  bet-time prices.)
+- We hold **nothing** for 2023-24, no bet-time snapshots before 2026-01-04, no
+  closing snapshots after 2026-01-03, and no game-level markets (h2h/totals)
+  at all.
+- Risk flag: the cache is NOT git-tracked (`data/raw/` is gitignored). 1,976
+  paid responses exist as a single copy on one machine. See open decisions.
+
+**API facts (vendor docs, checked 2026-07-09).** Historical player props
+exist from 2023-05-03 (covers all of 2023-24); snapshots at 5-minute
+intervals. Historical event-odds cost 10 credits per region per market per
+event; historical bulk odds (featured markets, all events in one call) cost
+10 per region per market; historical events lists cost ~1 (probe confirms).
+
+**Caching contract -- rules every fetch script must follow.**
+
+1. **Append-only raw archive.** Extend the existing convention in
+   `data/raw/betting_lines/cache/`: one file per API response, body stored
+   verbatim including the `timestamp`/`previous_timestamp`/`next_timestamp`
+   envelope. Filenames: `events_date={ISO}.json`,
+   `odds_{eventId}_date={ISO}_markets={mk}_regions={rg}.json`, and (new, for
+   featured markets) `bulk_date={ISO}_markets={mk}_regions={rg}.json`.
+   Existing files are never modified or deleted; a failed/partial response
+   never overwrites an existing file.
+2. **Cache-before-call.** A shared module (`src/betting/odds_archive.py`)
+   builds a manifest by scanning the cache (filenames + envelopes are the
+   manifest; no second bookkeeping file to drift). A planned request is
+   SKIPPED when an existing file with the same scope (event or bulk sport,
+   markets, regions) has envelope `timestamp <= requested_ts <
+   next_timestamp` -- that is exactly the condition under which the API would
+   return a snapshot we already hold. No network call happens without a
+   manifest miss.
+3. **Dry-run by default.** Every fetch script prints the planned calls,
+   skipped-as-cached count, and estimated credit cost, then exits; spending
+   requires `--execute`. A `--max-credits` hard cap is required on execute;
+   the script reads `x-requests-remaining` after every response and aborts
+   below a floor; one retry with backoff on 429/5xx.
+4. **Per-run report.** planned / skipped-cached / fetched / credits-spent
+   (from response headers), appended to a fetch log in the cache directory.
+
+**Purchase phases (gated; do not start a phase before the prior one is
+reviewed).** Credit figures assume `regions=us`; the probe revisits that.
+
+- **Phase 0 -- probe (~200-500 credits).** A few events-list calls plus ~6
+  event-odds calls sampling 2023-11, 2024-02, and 2025-12 at 22:30Z and at
+  commence. Confirms: saves props actually present in the archive for
+  2023-24, both sides quoted, which books, whether `us2` adds books worth
+  having (it roughly doubles saves-pass costs), and the true per-call credit
+  charge from response headers. If 2023-24 saves coverage is poor, stop and
+  re-plan before Phase 2.
+- **Phase 1 -- test-fold CLV pack (~15.5k credits).** (a) A bet-time pass at
+  **22:30Z** (matches the closing-fetch cron time already chosen for the live
+  workflow) for every test-fold game 2025-12-04 to 2026-04-16 (~900 events);
+  (b) a closing pass at commence for 2026-01-04 to 2026-04-13 (~630 events),
+  completing the closing-line record for the whole fold; (c) events lists for
+  dates not already covered (~100 credits).
+- **Phase 2 -- 2023-24 season pack (~26.5k credits).** Events lists (~186)
+  plus a 22:30Z pass and a commence pass for ~1,312 regular-season games.
+- **Phase 3 -- featured markets (~11.2k credits).** Bulk `h2h,totals`
+  snapshots at 22:30Z daily for 2023-24, 2024-25, and 2025-26 (~558 game
+  dates x 2 markets x 10). Closing totals are deliberately not purchased
+  initially.
+- Total ~54k credits us-only (+~35k more only if the probe shows `us2` books
+  matter for saves lines).
+
+**What each purchase feeds (derived artifacts, pre-registered uses).**
+
+- `scripts/build_odds_snapshots.py` -> `data/processed/saves_lines_snapshots.parquet`:
+  one row per (event, goalie, book, side, snapshot pass), **per-book, never
+  averaged** (the odds-averaging bug, `HISTORICAL_DATA_ANALYSIS.md` section 1;
+  the old `scripts/extract_historical_odds.py` averaging pipeline must not be
+  reused). Goalie name-to-id matching reuses `build_multibook_training_data.py`
+  conventions.
+- **CLV audit of the frozen pace_shots policy (interpretation rules written
+  now, before the data exists).** Re-price the frozen policy (models from
+  `experiment_pace_distributional_20260709_100802`, threshold fixed at 0.05,
+  no reselection of any kind) on the 22:30Z prices; for each bet, CLV =
+  de-vigged consensus closing probability of the chosen side minus its
+  de-vigged 22:30Z probability, plus per-book price CLV. Report mean CLV with
+  a goalie-night cluster bootstrap CI. Rules: CI above zero = strong
+  confirmation, justifies opening-season shadow + token live stakes; CI
+  spanning zero = unresolved, in-season shadow run remains the arbiter;
+  CI below zero = treat the +9.02% fold ROI as luck. This is a re-pricing of
+  an already-selected policy, not a new selection -- nothing may be tuned
+  against it.
+- **Rolling-origin confirmation on fresh folds.** Build a 2023-24
+  multibook-style frame; run the frozen pace_shots *recipe* (same feature
+  families, same config grid, validation-only selection inside each origin)
+  as: train <= 2022-23 -> test 2023-24; train <= 2023-24 -> test 2024-25.
+  One test touch each; metrics are the paired Brier delta vs the de-vigged
+  market with cluster CI (the 3.14 verification statistic) and policy ROI
+  with cluster CI. Recorded caveat: the first origin trains on one season
+  plus 2021-22 priors -- it tests the mechanism, not the production model.
+- **`market_game_features.parquet`.** Timing-safe game-market features from
+  the 22:30Z bulk snapshots (game total line and prices, moneyline implied
+  probabilities, derived market pace measures) for a future gated experiment.
+  Per the 3.14 verification note, this may only meet the worn 2025-26 test
+  fold as part of a single pre-season final-exam touch.
+
+**Derived-artifact results (2026-07-09, evening; agent-built, coordinator-verified).**
+
+- `saves_lines_snapshots.parquet` BUILT and verified: 79,884 rows (28,751
+  bettime / 51,133 closing), 99.94% both-sides, 99.11% goalie match, 12
+  duplicate rows traced to Bovada's own raw responses (kept, documented).
+  Supporting fix: `'Utah Mammoth': 'UTA'` added to
+  `scripts/build_multibook_training_data.py` TEAM_NAME_TO_ABBREV (the API
+  renamed the franchise for 2025-26; without it every Utah game failed to
+  match). Timestamps are stored as ISO strings, not datetime64 -- parse
+  before comparing.
+- **CLV AUDIT RESULT (pre-registered rules, outcome: STRONG CONFIRMATION).**
+  `scripts/clv_audit_pace_policy.py` -> `data/processed/clv_audit_bets.parquet`
+  (993 bets, 295 goalie-nights, 762 OVER / 231 UNDER). Wiring gate passed:
+  the reloaded frozen models reproduced the original 616-bet +9.02% test
+  evaluation bit-for-bit before any new numbers were computed. On the
+  uniform 22:30Z bettime pass, the frozen policy's bets show mean
+  probability CLV **+0.33%** with goalie-night cluster bootstrap 95% CI
+  **[+0.25%, +0.42%]** (n=836 with matchable closing consensus, 84.2%
+  coverage) and mean price CLV **+0.93%** CI **[+0.64%, +1.24%]** (n=801,
+  same-book same-line, 80.7% coverage). Claude independently recomputed
+  every per-bet value from the snapshots parquet (max abs diff 0.0) and the
+  bootstrap CIs with independent code and seeds (matched). Per the
+  pre-registered rule, CI above zero = strong confirmation: justifies
+  opening-season shadow + token live stakes. Honest caveats: the magnitude
+  is modest (~1/3 of a probability point; ~0.9 decimal-odds ticks of price);
+  the window is the same worn Dec 2025-Apr 2026 fold, so this is a NEW
+  evidence channel (market movement toward our bets), not a new season.
+  Implementation note recorded: the frozen selection code (`calculate_ev`
+  via `decide_bet`) compares model probability to the raw vig-inclusive
+  single-book implied probability -- the audit replicated that literal
+  behavior for selection; de-vigging is used only inside the CLV metrics
+  themselves (additive normalization, `tracking_db.devig_prob` convention).
+- `market_game_features.parquet` BUILT and verified: 305,940 rows from all
+  580 bulk files; 1,316-1,320 games/season with both totals and h2h at the
+  latest pregame snapshot; de-vig sums to 1 at float precision; zero
+  timing leakage among `is_latest_pregame_snapshot` rows (agent validation
+  + Claude's independent 300-event re-derivation). Gotcha handled: ~20% of
+  events' `commence_time` drifts across snapshot days as schedules firm up;
+  the script canonicalizes each event to its freshest snapshot's schedule
+  before computing the pregame flag.
+- **ROLLING-ORIGIN RESULT (pre-registered, outcome: CLEAN NEGATIVE).**
+  `scripts/experiment_rolling_origin.py` ->
+  `models/trained/experiment_rolling_origin_20260709_222639/` (+ new frames
+  `multibook_frame_2023_24.parquet` closing, 8,880 rows / 2,298 goalie-nights
+  / 87.6% join rate, and `..._bettime.parquet`). Wiring gate passed (frozen
+  artifact numbers reproduced bit-for-bit before any new numbers). The
+  pace_shots RECIPE (same config grid, validation-only selection, threshold
+  0.05, one test touch per origin) at fresh origins:
+  - Origin A (train <=2022-23, test 2023-24 closing): paired Brier delta
+    **+0.0134** CI [+0.0090, +0.0178] (model significantly WORSE than
+    market), policy ROI **-8.30%** CI [-13.9%, -2.6%], 3,895 bets.
+    Bettime secondary: delta +0.0119, ROI -6.54% CI [-12.7%, -0.5%].
+  - Origin B (train <=2023-24, test 2024-25 closing): delta **+0.0156**
+    CI [+0.0099, +0.0213] (significantly worse), ROI -3.00%
+    CI [-7.9%, +1.8%], 4,376 bets.
+  Claude independently recomputed every statistic from the per-row
+  prediction parquets (matched exactly; grading and profit arithmetic
+  verified to machine precision; min edge on placed bets exactly at the
+  0.05 rule). Pre-registered caveat applies: Origin A trains on ~1,864 rows
+  plus 2021-22 priors and Origin B on ~two seasons -- far less data than
+  the production model -- so this tests the MECHANISM at low data volume,
+  not the production model itself. Judgment calls documented in the run
+  metadata: threshold not reselected (no 2022-23 odds exist to sweep
+  against), validation windows carved inside the training pool, PMF cap
+  70->90 for new origins only.
+  **Synthesis with the CLV result:** the two findings are not contradictory
+  -- the frozen production-era policy genuinely beat the close on its own
+  fold (new evidence channel), while the recipe trained on less data does
+  not even reach market parity on fresh seasons. Together they say: the
+  production model MAY have a small timing/pricing edge, but the recipe is
+  not demonstrably transferable, and the worn-fold selection concern from
+  3.14 stands. Consequence for next season: shadow run + token stakes
+  (which the CLV rule already capped) -- nothing here justifies scaling
+  beyond that, and the in-season shadow run remains the final arbiter.
+
+**Open decisions for the user (all resolved 2026-07-09).**
+
+1. Back up the paid archive: RESOLVED -- local folder copy at
+   `s:\Documents\odds-api-backup\betting_lines`, re-synced via
+   `robocopy ... /E /NFL /NDL /NP` after every fetch phase (exit code 1 =
+   success-with-copies). Note: robocopy flags are mangled by Git Bash
+   (`/E` becomes a path); run it from PowerShell.
+2. `us` vs `us,us2`: RESOLVED -- stayed `us`-only (see execution actuals).
+3. 22:30Z bet-time anchor: RESOLVED -- used as planned, matinees use
+   commence minus 30 min.
 
 ---
 
@@ -1505,7 +1796,7 @@ experiments.
 | 7 | ~~Market-anchored residual experiment (implied probability, book, line movement, game total/moneyline) -- the retrain result strengthens the case: the model's huge unanchored disagreements with the market resolve at 49%~~ **done 2026-07-08 -- result: anchoring improves discrimination/calibration, no bettable edge; market-only model has no standalone signal (see 3.4).** | 1-2 days | 3.4, 3.9, 3.10, 3.11 |
 | 8 | New hockey-context features (game total/moneyline, opponent rest, special teams, shot attempts/xG, starter/news timing, season normalization). **First current-data slice implemented 2026-07-09 -- result: better prediction, no bettable edge (see 3.12); push-aware true-EV policy audit also negative (see 3.13).** Schedule/rest + prior-only season-to-date shot-volume context improved test AUC/Brier in the distributional model, but the selected betting policies still lost on the single test touch. **Pace/xG Component 3 is now done (see 3.14): `pace_shots` is the first repo model to beat the de-vigged market Brier on this worn test fold (0.24904 vs 0.24961) and selected +9.02% ROI, but the cluster CI still crosses zero. Treat as the strongest offline hypothesis so far, not proven edge.** | 2-3 days | 3.6, 3.9, 3.10, 3.12, 3.13, 3.14 |
 | 9 | ~~Distributional saves model prototype, head-to-head vs classifier (trains on all 10,496 goalie-games, no odds required)~~ **done 2026-07-08 -- result: best-calibrated model yet (test Brier 0.25487), +1.06% test ROI with a cluster CI spanning zero -- no demonstrated edge; signal lives in the shots submodel (see 3.5).** | ~a week | 3.5, 3.10, 3.11 |
-| 10 | Check The Odds API historical archive pricing for pre-2024 props | an hour | -- |
+| 10 | ~~Check The Odds API historical archive pricing for pre-2024 props~~ **resolved 2026-07-09: props history exists back to 2023-05-03; credits purchased; full cache-first acquisition plan (probe, test-fold CLV pack, 2023-24 season pack, featured markets; ~54k credits) pre-registered in 3.15 -- not yet executed.** | ~2 days incl. audits | 3.14, 3.15 |
 | 11 | Trivial carryover: `TheOddsAPIFetcher.DEFAULT_BOOKMAKERS = []` fix (`src/betting/odds_fetcher.py:261`) | minutes | -- |
 
 Items 5-6 were the "must happen before opening night" set if any betting
@@ -1597,6 +1888,48 @@ explicitly says the result survived the honest harness and uncertainty checks.
   beating the de-vigged market benchmark 0.24961 by 0.00057, and selected
   +9.02% ROI on 616 bets; cluster CI was [-3.12%, +21.15%], so this is a
   promising next-season confirmation hypothesis, not proof of a tradable edge.
+- **2026-07-09 (Claude) Component 3 verification + market-parity correction:**
+  independently reproduced every pace_shots headline number from the canonical
+  artifact with separate pmf/de-vig/grading code, then added the missing
+  statistic: the paired model-vs-market Brier delta is -0.00057 with cluster
+  CI [-0.00485, +0.00395] on test and +0.00251 (model behind) with CI
+  [-0.00422, +0.00904] on validation. Corrected claim recorded in 3.14:
+  market parity, not market superiority.
+- **2026-07-09 (Claude) Odds API acquisition plan:** audited the existing odds
+  archive (`data/raw/betting_lines/cache/` = one at-commence closing snapshot
+  per event, full 2024-25 plus 2025-10-07..2026-01-03; `betting.db` = bet-time
+  lines 2026-01-04..2026-04-13) and pre-registered the cache-first purchase
+  plan in 3.15: probe, test-fold CLV pack, 2023-24 season pack, featured
+  markets; ~54k credits; caching contract guarantees no repeat purchases.
+  No credits spent yet.
+- **2026-07-09 (Claude) acquisition tooling built:** `src/betting/odds_archive.py`
+  (manifest scan + skip rule + append-only atomic writes) and
+  `scripts/fetch_historical_odds_snapshots.py` (phased dry-run-default CLI
+  with credit caps, pacing, and fast-abort hardening), built by a Sonnet
+  sub-agent and independently reviewed/dry-run-verified. Archive backed up to
+  `s:\Documents\odds-api-backup`. Zero credits spent; probe awaits the
+  user's explicit spend authorization.
+- **2026-07-09 (Claude) acquisition EXECUTED:** user authorized probe +
+  blanket Phases 1-3. All phases run to convergence same day: 4,819
+  responses fetched, 47,735 credits actual (51,425 estimated; empty-book
+  responses charged less), 52,265 remaining. Cache grew 2,254 -> 7,071
+  files; backup re-synced (7,074). Two permanently-404 postponed games
+  documented in 3.15 (do not retry). 2023-24 coverage confirmed: 1,312
+  events x 2 snapshots, 4-6 us books, 99.9% both-sides quotes, 11-14%
+  empty (prop not posted). Full actuals table in 3.15.
+- **2026-07-09 (Claude, evening) all four derived artifacts built and
+  independently verified** (Sonnet sub-agents built, Claude re-derived every
+  headline number from raw inputs with independent code/seeds): (1)
+  `saves_lines_snapshots.parquet` 79,884 rows; (2) CLV audit -- frozen
+  pace_shots policy shows probability CLV +0.33% CI [+0.25%, +0.42%], price
+  CLV +0.93% CI [+0.64%, +1.24%] = pre-registered STRONG CONFIRMATION
+  (shadow + token stakes); (3) `market_game_features.parquet` 305,940 rows,
+  zero timing leakage; (4) rolling-origin confirmation -- CLEAN NEGATIVE:
+  the recipe at fresh origins is significantly worse than market Brier on
+  both 2023-24 and 2024-25 and loses money on 2023-24 (-8.3% ROI, CI fully
+  negative). Full results + synthesis in 3.15. Net posture for next season
+  unchanged by the good CLV news: shadow run + token stakes, in-season
+  shadow is the arbiter.
 
 ## 7. Appendix: what was checked and found sound
 

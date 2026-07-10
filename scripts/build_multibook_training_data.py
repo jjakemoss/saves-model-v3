@@ -64,6 +64,7 @@ TEAM_NAME_TO_ABBREV = {
     'Tampa Bay Lightning': 'TBL',
     'Toronto Maple Leafs': 'TOR',
     'Utah Hockey Club': 'UTA',
+    'Utah Mammoth': 'UTA',
     'Vancouver Canucks': 'VAN',
     'Vegas Golden Knights': 'VGK',
     'Washington Capitals': 'WSH',

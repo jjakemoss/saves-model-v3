@@ -1,0 +1,207 @@
+================================================================================
+ROLLING-ORIGIN CONFIRMATION: pace_shots recipe on fresh 2023-24 / 2024-25 folds
+Pre-registration: docs/OFFSEASON_OPTIMIZATION_PLAN.md section 3.15
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639
+================================================================================
+WIRING GATE: reproduce production pace_shots val/test metrics from the frozen artifact
+================================================================================
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+Raw pace_features.parquet: 10496 rows, 54 columns.
+Pace join keys: ['game_id', 'goalie_id', 'team_abbrev', 'opponent_team', 'game_date']; coverage 10496/10496 (100.00%).
+Pace feature NaNs retained for XGBoost missing-value handling (top nonzero null counts: {'goalie_xg_per_shot_roll10': 346, 'goalie_xg_per_shot_ema5': 346, 'goalie_high_danger_share_ema5': 346, 'goalie_rebound_rate_ema5': 346, 'combined_all_corsi_ema5_prior_league_z': 164, 'combined_all_xg_ema5_prior_league_z': 164, 'combined_all_corsi_ema5': 156, 'combined_all_fenwick_ema5': 156, 'combined_all_xg_ema5': 156, 'combined_5v5_corsi_ema5': 156, 'combined_5v5_xg_ema5': 156, 'opp_off_all_corsi_ema5_prior_league_z': 146}).
+Pace source coverage flags: {'pace_team_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_opponent_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_goalie_all_matched': {'match_rate_pct': 99.9904725609756, 'missing_rows': 1}}
+Pace shots feature columns: 41 -> ['opp_off_all_corsi_s2d_mean', 'opp_off_all_corsi_roll5', 'opp_off_all_corsi_roll10', 'opp_off_all_corsi_ema5', 'opp_off_all_corsi_prior_season_mean', 'opp_off_all_fenwick_s2d_mean', 'opp_off_all_fenwick_ema5', 'opp_off_all_xgf_s2d_mean', 'opp_off_all_xgf_ema5', 'opp_off_5v5_corsi_ema5', 'opp_off_5v5_xgf_ema5', 'opp_off_all_score_adj_corsi_ema5', 'team_def_all_corsi_against_s2d_mean', 'team_def_all_corsi_against_roll5', 'team_def_all_corsi_against_roll10', 'team_def_all_corsi_against_ema5', 'team_def_all_corsi_against_prior_season_mean', 'team_def_all_fenwick_against_s2d_mean', 'team_def_all_fenwick_against_ema5', 'team_def_all_xga_s2d_mean', 'team_def_all_xga_ema5', 'team_def_5v5_corsi_against_ema5', 'team_def_5v5_xga_ema5', 'team_def_all_score_adj_corsi_against_ema5', 'combined_all_corsi_ema5', 'combined_all_fenwick_ema5', 'combined_all_xg_ema5', 'combined_5v5_corsi_ema5', 'combined_5v5_xg_ema5', 'opp_pp_corsi_s2d_mean', 'opp_pp_corsi_ema5', 'opp_pp_xgf_s2d_mean', 'opp_pp_xgf_ema5', 'team_pk_corsi_against_s2d_mean', 'team_pk_corsi_against_ema5', 'team_pk_xga_ema5', 'team_pk_icetime_minutes_s2d_mean', 'opp_off_all_corsi_ema5_prior_league_z', 'team_def_all_corsi_against_ema5_prior_league_z', 'combined_all_corsi_ema5_prior_league_z', 'combined_all_xg_ema5_prior_league_z']
+Pace goalie-workload feature columns: 4 -> ['goalie_xg_per_shot_roll10', 'goalie_xg_per_shot_ema5', 'goalie_high_danger_share_ema5', 'goalie_rebound_rate_ema5']
+
+[clean_training_data (production dates)] Fold boundaries (date-based split):
+  train: 2022-10-07 to 2025-10-15  (n=7992)
+  val  : 2025-10-16 to 2025-12-03  (n=730)
+  test : 2025-12-04 to 2026-04-16  (n=1774)
+  [clean_training_data (production dates)] Fold date-disjointness verified.
+Feature identity check passed: 145 shots cols, 104 rate cols match the frozen artifact.
+Loaded frozen pace_shots shots_model and save_rate_model from the production artifact (no retraining).
+
+--- wiring_gate pace_shots: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 28.9548
+  mean(residual^2)   = 48.8087
+  NB2 dispersion alpha = 0.023509  (Var = mean + alpha*mean^2)
+Dispersion alpha matches frozen artifact: 0.023509
+[wiring_gate VAL] pmf normalization check: n=730, min_sum=0.999864, max_sum=1.000000, rows below 0.999: 0
+[wiring_gate TEST] pmf normalization check: n=1774, min_sum=0.999936, max_sum=1.000000, rows below 0.999: 0
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+[multibook_classification_training_data (production dates)] Fold boundaries (date-based split):
+  train: 2024-10-04 to 2025-10-15  (n=7844)
+  val  : 2025-10-16 to 2025-12-03  (n=2676)
+  test : 2025-12-04 to 2026-04-13  (n=2672)
+  [multibook_classification_training_data (production dates)] Fold date-disjointness verified.
+[wiring_gate VAL betting frame] join coverage: 2676/2676 rows matched (100.00%).
+[wiring_gate VAL] fold-wide AUC row-level=0.5237 one-per-goalie-night=0.5317  Brier=0.25327  (n=2676)
+[wiring_gate TEST betting frame] join coverage: 2672/2672 rows matched (100.00%).
+[wiring_gate TEST] fold-wide AUC row-level=0.5418 one-per-goalie-night=0.5408  Brier=0.24904  (n=2672)
+Observed: {'val_brier': 0.25327, 'test_brier': 0.24904, 'test_roi': 9.02, 'test_bets': 616}
+Expected: {'val_brier': 0.25327, 'test_brier': 0.24904, 'test_roi': 9.02, 'test_bets': 616}
+WIRING GATE PASSED: reproduced production pace_shots val Brier=0.25327, test Brier=0.24904, test ROI=+9.02%, 616 bets.
+
+================================================================================
+STEP 1: build data/processed/multibook_frame_2023_24.parquet (closing pass, PRIMARY deliverable)
+================================================================================
+2023-24 base goalie-night universe (clean_training_data.parquet): 2624 rows.
+saves_lines_snapshots.parquet: 79884 total rows across all fetched windows.
+[closing] attach_game_id via (goalie_id, game_date_eastern): 32998 rows unmatched and dropped (expected: rows outside the 2023-24 season, plus any unresolved goalie_id).
+[closing] 0 additional rows outside the 2023-24 season game_id universe dropped (sanity filter -- should be 0 given the lookup is season-scoped already).
+[closing] both-sides pivot: 8880 (event, game, goalie, book, line) rows with Over and Under both quoted.
+[closing] deduplicated on (game_id, goalie_id, book_key, betting_line): 0 rows dropped.
+[closing] FINAL: 8880 rows, 1160 distinct events, 2298 distinct goalie-nights (87.58% of the 2624-goalie-night 2023-24 base universe).
+[closing] books: {'williamhill_us': 2249, 'draftkings': 2174, 'fanduel': 2035, 'bovada': 1594, 'betmgm': 828}
+Saved closing-pass 2023-24 multibook frame to: S:\Documents\GitHub\saves-model-v3\data\processed\multibook_frame_2023_24.parquet
+[bettime] attach_game_id via (goalie_id, game_date_eastern): 11787 rows unmatched and dropped (expected: rows outside the 2023-24 season, plus any unresolved goalie_id).
+[bettime] 0 additional rows outside the 2023-24 season game_id universe dropped (sanity filter -- should be 0 given the lookup is season-scoped already).
+[bettime] both-sides pivot: 7660 (event, game, goalie, book, line) rows with Over and Under both quoted.
+[bettime] deduplicated on (game_id, goalie_id, book_key, betting_line): 0 rows dropped.
+[bettime] FINAL: 7660 rows, 1124 distinct events, 1973 distinct goalie-nights (75.19% of the 2624-goalie-night 2023-24 base universe).
+[bettime] books: {'williamhill_us': 1888, 'draftkings': 1839, 'fanduel': 1822, 'bovada': 1369, 'betmgm': 742}
+Saved bettime-pass 2023-24 multibook frame (bonus artifact, not a mandatory deliverable, kept for reproducibility) to: S:\Documents\GitHub\saves-model-v3\data\processed\multibook_frame_2023_24_bettime.parquet
+
+================================================================================
+Loading shared pace modeling frame (all seasons) for origin training
+================================================================================
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+Raw pace_features.parquet: 10496 rows, 54 columns.
+Pace join keys: ['game_id', 'goalie_id', 'team_abbrev', 'opponent_team', 'game_date']; coverage 10496/10496 (100.00%).
+Pace feature NaNs retained for XGBoost missing-value handling (top nonzero null counts: {'goalie_xg_per_shot_roll10': 346, 'goalie_xg_per_shot_ema5': 346, 'goalie_high_danger_share_ema5': 346, 'goalie_rebound_rate_ema5': 346, 'combined_all_corsi_ema5_prior_league_z': 164, 'combined_all_xg_ema5_prior_league_z': 164, 'combined_all_corsi_ema5': 156, 'combined_all_fenwick_ema5': 156, 'combined_all_xg_ema5': 156, 'combined_5v5_corsi_ema5': 156, 'combined_5v5_xg_ema5': 156, 'opp_off_all_corsi_ema5_prior_league_z': 146}).
+Pace source coverage flags: {'pace_team_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_opponent_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_goalie_all_matched': {'match_rate_pct': 99.9904725609756, 'missing_rows': 1}}
+Pace shots feature columns: 41 -> ['opp_off_all_corsi_s2d_mean', 'opp_off_all_corsi_roll5', 'opp_off_all_corsi_roll10', 'opp_off_all_corsi_ema5', 'opp_off_all_corsi_prior_season_mean', 'opp_off_all_fenwick_s2d_mean', 'opp_off_all_fenwick_ema5', 'opp_off_all_xgf_s2d_mean', 'opp_off_all_xgf_ema5', 'opp_off_5v5_corsi_ema5', 'opp_off_5v5_xgf_ema5', 'opp_off_all_score_adj_corsi_ema5', 'team_def_all_corsi_against_s2d_mean', 'team_def_all_corsi_against_roll5', 'team_def_all_corsi_against_roll10', 'team_def_all_corsi_against_ema5', 'team_def_all_corsi_against_prior_season_mean', 'team_def_all_fenwick_against_s2d_mean', 'team_def_all_fenwick_against_ema5', 'team_def_all_xga_s2d_mean', 'team_def_all_xga_ema5', 'team_def_5v5_corsi_against_ema5', 'team_def_5v5_xga_ema5', 'team_def_all_score_adj_corsi_against_ema5', 'combined_all_corsi_ema5', 'combined_all_fenwick_ema5', 'combined_all_xg_ema5', 'combined_5v5_corsi_ema5', 'combined_5v5_xg_ema5', 'opp_pp_corsi_s2d_mean', 'opp_pp_corsi_ema5', 'opp_pp_xgf_s2d_mean', 'opp_pp_xgf_ema5', 'team_pk_corsi_against_s2d_mean', 'team_pk_corsi_against_ema5', 'team_pk_xga_ema5', 'team_pk_icetime_minutes_s2d_mean', 'opp_off_all_corsi_ema5_prior_league_z', 'team_def_all_corsi_against_ema5_prior_league_z', 'combined_all_corsi_ema5_prior_league_z', 'combined_all_xg_ema5_prior_league_z']
+Pace goalie-workload feature columns: 4 -> ['goalie_xg_per_shot_roll10', 'goalie_xg_per_shot_ema5', 'goalie_high_danger_share_ema5', 'goalie_rebound_rate_ema5']
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+================================================================================
+ORIGIN A: train <= 2022-23, test = 2023-24
+================================================================================
+[Origin A] train/val carve: train 2022-10-07..2023-02-24 (n=1864); val 2023-02-25..2023-04-14 (n=760), the last 49 days of the training-pool date range ['2022-10-07', '2023-04-14'].
+[Origin A] test date range 2023-10-10..2024-04-18 (n=2624)
+
+Raw multibook_classification_training_data.parquet: 8880 rows, 130 columns.
+After both-side-odds filter + chronological sort: 8880 rows.
+
+Raw multibook_classification_training_data.parquet: 7660 rows, 130 columns.
+After both-side-odds filter + chronological sort: 7660 rows.
+
+================================================================================
+ORIGIN A: pace_shots recipe -- train/val config selection, frozen-threshold test pricing
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_A pace_shots: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.0145           2.0918
+depth2                  5.9909           2.0717
+depth4_mcw20            6.0974           2.1463
+more_trees_lowlr        6.0591           2.0998
+shallow_highreg         5.9846           2.0715
+deep_reg                6.0186           2.1072
+origin_A pace_shots shots winner: shallow_highreg  val_mae=5.9846  val_poisson_deviance=2.0715
+
+--- origin_A pace_shots: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5141
+  mean(residual^2)   = 42.6990
+  NB2 dispersion alpha = 0.012963  (Var = mean + alpha*mean^2)
+
+--- origin_A pace_shots: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A pace_shots save-rate winner: depth2  val_weighted_logloss=0.32074
+Saved origin A shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_a_pace_shots_shots_model.json
+Saved origin A save-rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_a_pace_shots_save_rate_model.json
+[origin_A TEST] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[origin_A TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A TEST closing] fold-wide AUC row-level=0.5182 one-per-goalie-night=0.5141  Brier=0.26338  (n=8880)
+[origin_A TEST closing] paired Brier delta (model-market): model_brier=0.26338 market_brier=0.25000 delta=+0.01338 95% CI=[+0.00902, +0.01776] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A TEST closing] 3895 bets, 43.9% bet rate, 49.3% hit rate, -8.30% ROI
+[origin_A TEST closing] ROI 95% CI (cluster): [-13.86%, -2.60%] (n_clusters=1154)
+[origin_A TEST closing] side breakdown: OVER 3163 bets (-10.58%), UNDER 732 bets (+1.55%)
+[origin_A TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A TEST bettime] fold-wide AUC row-level=0.5249 one-per-goalie-night=0.5226  Brier=0.26158  (n=7660)
+[origin_A TEST bettime] paired Brier delta (model-market): model_brier=0.26158 market_brier=0.24966 delta=+0.01191 95% CI=[+0.00710, +0.01668] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A TEST bettime] 3328 bets, 43.4% bet rate, 50.3% hit rate, -6.54% ROI
+[origin_A TEST bettime] ROI 95% CI (cluster): [-12.74%, -0.51%] (n_clusters=970)
+[origin_A TEST bettime] side breakdown: OVER 2723 bets (-8.58%), UNDER 605 bets (+2.64%)
+Saved 16540 per-row test predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_a_test_predictions.parquet
+
+================================================================================
+ORIGIN B: train <= 2023-24, test = 2024-25
+================================================================================
+[Origin B] train/val carve: train 2022-10-07..2024-02-29 (n=4528); val 2024-03-01..2024-04-18 (n=720), the last 49 days of the training-pool date range ['2022-10-07', '2024-04-18'].
+[Origin B] test date range 2024-10-04..2025-04-17 (n=2624)
+Origin B test betting frame (multibook_classification_training_data.parquet, season 2024-25, closing lines from the odds cache): 7463 rows.
+
+================================================================================
+ORIGIN B: pace_shots recipe -- train/val config selection, frozen-threshold test pricing
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_B pace_shots: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6066           1.9590
+depth2                  5.6262           1.9580
+depth4_mcw20            5.6218           1.9697
+more_trees_lowlr        5.6163           1.9608
+shallow_highreg         5.6266           1.9574
+deep_reg                5.5910           1.9528
+origin_B pace_shots shots winner: deep_reg  val_mae=5.5910  val_poisson_deviance=1.9528
+
+--- origin_B pace_shots: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8901
+  mean(residual^2)   = 28.4066
+  TRAIN variance <= TRAIN mean: falling back to Poisson (alpha=0).
+
+--- origin_B pace_shots: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B pace_shots save-rate winner: base  val_weighted_logloss=0.31912
+Saved origin B shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_b_pace_shots_shots_model.json
+Saved origin B save-rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_b_pace_shots_save_rate_model.json
+[origin_B TEST] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[origin_B TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B TEST closing] fold-wide AUC row-level=0.5577 one-per-goalie-night=0.5579  Brier=0.26439  (n=7463)
+[origin_B TEST closing] paired Brier delta (model-market): model_brier=0.26439 market_brier=0.24880 delta=+0.01559 95% CI=[+0.00982, +0.02141] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B TEST closing] 4376 bets, 58.6% bet rate, 52.2% hit rate, -3.00% ROI
+[origin_B TEST closing] ROI 95% CI (cluster): [-7.86%, +1.80%] (n_clusters=1566)
+[origin_B TEST closing] side breakdown: OVER 3504 bets (-8.40%), UNDER 872 bets (+18.71%)
+Saved 7463 per-row test predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\origin_b_test_predictions.parquet
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_rolling_origin_20260709_222639\metadata.json
+Wall-clock time: 65.6s (1.1 min)
+
+================================================================================
+ROLLING-ORIGIN CONFIRMATION COMPLETE
+================================================================================
