@@ -2136,6 +2136,105 @@ explicitly says the result survived the honest harness and uncertainty checks.
     2026-27 shadow program and reconsider the 2024-25 bettime-pass
     purchase; if not, the market-state result was an Origin B artifact.
 
+- **2026-07-13 (Codex-authored: independent Origin C / Experiment 8
+  audit and consequence).** The frozen market-state recipe completed its
+  pre-registered Origin C run on 2025-26. Codex reviewed the 1,147-line
+  implementation, verified the season fences and book-key provenance,
+  and independently rebuilt every headline statistic from the saved
+  prediction parquet plus the raw closing and bettime quote parquets with
+  different bootstrap seeds. The wiring gate reproduced Origin B
+  bit-exactly. **P1 passes:** market-state minus no-pace-control closing
+  paired Brier `-0.003111`, CI95 `[-0.005039, -0.001192]`, 5,729 rows /
+  2,070 goalie-night clusters. **P2 is INSUFFICIENT SAMPLE:** only 85
+  BetOnline bettime UNDERs met the frozen 0.05 probability-edge rule,
+  below the registered 100-bet floor; selected ROI `-11.40%` versus
+  blind-UNDER `-5.24%`, delta `-6.16` points, CI95
+  `[-25.36, +13.25]`. The all-books selection secondary was also null.
+  The Origin B post-hoc UNDER lead therefore did not replicate; 2025-26
+  threshold returns were carried by OVER instead. Market-state remains a
+  real incremental feature block -- it beat the no-pace control in a
+  second eligible origin and slightly improved shots MAE -- but it tied
+  the closing market and was significantly worse than the bettime market.
+  Drift-adjusted flagged-bet CLV was statistically positive but small
+  (`+0.12` probability points on 1,073 matched bets / 307 clusters all
+  books; `+0.19` on 240 BetOnline bets), and does not establish a
+  vig-clearing outcome edge. Per the registered mapping:
+  **no promotion, no purchase, and no executable edge claim.** Plan step
+  6b (deterministic funnel as a fixed offset) is now first in queue; the
+  6c fixed-weight early-exit shape is still unrun and should be bundled
+  into that evaluation, while 6d remains contract repair and
+  outcome-blind volume reconnaissance only.
+
+- **2026-07-13 (Codex-authored: plan step 6b/6c execution started).**
+  Began the next zero-credit architecture step: a deterministic,
+  prior-only attempt-to-SOG workload projection used as a fixed base,
+  with XGBoost restricted to learning the residual, and a fixed-weight
+  pooled early-exit mixture evaluated as the distributional shape rather
+  than as an individualized pull-risk classifier. Two independent
+  read-only agents are tracing the exact reusable funnel, shots-per-60,
+  TOI-bin, and corrected coverage machinery before the binding contract
+  is appended to
+  `docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md`. No model has been run
+  and no Origin A/B result has been viewed for this new architecture.
+  **Contract now locked in preregistration section 12:** the residual is
+  a Poisson log-offset model; the fixed mixture is mean-matched against
+  the identical single-NB2 arm; exposure weights/bins are train-only;
+  body dispersion is exposure-conditioned on validation and shared by
+  both arms; central coverage and aggregate lower-tail error must improve
+  on both origins. The implementation/run worker has been launched with
+  ownership limited to one new script and one new artifact directory.
+
+- **2026-07-13 (Codex-authored: Experiment 9 verified result).** The first
+  valid registered run completed once with both
+  no-pace wiring gates exact and no alternate candidate rerun. The
+  verified Gate-A verdict is FAIL: shots bias missed the `0.5` bar on
+  both origins (`+0.78`, `+1.99`), and closing Brier worsened versus
+  control on both (`+0.00216`, `+0.01526`; the latter CI excludes
+  zero). The fixed mixture did improve aggregate lower-tail error and
+  negative log score on both origins, but central coverage improved only
+  on B and the B bet rate inflated to `59.3%`. Codex plus two independent
+  audit agents verified the code path, folds, leakage fences, every
+  `base_margin` call, model reloads, persisted PMFs/quotes, P1-P5, and
+  fresh-seed cluster CIs. No material defect was found. Two label/guard-
+  only fixes were made without rerunning the candidate. The lesson is
+  narrow but useful: constant pooled early-exit mass is a better marginal
+  distribution shape, yet it smears tail probability across every start
+  and cannot rescue an inaccurate mean workload model or posted-line
+  Brier. The fixed-offset lead is closed; purchases remain blocked and
+  plan 6d's contract repair plus outcome-blind volume reconnaissance is
+  next.
+
+- **2026-07-13 (Codex-authored: Component G repair/recon started).** Two
+  independent read-only audits traced the failed Experiment 7 lock and
+  the 2025-26 snapshot schema before any new candidate count was viewed.
+  The repaired contract is now frozen in preregistration section 13. It
+  requires the accessible `betonlineag` quote to sit outside every tied
+  modal line, moves the 20-bet floor into binding text, uses only the
+  frozen NB2 scorer and threshold grid for counting, and fails closed on
+  duplicate/conflicting quotes. The run is restricted to one selectively
+  read snapshot parquet and cannot load outcomes, grade bets, compute ROI
+  or CLV, select a threshold, or spend credits. Its only decision is
+  whether at least 20 unique candidates exist at the most permissive
+  `0.02` threshold, making a future separately registered validation
+  arithmetically possible.
+
+- **2026-07-13 (Codex-authored: Experiment 10 verified result).** The
+  repaired Component G reconnaissance is complete and its registered
+  verdict is **TOO SPARSE**. From 1,185 paired BetOnline bettime goalie-
+  nights, only 31 quotes were strictly outside the complete modal-line
+  set. The frozen cross-line translator flagged just one candidate at the
+  most permissive `0.02` probability-gap threshold (`0 OVER / 1 UNDER`)
+  and zero at every higher threshold, far below the binding minimum of
+  20. No outcome or closing data was loaded, the candidate was not graded,
+  no credits were spent, and no threshold was selected. Codex audited the
+  script/artifact, an independent implementation reproduced every count
+  from the selectively read snapshot parquet, and a separate static audit
+  found no material defect. The only minor note is that sparse aggregate
+  slices describe the lone anonymous candidate narrowly; no identifier or
+  outcome is persisted. **Consequence:** the strictly off-modal BetOnline
+  strategy is arithmetically nonviable in this archive and is closed
+  without an outcome touch. Purchases remain blocked.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need

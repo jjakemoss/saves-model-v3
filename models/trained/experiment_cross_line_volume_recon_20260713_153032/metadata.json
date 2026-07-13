@@ -1,0 +1,713 @@
+{
+  "experiment": "Experiment 10 - Component G executable-volume reconnaissance",
+  "registration": "docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 13",
+  "timestamp": "20260713_153032",
+  "wall_clock_seconds": 0.5511972000240348,
+  "primary_verdict": "TOO_SPARSE",
+  "primary_gate": {
+    "threshold": 0.02,
+    "minimum_count": 20,
+    "unique_strictly_off_modal_target_goalie_nights": 1
+  },
+  "input": {
+    "absolute_path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\saves_lines_snapshots.parquet",
+    "repo_relative_path": "data/processed/saves_lines_snapshots.parquet",
+    "sha256": "E81CA4EA01B1DFB3F69068782B75E18B4D174BEF82DD34D8E341B59CBC94ED56",
+    "registered_sha256": "E81CA4EA01B1DFB3F69068782B75E18B4D174BEF82DD34D8E341B59CBC94ED56",
+    "read_columns": [
+      "event_id",
+      "commence_time",
+      "game_date_eastern",
+      "requested_ts",
+      "resolved_ts",
+      "snapshot_pass",
+      "book",
+      "goalie_id",
+      "side",
+      "line",
+      "price_decimal"
+    ],
+    "read_call_contract": "pd.read_parquet(INPUT_PATH, columns=READ_COLUMNS)",
+    "row_bearing_input_count": 1
+  },
+  "population": {
+    "season_start_inclusive": "2025-08-01",
+    "season_end_inclusive": "2026-07-31",
+    "snapshot_pass": "bettime",
+    "target_book": "betonlineag",
+    "target_aliases_merged": false
+  },
+  "frozen_scorer": {
+    "family": "NB2",
+    "alpha": 0.1,
+    "support_cap": 70,
+    "pmf_cap_renormalized": false,
+    "de_vig": "paired-price additive normalization",
+    "inversion": "brentq [0.1, 69.9], target clip [0.002, 0.998], xtol=1e-6, rtol=1e-8",
+    "consensus": "leave-one-book-out arithmetic mean of peer implied means",
+    "gap": "translated fair probability minus American-rounded raw vig-inclusive implied probability",
+    "side_rule": "OVER when gap_over >= t and gap_over > gap_under; otherwise UNDER when gap_under >= t",
+    "threshold_grid": [
+      0.02,
+      0.03,
+      0.04,
+      0.05,
+      0.06,
+      0.08,
+      0.1,
+      0.12,
+      0.15,
+      0.2
+    ]
+  },
+  "outcome_firewall": {
+    "no_outcome_columns_loaded": true,
+    "forbidden_loaded_columns": [
+      "clv",
+      "goals_against",
+      "grade",
+      "outcome",
+      "profit",
+      "result",
+      "roi",
+      "saves",
+      "shots_against",
+      "toi"
+    ],
+    "loaded_columns_disjoint_from_forbidden": true,
+    "closing_snapshot_loaded": false,
+    "other_row_bearing_input_opened": false,
+    "candidate_identifiers_persisted": false
+  },
+  "denominators": {
+    "loaded_rows": 79884,
+    "season_and_bettime_rows": 12811,
+    "later_snapshot_rows_removed": 1132,
+    "earliest_snapshot_rows_before_exact_dedup": 11679,
+    "exact_duplicates_removed": 2,
+    "rows_after_exact_dedup": 11677,
+    "missing_goalie_rows_in_population": 154,
+    "missing_goalie_rows_after_cleanup": 148,
+    "unmerged_betonline_alias_rows": 0,
+    "quote_groups_before_both_sides_requirement": 5766,
+    "unpaired_quote_groups": 3,
+    "all_paired_book_quotes": 5763,
+    "all_paired_goalie_nights": 1370,
+    "target_paired_quotes": 1185,
+    "target_paired_goalie_nights": 1185,
+    "target_strictly_off_modal": 31,
+    "target_strictly_off_modal_with_non_target_peer": 31,
+    "all_mu_inversion_failures": 20,
+    "all_modal_tie_goalie_nights": 5,
+    "target_modal_tie_goalie_nights": 5
+  },
+  "qa": {
+    "registered_input_path_exact": true,
+    "registered_sha256_exact": true,
+    "loaded_columns_exact": true,
+    "forbidden_columns_absent": true,
+    "season_fence_exact": true,
+    "bettime_only": true,
+    "earliest_requested_ts_per_event": true,
+    "exact_duplicate_key_clear": true,
+    "conflicting_quote_side_prices": 0,
+    "unexpected_side_labels": [],
+    "missing_critical_population_values": {
+      "event_id": 0,
+      "commence_time": 0,
+      "game_date_eastern": 0,
+      "requested_ts": 0,
+      "book": 0,
+      "side": 0,
+      "line": 0,
+      "price_decimal": 0
+    },
+    "unmerged_betonline_alias_rows": 0,
+    "multi_line_paired_book_nights": 0,
+    "target_duplicate_goalie_nights": 0,
+    "modal_set_includes_all_tied_maxima": true,
+    "target_line_outside_entire_modal_set_required": true,
+    "non_target_peer_required": true,
+    "line_spread_minimum_applied": false,
+    "candidate_rows_persisted": false,
+    "threshold_selected_from_counts": false
+  },
+  "threshold_counts": {
+    "0.02": {
+      "total": 1,
+      "OVER": 0,
+      "UNDER": 1
+    },
+    "0.03": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.04": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.05": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.06": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.08": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.10": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.12": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.15": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    },
+    "0.20": {
+      "total": 0,
+      "OVER": 0,
+      "UNDER": 0
+    }
+  },
+  "monthly_aggregate_counts": {
+    "2025-10": {
+      "paired_target_quotes": 14,
+      "strictly_off_modal": 2,
+      "strictly_off_modal_with_peer": 2,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2025-11": {
+      "paired_target_quotes": 26,
+      "strictly_off_modal": 2,
+      "strictly_off_modal_with_peer": 2,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2025-12": {
+      "paired_target_quotes": 285,
+      "strictly_off_modal": 17,
+      "strictly_off_modal_with_peer": 17,
+      "threshold_0.02_total": 1,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 1,
+      "thresholds": {
+        "0.02": {
+          "total": 1,
+          "OVER": 0,
+          "UNDER": 1
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2026-01": {
+      "paired_target_quotes": 188,
+      "strictly_off_modal": 5,
+      "strictly_off_modal_with_peer": 5,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2026-02": {
+      "paired_target_quotes": 119,
+      "strictly_off_modal": 2,
+      "strictly_off_modal_with_peer": 2,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2026-03": {
+      "paired_target_quotes": 352,
+      "strictly_off_modal": 2,
+      "strictly_off_modal_with_peer": 2,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    },
+    "2026-04": {
+      "paired_target_quotes": 201,
+      "strictly_off_modal": 1,
+      "strictly_off_modal_with_peer": 1,
+      "threshold_0.02_total": 0,
+      "threshold_0.02_OVER": 0,
+      "threshold_0.02_UNDER": 0,
+      "thresholds": {
+        "0.02": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.03": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.04": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.05": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.06": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.08": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.10": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.12": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.15": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        },
+        "0.20": {
+          "total": 0,
+          "OVER": 0,
+          "UNDER": 0
+        }
+      }
+    }
+  },
+  "peer_book_counts": {
+    "paired_target_quotes_histogram": {
+      "1": 7,
+      "2": 89,
+      "3": 407,
+      "4": 682
+    },
+    "strictly_off_modal_histogram": {
+      "2": 4,
+      "3": 18,
+      "4": 9
+    },
+    "paired_target_nights_valid_peer_presence_by_book": {
+      "betmgm": 1163,
+      "bovada": 999,
+      "draftkings": 1164,
+      "fanatics": 11,
+      "fanduel": 797
+    },
+    "strictly_off_modal_valid_peer_presence_by_book": {
+      "betmgm": 30,
+      "bovada": 28,
+      "draftkings": 30,
+      "fanatics": 2,
+      "fanduel": 8
+    },
+    "threshold_0.02_valid_peer_presence_by_book": {
+      "betmgm": 1,
+      "bovada": 1,
+      "draftkings": 1
+    },
+    "paired_target_quotes_summary": {
+      "n": 1185,
+      "min": 1.0,
+      "q25": 3.0,
+      "median": 4.0,
+      "mean": 3.488607594936709,
+      "q75": 4.0,
+      "max": 4.0
+    },
+    "strictly_off_modal_summary": {
+      "n": 31,
+      "min": 2.0,
+      "q25": 3.0,
+      "median": 3.0,
+      "mean": 3.161290322580645,
+      "q75": 4.0,
+      "max": 4.0
+    },
+    "threshold_0.02_summary": {
+      "n": 1,
+      "min": 3.0,
+      "q25": 3.0,
+      "median": 3.0,
+      "mean": 3.0,
+      "q75": 3.0,
+      "max": 3.0
+    }
+  },
+  "line_spread_summaries": {
+    "paired_target_quotes": {
+      "n": 1185,
+      "min": 0.0,
+      "q25": 0.0,
+      "median": 0.0,
+      "mean": 0.1189873417721519,
+      "q75": 0.0,
+      "max": 1.0
+    },
+    "strictly_off_modal": {
+      "n": 31,
+      "min": 1.0,
+      "q25": 1.0,
+      "median": 1.0,
+      "mean": 1.0,
+      "q75": 1.0,
+      "max": 1.0
+    },
+    "strictly_off_modal_with_peer": {
+      "n": 31,
+      "min": 1.0,
+      "q25": 1.0,
+      "median": 1.0,
+      "mean": 1.0,
+      "q75": 1.0,
+      "max": 1.0
+    },
+    "threshold_0.02": {
+      "n": 1,
+      "min": 1.0,
+      "q25": 1.0,
+      "median": 1.0,
+      "mean": 1.0,
+      "q75": 1.0,
+      "max": 1.0
+    }
+  },
+  "persistence": {
+    "aggregate_only": true,
+    "files": [
+      "metadata.json",
+      "run_log.txt"
+    ]
+  }
+}

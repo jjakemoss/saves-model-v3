@@ -1,0 +1,67 @@
+================================================================================
+EXPERIMENT 10: COMPONENT G EXECUTABLE-VOLUME RECONNAISSANCE
+Binding registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 13
+================================================================================
+Registered input: S:\Documents\GitHub\saves-model-v3\data\processed\saves_lines_snapshots.parquet
+SHA-256: E81CA4EA01B1DFB3F69068782B75E18B4D174BEF82DD34D8E341B59CBC94ED56 (MATCH)
+READ_COLUMNS (11): ['event_id', 'commence_time', 'game_date_eastern', 'requested_ts', 'resolved_ts', 'snapshot_pass', 'book', 'goalie_id', 'side', 'line', 'price_decimal']
+
+OUTCOME FIREWALL
+  one row-bearing input: S:\Documents\GitHub\saves-model-v3\data\processed\saves_lines_snapshots.parquet
+  exact loaded columns: ['event_id', 'commence_time', 'game_date_eastern', 'requested_ts', 'resolved_ts', 'snapshot_pass', 'book', 'goalie_id', 'side', 'line', 'price_decimal']
+  season=2025-08-01..2026-07-31; snapshot_pass=bettime; target=betonlineag
+  no outcome columns loaded; no closing snapshot loaded; aggregate-only persistence
+
+DENOMINATORS AND CLEANUP
+  loaded_rows: 79884
+  season_and_bettime_rows: 12811
+  later_snapshot_rows_removed: 1132
+  earliest_snapshot_rows_before_exact_dedup: 11679
+  exact_duplicates_removed: 2
+  rows_after_exact_dedup: 11677
+  missing_goalie_rows_in_population: 154
+  missing_goalie_rows_after_cleanup: 148
+  unmerged_betonline_alias_rows: 0
+  quote_groups_before_both_sides_requirement: 5766
+  unpaired_quote_groups: 3
+  all_paired_book_quotes: 5763
+  all_paired_goalie_nights: 1370
+  target_paired_quotes: 1185
+  target_paired_goalie_nights: 1185
+  target_strictly_off_modal: 31
+  target_strictly_off_modal_with_non_target_peer: 31
+  all_mu_inversion_failures: 20
+  all_modal_tie_goalie_nights: 5
+  target_modal_tie_goalie_nights: 5
+
+THRESHOLD COUNTS
+  t=0.02: total=1 OVER=0 UNDER=1
+  t=0.03: total=0 OVER=0 UNDER=0
+  t=0.04: total=0 OVER=0 UNDER=0
+  t=0.05: total=0 OVER=0 UNDER=0
+  t=0.06: total=0 OVER=0 UNDER=0
+  t=0.08: total=0 OVER=0 UNDER=0
+  t=0.10: total=0 OVER=0 UNDER=0
+  t=0.12: total=0 OVER=0 UNDER=0
+  t=0.15: total=0 OVER=0 UNDER=0
+  t=0.20: total=0 OVER=0 UNDER=0
+
+MONTHLY AGGREGATE COUNTS
+  2025-10: {'paired_target_quotes': 14, 'strictly_off_modal': 2, 'strictly_off_modal_with_peer': 2, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2025-11: {'paired_target_quotes': 26, 'strictly_off_modal': 2, 'strictly_off_modal_with_peer': 2, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2025-12: {'paired_target_quotes': 285, 'strictly_off_modal': 17, 'strictly_off_modal_with_peer': 17, 'threshold_0.02_total': 1, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 1, 'thresholds': {'0.02': {'total': 1, 'OVER': 0, 'UNDER': 1}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2026-01: {'paired_target_quotes': 188, 'strictly_off_modal': 5, 'strictly_off_modal_with_peer': 5, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2026-02: {'paired_target_quotes': 119, 'strictly_off_modal': 2, 'strictly_off_modal_with_peer': 2, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2026-03: {'paired_target_quotes': 352, 'strictly_off_modal': 2, 'strictly_off_modal_with_peer': 2, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+  2026-04: {'paired_target_quotes': 201, 'strictly_off_modal': 1, 'strictly_off_modal_with_peer': 1, 'threshold_0.02_total': 0, 'threshold_0.02_OVER': 0, 'threshold_0.02_UNDER': 0, 'thresholds': {'0.02': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.03': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.04': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.05': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.06': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.08': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.10': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.12': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.15': {'total': 0, 'OVER': 0, 'UNDER': 0}, '0.20': {'total': 0, 'OVER': 0, 'UNDER': 0}}}
+
+PEER-BOOK COUNTS: {'paired_target_quotes_histogram': {'1': 7, '2': 89, '3': 407, '4': 682}, 'strictly_off_modal_histogram': {'2': 4, '3': 18, '4': 9}, 'paired_target_nights_valid_peer_presence_by_book': {'betmgm': 1163, 'bovada': 999, 'draftkings': 1164, 'fanatics': 11, 'fanduel': 797}, 'strictly_off_modal_valid_peer_presence_by_book': {'betmgm': 30, 'bovada': 28, 'draftkings': 30, 'fanatics': 2, 'fanduel': 8}, 'threshold_0.02_valid_peer_presence_by_book': {'betmgm': 1, 'bovada': 1, 'draftkings': 1}, 'paired_target_quotes_summary': {'n': 1185, 'min': 1.0, 'q25': 3.0, 'median': 4.0, 'mean': 3.488607594936709, 'q75': 4.0, 'max': 4.0}, 'strictly_off_modal_summary': {'n': 31, 'min': 2.0, 'q25': 3.0, 'median': 3.0, 'mean': 3.161290322580645, 'q75': 4.0, 'max': 4.0}, 'threshold_0.02_summary': {'n': 1, 'min': 3.0, 'q25': 3.0, 'median': 3.0, 'mean': 3.0, 'q75': 3.0, 'max': 3.0}}
+LINE-SPREAD SUMMARIES: {'paired_target_quotes': {'n': 1185, 'min': 0.0, 'q25': 0.0, 'median': 0.0, 'mean': 0.1189873417721519, 'q75': 0.0, 'max': 1.0}, 'strictly_off_modal': {'n': 31, 'min': 1.0, 'q25': 1.0, 'median': 1.0, 'mean': 1.0, 'q75': 1.0, 'max': 1.0}, 'strictly_off_modal_with_peer': {'n': 31, 'min': 1.0, 'q25': 1.0, 'median': 1.0, 'mean': 1.0, 'q75': 1.0, 'max': 1.0}, 'threshold_0.02': {'n': 1, 'min': 1.0, 'q25': 1.0, 'median': 1.0, 'mean': 1.0, 'q75': 1.0, 'max': 1.0}}
+QA ASSERTIONS: {'registered_input_path_exact': True, 'registered_sha256_exact': True, 'loaded_columns_exact': True, 'forbidden_columns_absent': True, 'season_fence_exact': True, 'bettime_only': True, 'earliest_requested_ts_per_event': True, 'exact_duplicate_key_clear': True, 'conflicting_quote_side_prices': 0, 'unexpected_side_labels': [], 'missing_critical_population_values': {'event_id': 0, 'commence_time': 0, 'game_date_eastern': 0, 'requested_ts': 0, 'book': 0, 'side': 0, 'line': 0, 'price_decimal': 0}, 'unmerged_betonline_alias_rows': 0, 'multi_line_paired_book_nights': 0, 'target_duplicate_goalie_nights': 0, 'modal_set_includes_all_tied_maxima': True, 'target_line_outside_entire_modal_set_required': True, 'non_target_peer_required': True, 'line_spread_minimum_applied': False, 'candidate_rows_persisted': False, 'threshold_selected_from_counts': False}
+
+================================================================================
+PRIMARY VERDICT: TOO_SPARSE
+t=0.02 unique strictly off-modal betonlineag goalie-nights: 1
+================================================================================
+Saved aggregate metadata: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_cross_line_volume_recon_20260713_153032\metadata.json
+Saved run log: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_cross_line_volume_recon_20260713_153032\run_log.txt

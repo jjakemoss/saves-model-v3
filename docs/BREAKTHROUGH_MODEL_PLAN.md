@@ -737,13 +737,19 @@ architecture exists to attach it to. Per the pre-registration's own rule
 for Experiment 1, this is recorded as a clean negative for the two
 proposed fixes, not a refutation of the underlying section 2 diagnosis
 (which step 0 and Experiment 1 both independently confirmed) -- re-
-diagnosis, not abandonment, is the indicated next move. One concrete,
-untested lead from the funnel experiment: the deterministic attempt-to-SOG
-projection alone (no XGBoost) had low, well-centered bias; the bias
-reappeared specifically once those features were fed as raw inputs to the
-same flexible XGBoost recipe as everything else. Using the deterministic
-projection as a fixed offset rather than a learnable input is a plausible
-follow-up, not yet attempted.
+diagnosis, not abandonment, was the indicated next move.
+
+**Follow-up (Codex, 2026-07-13): the fixed-offset lead was tested and
+FAILED.** Experiment 9 locked the deterministic attempt-to-SOG rate as a
+Poisson log offset, restricted XGBoost to the 104-column no-pace residual
+feature set, and bundled the fixed-weight early-exit mixture. It failed
+shots bias and Brier versus control on both origins; Origin B also
+inflated the fixed-policy bet rate to 59.3%. The mixture genuinely
+improved marginal lower-tail error and full-distribution log score on both
+origins, but that shape gain did not translate to posted-line probability
+accuracy. Gate A therefore remains failed and the fixed-offset lead is now
+closed, not pending. Full verified numbers are in preregistration section
+12.8.
 
 ### Gate B: data coverage
 
@@ -879,19 +885,29 @@ does not guarantee a beatable market.
    (the deployment-relevant book) has zero 2023-24 coverage, so the
    2024-25 confirmatory touch does NOT proceed this round. See section
    4.7's development-phase result above.
-6. **NEXT ROUND (decided 2026-07-13 after dual independent audit -- Codex
-   and Claude each re-verified the whole round from raw artifacts and
-   converged on the same corrections and the same direction). All items
-   below are zero-credit; the three probes (~2,000 credits) and every
-   purchase downstream of them remain on hold until item 6a reads out.**
+6. **CURRENT NEXT ROUND (updated 2026-07-13 after the independently
+   verified 6a readout).** All items below are zero-credit. Step 6a is
+   complete; its promotion/purchase gate was not met. Purchases remain
+   blocked, and step 6b is now the first implementation priority.
 
-   6a. **Origin C market-state replication -- the priority experiment.**
-   The one statistically real model improvement of the round (Experiment
-   5's Origin B Brier -0.00414, CI [-0.0072, -0.0012]) gets its
-   replication test on a fold no model has been trained on. Design,
-   to be pre-registered in full (a new section appended to
-   `docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md`) BEFORE any test
-   prediction is generated:
+   6a. **DONE -- Origin C market-state replication: P1 PASS; P2
+   INSUFFICIENT SAMPLE.** The run and independent Codex audit are recorded
+   in preregistration section 11.12. The Origin B wiring gate reproduced
+   bit-exactly. On Origin C, market-state features again beat the no-pace
+   control on closing paired Brier: `-0.003111`, CI95
+   `[-0.005039, -0.001192]`, so the incremental accuracy benefit is
+   reproducible. The executable BetOnline selection primary produced only
+   85 qualifying UNDERs, below its registered 100-bet floor; selected ROI
+   was `-11.40%` versus `-5.24%` blind UNDER, delta `-6.16` points,
+   CI95 `[-25.36, +13.25]`. The all-books secondary was also null and
+   the side result flipped to OVER. The model tied the closing market and
+   was worse than the bettime market. Positive drift-adjusted CLV
+   (`+0.12` probability points all books; `+0.19` BetOnline) is real
+   but too small to establish a vig-clearing edge. **Consequence: no
+   promotion, no purchase, and no claim that the Origin B UNDER-selection
+   mechanism replicated.**
+
+   The frozen design that produced this result was:
    - Freeze the exact recipe from `experiment_market_state_20260710_213106`:
      104-feature no-pace control + the 7 market feature columns + match
      indicator, same hyperparameter grid, same selection protocol. No
@@ -900,10 +916,9 @@ does not guarantee a beatable market.
      through 2024-25 with the final 49 days as validation, test =
      2025-26 (2,624 goalie-games; market-feature coverage ~64% train /
      100% val / 100% test -- better than Origin B's 42% train).
-   - Evaluate BOTH passes: the 2025-26 bettime pass (12,811 rows,
-     including 1,212 BetOnline goalie-nights -- the executable window at
-     the executable venue, verified on disk 2026-07-13) and the closing
-     pass (18,220 rows).
+   - Evaluate both passes. The final paired evaluation frames contained
+     5,763 bettime quotes and 5,729 closing quotes; the primary BetOnline
+     bettime universe contained 1,185 gradeable goalie-nights.
    - PRIMARY metrics: paired Brier vs. the no-pace control (must improve
      with cluster CI excluding zero) and selection-over-blind-UNDER ROI
      delta on the BetOnline bettime cut (the model's UNDER picks at the
@@ -925,7 +940,14 @@ does not guarantee a beatable market.
      choice affect the primary metrics (Brier at posted lines is nearly
      dispersion-invariant in the middle; the selection-delta uses the
      same distribution for both arms).
-   6b. **Fixed-offset attempt-to-SOG funnel (second priority).** The
+   6b. **DONE -- fixed-offset attempt-to-SOG funnel FAILED.** Binding
+   implementation and pass/fail rules were written in preregistration
+   section 12 before candidate test predictions. The registered run and
+   independent audits are in section 12.8. The candidate missed the
+   shots-bias bar on both origins (`+0.78`, `+1.99`) and worsened
+   closing Brier versus the no-pace control on both (`+0.00216`,
+   `+0.01526`; B reliably worse). It is not a partial mean-model pass.
+   The tested construction was the
    registered-but-never-tested construction: deterministic funnel
    projection (attempts -> unblocked -> SOG conversion -> exposure) as a
    FIXED offset/base level, with XGBoost restricted to predicting the
@@ -935,33 +957,42 @@ does not guarantee a beatable market.
    minutes, reusing Experiment 6's `shots_rate60` machinery and pooled
    TOI bins. Bar: Gate A bullets 1-3 on both origins, pre-registered
    before running.
-   6c. **Dispersion/shape follow-up (bundled into 6a/6b, not a separate
-   run):** evaluate a fixed-weight pooled early-exit mixture (weight =
+   6c. **DONE -- fixed-weight early-exit shape improved tails but FAILED
+   the combined gate.** The fixed-weight pooled early-exit mixture (weight =
    train-fold early rate, no classifier) + NB2 body as the distribution
    shape, against the corrected Experiment 3 criteria: summed central
    coverage deviation no worse on both origins AND lower-tail gaps
    improved. Experiment 6's metadata already shows this shape had the
    best marginal tail and the best Origin B central coverage of the
-   round; it just was never scored as a standalone shape.
-   6d. **Component G: contract repair only, no re-run.** Before any
-   future lock attempt: (i) move the >=20-graded-bettime-bets minimum
-   into the binding registration text, (ii) require the flagged book's
-   line to be strictly off-modal, (iii) add the venue-accessible
-   (BetOnline-present) cut as a registered reporting slice. Then a
-   zero-outcome-touch volume recon on 2025-26 (count candidate off-modal
-   BetOnline-night quotes only -- no grading, no outcome columns loaded)
-   to determine whether a valid lock is even arithmetically feasible
-   (2023-24's ~11 bettime flags/season says the strategy is intrinsically
-   low-volume). Component G stays secondary until 6a reads out.
-   6e. **Purchase policy:** if 6a replicates (both primary CIs exclude
-   zero in the model's favor), the market-anchored model is promoted to
-   the 2026-27 shadow/token-stake program (step 14) and the 2024-25
-   bettime-pass purchase (~13,110 credits, section 5.3) becomes worth
-   reconsidering -- it would backfill the one executable-window season
-   this line of evidence still lacks. If 6a fails to replicate, the
-   market-state result was an Origin B artifact; fall back to 6b/6c
-   findings and re-assess. No purchase before the 6a readout in either
-   case.
+   round. In Experiment 9 it improved aggregate lower-tail error and
+   negative log score on both origins, and central coverage on B, but
+   worsened central coverage on A and could not repair the mean/Brier
+   failures. Retain it only as a possible shape layer for a future mean
+   architecture; it is not independently promotable.
+   6d. **DONE -- Component G executable form is TOO SPARSE.** The repaired
+   binding contract was registered in preregistration section 13 before
+   any 2025-26 count: the 20-bet minimum is now explicit, the target must
+   be outside every tied modal line, and the primary is the accessible
+   `betonlineag` cut. The zero-outcome-touch recon found 1,185 paired
+   BetOnline goalie-nights but only 31 strictly off-modal quotes; the
+   frozen scorer flagged just **one** at the loosest `0.02` threshold and
+   zero at every higher threshold. Independent reconstruction reproduced
+   every count. Since `1 < 20`, no valid threshold can exist in this
+   season even before outcome matching. Component G is closed without
+   grading or a confirmatory touch. Revisit only if access to a materially
+   different venue or quote product expands the candidate universe; do
+   not weaken the corrected contract to manufacture volume.
+   6e. **Purchase policy -- gates evaluated, NOT MET.** Step 6a required
+   both primaries to pass. P1 passed, but P2 was insufficient and
+   directionally unfavorable, so the market-anchored model is not
+   promoted and the 2024-25 bettime-pass purchase remains unauthorized.
+   This is not evidence that the market-state feature gain was an Origin
+   B artifact -- P1 replicated it -- but it is evidence that better
+   accuracy relative to the internal control has not translated into an
+   executable venue edge. Experiment 9 then failed the 6b/6c Gate-A
+   architecture bars on both shots level and Brier. Reconsider purchases
+   only after a new preregistered architecture clears its own gate or a
+   future untouched bettime season supplies a valid replication target.
 7. Freeze the opening anchor and full-purchase rules.
 8. Purchase the 2024-25 opening saves pass if its probe gate passes.
 9. Build and test the opening-to-close movement model (drift-baseline and
@@ -969,10 +1000,10 @@ does not guarantee a beatable market.
 10. Purchase two seasons of player SOG only if its probe gate passes AND the
     movement model shows evidence worth feeding.
 11. Build the synthetic cross-market fair saves distribution.
-12. Implement the venue-relative bet-time filter (`check_venue_value.py`,
-    section 1a / Component G deployed form) in the daily workflow so the
-    shadow run logs its verdicts from opening night, whether or not the
-    Component G gate passed (a filter that never fires is itself data).
+12. Deprioritize the venue-relative Component G filter: the corrected
+    BetOnline form produced only one candidate in a season. If retained
+    for shadow telemetry, log it as a dormant diagnostic only; do not
+    present it as a candidate betting policy.
 13. Lock the final candidate before the 2026-27 season.
 14. Run the candidate in shadow mode with token stakes and live CLV
     tracking. This season is explicitly a MEASUREMENT season: its job is to

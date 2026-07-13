@@ -943,3 +943,543 @@ implementation defects, corrected here so this document stays honest:
    and at closing timestamps rather than the executable window; it
    authorizes nothing except the pre-registered Origin C replication
    described in the plan's section 10 next-round entry.
+
+---
+
+## 11. Experiment 8 -- Origin C market-state replication
+
+Registered 2026-07-13 by the lead reviewer (Claude), BEFORE any Origin C
+model or test prediction existed anywhere in this repo. This is the plan's
+section 10 step 6a. Unlike the round-1 experiments (section 0.2's
+concurrency caveat), this registration is temporally strict: nothing below
+was chosen after seeing any 2025-26 model output.
+
+**11.1 Hypothesis.** Experiment 5's Origin B result -- market game-state
+features (Component C) produce a real paired-Brier improvement over the
+no-pace control -- replicates on a fold no model in this repo has ever
+been trained toward (test = 2025-26). Secondarily, the post-hoc UNDER-
+selection observation (section 10.1 item 5) generalizes to the executable
+venue and window: the model's UNDER picks at BetOnline bettime quotes
+outperform betting every UNDER quote in the same universe.
+
+**11.2 Frozen recipe -- nothing may be reselected.** Exact feature sets
+from `experiment_market_state_20260710_213106/metadata.json`: the
+104-column no-pace control shots feature list, plus the 7 `mkt_*` market
+feature columns, plus the `mkt_matched` indicator; the same hyperparameter
+grid and validation-selection protocol as that run (via the same script
+lineage); shared save-rate model design unchanged; `ORIGIN_CAP` 90; fixed
+EV threshold 0.05; goalie-night cluster bootstrap, 10,000 resamples, seed
+42. No new features, no removals, no grid changes, no threshold changes.
+
+**11.3 Folds (rolling-origin convention, carved with
+`ero.carve_origin_split`).** Origin C pool = seasons 2022-23 + 2023-24 +
+2024-25; validation = final 49 days of the pool date range; train = the
+rest. Test = season 20252026 (expected 2,624 goalie-games). 2025-26 must
+not appear in train or val in any form. Market-feature join coverage
+(verified 2026-07-13 before registration): 0% of 2022-23, ~100% of
+2023-24 onward -- roughly 64% of train rows, 100% of val and test.
+
+**11.4 Data inventory (verified on disk 2026-07-13, quote counts recorded
+before any model existed).** Features: `clean_training_data.parquet`,
+`game_context_features.parquet`, `pace_features.parquet`,
+`market_game_features.parquet` (the `is_latest_pregame_snapshot` view,
+same construction as Experiment 5). Closing-pass 2025-26 quotes:
+`multibook_classification_training_data.parquet`, season 20252026 (5,729
+paired quotes, 2025-10-07..2026-04-13; `book_key` counts: betmgm 1,231,
+betonlineag 1,034, draftkings 1,063, bovada 1,026, underdog 927, fanatics
+274, betonline 174). The `betonline` vs `betonlineag` key split (174 vs
+1,034 rows) must be diagnosed and reported BEFORE grading -- if they are
+the same book under two labels, say so and merge with justification; if
+provenance is unclear, use `betonlineag` only and report the exclusion.
+Bettime-pass 2025-26 quotes: `saves_lines_snapshots.parquet`,
+`snapshot_pass == "bettime"` (12,811 rows, of which 2,662 betonlineag
+across 1,212 goalie-nights); over/under sides must be paired per book/
+line/goalie-night (the pairing pattern in
+`scripts/experiment_cross_line_pricing.py` is the reference
+implementation) and graded against `clean_training_data` saves.
+
+**11.5 Wiring gate (mandatory, before any Origin C test prediction).**
+The new script must first re-run Origin B through its own code path and
+reproduce `experiment_market_state_20260710_213106`'s recorded Origin B
+paired Brier delta vs. control at closing (mean -0.0041404) to within
+1e-4, with the same n_bets (7,463) and n_clusters (2,510). If it does not
+reproduce, STOP and report -- do not proceed to 2025-26.
+
+**11.6 Viewed-data status of the test fold.** 2025-26 outcomes are
+"viewed" (the live production betting record on that season is known and
+UNDER-heavy). No model was ever trained or selected on it, but a raw ROI
+number on 2025-26 UNDERs is worthless as evidence by construction. The
+primary metrics below are chosen to be robust to this: P1 is side-neutral
+and market-relative; P2 nets out the season-wide direction by
+differencing against blind-UNDER on the identical quote universe.
+
+**11.7 PRIMARY metrics and pass bars (both must pass; plan step 6e's
+"replicates" means exactly this).**
+- **P1 (accuracy replication):** paired Brier delta (market-state variant
+  minus no-pace control), model probability at each posted line, closing
+  pass, all books, non-push rows, goalie-night cluster bootstrap. PASS =
+  CI95 entirely below zero.
+- **P2 (executable selection effect):** on the universe U = paired,
+  gradeable `betonlineag` bettime quotes for test-fold games (pushes
+  excluded from grading per standard convention): model arm = UNDER bets
+  where the market-state model's EV(UNDER) >= 0.05; blind arm = UNDER on
+  every quote in U. Per bootstrap resample (resampling goalie-night
+  clusters once, both arms computed within the same resample), delta =
+  ROI_model - ROI_blind. PASS = CI95 entirely above zero. American-odds
+  profit convention: win pays odds/100 (positive) or 100/|odds|
+  (negative); loss = -1. Resamples with an empty model arm are counted
+  and reported; if they exceed 1% of resamples, P2 is UNSTABLE (no pass).
+  If the model arm has fewer than 100 graded bets, P2 is INSUFFICIENT
+  SAMPLE (no pass, not a fail -- report and stop there).
+
+**11.8 SECONDARY metrics (report, no gate):** Brier vs. de-vigged market
+(closing and bettime); OVER/UNDER ROI splits at the fixed threshold, both
+passes, all-books and BetOnline cuts; the all-books bettime
+selection-over-blind delta; bettime-to-close CLV of the model's flagged
+bets net of the unconditional 2025-26 drift baseline (same matched-quote
+convention as the Component G run); shots-model signed bias and MAE on the
+test fold for both variants; join coverage by fold.
+
+**11.9 Dispersion policy (per the Experiment 3 correction, section 10.1
+item 1).** Headline results use validation-fitted NB2 dispersion --
+matching the frozen Origin B recipe being replicated, NOT because it is
+an adopted default. Train-fitted dispersion results are produced
+side-by-side as a sensitivity check: if either P1 or P2 flips sign under
+train-fitted dispersion, the replication is reported as
+DISPERSION-FRAGILE (no pass).
+
+**11.10 Forbidden.** Adding/removing/reweighting features; any
+hyperparameter, threshold, or calibration reselection; introducing new
+post-hoc slices as results (anything exploratory goes in a clearly
+labeled exploratory block of metadata and is excluded from the verdict);
+touching 2025-26 rows during training/validation; re-running with
+variations after seeing P1/P2 (one shot -- if the wiring gate passes and
+the run completes, the first P1/P2 numbers are the result); consuming any
+Odds API credit or network resource.
+
+**11.11 Consequence mapping (fixed in advance).** PASS (P1 and P2 both
+pass, dispersion-stable): the market-anchored model is promoted per plan
+step 6e -- 2026-27 shadow/token-stake candidacy, and the 2024-25
+bettime-pass purchase becomes worth reconsidering. FAIL of P1: Experiment
+5's Origin B result is treated as origin-specific; Component C drops out
+of the front of the queue. FAIL of P2 alone (P1 passing): the accuracy
+gain is real but the executable-venue selection effect is not
+demonstrated at bettime; no purchase, no promotion, revisit with 6b/6c
+architecture work. INSUFFICIENT SAMPLE on P2: report, and the closing-
+pass all-books selection delta (secondary) informs -- but does not decide
+-- whether a bettime re-test on 2026-27 live data is worth the wait.
+
+**11.12 Results -- P1 PASS; P2 INSUFFICIENT SAMPLE (Codex-verified
+2026-07-13).** Experiment 8 ran once, without network access or Odds API
+credit, through `scripts/experiment_market_state_origin_c.py`. Artifacts
+are in
+`models/trained/experiment_market_state_origin_c_20260713_140706/`.
+The mandatory wiring gate reproduced Origin B exactly: paired-Brier mean
+`-0.0041404240194266384`, 7,463 rows, and 2,510 goalie-night clusters.
+Origin C then used 7,134 train rows (2022-10-07 through 2025-02-27), 738
+validation rows (2025-02-28 through 2025-04-17), and the expected 2,624
+test rows from 2025-26 only.
+
+- **P1 PASS:** market-state minus no-pace-control paired Brier was
+  `-0.003111`, CI95 `[-0.005039, -0.001192]`, across 5,729 closing
+  quotes and 2,070 goalie-night clusters. Train-fitted dispersion gave
+  `-0.003171`, so the sign did not depend on the dispersion fit.
+- **P2 INSUFFICIENT SAMPLE:** the gradeable BetOnline bettime universe
+  contained 1,185 goalie-nights, but only 85 qualified model UNDER bets,
+  below the registered 100-bet floor. Model-arm ROI was `-11.40%`
+  versus `-5.24%` for blind UNDER, a `-6.16`-point delta with CI95
+  `[-25.36, +13.25]`. This is not a registered failure, but the point
+  estimate is unfavorable. The all-books secondary was also unsupportive:
+  434 selected UNDERs, delta `-0.85` points, CI95
+  `[-18.34, +16.54]`.
+- **Market-relative accuracy:** the market-state model was statistically
+  tied with the de-vigged closing market (Brier delta `+0.00049`, CI95
+  `[-0.00271, +0.00375]`) and worse than the bettime market (`+0.00383`,
+  CI95 `[+0.000001, +0.00752]`). It improved its own control; it did not
+  demonstrate superior probability estimates to the executable market.
+- **The Origin B UNDER mechanism did not replicate:** fixed-threshold
+  all-books ROI was carried by OVER at both closing (`+8.26%` OVER versus
+  `-2.74%` UNDER) and bettime (`+3.24%` versus `-5.75%`). At BetOnline
+  bettime, OVER returned `+2.51%` and UNDER `-11.40%`.
+- **CLV remained positive but small:** flagged-bet probability CLV net of
+  2025-26 unconditional drift was `+0.00121`, CI95
+  `[+0.00033, +0.00209]`, on 1,073 matched bets / 307 clusters all
+  books and `+0.00194`, CI95 `[+0.00089, +0.00303]`, on 240 matched
+  BetOnline bets / clusters. This is 0.12-0.19 probability points, not
+  evidence of a vig-clearing outcome edge by itself.
+- **Other checks:** market features slightly improved shots MAE
+  (`5.408` to `5.360`) while increasing signed bias (`+0.235` to
+  `+0.422`). Market-feature join coverage was 63.16% train, 100% val,
+  and 99.92% test. The `betonline`/`betonlineag` closing keys were traced
+  to the same book through non-overlapping source paths and merged only
+  for the relevant secondary cuts; P2 contained `betonlineag` only.
+  The frozen function named `calculate_ev` computes probability edge
+  (model probability minus implied probability), not monetary expected
+  return; the run correctly preserved that registered repository
+  convention rather than silently changing the policy.
+
+Codex independently reconstructed P1, P2, side ROI, market-relative
+Brier, drift, and CLV directly from the saved prediction parquet and raw
+closing/bettime quote parquets, using separate code and different
+bootstrap seeds. Point estimates matched exactly; confidence intervals
+matched within expected bootstrap noise. The four logged implementation
+deviations are representational or code-path differences with no numeric
+effect. The registered consequence is therefore binding: **no promotion,
+no data purchase, and no claim that the executable UNDER-selection edge
+replicated.** Component C has a reproducible accuracy benefit over the
+no-pace control, but the current model remains at best market-parity and
+does not have a demonstrated bettime betting edge.
+
+---
+
+## 12. Experiment 9 -- Fixed-offset funnel plus fixed-weight exposure mixture
+
+Registered 2026-07-13 by Codex, before any Experiment 9 candidate model
+or Origin A/B candidate prediction existed. This is plan steps 6b and 6c
+as one zero-credit experiment. Origins A and B are viewed development
+seasons, so even a full pass is architecture evidence, not an untouched
+betting-edge confirmation.
+
+**12.1 Hypothesis.** The prior attempt-to-SOG funnel failed because its
+stages were offered to XGBoost as ordinary features and its exposure
+stage used starter share. The deterministic projection itself was nearly
+centered. Locking that projection as a workload-rate offset, allowing the
+learner to estimate only a multiplicative residual, and representing
+early exits with a constant train-fold exposure mixture can remove the
+shots-level bias without sacrificing Brier or central calibration.
+
+**12.2 Fixed-offset workload-rate model.** Reuse the strictly prior-only
+funnel arithmetic from `scripts/experiment_season_funnel.py`, but remove
+`fnl_starter_share`. Define:
+
+```text
+A = opp_corsi_ema5 * team_corsi_against_ema5 / prior_league_corsi
+F = A * opp_unblocked_frac * team_unblocked_frac
+      / prior_league_unblocked_frac
+c = prior_league_sog / prior_league_fenwick
+r_opp  = (opp_shots_roll10 / opp_fenwick_ema5) / c
+r_team = (team_shots_against_roll10 / team_fenwick_against_ema5) / c
+lambda0_60 = F * c * sqrt(clip(r_opp, 0.5, 2.0)
+                           * clip(r_team, 0.5, 2.0))
+```
+
+League rates exclude the entire current game date. Missing offsets use a
+fixed `30.0 SOG/60` fallback and their count is reported; no test row may
+be dropped. This simple fallback is locked to avoid choosing a prior-
+season or rolling fallback after seeing which helps.
+
+The target is `y60 = shots_against / (max(TOI_minutes, 10) / 60)`, with
+the training target winsorized at the train-fold 99.5th percentile only.
+Use the existing `ds.SHOTS_CONFIGS`, `objective="count:poisson"`, and
+select by validation rate60 MAE. The deterministic rate is XGBoost's raw
+margin:
+
+```text
+z_i = log(max(lambda0_60_i, 1e-3))
+lambda_hat_60_i = exp(z_i + f_theta(X_i))
+```
+
+`base_margin=z` must be supplied for train, validation, and every
+prediction. `X` is exactly the 104 no-pace base+engineered columns. No
+`fnl_*`, pace, context, offset, actual TOI, or current-game outcome
+column may enter `X`. An additive squared-error residual model and a
+free-input funnel variant are forbidden.
+
+**12.3 Exposure and distribution shape.** From each origin's training
+fold only, define `pi = mean(TOI < 50)`; build Laplace-1 empirical TOI
+weights using 5-minute bins on `[0,50)` and 1-minute bins on `[50,66)`.
+No exposure classifier is trained. Let `Tbar` be the mixture-weighted
+mean of those bins. The single-body arm uses
+`mu_i = lambda_hat_60_i * Tbar / 60`. The fixed-mixture arm is:
+
+```text
+P_mix(S=s) =
+  pi * sum_b w_early,b  H(s | lambda_hat_60 * t_b/60, alpha, q_i)
+  + (1-pi) * sum_b w_normal,b H(s | lambda_hat_60 * t_b/60, alpha, q_i)
+```
+
+where `H` is the existing NB2-shots/Binomial-saves compound PMF,
+`ORIGIN_CAP=90`, and `q_i` comes from one shared no-pace save-rate
+model. The single and mixture arms therefore have the same expected mean;
+only distributional shape differs.
+
+The PRIMARY body `alpha` is fit once per origin on validation residuals
+using rate predictions composed with actual validation TOI. This uses TOI
+only to calibrate the exposure-conditioned body variance; actual test TOI
+is forbidden in every prediction. The same alpha is shared by the single
+and mixture arms. A train-fitted-alpha version using actual train TOI is
+reported as a sensitivity analysis only; no per-origin alpha selection is
+allowed.
+
+**12.4 Folds, baseline, and wiring gate.** Reuse
+`season_date_range`, `carve_origin_split`, and
+`date_range_test_idx` unchanged:
+
+- Origin A: train 2022-10-07..2023-02-24; val
+  2023-02-25..2023-04-14; test season 2023-24.
+- Origin B: train 2022-10-07..2024-02-29; val
+  2024-03-01..2024-04-18; test season 2024-25.
+
+The Gate-A baseline is the exact no-pace control: direct shots-count
+model, same 104 columns/grid, shared save-rate recipe, and identical
+joined quote rows. Before candidate test predictions, the new script must
+reproduce the prior no-pace test shots biases `+0.4419625` (A) and
+`+0.0308310` (B) within `1e-4`, plus its closing-pass Brier point
+scores `0.2552057011` (A) and `0.2512895068` (B) within `1e-6`. If
+the gate fails, stop. Do not run the candidate.
+
+**12.5 PRIMARY pass bars -- all are required on both origins.**
+
+1. **Shots level:** combined candidate
+   `abs(mean(mu_pred - shots_against)) < 0.5`.
+2. **Probability accuracy:** on identical closing quote rows,
+   `Brier(candidate fixed mixture) - Brier(no-pace control) < 0`.
+   Report a 10,000-resample goalie-night cluster CI. A point improvement
+   with CI crossing zero technically clears the inherited Experiment 2
+   bar but must be called statistically weak.
+3. **Central coverage:** on all 2,624 test starts,
+   `D = abs(cov50-50) + abs(cov80-80)`; require
+   `D_mixture <= D_single`. Inclusive discrete-PMF 25/75 and 10/90
+   quantiles are fixed.
+4. **Lower-tail calibration:** for
+   `K={5,10,15,20,25,30}`, define
+   `L = sum_k abs(mean(F_i(k)) - mean(1[saves_i<=k]))`; require
+   `L_mixture < L_single`. No cutoff may be selected or omitted after
+   viewing results.
+5. **No extreme edge inflation:** closing-pass bet rate under the
+   repository's fixed 0.05 probability-edge policy must remain in the
+   historical 15%-45% band.
+
+No averaging across origins is allowed. Failure of any bar on either
+origin means the combined 6b/6c Gate-A candidate fails. If shots bias and
+Brier pass but the mixture bars fail, report the fixed-offset mean model
+as a partial mechanism result, not a Gate-A pass.
+
+**12.6 SECONDARY metrics.** Report test shots MAE; randomized PIT;
+full-distribution negative log score; coverage and lower-tail tables;
+paired Brier versus the de-vigged market; side calibration; fixed-0.05
+bet count/rate/ROI with goalie-night cluster CIs; train-alpha
+sensitivity; test `TOI<50` diagnostics clearly labeled postgame-only;
+offset raw coverage and fallback counts; persisted offset formula,
+winsor cap, `pi`, TOI bins, alpha, feature list, models, predictions,
+metadata, and run log.
+
+**12.7 Forbidden and consequence.** No Odds API or network use; no new
+features; no hyperparameter, bin, cutoff, alpha, threshold, or fallback
+selection against either test fold; no ROI-based variant choice; no
+actual test TOI in predictions; no dropped test rows; no second candidate
+run after viewing the first completed P1-P5 readout. A full pass
+authorizes the low-credit Gate-B data probes and a frozen future-season
+shadow candidate, not live-stake promotion or a claim of market edge. A
+failure leaves purchases blocked and moves the queue to plan step 6d or
+a newly preregistered architecture justified by the failure mechanism.
+
+**12.8 Results -- COMBINED GATE A FAIL (Codex-verified 2026-07-13).**
+Experiment 9 ran once through
+`scripts/experiment_fixed_offset_mixture.py`; artifacts are in
+`models/trained/experiment_fixed_offset_mixture_20260713_144811/`.
+Both mandatory no-pace wiring gates reproduced exactly before candidate
+test prediction: A bias/Brier `+0.441962493 / 0.255205701`; B
+`+0.030831029 / 0.251289507`. The exact 104-column feature identity,
+Origin A/B folds, every candidate `base_margin` call, model reloads,
+train-only exposure parameters, offset fallbacks, and zero-network policy
+all passed audit.
+
+| Registered bar | Origin A | Origin B |
+|---|---:|---:|
+| P1: `abs(shots bias) < 0.5` | `+0.778396` -- **FAIL** | `+1.991173` -- **FAIL** |
+| P2: mixture minus control closing Brier `< 0` | `+0.002161`, CI95 `[-0.002530,+0.007015]` -- **FAIL** | `+0.015262`, CI95 `[+0.008460,+0.022075]` -- **FAIL** |
+| P3: mixture central deviation no worse than single | `4.8323 vs 3.5137` -- **FAIL** | `1.5168 vs 5.5716` -- **PASS** |
+| P4: mixture aggregate lower-tail error below single | `0.091605 vs 0.123107` -- **PASS** | `0.298533 vs 0.329355` -- **PASS** |
+| P5: closing bet rate 15%-45% | `41.914%` -- **PASS** | `59.333%` -- **FAIL** |
+
+The fixed-offset mean model is not a partial mechanism pass: P1 and P2
+failed on both origins. Candidate shots MAE also worsened versus control
+(A `5.7960 vs 5.7556`; B `5.7068 vs 5.4117`). Closing ROI was
+`-2.33%` on 3,722 A bets, CI crossing zero, and `-3.95%` on 4,428 B
+bets, CI crossing zero. The candidate was significantly worse than the
+de-vigged market on Brier on both origins.
+
+The distribution-shape result is real but insufficient: the fixed
+mixture improved aggregate lower-tail error and full-distribution
+negative log score on both origins (single to mixture: A
+`3.5627 -> 3.4242`; B `3.5124 -> 3.3928`). It improved central
+coverage only on B. A constant roughly 5%-6% early-exit component adds
+useful marginal tail mass, but cannot identify the actual short starts:
+postgame-only `TOI<50` bias remained `+14.66` shots on A and
+`+15.30` on B. Smearing that tail mass across every game therefore
+improves whole-distribution scoring while degrading the posted-line
+probabilities that drive betting. Train-alpha sensitivity did not rescue
+any conclusion.
+
+Codex independently rebuilt P1-P5, PMF coverage/tails/log scores, policy
+ROI, quote probabilities, fallbacks, and fresh-seed cluster CIs from the
+saved parquets. Two additional independent agents separately audited the
+code and recomputed the artifacts; neither found a material leakage,
+wiring, fold, or metric defect. The audit made two label/guard-only
+corrections without a rerun: `statistically_weak` now applies only to a
+negative Brier improvement whose CI crosses zero, and future runs verify
+PMF expected means directly. Current single-vs-mixture PMF expected-saves
+gaps are at most `0.00121` saves from cap truncation and are immaterial.
+The one Origin A integer-line push follows the inherited harness's
+binary-over convention; changing that single row does not affect a
+verdict.
+
+**Binding consequence:** purchases remain blocked; this architecture is
+not promoted or rerun. Retain the fixed-weight mixture only as a possible
+shape layer if a future, independently justified mean model exists. The
+next queued item is plan 6d: repair Component G's contract and run only
+the predeclared outcome-blind 2025-26 volume reconnaissance.
+
+---
+
+## 13. Experiment 10 -- Component G executable-volume reconnaissance
+
+Registered 2026-07-13 by Codex before any 2025-26 Component G candidate
+count was calculated. This repairs the omissions identified in the dual
+audit of Experiment 7 and performs only an outcome-blind arithmetic
+screen. It does not grade a bet, select or validate a policy, or authorize
+an outcome touch.
+
+**13.1 Question and binding population.** Does the available 2025-26
+bettime archive contain at least 20 unique, executable BetOnline goalie-
+nights that the frozen cross-line scorer flags at its most permissive
+predeclared threshold after the target quote is required to be strictly
+off-modal? The binding target is `book == "betonlineag"` in
+`data/processed/saves_lines_snapshots.parquet`; the `betonline` alias from
+the separate live-tracker fallback is not merged. Use season dates
+2025-08-01 through 2026-07-31, `snapshot_pass == "bettime"`, and at most
+one selected quote per `(event_id, goalie_id)`.
+
+**13.2 Outcome firewall and input identity.** The reconnaissance may open
+exactly one row-bearing input, the snapshot parquet above, pinned at
+SHA-256
+`E81CA4EA01B1DFB3F69068782B75E18B4D174BEF82DD34D8E341B59CBC94ED56`.
+It must read only:
+
+```text
+event_id, commence_time, game_date_eastern, requested_ts, resolved_ts,
+snapshot_pass, book, goalie_id, side, line, price_decimal
+```
+
+The script must not open `clean_training_data.parquet`, a closing frame,
+the betting database, or any result table; must not load or derive saves,
+shots against, goals against, TOI, result, grade, outcome, profit, ROI, or
+CLV; and must contain no outcome join or outcome-calibration call. The
+embedded `goalie_id` has historical postgame matching lineage, so this is
+accurately described as **no outcome columns loaded**, not as a guarantee
+that the source parquet's identity lineage was built without postgame
+information.
+
+**13.3 Quote cleanup, pairing, and modal rule.** Within the allowed season
+and pass, retain the earliest `requested_ts` per event. Drop only exact
+duplicates on `(event_id, requested_ts, book, goalie_id, side, line,
+price_decimal)`. Abort on conflicting prices for the same quote key/side
+or on more than one paired line for a `(event_id, goalie_id, book)`; do not
+silently take the first. Pair OVER and UNDER only at the exact
+`(event_id, goalie_id, book, line, commence_time, game_date_eastern)` key
+and require both prices.
+
+Compute line frequencies from all paired books before selecting
+BetOnline. The modal set is **every** line tied for the maximum distinct-
+book count. A target is strictly off-modal only if its line is outside
+that entire set; the old directionally asymmetric `mode().min()` tie rule
+is forbidden. No separate full-save line-spread minimum is imposed,
+because Experiment 7 never bound one into `flag_bets`; line spread must be
+reported as a diagnostic.
+
+**13.4 Frozen reconnaissance scorer.** Freeze the Experiment 7 NB2
+translator exactly for volume measurement: `alpha=0.100000`, support cap
+70, paired-price additive de-vigging, quote-to-NB2-mean inversion, and a
+leave-one-book-out consensus formed by averaging the other books' implied
+means. Require at least one non-BetOnline peer. Translate that consensus
+mean to BetOnline's posted line and define:
+
+```text
+gap_side = translated fair probability - raw vig-inclusive implied probability
+```
+
+At threshold `t`, select OVER only when `gap_over >= t` and
+`gap_over > gap_under`; otherwise select UNDER when `gap_under >= t`.
+This preserves Experiment 7's scorer and American-rounding convention.
+It is a frozen counter, not a rehabilitated model or valid betting policy.
+
+Report every threshold in the old predeclared grid:
+`0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.10, 0.12, 0.15, 0.20`.
+No threshold may be selected from these counts, and `0.02` remains an
+invalid fallback rather than a lock.
+
+**13.5 Primary arithmetic gate and reporting.** The primary count is the
+number of unique strictly off-modal `betonlineag` goalie-nights at
+`t=0.02`. Because the thresholds are nested:
+
+- `<20` candidates means every future threshold necessarily fails the
+  minimum and Component G is arithmetically too sparse at the user's
+  accessible venue. Deprioritize it; no outcome touch follows.
+- `>=20` candidates means only that a future lock may be arithmetically
+  possible. It does not pass Component G, prove edge, select a threshold,
+  or authorize an outcome touch without a separate preregistration.
+
+For each threshold report total unique candidates and OVER/UNDER counts.
+Also report the full BetOnline paired-quote denominator, strictly off-
+modal denominator, month counts, peer-book counts, line-spread summaries,
+missing-goalie counts, exact duplicates removed, and all fail-closed QA
+assertions. Persist aggregate counts and metadata only; do not persist
+identifiable candidate rows.
+
+**13.6 Repaired future lock rule -- not executed here.** Any separately
+authorized outcome-bearing development run must apply quote cleanup,
+strict off-modal status, BetOnline accessibility, side selection, and
+outcome matching before testing eligibility. A threshold requires both
+`>=20` unique graded BetOnline bettime goalie-nights and `>=20` of those
+with non-null exact-line closing consensus before its clustered CLV can
+be evaluated. The smallest eligible predeclared threshold whose goalie-
+night-clustered 95% CI for CLV net of unconditional drift is entirely
+above zero may be locked; any fallback remains `NO LOCK`. An untouched
+chronological confirmation must then show a BetOnline-only clustered ROI
+CI entirely above zero, report sides separately, and pass concentration
+checks. Inaccessible-book results cannot carry the decision.
+
+**13.7 Results -- TOO SPARSE (Codex-verified 2026-07-13).** The registered
+reconnaissance ran once through
+`scripts/experiment_cross_line_volume_recon.py`; aggregate-only artifacts
+are in
+`models/trained/experiment_cross_line_volume_recon_20260713_153032/`.
+The input hash matched the registration, exactly the 11 allowed columns
+were selectively loaded, and no outcome, closing, database, grading, ROI,
+CLV, or network path was opened. The run used zero Odds API credits.
+
+After the earliest-request and exact-duplicate rules, 5,763 paired book
+quotes covered 1,370 goalie-nights. BetOnline supplied 1,185 paired
+goalie-night quotes. Only 31 were strictly outside the complete tied-
+modal set; all 31 had at least one valid non-BetOnline peer. The frozen
+scorer then produced:
+
+| Threshold | Total | OVER | UNDER |
+|---:|---:|---:|---:|
+| `0.02` | **1** | 0 | 1 |
+| `0.03` through `0.20` | **0** at every threshold | 0 | 0 |
+
+The primary arithmetic gate therefore fails decisively: `1 < 20`. The
+one candidate occurred in December 2025; it is not graded and carries no
+edge interpretation. Every strictly off-modal BetOnline quote represented
+exactly a one-save line spread. Twenty NB2 inversions failed across the
+full all-book frame, but none reduced the 31-row target off-modal/peer
+denominator, and the registered fail-closed handling was preserved.
+
+Codex reviewed the script and artifact directly. A separate agent rebuilt
+the result from the raw snapshot parquet without importing the experiment
+script and reproduced every denominator, monthly count, threshold/side
+count, and QA result exactly. A second static audit found no material
+implementation, firewall, scorer, modal-set, persistence, or verdict
+defect. It noted only that sparse month/peer/line-spread aggregates can
+narrowly describe the lone anonymous candidate; no event, goalie, quote,
+or outcome identifier is persisted.
+
+**Binding consequence:** Component G's strictly off-modal BetOnline form
+is arithmetically nonviable on this season and is closed without an
+outcome touch. No threshold is locked, no grading or confirmatory run is
+authorized, and purchases remain blocked. Revisit only if a materially
+different executable venue or quote product creates a much larger
+pre-registered candidate universe; do not loosen the off-modal rule or
+minimum after seeing this count.
