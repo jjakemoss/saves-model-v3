@@ -1,0 +1,608 @@
+================================================================================
+SEASON-NORMALIZED PACE / ATTEMPT-TO-SOG FUNNEL EXPERIMENT
+Plan: docs/BREAKTHROUGH_MODEL_PLAN.md sections 4.2, 6.2 items 1-3, Gate A (section 7)
+Pre-registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md sections 1-4
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+Raw pace_features.parquet: 10496 rows, 54 columns.
+Pace join keys: ['game_id', 'goalie_id', 'team_abbrev', 'opponent_team', 'game_date']; coverage 10496/10496 (100.00%).
+Pace feature NaNs retained for XGBoost missing-value handling (top nonzero null counts: {'goalie_xg_per_shot_roll10': 346, 'goalie_xg_per_shot_ema5': 346, 'goalie_high_danger_share_ema5': 346, 'goalie_rebound_rate_ema5': 346, 'combined_all_corsi_ema5_prior_league_z': 164, 'combined_all_xg_ema5_prior_league_z': 164, 'combined_all_corsi_ema5': 156, 'combined_all_fenwick_ema5': 156, 'combined_all_xg_ema5': 156, 'combined_5v5_corsi_ema5': 156, 'combined_5v5_xg_ema5': 156, 'opp_off_all_corsi_ema5_prior_league_z': 146}).
+Pace source coverage flags: {'pace_team_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_opponent_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_goalie_all_matched': {'match_rate_pct': 99.9904725609756, 'missing_rows': 1}}
+Pace shots feature columns: 41 -> ['opp_off_all_corsi_s2d_mean', 'opp_off_all_corsi_roll5', 'opp_off_all_corsi_roll10', 'opp_off_all_corsi_ema5', 'opp_off_all_corsi_prior_season_mean', 'opp_off_all_fenwick_s2d_mean', 'opp_off_all_fenwick_ema5', 'opp_off_all_xgf_s2d_mean', 'opp_off_all_xgf_ema5', 'opp_off_5v5_corsi_ema5', 'opp_off_5v5_xgf_ema5', 'opp_off_all_score_adj_corsi_ema5', 'team_def_all_corsi_against_s2d_mean', 'team_def_all_corsi_against_roll5', 'team_def_all_corsi_against_roll10', 'team_def_all_corsi_against_ema5', 'team_def_all_corsi_against_prior_season_mean', 'team_def_all_fenwick_against_s2d_mean', 'team_def_all_fenwick_against_ema5', 'team_def_all_xga_s2d_mean', 'team_def_all_xga_ema5', 'team_def_5v5_corsi_against_ema5', 'team_def_5v5_xga_ema5', 'team_def_all_score_adj_corsi_against_ema5', 'combined_all_corsi_ema5', 'combined_all_fenwick_ema5', 'combined_all_xg_ema5', 'combined_5v5_corsi_ema5', 'combined_5v5_xg_ema5', 'opp_pp_corsi_s2d_mean', 'opp_pp_corsi_ema5', 'opp_pp_xgf_s2d_mean', 'opp_pp_xgf_ema5', 'team_pk_corsi_against_s2d_mean', 'team_pk_corsi_against_ema5', 'team_pk_xga_ema5', 'team_pk_icetime_minutes_s2d_mean', 'opp_off_all_corsi_ema5_prior_league_z', 'team_def_all_corsi_against_ema5_prior_league_z', 'combined_all_corsi_ema5_prior_league_z', 'combined_all_xg_ema5_prior_league_z']
+Pace goalie-workload feature columns: 4 -> ['goalie_xg_per_shot_roll10', 'goalie_xg_per_shot_ema5', 'goalie_high_danger_share_ema5', 'goalie_rebound_rate_ema5']
+Season column recovered from season_x and verified against clean_training_data (10496 rows).
+Season-normalized features: 37 sz_* columns added (prior-only within-season league z-scores). Top null counts (early-season rows, retained for XGBoost): [('sz_combined_all_fenwick_ema5', 170), ('sz_combined_all_corsi_ema5', 164), ('sz_combined_all_xg_ema5', 164), ('sz_combined_5v5_corsi_ema5', 164), ('sz_combined_5v5_xg_ema5', 164)]
+Funnel features: 14 fnl_* columns added (all stages prior-only). Top null counts (early-season rows, retained for XGBoost): [('fnl_expected_attempts', 160), ('fnl_expected_attempts_rel', 160), ('fnl_expected_fenwick', 160), ('fnl_mu_league_conv', 160), ('fnl_mu_team_adj', 160)]
+Row order and count verified unchanged after feature construction (10496 rows).
+Variant no_pace_control: 104 shots features, 104 rate features.
+Variant pace_shots_raw: 145 shots features, 104 rate features.
+Variant season_normalized: 145 shots features, 104 rate features.
+Variant attempt_sog_funnel: 118 shots features, 104 rate features.
+
+Raw multibook_classification_training_data.parquet: 8880 rows, 130 columns.
+After both-side-odds filter + chronological sort: 8880 rows.
+
+Raw multibook_classification_training_data.parquet: 7660 rows, 130 columns.
+After both-side-odds filter + chronological sort: 7660 rows.
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+Origin B closing betting frame (multibook, season 2024-25): 7463 rows.
+[Origin A] train/val carve: train 2022-10-07..2023-02-24 (n=1864); val 2023-02-25..2023-04-14 (n=760), the last 49 days of the training-pool date range ['2022-10-07', '2023-04-14'].
+[Origin A] test date range 2023-10-10..2024-04-18 (n=2624)
+[Origin B] train/val carve: train 2022-10-07..2024-02-29 (n=4528); val 2024-03-01..2024-04-18 (n=720), the last 49 days of the training-pool date range ['2022-10-07', '2024-04-18'].
+[Origin B] test date range 2024-10-04..2025-04-17 (n=2624)
+
+================================================================================
+ORIGIN A / VARIANT no_pace_control
+================================================================================
+Shots feature count: 104  Save-rate feature count: 104
+
+--- origin_A no_pace_control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.2061           2.1839
+depth2                  6.1723           2.1663
+depth4_mcw20            6.2222           2.2097
+more_trees_lowlr        6.2392           2.2048
+shallow_highreg         6.1688           2.1637
+deep_reg                6.2615           2.2313
+origin_A no_pace_control shots winner: shallow_highreg  val_mae=6.1688  val_poisson_deviance=2.1637
+
+--- origin_A no_pace_control: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A no_pace_control save-rate winner: depth2  val_weighted_logloss=0.32074
+
+--- origin_A no_pace_control (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5170
+  mean(residual^2)   = 46.7206
+  NB2 dispersion alpha = 0.017286  (Var = mean + alpha*mean^2)
+
+--- origin_A no_pace_control: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 30.3100
+  mean(val residual^2)      = 61.0835
+  NB2 dispersion alpha (val-fitted) = 0.033265  (Var = mean + alpha*mean^2)
+[origin_A no_pace_control] dispersion: train-fitted alpha=0.017286 (negative_binomial, diagnostic only) vs val-fitted alpha=0.033265 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_no_pace_control_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_no_pace_control_save_rate_model.json
+[origin_A no_pace_control TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999965, max_sum=1.000000, rows below 0.999: 0
+[origin_A no_pace_control] shots signed bias (mu - actual): +0.4420 95% CI [+0.1547, +0.7238] (n=2624)
+
+--- origin_A no_pace_control TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.7556  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5042
+Central 50% coverage: 55.5%; central 80% coverage: 82.3%
+PIT histogram frequencies: [0.111, 0.085, 0.091, 0.099, 0.104, 0.107, 0.103, 0.104, 0.105, 0.089]
+[origin_A no_pace_control] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0040 vs actual 0.0286 (gap -0.0246)
+    s= 12: predicted 0.0125 vs actual 0.0393 (gap -0.0267)
+    s= 15: predicted 0.0466 vs actual 0.0720 (gap -0.0254)
+    s= 18: predicted 0.1220 vs actual 0.1341 (gap -0.0121)
+    s= 20: predicted 0.1991 vs actual 0.1947 (gap +0.0043)
+[origin_A no_pace_control] lower-tail summed |gap| = 0.0932; TOI<50 subset diagnostics: {'n': 164, 'mean_pit': 0.06401987853842636, 'pit_below_0p2_freq': 0.9024390243902439, 'mean_logscore': 6.6350506506004026}
+[origin_A no_pace_control TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A no_pace_control TEST closing] fold-wide AUC row-level=0.4947 one-per-goalie-night=0.4910  Brier=0.25521  (n=8880)
+[origin_A no_pace_control TEST closing] paired Brier delta (model-market): model_brier=0.25521 market_brier=0.25000 delta=+0.00520 95% CI=[+0.00165, +0.00888] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A no_pace_control TEST closing] 2907 bets, 32.7% bet rate, +0.14% ROI, cluster CI [-6.53%, +6.84%]
+[origin_A no_pace_control TEST closing] side breakdown: OVER 423 (-13.89%), UNDER 2484 (+2.53%)
+[origin_A no_pace_control TEST closing] side calibration: OVER-leaning n=2610 mean_p=0.5520571168714594 empirical=0.43409961685823756; UNDER-leaning n=6270 mean_p=0.5791468562599573 empirical=0.5325358851674641
+[origin_A no_pace_control TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A no_pace_control TEST bettime] fold-wide AUC row-level=0.4983 one-per-goalie-night=0.4944  Brier=0.25510  (n=7660)
+[origin_A no_pace_control TEST bettime] paired Brier delta (model-market): model_brier=0.25510 market_brier=0.24966 delta=+0.00544 95% CI=[+0.00152, +0.00948] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A no_pace_control TEST bettime] 2519 bets, 32.9% bet rate, +0.52% ROI, cluster CI [-6.53%, +7.64%]
+[origin_A no_pace_control TEST bettime] side breakdown: OVER 357 (-12.69%), UNDER 2162 (+2.70%)
+[origin_A no_pace_control TEST bettime] side calibration: OVER-leaning n=2160 mean_p=0.551228553546477 empirical=0.4412037037037037; UNDER-leaning n=5500 mean_p=0.579191775659319 empirical=0.5301818181818182
+CROSS-CHECK control bias origin A: observed +0.4420 vs step-0 +0.4420 -> OK
+
+================================================================================
+ORIGIN A / VARIANT pace_shots_raw
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_A pace_shots_raw: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.0145           2.0918
+depth2                  5.9909           2.0717
+depth4_mcw20            6.0974           2.1463
+more_trees_lowlr        6.0591           2.0998
+shallow_highreg         5.9846           2.0715
+deep_reg                6.0186           2.1072
+origin_A pace_shots_raw shots winner: shallow_highreg  val_mae=5.9846  val_poisson_deviance=2.0715
+
+--- origin_A pace_shots_raw: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A pace_shots_raw save-rate winner: depth2  val_weighted_logloss=0.32074
+
+--- origin_A pace_shots_raw (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5141
+  mean(residual^2)   = 42.6990
+  NB2 dispersion alpha = 0.012963  (Var = mean + alpha*mean^2)
+
+--- origin_A pace_shots_raw: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 30.2821
+  mean(val residual^2)      = 58.3763
+  NB2 dispersion alpha (val-fitted) = 0.030343  (Var = mean + alpha*mean^2)
+[origin_A pace_shots_raw] dispersion: train-fitted alpha=0.012963 (negative_binomial, diagnostic only) vs val-fitted alpha=0.030343 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_pace_shots_raw_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_pace_shots_raw_save_rate_model.json
+[origin_A pace_shots_raw TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999963, max_sum=1.000000, rows below 0.999: 0
+[origin_A pace_shots_raw] shots signed bias (mu - actual): +1.9501 95% CI [+1.6668, +2.2307] (n=2624)
+
+--- origin_A pace_shots_raw TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.8618  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5313
+Central 50% coverage: 56.4%; central 80% coverage: 81.6%
+PIT histogram frequencies: [0.149, 0.089, 0.117, 0.107, 0.114, 0.088, 0.105, 0.093, 0.08, 0.057]
+[origin_A pace_shots_raw] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0024 vs actual 0.0286 (gap -0.0262)
+    s= 12: predicted 0.0080 vs actual 0.0393 (gap -0.0313)
+    s= 15: predicted 0.0321 vs actual 0.0720 (gap -0.0399)
+    s= 18: predicted 0.0901 vs actual 0.1341 (gap -0.0441)
+    s= 20: predicted 0.1534 vs actual 0.1947 (gap -0.0413)
+[origin_A pace_shots_raw] lower-tail summed |gap| = 0.1827; TOI<50 subset diagnostics: {'n': 164, 'mean_pit': 0.04824043973433973, 'pit_below_0p2_freq': 0.926829268292683, 'mean_logscore': 7.234579562528402}
+[origin_A pace_shots_raw] full-distribution log-score delta vs control: +0.02711 95% CI [+0.01450, +0.03946] (negative = variant better)
+[origin_A pace_shots_raw TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A pace_shots_raw TEST closing] fold-wide AUC row-level=0.5181 one-per-goalie-night=0.5139  Brier=0.25877  (n=8880)
+[origin_A pace_shots_raw TEST closing] paired Brier delta (model-market): model_brier=0.25877 market_brier=0.25000 delta=+0.00877 95% CI=[+0.00513, +0.01239] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A pace_shots_raw TEST closing] paired Brier delta vs no_pace_control: +0.00356 95% CI [-0.00115, +0.00837] (negative = variant better)
+[origin_A pace_shots_raw TEST closing] 3091 bets, 34.8% bet rate, -6.44% ROI, cluster CI [-12.64%, -0.12%]
+[origin_A pace_shots_raw TEST closing] side breakdown: OVER 2396 (-9.04%), UNDER 695 (+2.54%)
+[origin_A pace_shots_raw TEST closing] side calibration: OVER-leaning n=5857 mean_p=0.5819760043246359 empirical=0.4630356837971658; UNDER-leaning n=3023 mean_p=0.556616947152304 empirical=0.5530929540191862
+[origin_A pace_shots_raw TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A pace_shots_raw TEST bettime] fold-wide AUC row-level=0.5248 one-per-goalie-night=0.5224  Brier=0.25731  (n=7660)
+[origin_A pace_shots_raw TEST bettime] paired Brier delta (model-market): model_brier=0.25731 market_brier=0.24966 delta=+0.00765 95% CI=[+0.00367, +0.01156] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A pace_shots_raw TEST bettime] paired Brier delta vs no_pace_control: +0.00221 95% CI [-0.00304, +0.00736] (negative = variant better)
+[origin_A pace_shots_raw TEST bettime] 2624 bets, 34.3% bet rate, -4.88% ROI, cluster CI [-11.80%, +1.92%]
+[origin_A pace_shots_raw TEST bettime] side breakdown: OVER 2044 (-7.22%), UNDER 580 (+3.36%)
+[origin_A pace_shots_raw TEST bettime] side calibration: OVER-leaning n=5042 mean_p=0.5812410775354172 empirical=0.46846489488298293; UNDER-leaning n=2618 mean_p=0.5556763168419042 empirical=0.5511841100076394
+
+--------------------------------------------------------------------------------
+WIRING GATE origin A: pace_shots_raw + TRAIN-fitted alpha must reproduce experiment_rolling_origin_20260709_222639's recorded closing-pass numbers
+--------------------------------------------------------------------------------
+Train-fitted alpha matches recorded value: 0.0129626252
+[wiring_gate origin_A (train-fitted alpha)] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[wiring_gate origin_A closing] join coverage: 8880/8880 rows matched (100.00%).
+[wiring_gate origin_A] fold-wide AUC row-level=0.5182 one-per-goalie-night=0.5141  Brier=0.26338  (n=8880)
+[wiring_gate origin_A] paired Brier delta (model-market): model_brier=0.26338 market_brier=0.25000 delta=+0.01338 95% CI=[+0.00902, +0.01776] n_rows=8880 n_clusters=2298 devig_failures=0
+Observed: {'brier_r5': 0.26338, 'delta_r5': 0.01338, 'roi_r2': -8.3, 'bets': 3895}
+Expected: {'brier_r5': 0.26338, 'delta_r5': 0.01338, 'roi_r2': -8.3, 'bets': 3895}
+WIRING GATE PASSED (origin A).
+CROSS-CHECK pace_shots val-fitted alpha origin A: observed 0.0303 vs step-0 ~0.0303 -> OK
+
+================================================================================
+ORIGIN A / VARIANT season_normalized
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_A season_normalized: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.0531           2.1000
+depth2                  5.9496           2.0383
+depth4_mcw20            6.0695           2.1167
+more_trees_lowlr        6.0447           2.0939
+shallow_highreg         5.9450           2.0400
+deep_reg                6.0733           2.1285
+origin_A season_normalized shots winner: shallow_highreg  val_mae=5.9450  val_poisson_deviance=2.0400
+
+--- origin_A season_normalized: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A season_normalized save-rate winner: depth2  val_weighted_logloss=0.32074
+
+--- origin_A season_normalized (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5175
+  mean(residual^2)   = 42.5622
+  NB2 dispersion alpha = 0.012806  (Var = mean + alpha*mean^2)
+
+--- origin_A season_normalized: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 30.3983
+  mean(val residual^2)      = 57.5038
+  NB2 dispersion alpha (val-fitted) = 0.028985  (Var = mean + alpha*mean^2)
+[origin_A season_normalized] dispersion: train-fitted alpha=0.012806 (negative_binomial, diagnostic only) vs val-fitted alpha=0.028985 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_season_normalized_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_season_normalized_save_rate_model.json
+[origin_A season_normalized TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999953, max_sum=1.000000, rows below 0.999: 0
+[origin_A season_normalized] shots signed bias (mu - actual): +0.9830 95% CI [+0.6963, +1.2630] (n=2624)
+
+--- origin_A season_normalized TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.7069  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5099
+Central 50% coverage: 56.1%; central 80% coverage: 82.1%
+PIT histogram frequencies: [0.128, 0.085, 0.101, 0.098, 0.104, 0.107, 0.098, 0.106, 0.099, 0.075]
+[origin_A season_normalized] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0033 vs actual 0.0286 (gap -0.0253)
+    s= 12: predicted 0.0105 vs actual 0.0393 (gap -0.0287)
+    s= 15: predicted 0.0407 vs actual 0.0720 (gap -0.0313)
+    s= 18: predicted 0.1097 vs actual 0.1341 (gap -0.0245)
+    s= 20: predicted 0.1819 vs actual 0.1947 (gap -0.0128)
+[origin_A season_normalized] lower-tail summed |gap| = 0.1226; TOI<50 subset diagnostics: {'n': 164, 'mean_pit': 0.05504233340059265, 'pit_below_0p2_freq': 0.9024390243902439, 'mean_logscore': 7.02736207766642}
+[origin_A season_normalized] full-distribution log-score delta vs control: +0.00578 95% CI [-0.00557, +0.01697] (negative = variant better)
+[origin_A season_normalized TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A season_normalized TEST closing] fold-wide AUC row-level=0.5241 one-per-goalie-night=0.5206  Brier=0.25409  (n=8880)
+[origin_A season_normalized TEST closing] paired Brier delta (model-market): model_brier=0.25409 market_brier=0.25000 delta=+0.00409 95% CI=[+0.00046, +0.00783] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A season_normalized TEST closing] paired Brier delta vs no_pace_control: -0.00112 95% CI [-0.00548, +0.00338] (negative = variant better)
+[origin_A season_normalized TEST closing] 3071 bets, 34.6% bet rate, -3.06% ROI, cluster CI [-9.31%, +3.17%]
+[origin_A season_normalized TEST closing] side breakdown: OVER 1216 (-8.78%), UNDER 1855 (+0.68%)
+[origin_A season_normalized TEST closing] side calibration: OVER-leaning n=3909 mean_p=0.5714480391886726 empirical=0.48810437452033767; UNDER-leaning n=4971 mean_p=0.5757170031355354 empirical=0.5662844498088916
+[origin_A season_normalized TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A season_normalized TEST bettime] fold-wide AUC row-level=0.5329 one-per-goalie-night=0.5317  Brier=0.25262  (n=7660)
+[origin_A season_normalized TEST bettime] paired Brier delta (model-market): model_brier=0.25262 market_brier=0.24966 delta=+0.00295 95% CI=[-0.00112, +0.00704] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A season_normalized TEST bettime] paired Brier delta vs no_pace_control: -0.00249 95% CI [-0.00744, +0.00231] (negative = variant better)
+[origin_A season_normalized TEST bettime] 2611 bets, 34.1% bet rate, -0.61% ROI, cluster CI [-7.50%, +6.30%]
+[origin_A season_normalized TEST bettime] side breakdown: OVER 1034 (-4.85%), UNDER 1577 (+2.17%)
+[origin_A season_normalized TEST bettime] side calibration: OVER-leaning n=3380 mean_p=0.5704407502903084 empirical=0.4982248520710059; UNDER-leaning n=4280 mean_p=0.5752442021104078 empirical=0.5670560747663551
+
+================================================================================
+ORIGIN A / VARIANT attempt_sog_funnel
+================================================================================
+Shots feature count: 118  Save-rate feature count: 104
+
+--- origin_A attempt_sog_funnel: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.2064           2.1905
+depth2                  6.1558           2.1577
+depth4_mcw20            6.2086           2.1941
+more_trees_lowlr        6.2418           2.2003
+shallow_highreg         6.1480           2.1514
+deep_reg                6.2032           2.1978
+origin_A attempt_sog_funnel shots winner: shallow_highreg  val_mae=6.1480  val_poisson_deviance=2.1514
+
+--- origin_A attempt_sog_funnel: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A attempt_sog_funnel save-rate winner: depth2  val_weighted_logloss=0.32074
+
+--- origin_A attempt_sog_funnel (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5191
+  mean(residual^2)   = 45.3749
+  NB2 dispersion alpha = 0.015832  (Var = mean + alpha*mean^2)
+
+--- origin_A attempt_sog_funnel: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 30.6406
+  mean(val residual^2)      = 60.6626
+  NB2 dispersion alpha (val-fitted) = 0.031714  (Var = mean + alpha*mean^2)
+[origin_A attempt_sog_funnel] dispersion: train-fitted alpha=0.015832 (negative_binomial, diagnostic only) vs val-fitted alpha=0.031714 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_attempt_sog_funnel_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_attempt_sog_funnel_save_rate_model.json
+[origin_A attempt_sog_funnel TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999935, max_sum=1.000000, rows below 0.999: 0
+[origin_A attempt_sog_funnel] shots signed bias (mu - actual): +1.9913 95% CI [+1.7091, +2.2689] (n=2624)
+
+--- origin_A attempt_sog_funnel TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.9092  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5305
+Central 50% coverage: 56.7%; central 80% coverage: 81.9%
+PIT histogram frequencies: [0.151, 0.091, 0.111, 0.111, 0.112, 0.097, 0.099, 0.087, 0.087, 0.054]
+[origin_A attempt_sog_funnel] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0024 vs actual 0.0286 (gap -0.0262)
+    s= 12: predicted 0.0079 vs actual 0.0393 (gap -0.0314)
+    s= 15: predicted 0.0317 vs actual 0.0720 (gap -0.0403)
+    s= 18: predicted 0.0891 vs actual 0.1341 (gap -0.0451)
+    s= 20: predicted 0.1519 vs actual 0.1947 (gap -0.0429)
+[origin_A attempt_sog_funnel] lower-tail summed |gap| = 0.1858; TOI<50 subset diagnostics: {'n': 164, 'mean_pit': 0.048596754685700135, 'pit_below_0p2_freq': 0.9329268292682927, 'mean_logscore': 7.141848017063239}
+[origin_A attempt_sog_funnel] full-distribution log-score delta vs control: +0.02630 95% CI [+0.01635, +0.03583] (negative = variant better)
+[origin_A attempt_sog_funnel] deterministic fnl_mu_league_conv: bias -0.0477, MAE 6.2826 (98.6% rows non-null)
+[origin_A attempt_sog_funnel] deterministic fnl_mu_team_adj: bias -0.1622, MAE 5.9714 (98.6% rows non-null)
+[origin_A attempt_sog_funnel TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A attempt_sog_funnel TEST closing] fold-wide AUC row-level=0.5049 one-per-goalie-night=0.5032  Brier=0.25964  (n=8880)
+[origin_A attempt_sog_funnel TEST closing] paired Brier delta (model-market): model_brier=0.25964 market_brier=0.25000 delta=+0.00964 95% CI=[+0.00620, +0.01309] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A attempt_sog_funnel TEST closing] paired Brier delta vs no_pace_control: +0.00443 95% CI [+0.00055, +0.00829] (negative = variant better)
+[origin_A attempt_sog_funnel TEST closing] 2655 bets, 29.9% bet rate, -13.73% ROI, cluster CI [-20.43%, -6.91%]
+[origin_A attempt_sog_funnel TEST closing] side breakdown: OVER 2177 (-16.20%), UNDER 478 (-2.47%)
+[origin_A attempt_sog_funnel TEST closing] side calibration: OVER-leaning n=6192 mean_p=0.576316182150336 empirical=0.46398578811369506; UNDER-leaning n=2688 mean_p=0.5501086504296273 empirical=0.5572916666666666
+[origin_A attempt_sog_funnel TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A attempt_sog_funnel TEST bettime] fold-wide AUC row-level=0.5093 one-per-goalie-night=0.5077  Brier=0.25855  (n=7660)
+[origin_A attempt_sog_funnel TEST bettime] paired Brier delta (model-market): model_brier=0.25855 market_brier=0.24966 delta=+0.00889 95% CI=[+0.00525, +0.01260] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A attempt_sog_funnel TEST bettime] paired Brier delta vs no_pace_control: +0.00344 95% CI [-0.00078, +0.00750] (negative = variant better)
+[origin_A attempt_sog_funnel TEST bettime] 2251 bets, 29.4% bet rate, -13.80% ROI, cluster CI [-21.15%, -6.36%]
+[origin_A attempt_sog_funnel TEST bettime] side breakdown: OVER 1847 (-16.10%), UNDER 404 (-3.29%)
+[origin_A attempt_sog_funnel TEST bettime] side calibration: OVER-leaning n=5317 mean_p=0.5753287583807972 empirical=0.4737634004137672; UNDER-leaning n=2343 mean_p=0.549641930786628 empirical=0.5655142979086641
+Saved 66160 per-row test predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_a_test_predictions.parquet
+
+================================================================================
+ORIGIN B / VARIANT no_pace_control
+================================================================================
+Shots feature count: 104  Save-rate feature count: 104
+
+--- origin_B no_pace_control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6809           1.9764
+depth2                  5.6845           1.9771
+depth4_mcw20            5.6783           1.9723
+more_trees_lowlr        5.6812           1.9629
+shallow_highreg         5.6803           1.9760
+deep_reg                5.6892           1.9888
+origin_B no_pace_control shots winner: depth4_mcw20  val_mae=5.6783  val_poisson_deviance=1.9723
+
+--- origin_B no_pace_control: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B no_pace_control save-rate winner: base  val_weighted_logloss=0.31912
+
+--- origin_B no_pace_control (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8957
+  mean(residual^2)   = 36.9848
+  NB2 dispersion alpha = 0.007854  (Var = mean + alpha*mean^2)
+
+--- origin_B no_pace_control: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 29.0609
+  mean(val residual^2)      = 53.3270
+  NB2 dispersion alpha (val-fitted) = 0.028522  (Var = mean + alpha*mean^2)
+[origin_B no_pace_control] dispersion: train-fitted alpha=0.007854 (negative_binomial, diagnostic only) vs val-fitted alpha=0.028522 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_no_pace_control_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_no_pace_control_save_rate_model.json
+[origin_B no_pace_control TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_B no_pace_control] shots signed bias (mu - actual): +0.0308 95% CI [-0.2435, +0.2941] (n=2624)
+
+--- origin_B no_pace_control TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4117  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4113
+Central 50% coverage: 53.9%; central 80% coverage: 80.3%
+PIT histogram frequencies: [0.112, 0.088, 0.087, 0.101, 0.096, 0.109, 0.095, 0.096, 0.106, 0.109]
+[origin_B no_pace_control] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0070 vs actual 0.0271 (gap -0.0200)
+    s= 12: predicted 0.0210 vs actual 0.0434 (gap -0.0224)
+    s= 15: predicted 0.0733 vs actual 0.0831 (gap -0.0098)
+    s= 18: predicted 0.1786 vs actual 0.1696 (gap +0.0090)
+    s= 20: predicted 0.2777 vs actual 0.2565 (gap +0.0213)
+[origin_B no_pace_control] lower-tail summed |gap| = 0.0825; TOI<50 subset diagnostics: {'n': 126, 'mean_pit': 0.058205169214692334, 'pit_below_0p2_freq': 0.8888888888888888, 'mean_logscore': 6.480505300248151}
+[origin_B no_pace_control TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B no_pace_control TEST closing] fold-wide AUC row-level=0.5505 one-per-goalie-night=0.5471  Brier=0.25129  (n=7463)
+[origin_B no_pace_control TEST closing] paired Brier delta (model-market): model_brier=0.25129 market_brier=0.24880 delta=+0.00248 95% CI=[-0.00232, +0.00732] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B no_pace_control TEST closing] 3801 bets, 50.9% bet rate, +4.35% ROI, cluster CI [-0.84%, +9.44%]
+[origin_B no_pace_control TEST closing] side breakdown: OVER 773 (-3.82%), UNDER 3028 (+6.44%)
+[origin_B no_pace_control TEST closing] side calibration: OVER-leaning n=2235 mean_p=0.5736390470899049 empirical=0.5221476510067115; UNDER-leaning n=5228 mean_p=0.6108182943412666 empirical=0.569433817903596
+CROSS-CHECK control bias origin B: observed +0.0308 vs step-0 +0.0308 -> OK
+
+================================================================================
+ORIGIN B / VARIANT pace_shots_raw
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_B pace_shots_raw: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6066           1.9590
+depth2                  5.6262           1.9580
+depth4_mcw20            5.6218           1.9697
+more_trees_lowlr        5.6163           1.9608
+shallow_highreg         5.6266           1.9574
+deep_reg                5.5910           1.9528
+origin_B pace_shots_raw shots winner: deep_reg  val_mae=5.5910  val_poisson_deviance=1.9528
+
+--- origin_B pace_shots_raw: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B pace_shots_raw save-rate winner: base  val_weighted_logloss=0.31912
+
+--- origin_B pace_shots_raw (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8901
+  mean(residual^2)   = 28.4066
+  TRAIN variance <= TRAIN mean: falling back to Poisson (alpha=0).
+
+--- origin_B pace_shots_raw: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 29.3287
+  mean(val residual^2)      = 52.7009
+  NB2 dispersion alpha (val-fitted) = 0.026958  (Var = mean + alpha*mean^2)
+[origin_B pace_shots_raw] dispersion: train-fitted alpha=0.000000 (poisson_fallback, diagnostic only) vs val-fitted alpha=0.026958 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_pace_shots_raw_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_pace_shots_raw_save_rate_model.json
+[origin_B pace_shots_raw TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_B pace_shots_raw] shots signed bias (mu - actual): +1.8445 95% CI [+1.5719, +2.1093] (n=2624)
+
+--- origin_B pace_shots_raw TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.5973  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4389
+Central 50% coverage: 54.5%; central 80% coverage: 80.8%
+PIT histogram frequencies: [0.151, 0.108, 0.106, 0.119, 0.107, 0.086, 0.095, 0.09, 0.075, 0.063]
+[origin_B pace_shots_raw] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0038 vs actual 0.0271 (gap -0.0233)
+    s= 12: predicted 0.0121 vs actual 0.0434 (gap -0.0314)
+    s= 15: predicted 0.0465 vs actual 0.0831 (gap -0.0366)
+    s= 18: predicted 0.1242 vs actual 0.1696 (gap -0.0454)
+    s= 20: predicted 0.2045 vs actual 0.2565 (gap -0.0519)
+[origin_B pace_shots_raw] lower-tail summed |gap| = 0.1886; TOI<50 subset diagnostics: {'n': 126, 'mean_pit': 0.037305175262355446, 'pit_below_0p2_freq': 0.9603174603174603, 'mean_logscore': 7.177262263955463}
+[origin_B pace_shots_raw] full-distribution log-score delta vs control: +0.02759 95% CI [+0.01235, +0.04258] (negative = variant better)
+[origin_B pace_shots_raw TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B pace_shots_raw TEST closing] fold-wide AUC row-level=0.5581 one-per-goalie-night=0.5583  Brier=0.25523  (n=7463)
+[origin_B pace_shots_raw TEST closing] paired Brier delta (model-market): model_brier=0.25523 market_brier=0.24880 delta=+0.00642 95% CI=[+0.00216, +0.01068] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B pace_shots_raw TEST closing] paired Brier delta vs no_pace_control: +0.00394 95% CI [-0.00168, +0.00955] (negative = variant better)
+[origin_B pace_shots_raw TEST closing] 3346 bets, 44.8% bet rate, -0.97% ROI, cluster CI [-6.37%, +4.59%]
+[origin_B pace_shots_raw TEST closing] side breakdown: OVER 2552 (-7.19%), UNDER 794 (+19.02%)
+[origin_B pace_shots_raw TEST closing] side calibration: OVER-leaning n=4884 mean_p=0.5994787041964074 empirical=0.4879197379197379; UNDER-leaning n=2579 mean_p=0.5715021941790003 empirical=0.5986816595579683
+
+--------------------------------------------------------------------------------
+WIRING GATE origin B: pace_shots_raw + TRAIN-fitted alpha must reproduce experiment_rolling_origin_20260709_222639's recorded closing-pass numbers
+--------------------------------------------------------------------------------
+Train-fitted alpha matches recorded value: 0.0000000000
+[wiring_gate origin_B (train-fitted alpha)] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[wiring_gate origin_B closing] join coverage: 7463/7463 rows matched (100.00%).
+[wiring_gate origin_B] fold-wide AUC row-level=0.5577 one-per-goalie-night=0.5579  Brier=0.26439  (n=7463)
+[wiring_gate origin_B] paired Brier delta (model-market): model_brier=0.26439 market_brier=0.24880 delta=+0.01559 95% CI=[+0.00982, +0.02141] n_rows=7463 n_clusters=2510 devig_failures=0
+Observed: {'brier_r5': 0.26439, 'delta_r5': 0.01559, 'roi_r2': -3.0, 'bets': 4376}
+Expected: {'brier_r5': 0.26439, 'delta_r5': 0.01559, 'roi_r2': -3.0, 'bets': 4376}
+WIRING GATE PASSED (origin B).
+CROSS-CHECK pace_shots val-fitted alpha origin B: observed 0.0270 vs step-0 ~0.0270 -> OK
+
+================================================================================
+ORIGIN B / VARIANT season_normalized
+================================================================================
+Shots feature count: 145  Save-rate feature count: 104
+
+--- origin_B season_normalized: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.5933           1.9294
+depth2                  5.5825           1.9170
+depth4_mcw20            5.5823           1.9311
+more_trees_lowlr        5.5847           1.9296
+shallow_highreg         5.5913           1.9209
+deep_reg                5.5957           1.9379
+origin_B season_normalized shots winner: depth4_mcw20  val_mae=5.5823  val_poisson_deviance=1.9311
+
+--- origin_B season_normalized: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B season_normalized save-rate winner: base  val_weighted_logloss=0.31912
+
+--- origin_B season_normalized (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8928
+  mean(residual^2)   = 33.9083
+  NB2 dispersion alpha = 0.004439  (Var = mean + alpha*mean^2)
+
+--- origin_B season_normalized: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 29.1940
+  mean(val residual^2)      = 52.0406
+  NB2 dispersion alpha (val-fitted) = 0.026570  (Var = mean + alpha*mean^2)
+[origin_B season_normalized] dispersion: train-fitted alpha=0.004439 (negative_binomial, diagnostic only) vs val-fitted alpha=0.026570 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_season_normalized_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_season_normalized_save_rate_model.json
+[origin_B season_normalized TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_B season_normalized] shots signed bias (mu - actual): +1.8420 95% CI [+1.5712, +2.1050] (n=2624)
+
+--- origin_B season_normalized TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.6096  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4417
+Central 50% coverage: 54.6%; central 80% coverage: 80.9%
+PIT histogram frequencies: [0.151, 0.111, 0.108, 0.12, 0.096, 0.091, 0.094, 0.089, 0.077, 0.064]
+[origin_B season_normalized] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0039 vs actual 0.0271 (gap -0.0232)
+    s= 12: predicted 0.0124 vs actual 0.0434 (gap -0.0311)
+    s= 15: predicted 0.0472 vs actual 0.0831 (gap -0.0359)
+    s= 18: predicted 0.1253 vs actual 0.1696 (gap -0.0442)
+    s= 20: predicted 0.2058 vs actual 0.2565 (gap -0.0507)
+[origin_B season_normalized] lower-tail summed |gap| = 0.1851; TOI<50 subset diagnostics: {'n': 126, 'mean_pit': 0.03663457033375979, 'pit_below_0p2_freq': 0.9523809523809523, 'mean_logscore': 7.189873898637382}
+[origin_B season_normalized] full-distribution log-score delta vs control: +0.03036 95% CI [+0.01446, +0.04611] (negative = variant better)
+[origin_B season_normalized TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B season_normalized TEST closing] fold-wide AUC row-level=0.5545 one-per-goalie-night=0.5567  Brier=0.25695  (n=7463)
+[origin_B season_normalized TEST closing] paired Brier delta (model-market): model_brier=0.25695 market_brier=0.24880 delta=+0.00815 95% CI=[+0.00361, +0.01277] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B season_normalized TEST closing] paired Brier delta vs no_pace_control: +0.00566 95% CI [-0.00039, +0.01164] (negative = variant better)
+[origin_B season_normalized TEST closing] 3520 bets, 47.2% bet rate, -1.75% ROI, cluster CI [-7.10%, +3.65%]
+[origin_B season_normalized TEST closing] side breakdown: OVER 2605 (-8.04%), UNDER 915 (+16.15%)
+[origin_B season_normalized TEST closing] side calibration: OVER-leaning n=4773 mean_p=0.605052241507929 empirical=0.4883720930232558; UNDER-leaning n=2690 mean_p=0.5761592351349761 empirical=0.5959107806691449
+
+================================================================================
+ORIGIN B / VARIANT attempt_sog_funnel
+================================================================================
+Shots feature count: 118  Save-rate feature count: 104
+
+--- origin_B attempt_sog_funnel: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6877           1.9773
+depth2                  5.6390           1.9555
+depth4_mcw20            5.7275           2.0096
+more_trees_lowlr        5.7112           1.9875
+shallow_highreg         5.6319           1.9526
+deep_reg                5.7262           2.0208
+origin_B attempt_sog_funnel shots winner: shallow_highreg  val_mae=5.6319  val_poisson_deviance=1.9526
+
+--- origin_B attempt_sog_funnel: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B attempt_sog_funnel save-rate winner: base  val_weighted_logloss=0.31912
+
+--- origin_B attempt_sog_funnel (train, diagnostic): dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8975
+  mean(residual^2)   = 50.7541
+  NB2 dispersion alpha = 0.023191  (Var = mean + alpha*mean^2)
+
+--- origin_B attempt_sog_funnel: dispersion fit on VALIDATION residuals ---
+  mean(predicted mu on val) = 29.4806
+  mean(val residual^2)      = 52.6994
+  NB2 dispersion alpha (val-fitted) = 0.026571  (Var = mean + alpha*mean^2)
+[origin_B attempt_sog_funnel] dispersion: train-fitted alpha=0.023191 (negative_binomial, diagnostic only) vs val-fitted alpha=0.026571 (negative_binomial_val, USED)
+Saved shots model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_attempt_sog_funnel_shots_model.json
+Saved save-rate model to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_attempt_sog_funnel_save_rate_model.json
+[origin_B attempt_sog_funnel TEST (val-fitted alpha)] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[origin_B attempt_sog_funnel] shots signed bias (mu - actual): +1.4866 95% CI [+1.2159, +1.7487] (n=2624)
+
+--- origin_B attempt_sog_funnel TEST: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4827  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4236
+Central 50% coverage: 54.7%; central 80% coverage: 81.1%
+PIT histogram frequencies: [0.146, 0.101, 0.108, 0.107, 0.105, 0.096, 0.097, 0.088, 0.085, 0.067]
+[origin_B attempt_sog_funnel] lower-tail P(saves<=s) predicted vs actual:
+    s= 10: predicted 0.0037 vs actual 0.0271 (gap -0.0234)
+    s= 12: predicted 0.0121 vs actual 0.0434 (gap -0.0314)
+    s= 15: predicted 0.0475 vs actual 0.0831 (gap -0.0356)
+    s= 18: predicted 0.1285 vs actual 0.1696 (gap -0.0411)
+    s= 20: predicted 0.2123 vs actual 0.2565 (gap -0.0441)
+[origin_B attempt_sog_funnel] lower-tail summed |gap| = 0.1756; TOI<50 subset diagnostics: {'n': 126, 'mean_pit': 0.04257837802161838, 'pit_below_0p2_freq': 0.9285714285714286, 'mean_logscore': 7.032057697768469}
+[origin_B attempt_sog_funnel] full-distribution log-score delta vs control: +0.01226 95% CI [+0.00098, +0.02335] (negative = variant better)
+[origin_B attempt_sog_funnel] deterministic fnl_mu_league_conv: bias +0.3519, MAE 5.9248 (98.4% rows non-null)
+[origin_B attempt_sog_funnel] deterministic fnl_mu_team_adj: bias +0.0028, MAE 5.6118 (98.4% rows non-null)
+[origin_B attempt_sog_funnel TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B attempt_sog_funnel TEST closing] fold-wide AUC row-level=0.5695 one-per-goalie-night=0.5677  Brier=0.25075  (n=7463)
+[origin_B attempt_sog_funnel TEST closing] paired Brier delta (model-market): model_brier=0.25075 market_brier=0.24880 delta=+0.00194 95% CI=[-0.00193, +0.00581] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B attempt_sog_funnel TEST closing] paired Brier delta vs no_pace_control: -0.00054 95% CI [-0.00461, +0.00358] (negative = variant better)
+[origin_B attempt_sog_funnel TEST closing] 2705 bets, 36.2% bet rate, +5.00% ROI, cluster CI [-1.12%, +10.97%]
+[origin_B attempt_sog_funnel TEST closing] side breakdown: OVER 1874 (-0.32%), UNDER 831 (+17.01%)
+[origin_B attempt_sog_funnel TEST closing] side calibration: OVER-leaning n=4377 mean_p=0.5886056599678626 empirical=0.5010281014393421; UNDER-leaning n=3086 mean_p=0.566745737876131 empirical=0.6030460142579391
+Saved 29852 per-row test predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\origin_b_test_predictions.parquet
+
+================================================================================
+SUMMARY (closing pass, val-fitted dispersion, fixed EV threshold 0.05)
+================================================================================
+origin  variant                  bias     mae     brier     d_mkt     d_ctl      roi   bets   bet%
+A       no_pace_control       +0.4420  5.7556   0.25521  +0.00520        --    +0.14   2907   32.7
+A       pace_shots_raw        +1.9501  5.8618   0.25877  +0.00877  +0.00356    -6.44   3091   34.8
+A       season_normalized     +0.9830  5.7069   0.25409  +0.00409  -0.00112    -3.06   3071   34.6
+A       attempt_sog_funnel    +1.9913  5.9092   0.25964  +0.00964  +0.00443   -13.73   2655   29.9
+B       no_pace_control       +0.0308  5.4117   0.25129  +0.00248        --    +4.35   3801   50.9
+B       pace_shots_raw        +1.8445  5.5973   0.25523  +0.00642  +0.00394    -0.97   3346   44.8
+B       season_normalized     +1.8420  5.6096   0.25695  +0.00815  +0.00566    -1.75   3520   47.2
+B       attempt_sog_funnel    +1.4866  5.4827   0.25075  +0.00194  -0.00054    +5.00   2705   36.2
+bias = mean(mu - actual shots against); d_mkt = paired Brier delta vs de-vigged market (positive = worse than market); d_ctl = paired Brier delta vs no_pace_control (negative = better than control).
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_season_funnel_20260713_124419\metadata.json
+Wall-clock time: 216.2s (3.6 min)
+
+================================================================================
+EXPERIMENT COMPLETE
+================================================================================

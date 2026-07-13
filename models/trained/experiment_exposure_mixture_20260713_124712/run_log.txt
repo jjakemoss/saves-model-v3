@@ -1,0 +1,478 @@
+================================================================================
+EXPOSURE-STATE MIXTURE EXPERIMENT (Gate A / Component A / pre-registration Experiment 6)
+Pre-registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md sections 1 and 7
+Plan: docs/BREAKTHROUGH_MODEL_PLAN.md sections 3.2, 4.1, 6.2 item 6, 7 (Gate A)
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712
+
+================================================================================
+SANITY GATE: reproduce plan section 3.2's TOI<50 claim from clean_training_data.parquet
+================================================================================
+Observed: 572/10496 = 5.45%  Expected: 572/10496 = 5.45%
+SANITY GATE PASSED.
+
+================================================================================
+Loading shared modeling frame (base + engineered + pace, per pre-registration 7.2)
+================================================================================
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+Raw pace_features.parquet: 10496 rows, 54 columns.
+Pace join keys: ['game_id', 'goalie_id', 'team_abbrev', 'opponent_team', 'game_date']; coverage 10496/10496 (100.00%).
+Pace feature NaNs retained for XGBoost missing-value handling (top nonzero null counts: {'goalie_xg_per_shot_roll10': 346, 'goalie_xg_per_shot_ema5': 346, 'goalie_high_danger_share_ema5': 346, 'goalie_rebound_rate_ema5': 346, 'combined_all_corsi_ema5_prior_league_z': 164, 'combined_all_xg_ema5_prior_league_z': 164, 'combined_all_corsi_ema5': 156, 'combined_all_fenwick_ema5': 156, 'combined_all_xg_ema5': 156, 'combined_5v5_corsi_ema5': 156, 'combined_5v5_xg_ema5': 156, 'opp_off_all_corsi_ema5_prior_league_z': 146}).
+Pace source coverage flags: {'pace_team_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_opponent_all_matched': {'match_rate_pct': 100.0, 'missing_rows': 0}, 'pace_goalie_all_matched': {'match_rate_pct': 99.9904725609756, 'missing_rows': 1}}
+Pace shots feature columns: 41 -> ['opp_off_all_corsi_s2d_mean', 'opp_off_all_corsi_roll5', 'opp_off_all_corsi_roll10', 'opp_off_all_corsi_ema5', 'opp_off_all_corsi_prior_season_mean', 'opp_off_all_fenwick_s2d_mean', 'opp_off_all_fenwick_ema5', 'opp_off_all_xgf_s2d_mean', 'opp_off_all_xgf_ema5', 'opp_off_5v5_corsi_ema5', 'opp_off_5v5_xgf_ema5', 'opp_off_all_score_adj_corsi_ema5', 'team_def_all_corsi_against_s2d_mean', 'team_def_all_corsi_against_roll5', 'team_def_all_corsi_against_roll10', 'team_def_all_corsi_against_ema5', 'team_def_all_corsi_against_prior_season_mean', 'team_def_all_fenwick_against_s2d_mean', 'team_def_all_fenwick_against_ema5', 'team_def_all_xga_s2d_mean', 'team_def_all_xga_ema5', 'team_def_5v5_corsi_against_ema5', 'team_def_5v5_xga_ema5', 'team_def_all_score_adj_corsi_against_ema5', 'combined_all_corsi_ema5', 'combined_all_fenwick_ema5', 'combined_all_xg_ema5', 'combined_5v5_corsi_ema5', 'combined_5v5_xg_ema5', 'opp_pp_corsi_s2d_mean', 'opp_pp_corsi_ema5', 'opp_pp_xgf_s2d_mean', 'opp_pp_xgf_ema5', 'team_pk_corsi_against_s2d_mean', 'team_pk_corsi_against_ema5', 'team_pk_xga_ema5', 'team_pk_icetime_minutes_s2d_mean', 'opp_off_all_corsi_ema5_prior_league_z', 'team_def_all_corsi_against_ema5_prior_league_z', 'combined_all_corsi_ema5_prior_league_z', 'combined_all_xg_ema5_prior_league_z']
+Pace goalie-workload feature columns: 4 -> ['goalie_xg_per_shot_roll10', 'goalie_xg_per_shot_ema5', 'goalie_high_danger_share_ema5', 'goalie_rebound_rate_ema5']
+Core feature set (shots-rate60 / save-rate / control shots): 104 columns -- identical to the existing no-pace control recipe. No pace/market-context features added to the count models, keeping this component isolated per plan section 6.2.
+Exposure-classifier feature set: 108 columns = core + the pace goalie_workload_quality family (['goalie_xg_per_shot_roll10', 'goalie_xg_per_shot_ema5', 'goalie_high_danger_share_ema5', 'goalie_rebound_rate_ema5']), the candidate exposure-risk features named in pre-registration section 7.2. All pregame-safe (prior-only rolling/EMA).
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+================================================================================
+Carving Origin A folds (reusing experiment_rolling_origin's carve logic)
+================================================================================
+[Origin A] train/val carve: train 2022-10-07..2023-02-24 (n=1864); val 2023-02-25..2023-04-14 (n=760), the last 49 days of the training-pool date range ['2022-10-07', '2023-04-14'].
+[Origin A] test date range 2023-10-10..2024-04-18 (n=2624)
+
+Raw multibook_classification_training_data.parquet: 8880 rows, 130 columns.
+After both-side-odds filter + chronological sort: 8880 rows.
+
+Raw multibook_classification_training_data.parquet: 7660 rows, 130 columns.
+After both-side-odds filter + chronological sort: 7660 rows.
+Origin A price frames loaded from existing rolling-origin artifacts (closing is PRIMARY; bettime is a secondary descriptive pass, matching experiment_rolling_origin.py's convention).
+
+================================================================================
+ORIGIN A: exposure-state mixture vs single-NB2 no-pace controls
+================================================================================
+
+--- origin_A control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.2061           2.1839
+depth2                  6.1723           2.1663
+depth4_mcw20            6.2222           2.2097
+more_trees_lowlr        6.2392           2.2048
+shallow_highreg         6.1688           2.1637
+deep_reg                6.2615           2.2313
+origin_A control shots winner: shallow_highreg  val_mae=6.1688  val_poisson_deviance=2.1637
+
+--- origin_A control: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.5170
+  mean(residual^2)   = 46.7206
+  NB2 dispersion alpha = 0.017286  (Var = mean + alpha*mean^2)
+
+--- origin_A shared_save_rate: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_A shared_save_rate save-rate winner: depth2  val_weighted_logloss=0.32074
+
+--- origin_A control_val_disp: dispersion fit on VAL (out-of-sample) residuals ---
+  mean(predicted mu) = 30.3100
+  mean(residual^2)   = 61.0835
+  NB2 dispersion alpha (OOS) = 0.033265  (Var = mean + alpha*mean^2)
+Saved control shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_control_shots_model.json
+Saved shared save-rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_shared_save_rate_model.json
+
+--- origin_A exposure: exposure classifier (binary:logistic), selected on VAL log loss ---
+  TRAIN n=1864 positives=97 (5.20%)
+  VAL   n=760 positives=51 (6.71%)
+config                val_logloss
+base                      0.29439
+depth2                    0.28160
+depth4_mcw20              0.27661
+more_trees_lowlr          0.29646
+shallow_highreg           0.25425
+deep_reg                  0.25319
+origin_A exposure exposure winner: deep_reg  val_logloss=0.25319
+origin_A exposure Platt (sigmoid) calibration fit on VAL (n=760, 51 positives): coef=0.2813 intercept=-1.7769
+  CAVEAT: VAL positive count (51) is small; Platt calibration (2 free parameters) is the most sample-efficient standard choice, but treat calibrated probabilities in the extreme tails with caution.
+Saved exposure classifier to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_exposure_classifier.json
+
+--- origin_A rate60: shots-per-60 rate model (count:poisson), selected on VAL MAE ---
+  TOI floor=10.0min for target construction; TRAIN target winsorized at p99.5=53.14 shots/60 (10/1864 train rows clipped).
+config                 val_mae
+base                    5.7267
+depth2                  5.7020
+depth4_mcw20            5.7757
+more_trees_lowlr        5.7455
+shallow_highreg         5.6993
+deep_reg                5.7796
+origin_A rate60 shots-rate60 winner: shallow_highreg  val_mae=5.6993
+Saved shots-rate60 model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_shots_rate60_model.json
+
+--- origin_A mixture: dispersion fit on VAL (out-of-sample) residuals ---
+  mean(predicted mu) = 30.2612
+  mean(residual^2)   = 46.1600
+  NB2 dispersion alpha (OOS) = 0.016904  (Var = mean + alpha*mean^2)
+[origin_A early] pooled TOI-bin distribution: n_obs=97, n_bins=10, bin_width=5.0min, range=[0.0,50.0), laplace_smoothing=1.0
+[origin_A early]   bin midpoints: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5]
+[origin_A early]   bin weights:   [0.0467, 0.0187, 0.0654, 0.0841, 0.1869, 0.1028, 0.1121, 0.1308, 0.1963, 0.0561]
+[origin_A normal] pooled TOI-bin distribution: n_obs=1767, n_bins=16, bin_width=1.0min, range=[50.0,66.0), laplace_smoothing=1.0
+[origin_A normal]   bin midpoints: [50.5, 51.5, 52.5, 53.5, 54.5, 55.5, 56.5, 57.5, 58.5, 59.5, 60.5, 61.5, 62.5, 63.5, 64.5, 65.5]
+[origin_A normal]   bin weights:   [0.0017, 0.0006, 0.0006, 0.0011, 0.0017, 0.0056, 0.0179, 0.0746, 0.1195, 0.2238, 0.3674, 0.0348, 0.032, 0.0247, 0.0544, 0.0398]
+[origin_A] historical OT/SO baseline embedded in the normal-start TOI distribution (TRAIN, fraction with TOI>60.05min): 0.2230 -- used in place of a market-derived OT probability, per plan section 4.1's allowed simplification (pre-registration 7.2 makes the market-derived variant optional).
+
+--- origin_A exposure: exposure component evaluation (TEST fold, n=2624, base_rate=0.0625) ---
+  constant-base-rate baseline: logloss=0.23379 brier=0.05859
+  raw model:                   logloss=0.24375 brier=0.05943
+  Platt-calibrated model:      logloss=0.23390 brier=0.05862
+  AUC=0.5244 -- context only, vs the plan's prior quick-attempt ceiling 0.53-0.56. AUC is NOT part of the pass bar (pre-registration sections 7.4/7.5); no individualized pull/injury skill is claimed.
+  reliability table (calibrated probability, quantile bins):
+    n=  328  mean_pred=0.0505  mean_actual=0.0640  diff=-0.0136
+    n=  328  mean_pred=0.0563  mean_actual=0.0335  diff=+0.0227
+    n=  328  mean_pred=0.0600  mean_actual=0.0671  diff=-0.0070
+    n=  328  mean_pred=0.0633  mean_actual=0.0640  diff=-0.0008
+    n=  328  mean_pred=0.0665  mean_actual=0.0945  diff=-0.0280
+    n=  328  mean_pred=0.0702  mean_actual=0.0457  diff=+0.0245
+    n=  328  mean_pred=0.0749  mean_actual=0.0579  diff=+0.0170
+    n=  328  mean_pred=0.0846  mean_actual=0.0732  diff=+0.0114
+[origin_A control_train_disp TEST] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_A control_val_disp TEST] pmf normalization check: n=2624, min_sum=0.999965, max_sum=1.000000, rows below 0.999: 0
+[origin_A mixture TEST] mixture pmf normalization check: n=2624, min_sum=0.999998, max_sum=1.000000, rows below 0.999: 0
+
+--- origin_A_mixture: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.7276  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.4077
+Central 50% coverage: 54.0%; central 80% coverage: 81.5%
+PIT histogram frequencies: [0.106, 0.095, 0.1, 0.106, 0.099, 0.103, 0.091, 0.098, 0.1, 0.102]
+
+--- origin_A_control_train_disp: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.7556  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5497
+Central 50% coverage: 50.6%; central 80% coverage: 77.3%
+PIT histogram frequencies: [0.146, 0.081, 0.089, 0.089, 0.096, 0.093, 0.091, 0.091, 0.109, 0.115]
+
+--- origin_A_control_val_disp: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.7556  naive(shots_against_rolling_5)=6.3887
+Mean pmf log-loss at actual saves value: 3.5042
+Central 50% coverage: 55.5%; central 80% coverage: 82.3%
+PIT histogram frequencies: [0.111, 0.085, 0.091, 0.099, 0.104, 0.107, 0.103, 0.104, 0.105, 0.089]
+[origin_A] TEST shots bias (mean predicted mu - actual shots_against): {'mixture': 0.1533869376521581, 'control_train_disp': 0.44196249290210443, 'control_val_disp': 0.44196249290210443}
+
+--------------------------------------------------------------------------------
+[origin_A] PRE-REGISTERED PASS-BAR METRIC (PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 7.4): central 50%/80% coverage on the TOI<50 TEST subset (n=164 goalie-nights).
+[origin_A] SMALL-SAMPLE CAVEAT (section 7.3/7.6): 164 goalie-nights is a small slice; CIs on this subset are wide and the coverage comparison is directionally informative, not tightly estimated.
+--------------------------------------------------------------------------------
+[origin_A] ALL           mixture              n= 2624 cov50= 54.04% cov80= 81.48% summed_dev=  5.518  PIT=[0.1059, 0.0945, 0.0998, 0.1059, 0.0995, 0.1033, 0.0911, 0.0976, 0.1002, 0.1021]
+[origin_A] ALL           control_train_disp   n= 2624 cov50= 50.65% cov80= 77.29% summed_dev=  3.361  PIT=[0.1456, 0.0808, 0.0892, 0.0892, 0.096, 0.0926, 0.0915, 0.0915, 0.1086, 0.1151]
+[origin_A] ALL           control_val_disp     n= 2624 cov50= 55.49% cov80= 82.32% summed_dev=  7.805  PIT=[0.1113, 0.0854, 0.0915, 0.0995, 0.1037, 0.1075, 0.1033, 0.1037, 0.1052, 0.0892]
+[origin_A] EARLY_SUBSET  mixture              n=  164 cov50=  6.71% cov80= 21.34% summed_dev=101.951  PIT=[0.7927, 0.122, 0.0427, 0.0122, 0.0061, 0.0122, 0.0061, 0.0, 0.0061, 0.0]
+[origin_A] EARLY_SUBSET  control_train_disp   n=  164 cov50=  6.71% cov80= 17.68% summed_dev=105.610  PIT=[0.8415, 0.0793, 0.0366, 0.0122, 0.0122, 0.0, 0.0122, 0.0, 0.0061, 0.0]
+[origin_A] EARLY_SUBSET  control_val_disp     n=  164 cov50=  7.32% cov80= 21.34% summed_dev=101.341  PIT=[0.8171, 0.0854, 0.0427, 0.0244, 0.0122, 0.0, 0.0122, 0.0, 0.0061, 0.0]
+[origin_A EARLY cov50 mixture-vs-control_val_disp] paired coverage-indicator difference (mixture - baseline): mean=-0.0061 95% CI=[-0.0183, +0.0000] n=164 clusters=164
+[origin_A EARLY cov80 mixture-vs-control_val_disp] paired coverage-indicator difference (mixture - baseline): mean=+0.0000 95% CI=[-0.0183, +0.0183] n=164 clusters=164
+[origin_A] PASS BAR vs control_val_disp (PRIMARY): mixture summed_dev=101.951 vs baseline 101.341 -> FAIL (point comparison per section 7.4; CIs above are the honesty check on the small subset).
+[origin_A EARLY cov50 mixture-vs-control_train_disp] paired coverage-indicator difference (mixture - baseline): mean=+0.0000 95% CI=[-0.0183, +0.0183] n=164 clusters=164
+[origin_A EARLY cov80 mixture-vs-control_train_disp] paired coverage-indicator difference (mixture - baseline): mean=+0.0366 95% CI=[+0.0122, +0.0671] n=164 clusters=164
+[origin_A] PASS BAR vs control_train_disp (SECONDARY): mixture summed_dev=101.951 vs baseline 105.610 -> PASS (point comparison per section 7.4; CIs above are the honesty check on the small subset).
+[origin_A mixture ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0086               0.0095  -0.0009
+    10             0.0253               0.0286  -0.0033
+    15             0.0649               0.0720  -0.0071
+    20             0.1921               0.1947  -0.0026
+    25             0.4418               0.4440  -0.0021
+    30             0.7117               0.7138  -0.0021
+[origin_A mixture EARLY_SUBSET(n=164)] lower-tail calibration (n=164):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0085               0.1524  -0.1439
+    10             0.0248               0.4146  -0.3899
+    15             0.0617               0.6890  -0.6273
+    20             0.1800               0.8902  -0.7102
+    25             0.4209               0.9695  -0.5486
+    30             0.6921               0.9939  -0.3019
+[origin_A control_train_disp ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0000               0.0095  -0.0095
+    10             0.0016               0.0286  -0.0270
+    15             0.0292               0.0720  -0.0428
+    20             0.1662               0.1947  -0.0286
+    25             0.4431               0.4440  -0.0009
+    30             0.7288               0.7138  +0.0150
+[origin_A control_train_disp EARLY_SUBSET(n=164)] lower-tail calibration (n=164):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0000               0.1524  -0.1524
+    10             0.0014               0.4146  -0.4133
+    15             0.0266               0.6890  -0.6624
+    20             0.1564               0.8902  -0.7338
+    25             0.4275               0.9695  -0.5420
+    30             0.7153               0.9939  -0.2786
+[origin_A control_val_disp ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0001               0.0095  -0.0095
+    10             0.0040               0.0286  -0.0246
+    15             0.0466               0.0720  -0.0254
+    20             0.1991               0.1947  +0.0043
+    25             0.4574               0.4440  +0.0134
+    30             0.7119               0.7138  -0.0019
+[origin_A control_val_disp EARLY_SUBSET(n=164)] lower-tail calibration (n=164):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0001               0.1524  -0.1524
+    10             0.0036               0.4146  -0.4110
+    15             0.0434               0.6890  -0.6457
+    20             0.1895               0.8902  -0.7007
+    25             0.4434               0.9695  -0.5261
+    30             0.6995               0.9939  -0.2944
+[origin_A mixture TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A mixture TEST closing] fold-wide AUC row-level=0.4897 one-per-goalie-night=0.4871  Brier=0.25581  (n=8880)
+[origin_A mixture TEST closing] paired Brier delta (model-market): model_brier=0.25581 market_brier=0.25000 delta=+0.00581 95% CI=[+0.00243, +0.00930] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A mixture TEST closing] 2646 bets, 29.8% bet rate, 51.7% hit rate, -3.26% ROI
+[origin_A mixture TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 3303, 'mean_predicted_p_over': 0.553364712452641, 'actual_over_rate': 0.44383893430214955}, 'UNDER_favored': {'n': 5577, 'mean_predicted_p_under': 0.574622309197028, 'actual_under_rate': 0.5343374574143805}}
+[origin_A control_train_disp TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A control_train_disp TEST closing] fold-wide AUC row-level=0.4947 one-per-goalie-night=0.4911  Brier=0.25708  (n=8880)
+[origin_A control_train_disp TEST closing] paired Brier delta (model-market): model_brier=0.25708 market_brier=0.25000 delta=+0.00708 95% CI=[+0.00320, +0.01103] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A control_train_disp TEST closing] 3250 bets, 36.6% bet rate, 52.7% hit rate, -1.28% ROI
+[origin_A control_train_disp TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2937, 'mean_predicted_p_over': 0.5610127567134687, 'actual_over_rate': 0.43990466462376576}, 'UNDER_favored': {'n': 5943, 'mean_predicted_p_under': 0.5854908971874953, 'actual_under_rate': 0.5337371697795726}}
+[origin_A control_val_disp TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_A control_val_disp TEST closing] fold-wide AUC row-level=0.4947 one-per-goalie-night=0.4910  Brier=0.25521  (n=8880)
+[origin_A control_val_disp TEST closing] paired Brier delta (model-market): model_brier=0.25521 market_brier=0.25000 delta=+0.00520 95% CI=[+0.00165, +0.00888] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_A control_val_disp TEST closing] 2907 bets, 32.7% bet rate, 53.4% hit rate, +0.14% ROI
+[origin_A control_val_disp TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2610, 'mean_predicted_p_over': 0.5520571168714594, 'actual_over_rate': 0.43409961685823756}, 'UNDER_favored': {'n': 6270, 'mean_predicted_p_under': 0.5792515684594971, 'actual_under_rate': 0.532695374800638}}
+[origin_A mixture_vs_control_val_disp TEST closing] paired Brier delta (mixture - control_val_disp): mixture_brier=0.25581 control_val_disp_brier=0.25521 delta=+0.00060 95% CI=[-0.00122, +0.00243] n_rows=8880 n_clusters=2298
+[origin_A mixture_vs_control_train_disp TEST closing] paired Brier delta (mixture - control_train_disp): mixture_brier=0.25581 control_train_disp_brier=0.25708 delta=-0.00127 95% CI=[-0.00321, +0.00064] n_rows=8880 n_clusters=2298
+[origin_A mixture TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A mixture TEST bettime] fold-wide AUC row-level=0.4902 one-per-goalie-night=0.4861  Brier=0.25592  (n=7660)
+[origin_A mixture TEST bettime] paired Brier delta (model-market): model_brier=0.25592 market_brier=0.24966 delta=+0.00625 95% CI=[+0.00255, +0.01003] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A mixture TEST bettime] 2260 bets, 29.5% bet rate, 52.0% hit rate, -2.83% ROI
+[origin_A mixture TEST bettime] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2764, 'mean_predicted_p_over': 0.5520546741472746, 'actual_over_rate': 0.4475397973950796}, 'UNDER_favored': {'n': 4896, 'mean_predicted_p_under': 0.5746081223084318, 'actual_under_rate': 0.5302287581699346}}
+[origin_A control_train_disp TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A control_train_disp TEST bettime] fold-wide AUC row-level=0.4984 one-per-goalie-night=0.4945  Brier=0.25685  (n=7660)
+[origin_A control_train_disp TEST bettime] paired Brier delta (model-market): model_brier=0.25685 market_brier=0.24966 delta=+0.00719 95% CI=[+0.00292, +0.01154] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A control_train_disp TEST bettime] 2791 bets, 36.4% bet rate, 53.0% hit rate, -0.88% ROI
+[origin_A control_train_disp TEST bettime] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2445, 'mean_predicted_p_over': 0.5598689499835334, 'actual_over_rate': 0.44826175869120655}, 'UNDER_favored': {'n': 5215, 'mean_predicted_p_under': 0.5854816784114625, 'actual_under_rate': 0.5319271332694151}}
+[origin_A control_val_disp TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_A control_val_disp TEST bettime] fold-wide AUC row-level=0.4983 one-per-goalie-night=0.4944  Brier=0.25510  (n=7660)
+[origin_A control_val_disp TEST bettime] paired Brier delta (model-market): model_brier=0.25510 market_brier=0.24966 delta=+0.00544 95% CI=[+0.00152, +0.00948] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_A control_val_disp TEST bettime] 2519 bets, 32.9% bet rate, 53.6% hit rate, +0.52% ROI
+[origin_A control_val_disp TEST bettime] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2160, 'mean_predicted_p_over': 0.551228553546477, 'actual_over_rate': 0.4412037037037037}, 'UNDER_favored': {'n': 5500, 'mean_predicted_p_under': 0.5792688722070922, 'actual_under_rate': 0.5301818181818182}}
+[origin_A mixture_vs_control_val_disp TEST bettime] paired Brier delta (mixture - control_val_disp): mixture_brier=0.25592 control_val_disp_brier=0.25510 delta=+0.00081 95% CI=[-0.00114, +0.00278] n_rows=7660 n_clusters=1973
+[origin_A mixture_vs_control_train_disp TEST bettime] paired Brier delta (mixture - control_train_disp): mixture_brier=0.25592 control_train_disp_brier=0.25685 delta=-0.00094 95% CI=[-0.00303, +0.00114] n_rows=7660 n_clusters=1973
+Saved 49620 per-row test predictions (mixture + both controls) to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_test_predictions.parquet
+Saved 2624 per-goalie-night exposure predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_a_exposure_predictions.parquet
+
+================================================================================
+Carving Origin B folds (reusing experiment_rolling_origin's carve logic)
+================================================================================
+[Origin B] train/val carve: train 2022-10-07..2024-02-29 (n=4528); val 2024-03-01..2024-04-18 (n=720), the last 49 days of the training-pool date range ['2022-10-07', '2024-04-18'].
+[Origin B] test date range 2024-10-04..2025-04-17 (n=2624)
+Origin B price frame: multibook_classification_training_data.parquet season 20242025 closing rows (7463). No usable 2024-25 bettime pass exists (pre-registration 1.2).
+
+================================================================================
+ORIGIN B: exposure-state mixture vs single-NB2 no-pace controls
+================================================================================
+
+--- origin_B control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6809           1.9764
+depth2                  5.6845           1.9771
+depth4_mcw20            5.6783           1.9723
+more_trees_lowlr        5.6812           1.9629
+shallow_highreg         5.6803           1.9760
+deep_reg                5.6892           1.9888
+origin_B control shots winner: depth4_mcw20  val_mae=5.6783  val_poisson_deviance=1.9723
+
+--- origin_B control: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.8957
+  mean(residual^2)   = 36.9848
+  NB2 dispersion alpha = 0.007854  (Var = mean + alpha*mean^2)
+
+--- origin_B shared_save_rate: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_B shared_save_rate save-rate winner: base  val_weighted_logloss=0.31912
+
+--- origin_B control_val_disp: dispersion fit on VAL (out-of-sample) residuals ---
+  mean(predicted mu) = 29.0609
+  mean(residual^2)   = 53.3270
+  NB2 dispersion alpha (OOS) = 0.028522  (Var = mean + alpha*mean^2)
+Saved control shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_control_shots_model.json
+Saved shared save-rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_shared_save_rate_model.json
+
+--- origin_B exposure: exposure classifier (binary:logistic), selected on VAL log loss ---
+  TRAIN n=4528 positives=271 (5.98%)
+  VAL   n=720 positives=41 (5.69%)
+config                val_logloss
+base                      0.22321
+depth2                    0.22031
+depth4_mcw20              0.22695
+more_trees_lowlr          0.22260
+shallow_highreg           0.22044
+deep_reg                  0.22374
+origin_B exposure exposure winner: depth2  val_logloss=0.22031
+origin_B exposure Platt (sigmoid) calibration fit on VAL (n=720, 41 positives): coef=0.3870 intercept=-1.6767
+  CAVEAT: VAL positive count (41) is small; Platt calibration (2 free parameters) is the most sample-efficient standard choice, but treat calibrated probabilities in the extreme tails with caution.
+Saved exposure classifier to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_exposure_classifier.json
+
+--- origin_B rate60: shots-per-60 rate model (count:poisson), selected on VAL MAE ---
+  TOI floor=10.0min for target construction; TRAIN target winsorized at p99.5=53.11 shots/60 (23/4528 train rows clipped).
+config                 val_mae
+base                    5.5371
+depth2                  5.5384
+depth4_mcw20            5.5437
+more_trees_lowlr        5.5444
+shallow_highreg         5.5378
+deep_reg                5.5585
+origin_B rate60 shots-rate60 winner: base  val_mae=5.5371
+Saved shots-rate60 model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_shots_rate60_model.json
+
+--- origin_B mixture: dispersion fit on VAL (out-of-sample) residuals ---
+  mean(predicted mu) = 29.0873
+  mean(residual^2)   = 40.5120
+  NB2 dispersion alpha (OOS) = 0.013136  (Var = mean + alpha*mean^2)
+[origin_B early] pooled TOI-bin distribution: n_obs=271, n_bins=10, bin_width=5.0min, range=[0.0,50.0), laplace_smoothing=1.0
+[origin_B early]   bin midpoints: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5]
+[origin_B early]   bin weights:   [0.0178, 0.0463, 0.0819, 0.0641, 0.2206, 0.1174, 0.0961, 0.0996, 0.21, 0.0463]
+[origin_B normal] pooled TOI-bin distribution: n_obs=4257, n_bins=16, bin_width=1.0min, range=[50.0,66.0), laplace_smoothing=1.0
+[origin_B normal]   bin midpoints: [50.5, 51.5, 52.5, 53.5, 54.5, 55.5, 56.5, 57.5, 58.5, 59.5, 60.5, 61.5, 62.5, 63.5, 64.5, 65.5]
+[origin_B normal]   bin weights:   [0.0012, 0.0005, 0.0002, 0.0009, 0.0009, 0.0051, 0.0197, 0.0749, 0.1194, 0.2333, 0.3555, 0.0377, 0.029, 0.0262, 0.051, 0.0445]
+[origin_B] historical OT/SO baseline embedded in the normal-start TOI distribution (TRAIN, fraction with TOI>60.05min): 0.2236 -- used in place of a market-derived OT probability, per plan section 4.1's allowed simplification (pre-registration 7.2 makes the market-derived variant optional).
+
+--- origin_B exposure: exposure component evaluation (TEST fold, n=2624, base_rate=0.0480) ---
+  constant-base-rate baseline: logloss=0.19264 brier=0.04571
+  raw model:                   logloss=0.19867 brier=0.04658
+  Platt-calibrated model:      logloss=0.19291 brier=0.04577
+  AUC=0.5521 -- context only, vs the plan's prior quick-attempt ceiling 0.53-0.56. AUC is NOT part of the pass bar (pre-registration sections 7.4/7.5); no individualized pull/injury skill is claimed.
+  reliability table (calibrated probability, quantile bins):
+    n=  328  mean_pred=0.0348  mean_actual=0.0427  diff=-0.0079
+    n=  328  mean_pred=0.0426  mean_actual=0.0122  diff=+0.0304
+    n=  328  mean_pred=0.0474  mean_actual=0.0610  diff=-0.0136
+    n=  328  mean_pred=0.0518  mean_actual=0.0457  diff=+0.0061
+    n=  328  mean_pred=0.0559  mean_actual=0.0610  diff=-0.0050
+    n=  328  mean_pred=0.0607  mean_actual=0.0457  diff=+0.0150
+    n=  328  mean_pred=0.0674  mean_actual=0.0427  diff=+0.0247
+    n=  328  mean_pred=0.0803  mean_actual=0.0732  diff=+0.0071
+[origin_B control_train_disp TEST] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[origin_B control_val_disp TEST] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_B mixture TEST] mixture pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+
+--- origin_B_mixture: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4094  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.3477
+Central 50% coverage: 52.5%; central 80% coverage: 80.4%
+PIT histogram frequencies: [0.119, 0.111, 0.104, 0.097, 0.099, 0.097, 0.09, 0.083, 0.099, 0.101]
+
+--- origin_B_control_train_disp: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4117  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4885
+Central 50% coverage: 47.9%; central 80% coverage: 73.7%
+PIT histogram frequencies: [0.152, 0.086, 0.088, 0.081, 0.09, 0.088, 0.084, 0.09, 0.096, 0.145]
+
+--- origin_B_control_val_disp: intrinsic distribution quality on VAL ---
+Shots MAE: model=5.4117  naive(shots_against_rolling_5)=6.0500
+Mean pmf log-loss at actual saves value: 3.4113
+Central 50% coverage: 53.9%; central 80% coverage: 80.3%
+PIT histogram frequencies: [0.112, 0.088, 0.087, 0.101, 0.096, 0.109, 0.095, 0.096, 0.106, 0.109]
+[origin_B] TEST shots bias (mean predicted mu - actual shots_against): {'mixture': 0.3464278464929255, 'control_train_disp': 0.030831028775471014, 'control_val_disp': 0.030831028775471014}
+
+--------------------------------------------------------------------------------
+[origin_B] PRE-REGISTERED PASS-BAR METRIC (PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 7.4): central 50%/80% coverage on the TOI<50 TEST subset (n=126 goalie-nights).
+[origin_B] SMALL-SAMPLE CAVEAT (section 7.3/7.6): 126 goalie-nights is a small slice; CIs on this subset are wide and the coverage comparison is directionally informative, not tightly estimated.
+--------------------------------------------------------------------------------
+[origin_B] ALL           mixture              n= 2624 cov50= 52.48% cov80= 80.41% summed_dev=  2.889  PIT=[0.1185, 0.1113, 0.104, 0.0968, 0.0987, 0.0972, 0.0899, 0.0835, 0.0987, 0.1014]
+[origin_B] ALL           control_train_disp   n= 2624 cov50= 47.87% cov80= 73.70% summed_dev=  8.430  PIT=[0.1517, 0.0861, 0.088, 0.0808, 0.0899, 0.0884, 0.0842, 0.0896, 0.096, 0.1452]
+[origin_B] ALL           control_val_disp     n= 2624 cov50= 53.89% cov80= 80.34% summed_dev=  4.223  PIT=[0.1124, 0.0884, 0.0869, 0.1006, 0.096, 0.1094, 0.0953, 0.096, 0.1059, 0.109]
+[origin_B] EARLY_SUBSET  mixture              n=  126 cov50=  6.35% cov80= 19.84% summed_dev=103.810  PIT=[0.8095, 0.1111, 0.0397, 0.0238, 0.0079, 0.0079, 0.0, 0.0, 0.0, 0.0]
+[origin_B] EARLY_SUBSET  control_train_disp   n=  126 cov50=  6.35% cov80= 17.46% summed_dev=106.190  PIT=[0.8333, 0.0952, 0.0397, 0.0079, 0.0238, 0.0, 0.0, 0.0, 0.0, 0.0]
+[origin_B] EARLY_SUBSET  control_val_disp     n=  126 cov50=  8.73% cov80= 22.22% summed_dev= 99.048  PIT=[0.8254, 0.0635, 0.0476, 0.0397, 0.0238, 0.0, 0.0, 0.0, 0.0, 0.0]
+[origin_B EARLY cov50 mixture-vs-control_val_disp] paired coverage-indicator difference (mixture - baseline): mean=-0.0238 95% CI=[-0.0556, +0.0000] n=126 clusters=126
+[origin_B EARLY cov80 mixture-vs-control_val_disp] paired coverage-indicator difference (mixture - baseline): mean=-0.0238 95% CI=[-0.0635, +0.0159] n=126 clusters=126
+[origin_B] PASS BAR vs control_val_disp (PRIMARY): mixture summed_dev=103.810 vs baseline 99.048 -> FAIL (point comparison per section 7.4; CIs above are the honesty check on the small subset).
+[origin_B EARLY cov50 mixture-vs-control_train_disp] paired coverage-indicator difference (mixture - baseline): mean=+0.0000 95% CI=[+0.0000, +0.0000] n=126 clusters=126
+[origin_B EARLY cov80 mixture-vs-control_train_disp] paired coverage-indicator difference (mixture - baseline): mean=+0.0238 95% CI=[+0.0000, +0.0556] n=126 clusters=126
+[origin_B] PASS BAR vs control_train_disp (SECONDARY): mixture summed_dev=103.810 vs baseline 106.190 -> PASS (point comparison per section 7.4; CIs above are the honesty check on the small subset).
+[origin_B mixture ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0082               0.0076  +0.0006
+    10             0.0252               0.0271  -0.0019
+    15             0.0734               0.0831  -0.0097
+    20             0.2382               0.2565  -0.0182
+    25             0.5288               0.5583  -0.0295
+    30             0.7936               0.8064  -0.0128
+[origin_B mixture EARLY_SUBSET(n=126)] lower-tail calibration (n=126):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0083               0.1587  -0.1505
+    10             0.0252               0.5000  -0.4748
+    15             0.0706               0.7540  -0.6834
+    20             0.2253               0.9206  -0.6954
+    25             0.5071               0.9921  -0.4850
+    30             0.7749               1.0000  -0.2251
+[origin_B control_train_disp ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0000               0.0076  -0.0076
+    10             0.0023               0.0271  -0.0248
+    15             0.0439               0.0831  -0.0392
+    20             0.2363               0.2565  -0.0202
+    25             0.5686               0.5583  +0.0103
+    30             0.8388               0.8064  +0.0324
+[origin_B control_train_disp EARLY_SUBSET(n=126)] lower-tail calibration (n=126):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0000               0.1587  -0.1587
+    10             0.0019               0.5000  -0.4981
+    15             0.0391               0.7540  -0.7149
+    20             0.2204               0.9206  -0.7002
+    25             0.5485               0.9921  -0.4436
+    30             0.8262               1.0000  -0.1738
+[origin_B control_val_disp ALL] lower-tail calibration (n=2624):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0001               0.0076  -0.0075
+    10             0.0070               0.0271  -0.0200
+    15             0.0733               0.0831  -0.0098
+    20             0.2777               0.2565  +0.0213
+    25             0.5691               0.5583  +0.0108
+    30             0.8061               0.8064  -0.0003
+[origin_B control_val_disp EARLY_SUBSET(n=126)] lower-tail calibration (n=126):
+     k   pred_P(saves<=k)   actual_P(saves<=k)     diff
+     5             0.0001               0.1587  -0.1586
+    10             0.0062               0.5000  -0.4938
+    15             0.0674               0.7540  -0.6866
+    20             0.2632               0.9206  -0.6574
+    25             0.5518               0.9921  -0.4403
+    30             0.7938               1.0000  -0.2062
+[origin_B mixture TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B mixture TEST closing] fold-wide AUC row-level=0.5496 one-per-goalie-night=0.5468  Brier=0.25156  (n=7463)
+[origin_B mixture TEST closing] paired Brier delta (model-market): model_brier=0.25156 market_brier=0.24880 delta=+0.00275 95% CI=[-0.00143, +0.00693] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B mixture TEST closing] 3117 bets, 41.8% bet rate, 54.4% hit rate, +0.96% ROI
+[origin_B mixture TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 3226, 'mean_predicted_p_over': 0.5854819726250211, 'actual_over_rate': 0.5068195908245505}, 'UNDER_favored': {'n': 4237, 'mean_predicted_p_under': 0.5873766495485592, 'actual_under_rate': 0.579183384470144}}
+[origin_B control_train_disp TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B control_train_disp TEST closing] fold-wide AUC row-level=0.5505 one-per-goalie-night=0.5472  Brier=0.25414  (n=7463)
+[origin_B control_train_disp TEST closing] paired Brier delta (model-market): model_brier=0.25414 market_brier=0.24880 delta=+0.00533 95% CI=[-0.00009, +0.01079] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B control_train_disp TEST closing] 4192 bets, 56.2% bet rate, 55.6% hit rate, +3.15% ROI
+[origin_B control_train_disp TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2457, 'mean_predicted_p_over': 0.5911995181148424, 'actual_over_rate': 0.5185185185185185}, 'UNDER_favored': {'n': 5006, 'mean_predicted_p_under': 0.6243913957228473, 'actual_under_rate': 0.5717139432680783}}
+[origin_B control_val_disp TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_B control_val_disp TEST closing] fold-wide AUC row-level=0.5505 one-per-goalie-night=0.5471  Brier=0.25129  (n=7463)
+[origin_B control_val_disp TEST closing] paired Brier delta (model-market): model_brier=0.25129 market_brier=0.24880 delta=+0.00248 95% CI=[-0.00232, +0.00732] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_B control_val_disp TEST closing] 3801 bets, 50.9% bet rate, 56.1% hit rate, +4.35% ROI
+[origin_B control_val_disp TEST closing] OVER/UNDER calibration by predicted side: {'OVER_favored': {'n': 2235, 'mean_predicted_p_over': 0.5736390470899049, 'actual_over_rate': 0.5221476510067115}, 'UNDER_favored': {'n': 5228, 'mean_predicted_p_under': 0.6108299005284136, 'actual_under_rate': 0.569433817903596}}
+[origin_B mixture_vs_control_val_disp TEST closing] paired Brier delta (mixture - control_val_disp): mixture_brier=0.25156 control_val_disp_brier=0.25129 delta=+0.00027 95% CI=[-0.00241, +0.00300] n_rows=7463 n_clusters=2510
+[origin_B mixture_vs_control_train_disp TEST closing] paired Brier delta (mixture - control_train_disp): mixture_brier=0.25156 control_train_disp_brier=0.25414 delta=-0.00258 95% CI=[-0.00554, +0.00040] n_rows=7463 n_clusters=2510
+Saved 22389 per-row test predictions (mixture + both controls) to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_test_predictions.parquet
+Saved 2624 per-goalie-night exposure predictions to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\origin_b_exposure_predictions.parquet
+
+================================================================================
+OVERALL PRE-REGISTERED VERDICT (section 7.4: pass requires BOTH origins)
+================================================================================
+  vs control_val_disp: Origin A FAIL, Origin B FAIL -> overall FAIL
+  vs control_train_disp: Origin A PASS, Origin B PASS -> overall PASS
+  Reminder (pre-registration 7.6 / plan 6.1): Origin A improvement is hypothesis support only; both origins agreeing is the strongest no-purchase evidence available; the early-subset sample is small and CIs are wide. Gate A is judged on the COMBINED architecture, not this experiment alone.
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_exposure_mixture_20260713_124712\metadata.json
+Wall-clock time: 107.4s (1.8 min)
+
+================================================================================
+EXPOSURE-STATE MIXTURE EXPERIMENT COMPLETE
+================================================================================

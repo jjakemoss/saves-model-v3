@@ -2012,6 +2012,129 @@ explicitly says the result survived the honest harness and uncertainty checks.
   value to survive at the user's real window and venues, and the sequence
   gained a deployment step. 2026-27 is explicitly framed as a measurement
   season.
+- **2026-07-10/13 (Claude, six parallel Sonnet sub-agents, zero credits)
+  executed steps 0-5 of `docs/BREAKTHROUGH_MODEL_PLAN.md` section 10.**
+  Two session-limit interruptions occurred mid-run; all agents resumed
+  cleanly from saved transcripts with no lost work. Full detail and pass/
+  fail bars in `docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 10
+  (Results); plan-level verdicts in `docs/BREAKTHROUGH_MODEL_PLAN.md`
+  section 7 (Gate A) and section 4.7 (Component G). Summary:
+  - **Step 0 (verify Codex's section 2 diagnostics): all six CONFIRMED**
+    by reloading the frozen origin artifacts -- shots bias +1.9501/+1.8445,
+    saves bias +1.7863/+1.7511, no-pace-control ablation reproduced at
+    +0.4420/+0.0308, the 30.31/29.18/27.41 starter-SOG seasonal decline
+    while raw attempt volume rose then flattened, and the in-sample
+    dispersion-fitting bug confirmed in code with Origin B's frozen
+    artifact shown to have silently fallen back to a Poisson (alpha=0)
+    distribution when true held-out dispersion implied alpha ~0.027. One
+    downgrade: the "control still trailed the market" claim is solid for
+    Origin A but statistically marginal for Origin B (CI touches zero).
+  - **Step 2 (season-normalized funnel) and step 3 (exposure mixture):
+    both FAIL Gate A.** Season-normalization roughly halves Origin A's
+    shots bias but barely moves Origin B; the attempt-to-SOG funnel does
+    the reverse. Neither beats the no-pace control's Brier on both
+    origins, and lower-tail calibration gets worse under every
+    pace-informed variant. The exposure classifier (P(TOI<50)) has
+    essentially no discrimination (AUC 0.52-0.55, log loss/Brier
+    statistically tied with a constant-base-rate baseline), so the
+    exposure mixture fails its lower-tail coverage bar against the
+    correct baseline (no-pace control with validation-fitted dispersion
+    already applied). **The one clear, reproducible win across all three
+    independent agents: validation-fitted dispersion** (never train
+    residuals) -- alpha values matched closely across step 0, the funnel
+    experiment, and the exposure experiment.
+  - **Step 4 (market game-state features): real but partial.** Origin A's
+    entire training pool sits inside 2022-23, which has zero
+    `market_game_features.parquet` coverage, so its result is
+    uninformative by construction. Origin B, with 42% train / 100% val
+    coverage, shows a real paired Brier improvement (-0.00414, cluster CI
+    [-0.00720,-0.00118], market_state moved Origin B's Brier from worse-
+    than-market to better-than-market). Fails the pre-registered
+    both-origins bar; not currently blocked by Gate A since Component C
+    was never one of its four bullets.
+  - **Step 5 (Component G development, 2023-24 only): no confirmed edge,
+    and the venue-relative deployment concept is untestable this season.**
+    The pre-registered threshold lock failed outright -- no gap threshold
+    produced the minimum 20 graded bettime bets required, so the fallback
+    threshold (0.02, 11 bettime bets) is explicitly not a usable policy
+    lock. All ROI/CLV confidence intervals at every threshold cross zero.
+    Flagged bets are heavily concentrated in one book (fanduel, 9/11
+    bettime), consistent with the "single lagging book" theory but not a
+    general cross-book finding this season. The drift baseline cross-
+    checked against the earlier diagnostic within 0.01 probability points
+    (pipeline correctness confirmed) and the candidate-pool size matched
+    the earlier forecast (10.6% bettime / 15.5% closing vs. the ~11%/16-
+    18% estimate). **Critical finding: `betonlineag` has zero quotes
+    anywhere in the 2023-24 archive** -- coverage only starts in 2024-25 --
+    so the one venue the user can actually execute straight bets at cannot
+    be evaluated with this season's data at all. Per the pre-registration's
+    own single-touch discipline, the 2024-25 closing-pass test touch does
+    NOT proceed on this unlocked policy.
+  - **Net effect on the plan:** Gate A, as scored on the combined
+    architecture, currently fails -- no purchase (the SOG probe/pass, the
+    2024-25 opening saves pass) is authorized by this round's evidence.
+    Nothing here overturns the frozen production model's verified CLV
+    finding (section 3.15) or the live 2025-26 UNDER record (section
+    3.11); it narrows which of the *new* research directions still have
+    life in them. Validation-fitted dispersion is adoptable now at zero
+    further cost. Component G needs either a materially larger flagged-bet
+    sample (more seasons/lines) or 2025-26 data (where BetOnline coverage
+    should exist) before its central hypothesis is testable at all.
+    (Correction 2026-07-13, see the next entry: the validation-fitted-
+    dispersion "adoptable now" claim in this paragraph was subsequently
+    corrected -- it fails its own registered central-coverage bar on
+    Origin A.)
+
+- **2026-07-13 (dual independent audit of the six-experiment round: Codex
+  and Claude, given the identical audit prompt, each re-verified the round
+  from raw artifacts -- script review for leakage, fold checks, own-code
+  recomputation of Brier/ROI/CLV/AUC/bootstrap CIs, and bias via reloading
+  the saved model JSONs against a harness-rebuilt frame).** Both audits
+  agree: the experiments genuinely ran, folds are correct, no outcome
+  leakage, and every major number reproduces (bias to 4 decimals, CIs to
+  bootstrap noise; the three agents' control models are prediction-
+  identical, confirming cross-agent fold alignment). Both audits also
+  converged on the same defects, now corrected in
+  `docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md` (amended Experiment 3 table
+  row + new section 10.1) and `docs/BREAKTHROUGH_MODEL_PLAN.md` (Gate A
+  verdict correction + rewritten section 10 step 6):
+  - **Experiment 3's PASS corrected to FAIL**: summed central-coverage
+    deviation worsens on Origin A under val-fitted dispersion (3.36 ->
+    7.80) while improving on Origin B (8.43 -> 4.22) -- the registered
+    both-origins bar fails. The declaring run never computed the
+    train-fitted comparison (diagnostic-only alpha, no test predictions);
+    the exposure run's metadata contained the disproof. Lower-tail gains
+    and the Origin B Poisson-fallback fix remain real; the corrected
+    reading is that single-alpha NB2 cannot fit middle and lower tail
+    simultaneously.
+  - Experiment 2 deviations recorded (starter-share exposure stage instead
+    of the registered per-60 x projected-minutes construction; 4
+    duplicated z-score features); Experiment 6 reframed as "gate failed,
+    mechanism inconclusive" (its pooled mixture had the round's best
+    marginal tail calibration; the classifier, not the shape, is what
+    failed); Experiment 7 contract gaps recorded (20-bet minimum lived in
+    code not in the binding registration; off-modal-line requirement never
+    enforced -- 12 of 42 closing flags were at the modal line).
+  - **New post-hoc observation (verified by both audits, registered as
+    hypothesis only)**: Origin B 2024-25 closing, market-state variant,
+    UNDER picks at the fixed 0.05 EV threshold: +11.18% ROI/bet all books
+    (cluster CI [+4.21%, +18.03%], n=2031/762 nights), +8.66% at BetOnline
+    (CI [+0.53%, +16.57%], n=513). Blind bet-every-UNDER on the same quote
+    universe: +1.06% (CI [-2.77%, +4.82%]) -- so the return is quote
+    SELECTION, not the 2024-25 season-wide UNDER drift. Post-hoc slice;
+    authorizes nothing except the pre-registered replication below.
+  - **Next round decided (all zero-credit; written as plan section 10 step
+    6a-6e)**: (6a) Origin C replication of the frozen market-state recipe
+    -- train through 2024-25, test 2025-26, primary = paired Brier vs.
+    control + selection-over-blind-UNDER delta on the BetOnline bettime
+    cut (1,212 goalie-nights verified on disk); (6b) fixed-offset
+    deterministic funnel (the registered-but-never-tested construction);
+    (6c) fixed-weight early-exit mixture scored as a standalone shape
+    against the corrected dispersion criteria; (6d) Component G contract
+    repair + zero-outcome-touch 2025-26 volume recon only; (6e) purchases
+    stay blocked until 6a reads out -- if it replicates, promote to the
+    2026-27 shadow program and reconsider the 2024-25 bettime-pass
+    purchase; if not, the market-state result was an Origin B artifact.
 
 ## 7. Appendix: what was checked and found sound
 

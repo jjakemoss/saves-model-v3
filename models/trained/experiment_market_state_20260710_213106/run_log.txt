@@ -1,0 +1,278 @@
+================================================================================
+MARKET-STATE FEATURES EXPERIMENT (Breakthrough Model Plan section 4.3 / Component C)
+Rolling-origin harness reused unchanged from scripts/experiment_rolling_origin.py
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106
+
+================================================================================
+STEP 1: build event-level market-state table from market_game_features.parquet
+================================================================================
+market_game_features.parquet: 305940 rows / 3956 distinct events total; 170924 rows / 3954 distinct events at is_latest_pregame_snapshot==True (the timing-safe last-snapshot-before-commence view -- the only rows used anywhere below).
+Event-level market-state table: 3954 distinct events; 3954 with an h2h summary, 3954 with a totals summary, 3954 with both.
+
+================================================================================
+STEP 2: load no-pace control modeling frame and join market-state features
+================================================================================
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+
+Market-state join to modeling frame: 7866/10496 rows matched (74.94% overall across ALL seasons combined -- see the per-origin/split breakdown below for the number that actually determines trainability).
+Market feature NaN counts (retained for XGBoost native missing-value handling; NaN exactly where mkt_matched==0 or a sub-market was unquoted for a matched event): {'mkt_consensus_total': 2630, 'mkt_team_win_prob_devigged': 2630, 'mkt_opponent_win_prob_devigged': 2630, 'mkt_favorite_underdog_strength': 2630, 'mkt_total_dispersion': 2630, 'mkt_h2h_dispersion': 2630, 'mkt_opponent_expected_goals_approx': 2630}
+
+no_pace_control shots/rate feature count: 104
+control_plus_market_state shots feature count: 112 (104 no-pace-control + 8 market-state)
+[Origin A] train/val carve: train 2022-10-07..2023-02-24 (n=1864); val 2023-02-25..2023-04-14 (n=760), the last 49 days of the training-pool date range ['2022-10-07', '2023-04-14'].
+[Origin A] test date range 2023-10-10..2024-04-18 (n=2624)
+[Origin B] train/val carve: train 2022-10-07..2024-02-29 (n=4528); val 2024-03-01..2024-04-18 (n=720), the last 49 days of the training-pool date range ['2022-10-07', '2024-04-18'].
+[Origin B] test date range 2024-10-04..2025-04-17 (n=2624)
+
+================================================================================
+CRITICAL FIRST STEP: market_game_features.parquet join coverage
+================================================================================
+
+Per-season coverage across the full clean_training_data.parquet universe (answers: which seasons have quotes at all?):
+  season 20222023: 0/2624 rows matched (0.00%)
+  season 20232024: 2622/2624 rows matched (99.92%)
+  season 20242025: 2622/2624 rows matched (99.92%)
+  season 20252026: 2622/2624 rows matched (99.92%)
+
+Per-origin, per-split coverage (this determines whether the market-state variant is actually trainable for a given origin):
+
+Origin A:
+  train : 0/1864 rows matched to a market_game_features event (0.00%)
+  val   : 0/760 rows matched to a market_game_features event (0.00%)
+  test  : 2622/2624 rows matched to a market_game_features event (99.92%)
+
+Origin B:
+  train : 1902/4528 rows matched to a market_game_features event (42.01%)
+  val   : 720/720 rows matched to a market_game_features event (100.00%)
+  test  : 2622/2624 rows matched to a market_game_features event (99.92%)
+
+Raw multibook_classification_training_data.parquet: 8880 rows, 130 columns.
+After both-side-odds filter + chronological sort: 8880 rows.
+
+Raw multibook_classification_training_data.parquet: 7660 rows, 130 columns.
+After both-side-odds filter + chronological sort: 7660 rows.
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+
+Origin B test betting frame (multibook_classification_training_data.parquet, season 2024-25, closing lines): 7463 rows.
+
+================================================================================
+ORIGIN A: shared save-rate model, then both shots-model variants
+================================================================================
+
+--- origin_a_shared_save_rate: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.32159
+depth2                             0.32074
+depth4_mcw20                       0.32195
+more_trees_lowlr                   0.32150
+shallow_highreg                    0.32082
+deep_reg                           0.32213
+origin_a_shared_save_rate save-rate winner: depth2  val_weighted_logloss=0.32074
+Saved origin_a_shared_save_rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_a_shared_save_rate_model.json (shared by both variants of Origin A)
+
+================================================================================
+ORIGIN A / VARIANT no_pace_control
+================================================================================
+Shots feature count: 104  (save-rate model is shared across variants, 104 features)
+
+--- origin_a_no_pace_control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.2061           2.1839
+depth2                  6.1723           2.1663
+depth4_mcw20            6.2222           2.2097
+more_trees_lowlr        6.2392           2.2048
+shallow_highreg         6.1688           2.1637
+deep_reg                6.2615           2.2313
+origin_a_no_pace_control shots winner: shallow_highreg  val_mae=6.1688  val_poisson_deviance=2.1637
+[origin_a_no_pace_control] NOTE: fit_dispersion is called with val_idx (validation residuals), not train_idx, per this experiment's explicit dispersion-fitting requirement -- its own log lines below say 'TRAIN residuals' verbatim (hardcoded string in the reused function) but the residuals are val_idx's.
+
+--- origin_a_no_pace_control: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.3100
+  mean(residual^2)   = 61.0835
+  NB2 dispersion alpha = 0.033265  (Var = mean + alpha*mean^2)
+Saved origin_a_no_pace_control shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_a_no_pace_control_shots_model.json
+[origin_a_no_pace_control TEST] pmf normalization check: n=2624, min_sum=0.999965, max_sum=1.000000, rows below 0.999: 0
+[origin_a_no_pace_control] shots-against workload on TEST: mean_bias=+0.4420 MAE=5.7556 (n=2624)
+[origin_a_no_pace_control TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_a_no_pace_control TEST closing] fold-wide AUC row-level=0.4947 one-per-goalie-night=0.4910  Brier=0.25521  (n=8880)
+[origin_a_no_pace_control TEST closing] paired Brier delta (model-market): model_brier=0.25521 market_brier=0.25000 delta=+0.00520 95% CI=[+0.00165, +0.00888] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_a_no_pace_control TEST closing] 2907 bets, 32.7% bet rate, 53.4% hit rate, +0.14% ROI
+[origin_a_no_pace_control TEST closing] ROI 95% CI (cluster): [-6.53%, +6.84%] (n_clusters=905)
+[origin_a_no_pace_control TEST closing] side calibration (one row per goalie-night): {'model_favors_over': {'n': 687, 'mean_predicted_p_over': 0.5529096337748266, 'actual_over_rate': 0.4294032023289665, 'calibration_gap': 0.1235064314458601}, 'model_favors_under': {'n': 1611, 'mean_predicted_p_over': 0.4199914159654978, 'actual_over_rate': 0.47423960273122284, 'calibration_gap': -0.054248186765725015}}
+[origin_a_no_pace_control TEST closing] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 143, 'brier': 0.218274783103699, 'mean_predicted_p_over': 0.4575096192499934, 'actual_over_rate': 0.027972027972027972}
+[origin_a_no_pace_control TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_a_no_pace_control TEST bettime] fold-wide AUC row-level=0.4983 one-per-goalie-night=0.4944  Brier=0.25510  (n=7660)
+[origin_a_no_pace_control TEST bettime] paired Brier delta (model-market): model_brier=0.25510 market_brier=0.24966 delta=+0.00544 95% CI=[+0.00152, +0.00948] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_a_no_pace_control TEST bettime] 2519 bets, 32.9% bet rate, 53.6% hit rate, +0.52% ROI
+[origin_a_no_pace_control TEST bettime] ROI 95% CI (cluster): [-6.53%, +7.64%] (n_clusters=755)
+[origin_a_no_pace_control TEST bettime] side calibration (one row per goalie-night): {'model_favors_over': {'n': 566, 'mean_predicted_p_over': 0.5519129004207332, 'actual_over_rate': 0.43462897526501765, 'calibration_gap': 0.11728392515571551}, 'model_favors_under': {'n': 1407, 'mean_predicted_p_over': 0.4203470951268662, 'actual_over_rate': 0.472636815920398, 'calibration_gap': -0.052289720793531835}}
+[origin_a_no_pace_control TEST bettime] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 119, 'brier': 0.21686087461348721, 'mean_predicted_p_over': 0.45735963501216587, 'actual_over_rate': 0.025210084033613446}
+
+================================================================================
+ORIGIN A / VARIANT control_plus_market_state
+================================================================================
+Shots feature count: 112  (save-rate model is shared across variants, 104 features)
+
+--- origin_a_control_plus_market_state: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    6.2504           2.2080
+depth2                  6.1662           2.1618
+depth4_mcw20            6.2499           2.2201
+more_trees_lowlr        6.2837           2.2260
+shallow_highreg         6.1602           2.1562
+deep_reg                6.3056           2.2595
+origin_a_control_plus_market_state shots winner: shallow_highreg  val_mae=6.1602  val_poisson_deviance=2.1562
+[origin_a_control_plus_market_state] NOTE: fit_dispersion is called with val_idx (validation residuals), not train_idx, per this experiment's explicit dispersion-fitting requirement -- its own log lines below say 'TRAIN residuals' verbatim (hardcoded string in the reused function) but the residuals are val_idx's.
+
+--- origin_a_control_plus_market_state: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 30.2831
+  mean(residual^2)   = 60.8693
+  NB2 dispersion alpha = 0.033122  (Var = mean + alpha*mean^2)
+Saved origin_a_control_plus_market_state shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_a_control_plus_market_state_shots_model.json
+[origin_a_control_plus_market_state TEST] pmf normalization check: n=2624, min_sum=0.999967, max_sum=1.000000, rows below 0.999: 0
+[origin_a_control_plus_market_state] shots-against workload on TEST: mean_bias=+0.4335 MAE=5.7653 (n=2624)
+[origin_a_control_plus_market_state TEST closing] join coverage: 8880/8880 rows matched (100.00%).
+[origin_a_control_plus_market_state TEST closing] fold-wide AUC row-level=0.4901 one-per-goalie-night=0.4865  Brier=0.25574  (n=8880)
+[origin_a_control_plus_market_state TEST closing] paired Brier delta (model-market): model_brier=0.25574 market_brier=0.25000 delta=+0.00574 95% CI=[+0.00219, +0.00943] n_rows=8880 n_clusters=2298 devig_failures=0
+[origin_a_control_plus_market_state TEST closing] 2918 bets, 32.9% bet rate, 52.2% hit rate, -2.10% ROI
+[origin_a_control_plus_market_state TEST closing] ROI 95% CI (cluster): [-8.65%, +4.46%] (n_clusters=907)
+[origin_a_control_plus_market_state TEST closing] side calibration (one row per goalie-night): {'model_favors_over': {'n': 698, 'mean_predicted_p_over': 0.5522022205980666, 'actual_over_rate': 0.4355300859598854, 'calibration_gap': 0.11667213463818116}, 'model_favors_under': {'n': 1600, 'mean_predicted_p_over': 0.4191079972881944, 'actual_over_rate': 0.471875, 'calibration_gap': -0.052767002711805566}}
+[origin_a_control_plus_market_state TEST closing] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 143, 'brier': 0.21797965855674986, 'mean_predicted_p_over': 0.45785279464074474, 'actual_over_rate': 0.027972027972027972}
+[origin_a_control_plus_market_state TEST bettime] join coverage: 7660/7660 rows matched (100.00%).
+[origin_a_control_plus_market_state TEST bettime] fold-wide AUC row-level=0.4926 one-per-goalie-night=0.4884  Brier=0.25578  (n=7660)
+[origin_a_control_plus_market_state TEST bettime] paired Brier delta (model-market): model_brier=0.25578 market_brier=0.24966 delta=+0.00612 95% CI=[+0.00217, +0.01015] n_rows=7660 n_clusters=1973 devig_failures=0
+[origin_a_control_plus_market_state TEST bettime] 2512 bets, 32.8% bet rate, 52.0% hit rate, -2.54% ROI
+[origin_a_control_plus_market_state TEST bettime] ROI 95% CI (cluster): [-9.67%, +4.68%] (n_clusters=752)
+[origin_a_control_plus_market_state TEST bettime] side calibration (one row per goalie-night): {'model_favors_over': {'n': 571, 'mean_predicted_p_over': 0.5512506555263115, 'actual_over_rate': 0.4413309982486865, 'calibration_gap': 0.10991965727762498}, 'model_favors_under': {'n': 1402, 'mean_predicted_p_over': 0.4197986958411766, 'actual_over_rate': 0.47004279600570614, 'calibration_gap': -0.05024410016452957}}
+[origin_a_control_plus_market_state TEST bettime] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 119, 'brier': 0.21729629236596584, 'mean_predicted_p_over': 0.4585463684575716, 'actual_over_rate': 0.025210084033613446}
+
+Saved 33080 per-row test predictions (both variants) to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_a_test_predictions.parquet
+[origin_A closing] paired Brier delta (control_plus_market_state - no_pace_control): mean=0.000537819408872642 95% CI=[-0.0001351793045926375, 0.0012345894289141777] n_rows=8880 n_clusters=2298 (negative means the market-state variant was BETTER)
+[origin_A TEST] paired shots |error| delta (control_plus_market_state - no_pace_control): mean=+0.00971 95% CI=[-0.00321, +0.02257] n=2624 (negative means the market-state variant's shots model was BETTER)
+
+================================================================================
+ORIGIN B: shared save-rate model, then both shots-model variants
+================================================================================
+
+--- origin_b_shared_save_rate: save-rate model (binary:logistic), selected on VAL weighted log-loss ---
+config                val_weighted_logloss
+base                               0.31912
+depth2                             0.31914
+depth4_mcw20                       0.31954
+more_trees_lowlr                   0.31927
+shallow_highreg                    0.31918
+deep_reg                           0.31959
+origin_b_shared_save_rate save-rate winner: base  val_weighted_logloss=0.31912
+Saved origin_b_shared_save_rate model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_b_shared_save_rate_model.json (shared by both variants of Origin B)
+
+================================================================================
+ORIGIN B / VARIANT no_pace_control
+================================================================================
+Shots feature count: 104  (save-rate model is shared across variants, 104 features)
+
+--- origin_b_no_pace_control: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6809           1.9764
+depth2                  5.6845           1.9771
+depth4_mcw20            5.6783           1.9723
+more_trees_lowlr        5.6812           1.9629
+shallow_highreg         5.6803           1.9760
+deep_reg                5.6892           1.9888
+origin_b_no_pace_control shots winner: depth4_mcw20  val_mae=5.6783  val_poisson_deviance=1.9723
+[origin_b_no_pace_control] NOTE: fit_dispersion is called with val_idx (validation residuals), not train_idx, per this experiment's explicit dispersion-fitting requirement -- its own log lines below say 'TRAIN residuals' verbatim (hardcoded string in the reused function) but the residuals are val_idx's.
+
+--- origin_b_no_pace_control: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.0609
+  mean(residual^2)   = 53.3270
+  NB2 dispersion alpha = 0.028522  (Var = mean + alpha*mean^2)
+Saved origin_b_no_pace_control shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_b_no_pace_control_shots_model.json
+[origin_b_no_pace_control TEST] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[origin_b_no_pace_control] shots-against workload on TEST: mean_bias=+0.0308 MAE=5.4117 (n=2624)
+[origin_b_no_pace_control TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_b_no_pace_control TEST closing] fold-wide AUC row-level=0.5505 one-per-goalie-night=0.5471  Brier=0.25129  (n=7463)
+[origin_b_no_pace_control TEST closing] paired Brier delta (model-market): model_brier=0.25129 market_brier=0.24880 delta=+0.00248 95% CI=[-0.00232, +0.00732] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_b_no_pace_control TEST closing] 3801 bets, 50.9% bet rate, 56.1% hit rate, +4.35% ROI
+[origin_b_no_pace_control TEST closing] ROI 95% CI (cluster): [-0.84%, +9.44%] (n_clusters=1389)
+[origin_b_no_pace_control TEST closing] side calibration (one row per goalie-night): {'model_favors_over': {'n': 734, 'mean_predicted_p_over': 0.572714032358673, 'actual_over_rate': 0.5163487738419619, 'calibration_gap': 0.05636525851671115}, 'model_favors_under': {'n': 1776, 'mean_predicted_p_over': 0.38935630816777284, 'actual_over_rate': 0.42567567567567566, 'calibration_gap': -0.03631936750790282}}
+[origin_b_no_pace_control TEST closing] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 123, 'brier': 0.19979835254246786, 'mean_predicted_p_over': 0.4359215370616014, 'actual_over_rate': 0.008130081300813009}
+
+================================================================================
+ORIGIN B / VARIANT control_plus_market_state
+================================================================================
+Shots feature count: 112  (save-rate model is shared across variants, 104 features)
+
+--- origin_b_control_plus_market_state: shots model (count:poisson), selected on VAL MAE ---
+config                 val_mae  val_poisson_dev
+base                    5.6046           1.9131
+depth2                  5.5918           1.9184
+depth4_mcw20            5.6371           1.9348
+more_trees_lowlr        5.6297           1.9286
+shallow_highreg         5.5864           1.9169
+deep_reg                5.6203           1.9312
+origin_b_control_plus_market_state shots winner: shallow_highreg  val_mae=5.5864  val_poisson_deviance=1.9169
+[origin_b_control_plus_market_state] NOTE: fit_dispersion is called with val_idx (validation residuals), not train_idx, per this experiment's explicit dispersion-fitting requirement -- its own log lines below say 'TRAIN residuals' verbatim (hardcoded string in the reused function) but the residuals are val_idx's.
+
+--- origin_b_control_plus_market_state: dispersion fit on TRAIN residuals ---
+  mean(predicted mu) = 29.0338
+  mean(residual^2)   = 51.7683
+  NB2 dispersion alpha = 0.026776  (Var = mean + alpha*mean^2)
+Saved origin_b_control_plus_market_state shots model to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_b_control_plus_market_state_shots_model.json
+[origin_b_control_plus_market_state TEST] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[origin_b_control_plus_market_state] shots-against workload on TEST: mean_bias=+0.5219 MAE=5.3380 (n=2624)
+[origin_b_control_plus_market_state TEST closing] join coverage: 7463/7463 rows matched (100.00%).
+[origin_b_control_plus_market_state TEST closing] fold-wide AUC row-level=0.5627 one-per-goalie-night=0.5615  Brier=0.24715  (n=7463)
+[origin_b_control_plus_market_state TEST closing] paired Brier delta (model-market): model_brier=0.24715 market_brier=0.24880 delta=-0.00166 95% CI=[-0.00543, +0.00207] n_rows=7463 n_clusters=2510 devig_failures=0
+[origin_b_control_plus_market_state TEST closing] 2810 bets, 37.7% bet rate, 58.3% hit rate, +8.12% ROI
+[origin_b_control_plus_market_state TEST closing] ROI 95% CI (cluster): [+2.16%, +13.85%] (n_clusters=1057)
+[origin_b_control_plus_market_state TEST closing] side calibration (one row per goalie-night): {'model_favors_over': {'n': 971, 'mean_predicted_p_over': 0.5654686569128947, 'actual_over_rate': 0.5108135942327497, 'calibration_gap': 0.05465506268014497}, 'model_favors_under': {'n': 1539, 'mean_predicted_p_over': 0.41006766267718564, 'actual_over_rate': 0.4152046783625731, 'calibration_gap': -0.005137015685387436}}
+[origin_b_control_plus_market_state TEST closing] lower-tail (toi<50) calibration (one row per goalie-night): {'n': 123, 'brier': 0.2314279332089546, 'mean_predicted_p_over': 0.47368828123693923, 'actual_over_rate': 0.008130081300813009}
+
+Saved 14926 per-row test predictions (both variants) to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\origin_b_test_predictions.parquet
+[origin_B closing] paired Brier delta (control_plus_market_state - no_pace_control): mean=-0.0041404240194266384 95% CI=[-0.007196770975912929, -0.0011800274158189096] n_rows=7463 n_clusters=2510 (negative means the market-state variant was BETTER)
+[origin_B TEST] paired shots |error| delta (control_plus_market_state - no_pace_control): mean=-0.07376 95% CI=[-0.12168, -0.02355] n=2624 (negative means the market-state variant's shots model was BETTER)
+
+================================================================================
+HEAD-TO-HEAD SUMMARY (closing pass, TEST fold)
+================================================================================
+origin   variant                     shots_mae  shots_bias     brier    vs_mkt       roi   bets
+A        no_pace_control                5.7556     +0.4420   0.25521  +0.00520    +0.14%   2907
+A        control_plus_market_state      5.7653     +0.4335   0.25574  +0.00574    -2.10%   2918
+  Origin A: Brier(control_plus_market_state) - Brier(no_pace_control) on closing pass: mean=+0.00054  95% CI=[-0.00014, +0.00123]  n_rows=8880  n_clusters=2298
+  Origin A: shots |error| delta (market - control): mean=+0.00971  95% CI=[-0.00321, +0.02257]  n=2624
+B        no_pace_control                5.4117     +0.0308   0.25129  +0.00248    +4.35%   3801
+B        control_plus_market_state      5.3380     +0.5219   0.24715  -0.00166    +8.12%   2810
+  Origin B: Brier(control_plus_market_state) - Brier(no_pace_control) on closing pass: mean=-0.00414  95% CI=[-0.00720, -0.00118]  n_rows=7463  n_clusters=2510
+  Origin B: shots |error| delta (market - control): mean=-0.07376  95% CI=[-0.12168, -0.02355]  n=2624
+vs_mkt is model Brier minus the de-vigged market Brier; lower is better.
+Brier(control_plus_market_state) - Brier(no_pace_control) negative means market-state features HELPED.
+Do not interpret Origin A's control_plus_market_state result without reading the join-coverage table above.
+
+================================================================================
+PRE-REGISTERED PASS BAR (PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 6.4)
+================================================================================
+Pass requires a cluster-CI-excluding-zero IMPROVEMENT (CI upper bound < 0 on the market-minus-control delta) in shots MAE or paired Brier, on BOTH origins. A marginal CI-spanning-zero result is a valid negative.
+  shots |error| delta / Origin A: mean=+0.00971 CI=[-0.00321, +0.02257] -> NOT a CI-excluding-zero improvement
+  shots |error| delta / Origin B: mean=-0.07376 CI=[-0.12168, -0.02355] -> CI-excluding-zero improvement
+  paired Brier delta (closing) / Origin A: mean=+0.00054 CI=[-0.00014, +0.00123] -> NOT a CI-excluding-zero improvement
+  paired Brier delta (closing) / Origin B: mean=-0.00414 CI=[-0.00720, -0.00118] -> CI-excluding-zero improvement
+
+OVERALL: FAIL against the pre-registered section 6.4 bar.
+Per section 6.4 this is a valid negative: the features are not carried into the combined model (or are retained only as an input to Experiment 6's exposure component). It does not block Gate A.
+Caveat that travels with any Origin A number: Origin A's train+val pool has 0% market-state coverage, so its market-variant result is a mechanical check, not evidence about the features (see join-coverage table).
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_market_state_20260710_213106\metadata.json
+Wall-clock time: 61.9s (1.0 min)
+
+================================================================================
+MARKET-STATE FEATURES EXPERIMENT COMPLETE
+================================================================================

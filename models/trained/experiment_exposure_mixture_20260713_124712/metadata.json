@@ -1,0 +1,3004 @@
+{
+  "timestamp": "2026-07-13T12:47:12.703495",
+  "sanity_gate": {
+    "n_total": 10496,
+    "n_early": 572,
+    "pct_early": 5.449695121951219
+  },
+  "overall_preregistered_verdict": {
+    "control_val_disp": {
+      "origin_a_pass": false,
+      "origin_b_pass": false,
+      "overall_pass": false
+    },
+    "control_train_disp": {
+      "origin_a_pass": true,
+      "origin_b_pass": true,
+      "overall_pass": true
+    }
+  },
+  "origin_a": {
+    "origin": "A",
+    "test_season": 20232024,
+    "core_feature_count": 104,
+    "exposure_feature_count": 108,
+    "exposure_only_extra_cols": [
+      "goalie_xg_per_shot_roll10",
+      "goalie_xg_per_shot_ema5",
+      "goalie_high_danger_share_ema5",
+      "goalie_rebound_rate_ema5"
+    ],
+    "control_shots_model": {
+      "winner": {
+        "config": "shallow_highreg",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        },
+        "val_mae": 6.168846067629363,
+        "val_poisson_deviance": 2.163720091937922
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.206144177286249,
+          "val_poisson_deviance": 2.1839130755687948
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.172252860822176,
+          "val_poisson_deviance": 2.166323577808176
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.222244265204981,
+          "val_poisson_deviance": 2.2097055169590556
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.239190719002171,
+          "val_poisson_deviance": 2.2048467809863235
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 6.168846067629363,
+          "val_poisson_deviance": 2.163720091937922
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 6.261491215856451,
+          "val_poisson_deviance": 2.2313148108657797
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_control_shots_model.json"
+    },
+    "shared_save_rate_model": {
+      "winner": {
+        "config": "depth2",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.3207419963767144
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32159031174354247
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3207419963767144
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32195435071716955
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.32149965379143575
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_weighted_logloss": 0.32081782938732123
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3221297411245098
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_shared_save_rate_model.json"
+    },
+    "control_dispersion_train": {
+      "alpha": 0.017286448066913984,
+      "method": "negative_binomial",
+      "diagnostics": {
+        "train_mean": 30.516977310180664,
+        "train_var": 46.7206020169637,
+        "mean_mu2": 937.3599853515625
+      }
+    },
+    "control_dispersion_val": {
+      "alpha": 0.033265130249687844,
+      "method": "negative_binomial_oos",
+      "diagnostics": {
+        "val_mean": 30.310028076171875,
+        "val_var": 61.083524135351496,
+        "mean_mu2": 925.0977172851562
+      }
+    },
+    "exposure_classifier": {
+      "winner": {
+        "config": "deep_reg",
+        "hyperparams": {
+          "max_depth": 5,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 300,
+          "reg_lambda": 1.0
+        },
+        "val_logloss": 0.2531855521749488
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2943898726409474
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2815987733601434
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2766092286903999
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2964623958362175
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_logloss": 0.2542532200169245
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2531855521749488
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_exposure_classifier.json",
+      "platt_coef": 0.28128924322396137,
+      "platt_intercept": -1.7768718627948046
+    },
+    "shots_rate60_model": {
+      "winner": {
+        "config": "shallow_highreg",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 30,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 5.0
+        },
+        "val_mae": 5.699260474802104
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.726739542640264
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.702035519895905
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.775713827447475
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.745478617049053
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 5.699260474802104
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.7796264933111665
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_shots_rate60_model.json",
+      "train_winsor_cap": 53.14338523580149
+    },
+    "mixture_dispersion": {
+      "alpha": 0.016904241888525216,
+      "method": "negative_binomial_oos",
+      "diagnostics": {
+        "val_mean": 30.261225446657825,
+        "val_var": 46.159993993589545,
+        "mean_mu2": 940.5194655741395
+      }
+    },
+    "early_bins": [
+      [
+        0.04672897196261682,
+        2.5
+      ],
+      [
+        0.018691588785046728,
+        7.5
+      ],
+      [
+        0.06542056074766354,
+        12.5
+      ],
+      [
+        0.08411214953271028,
+        17.5
+      ],
+      [
+        0.18691588785046728,
+        22.5
+      ],
+      [
+        0.102803738317757,
+        27.5
+      ],
+      [
+        0.11214953271028037,
+        32.5
+      ],
+      [
+        0.1308411214953271,
+        37.5
+      ],
+      [
+        0.19626168224299065,
+        42.5
+      ],
+      [
+        0.056074766355140186,
+        47.5
+      ]
+    ],
+    "normal_bins": [
+      [
+        0.0016825574873808188,
+        50.5
+      ],
+      [
+        0.0005608524957936063,
+        51.5
+      ],
+      [
+        0.0005608524957936063,
+        52.5
+      ],
+      [
+        0.0011217049915872126,
+        53.5
+      ],
+      [
+        0.0016825574873808188,
+        54.5
+      ],
+      [
+        0.005608524957936063,
+        55.5
+      ],
+      [
+        0.0179472798653954,
+        56.5
+      ],
+      [
+        0.07459338194054964,
+        57.5
+      ],
+      [
+        0.11946158160403814,
+        58.5
+      ],
+      [
+        0.2237801458216489,
+        59.5
+      ],
+      [
+        0.36735838474481214,
+        60.5
+      ],
+      [
+        0.034772854739203586,
+        61.5
+      ],
+      [
+        0.03196859226023556,
+        62.5
+      ],
+      [
+        0.024677509814918678,
+        63.5
+      ],
+      [
+        0.05440269209197981,
+        64.5
+      ],
+      [
+        0.039820527201346045,
+        65.5
+      ]
+    ],
+    "normal_ot_fraction_train": 0.22297679683078664,
+    "exposure_eval_test": {
+      "n": 2624,
+      "base_rate": 0.0625,
+      "raw": {
+        "logloss": 0.24375418986246677,
+        "brier": 0.059425435960292816,
+        "auc": 0.5243505849692643
+      },
+      "calibrated": {
+        "logloss": 0.23390197862586773,
+        "brier": 0.058615679022249775
+      },
+      "constant_baseline": {
+        "logloss": 0.23379165870645927,
+        "brier": 0.05859375
+      },
+      "auc_prior_ceiling": [
+        0.53,
+        0.56
+      ],
+      "reliability_table": [
+        {
+          "mean_pred": 0.05047305941383669,
+          "mean_actual": 0.06402439024390244,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.056278330828309076,
+          "mean_actual": 0.03353658536585366,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.06004580937539578,
+          "mean_actual": 0.06707317073170732,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.06326833694081527,
+          "mean_actual": 0.06402439024390244,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.06647248772549462,
+          "mean_actual": 0.09451219512195122,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.07024171300003787,
+          "mean_actual": 0.04573170731707317,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.07494198736291156,
+          "mean_actual": 0.057926829268292686,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.08459505214419975,
+          "mean_actual": 0.07317073170731707,
+          "n": 328
+        }
+      ]
+    },
+    "intrinsic_quality_test": {
+      "mixture": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.727564969149901,
+        "shots_mae_naive": 6.388719512195122,
+        "mean_pmf_logloss_at_actual": 3.4077495830647053,
+        "coverage_50pct_nominal_actual": 54.03963414634146,
+        "coverage_80pct_nominal_actual": 81.47865853658537,
+        "pit_histogram_10bins": [
+          0.10594512195121951,
+          0.09451219512195122,
+          0.09984756097560976,
+          0.10594512195121951,
+          0.09946646341463415,
+          0.10327743902439024,
+          0.09108231707317073,
+          0.0975609756097561,
+          0.10022865853658537,
+          0.10213414634146341
+        ],
+        "pit_bin_freq_min": 0.09108231707317073,
+        "pit_bin_freq_max": 0.10594512195121951,
+        "n_val_rows": 2624
+      },
+      "control_train_disp": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.755618747414612,
+        "shots_mae_naive": 6.388719512195122,
+        "mean_pmf_logloss_at_actual": 3.5497195942126663,
+        "coverage_50pct_nominal_actual": 50.64786585365854,
+        "coverage_80pct_nominal_actual": 77.28658536585365,
+        "pit_histogram_10bins": [
+          0.14557926829268292,
+          0.08079268292682927,
+          0.08917682926829268,
+          0.08917682926829268,
+          0.09603658536585366,
+          0.09260670731707317,
+          0.09146341463414634,
+          0.09146341463414634,
+          0.10861280487804878,
+          0.11509146341463415
+        ],
+        "pit_bin_freq_min": 0.08079268292682927,
+        "pit_bin_freq_max": 0.14557926829268292,
+        "n_val_rows": 2624
+      },
+      "control_val_disp": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.755618747414612,
+        "shots_mae_naive": 6.388719512195122,
+        "mean_pmf_logloss_at_actual": 3.5041546744190653,
+        "coverage_50pct_nominal_actual": 55.487804878048784,
+        "coverage_80pct_nominal_actual": 82.3170731707317,
+        "pit_histogram_10bins": [
+          0.11128048780487805,
+          0.08536585365853659,
+          0.09146341463414634,
+          0.09946646341463415,
+          0.10365853658536585,
+          0.10746951219512195,
+          0.10327743902439024,
+          0.10365853658536585,
+          0.10518292682926829,
+          0.08917682926829268
+        ],
+        "pit_bin_freq_min": 0.08536585365853659,
+        "pit_bin_freq_max": 0.11128048780487805,
+        "n_val_rows": 2624
+      }
+    },
+    "shots_bias_test": {
+      "mixture": 0.1533869376521581,
+      "control_train_disp": 0.44196249290210443,
+      "control_val_disp": 0.44196249290210443
+    },
+    "coverage_results_test": {
+      "ALL": {
+        "mixture": {
+          "n": 2624,
+          "cov50_pct": 54.03963414634146,
+          "cov80_pct": 81.47865853658537,
+          "summed_coverage_deviation": 5.518292682926834,
+          "pit_histogram_10bins": [
+            0.1059,
+            0.0945,
+            0.0998,
+            0.1059,
+            0.0995,
+            0.1033,
+            0.0911,
+            0.0976,
+            0.1002,
+            0.1021
+          ]
+        },
+        "control_train_disp": {
+          "n": 2624,
+          "cov50_pct": 50.64786585365854,
+          "cov80_pct": 77.28658536585365,
+          "summed_coverage_deviation": 3.3612804878048834,
+          "pit_histogram_10bins": [
+            0.1456,
+            0.0808,
+            0.0892,
+            0.0892,
+            0.096,
+            0.0926,
+            0.0915,
+            0.0915,
+            0.1086,
+            0.1151
+          ]
+        },
+        "control_val_disp": {
+          "n": 2624,
+          "cov50_pct": 55.487804878048784,
+          "cov80_pct": 82.3170731707317,
+          "summed_coverage_deviation": 7.804878048780488,
+          "pit_histogram_10bins": [
+            0.1113,
+            0.0854,
+            0.0915,
+            0.0995,
+            0.1037,
+            0.1075,
+            0.1033,
+            0.1037,
+            0.1052,
+            0.0892
+          ]
+        }
+      },
+      "EARLY_SUBSET": {
+        "mixture": {
+          "n": 164,
+          "cov50_pct": 6.707317073170732,
+          "cov80_pct": 21.341463414634145,
+          "summed_coverage_deviation": 101.95121951219511,
+          "pit_histogram_10bins": [
+            0.7927,
+            0.122,
+            0.0427,
+            0.0122,
+            0.0061,
+            0.0122,
+            0.0061,
+            0.0,
+            0.0061,
+            0.0
+          ]
+        },
+        "control_train_disp": {
+          "n": 164,
+          "cov50_pct": 6.707317073170732,
+          "cov80_pct": 17.682926829268293,
+          "summed_coverage_deviation": 105.60975609756096,
+          "pit_histogram_10bins": [
+            0.8415,
+            0.0793,
+            0.0366,
+            0.0122,
+            0.0122,
+            0.0,
+            0.0122,
+            0.0,
+            0.0061,
+            0.0
+          ]
+        },
+        "control_val_disp": {
+          "n": 164,
+          "cov50_pct": 7.317073170731707,
+          "cov80_pct": 21.341463414634145,
+          "summed_coverage_deviation": 101.34146341463415,
+          "pit_histogram_10bins": [
+            0.8171,
+            0.0854,
+            0.0427,
+            0.0244,
+            0.0122,
+            0.0,
+            0.0122,
+            0.0,
+            0.0061,
+            0.0
+          ]
+        }
+      }
+    },
+    "preregistered_pass_bar_section_7_4": {
+      "control_val_disp": {
+        "role": "PRIMARY",
+        "mixture_summed_dev": 101.95121951219511,
+        "baseline_summed_dev": 101.34146341463415,
+        "passed_point_comparison": false,
+        "early_subset_n": 164,
+        "cov50_indicator_diff_ci": {
+          "mean": -0.006097560975609756,
+          "lower": -0.018292682926829267,
+          "upper": 0.0,
+          "n_bets": 164,
+          "n_clusters": 164
+        },
+        "cov80_indicator_diff_ci": {
+          "mean": 0.0,
+          "lower": -0.018292682926829267,
+          "upper": 0.018292682926829267,
+          "n_bets": 164,
+          "n_clusters": 164
+        }
+      },
+      "control_train_disp": {
+        "role": "SECONDARY",
+        "mixture_summed_dev": 101.95121951219511,
+        "baseline_summed_dev": 105.60975609756096,
+        "passed_point_comparison": true,
+        "early_subset_n": 164,
+        "cov50_indicator_diff_ci": {
+          "mean": 0.0,
+          "lower": -0.018292682926829267,
+          "upper": 0.018292682926829267,
+          "n_bets": 164,
+          "n_clusters": 164
+        },
+        "cov80_indicator_diff_ci": {
+          "mean": 0.036585365853658534,
+          "lower": 0.012195121951219513,
+          "upper": 0.06707317073170732,
+          "n_bets": 164,
+          "n_clusters": 164
+        }
+      }
+    },
+    "lower_tail_calibration_test": {
+      "mixture__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 0.00864052087658295,
+          "actual_P_le_k": 0.009527439024390244,
+          "diff": -0.0008869181478072929,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.025278179014575578,
+          "actual_P_le_k": 0.028582317073170733,
+          "diff": -0.0033041380585951546,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.06489449703098905,
+          "actual_P_le_k": 0.07202743902439024,
+          "diff": -0.0071329419934011845,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.19210660379112562,
+          "actual_P_le_k": 0.19474085365853658,
+          "diff": -0.002634249867410954,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.4418350581253521,
+          "actual_P_le_k": 0.44397865853658536,
+          "diff": -0.0021436004112332374,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7116991924598389,
+          "actual_P_le_k": 0.713795731707317,
+          "diff": -0.002096539247478102,
+          "n": 2624
+        }
+      ],
+      "mixture__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 0.008525979913826339,
+          "actual_P_le_k": 0.1524390243902439,
+          "diff": -0.14391304447641756,
+          "n": 164
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.024771766745186472,
+          "actual_P_le_k": 0.4146341463414634,
+          "diff": -0.3898623795962769,
+          "n": 164
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.06167685123716674,
+          "actual_P_le_k": 0.6890243902439024,
+          "diff": -0.6273475390067357,
+          "n": 164
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.18001127741081516,
+          "actual_P_le_k": 0.8902439024390244,
+          "diff": -0.7102326250282093,
+          "n": 164
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.4209360515155416,
+          "actual_P_le_k": 0.9695121951219512,
+          "diff": -0.5485761436064096,
+          "n": 164
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.6920508694527543,
+          "actual_P_le_k": 0.9939024390243902,
+          "diff": -0.30185156957163595,
+          "n": 164
+        }
+      ],
+      "control_train_disp__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 1.1428117007129564e-05,
+          "actual_P_le_k": 0.009527439024390244,
+          "diff": -0.009516010907383115,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.0015822413320845698,
+          "actual_P_le_k": 0.028582317073170733,
+          "diff": -0.027000075741086163,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.02924533788889154,
+          "actual_P_le_k": 0.07202743902439024,
+          "diff": -0.0427821011354987,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.16618181277318628,
+          "actual_P_le_k": 0.19474085365853658,
+          "diff": -0.0285590408853503,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.4430836432012518,
+          "actual_P_le_k": 0.44397865853658536,
+          "diff": -0.0008950153353335377,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7288369673698378,
+          "actual_P_le_k": 0.713795731707317,
+          "diff": 0.015041235662520802,
+          "n": 2624
+        }
+      ],
+      "control_train_disp__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 9.412531179679434e-06,
+          "actual_P_le_k": 0.1524390243902439,
+          "diff": -0.15242961185906423,
+          "n": 164
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.0013796327361610477,
+          "actual_P_le_k": 0.4146341463414634,
+          "diff": -0.41325451360530235,
+          "n": 164
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.026633318007616293,
+          "actual_P_le_k": 0.6890243902439024,
+          "diff": -0.6623910722362861,
+          "n": 164
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.15642900091924647,
+          "actual_P_le_k": 0.8902439024390244,
+          "diff": -0.7338149015197779,
+          "n": 164
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.4274768903864084,
+          "actual_P_le_k": 0.9695121951219512,
+          "diff": -0.5420353047355428,
+          "n": 164
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7153301694067143,
+          "actual_P_le_k": 0.9939024390243902,
+          "diff": -0.2785722696176759,
+          "n": 164
+        }
+      ],
+      "control_val_disp__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 5.822416185909611e-05,
+          "actual_P_le_k": 0.009527439024390244,
+          "diff": -0.009469214862531147,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.004022523876939794,
+          "actual_P_le_k": 0.028582317073170733,
+          "diff": -0.024559793196230938,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.04663519084209346,
+          "actual_P_le_k": 0.07202743902439024,
+          "diff": -0.02539224818229678,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.19908363468475243,
+          "actual_P_le_k": 0.19474085365853658,
+          "diff": 0.004342781026215853,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.4573534218031114,
+          "actual_P_le_k": 0.44397865853658536,
+          "diff": 0.013374763266526035,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7119016484208177,
+          "actual_P_le_k": 0.713795731707317,
+          "diff": -0.0018940832864993151,
+          "n": 2624
+        }
+      ],
+      "control_val_disp__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 5.065710413925553e-05,
+          "actual_P_le_k": 0.1524390243902439,
+          "diff": -0.15238836728610464,
+          "n": 164
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.003630824635928243,
+          "actual_P_le_k": 0.4146341463414634,
+          "diff": -0.41100332170553516,
+          "n": 164
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.043358313859825595,
+          "actual_P_le_k": 0.6890243902439024,
+          "diff": -0.6456660763840768,
+          "n": 164
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.18951501485435526,
+          "actual_P_le_k": 0.8902439024390244,
+          "diff": -0.7007288875846691,
+          "n": 164
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.44340923930297954,
+          "actual_P_le_k": 0.9695121951219512,
+          "diff": -0.5261029558189716,
+          "n": 164
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.6994659601117174,
+          "actual_P_le_k": 0.9939024390243902,
+          "diff": -0.2944364789126729,
+          "n": 164
+        }
+      ]
+    },
+    "price_passes": {
+      "closing": {
+        "per_model": {
+          "mixture": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.4896935953357824,
+              "one_per_goalie_night": 0.487053969168532,
+              "n_rows": 8880,
+              "n_goalie_nights": 2298
+            },
+            "fold_wide_brier": 0.2558095686750424,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.2558095686750424,
+              "market_brier_mean": 0.25000163479156506,
+              "delta_mean": 0.005807933883477299,
+              "delta_ci95_lower": 0.0024331291135406196,
+              "delta_ci95_upper": 0.00929514671005725,
+              "n_rows": 8880,
+              "n_clusters": 2298,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 2646,
+                "bet_rate": 29.7972972972973,
+                "hit_rate": 51.70068027210885,
+                "roi": -3.258775247272453,
+                "profit": -86.2271930428291
+              },
+              "roi_ci_row": {
+                "lower": -6.912877991159781,
+                "upper": 0.2615303197045977,
+                "n_bets": 2646
+              },
+              "roi_ci_cluster": {
+                "lower": -10.015978508073099,
+                "upper": 3.585761318697771,
+                "n_clusters": 844
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 584,
+                  "hit_rate": 49.31506849315068,
+                  "roi": -8.331631423943064,
+                  "profit": -48.65672751582749
+                },
+                "UNDER": {
+                  "bets": 2062,
+                  "hit_rate": 52.376333656644036,
+                  "roi": -1.8220400352571104,
+                  "profit": -37.570465527001616
+                }
+              },
+              "goalie_nights_total": 2298,
+              "goalie_nights_bet": 844
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 3303,
+                "mean_predicted_p_over": 0.553364712452641,
+                "actual_over_rate": 0.44383893430214955
+              },
+              "UNDER_favored": {
+                "n": 5577,
+                "mean_predicted_p_under": 0.574622309197028,
+                "actual_under_rate": 0.5343374574143805
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_train_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.4947115114648255,
+              "one_per_goalie_night": 0.49108795740571803,
+              "n_rows": 8880,
+              "n_goalie_nights": 2298
+            },
+            "fold_wide_brier": 0.2570770398853123,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.2570770398853123,
+              "market_brier_mean": 0.25000163479156506,
+              "delta_mean": 0.007075405093747217,
+              "delta_ci95_lower": 0.003196118272898122,
+              "delta_ci95_upper": 0.01102722872395449,
+              "n_rows": 8880,
+              "n_clusters": 2298,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 3250,
+                "bet_rate": 36.5990990990991,
+                "hit_rate": 52.738461538461536,
+                "roi": -1.2766884108993972,
+                "profit": -41.49237335423041
+              },
+              "roi_ci_row": {
+                "lower": -4.507429738770611,
+                "upper": 1.8485486897420145,
+                "n_bets": 3250
+              },
+              "roi_ci_cluster": {
+                "lower": -7.265903632993649,
+                "upper": 4.8859613114506075,
+                "n_clusters": 1013
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 687,
+                  "hit_rate": 43.95924308588064,
+                  "roi": -18.253225800342292,
+                  "profit": -125.39966124835156
+                },
+                "UNDER": {
+                  "bets": 2563,
+                  "hit_rate": 55.09168942645337,
+                  "roi": 3.2737919584128425,
+                  "profit": 83.90728789412115
+                }
+              },
+              "goalie_nights_total": 2298,
+              "goalie_nights_bet": 1013
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2937,
+                "mean_predicted_p_over": 0.5610127567134687,
+                "actual_over_rate": 0.43990466462376576
+              },
+              "UNDER_favored": {
+                "n": 5943,
+                "mean_predicted_p_under": 0.5854908971874953,
+                "actual_under_rate": 0.5337371697795726
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_val_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.4946697159349954,
+              "one_per_goalie_night": 0.49104451562798895,
+              "n_rows": 8880,
+              "n_goalie_nights": 2298
+            },
+            "fold_wide_brier": 0.25520570113166147,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.25520570113166147,
+              "market_brier_mean": 0.25000163479156506,
+              "delta_mean": 0.005204066340096425,
+              "delta_ci95_lower": 0.0016548788855592152,
+              "delta_ci95_upper": 0.008875835482725306,
+              "n_rows": 8880,
+              "n_clusters": 2298,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 2907,
+                "bet_rate": 32.73648648648649,
+                "hit_rate": 53.38837289301686,
+                "roi": 0.1443912443852332,
+                "profit": 4.1974534742787295
+              },
+              "roi_ci_row": {
+                "lower": -3.2338522480723744,
+                "upper": 3.4980289891593306,
+                "n_bets": 2907
+              },
+              "roi_ci_cluster": {
+                "lower": -6.530777854772978,
+                "upper": 6.837040097669586,
+                "n_clusters": 905
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 423,
+                  "hit_rate": 46.09929078014184,
+                  "roi": -13.892194280612003,
+                  "profit": -58.763981806988774
+                },
+                "UNDER": {
+                  "bets": 2484,
+                  "hit_rate": 54.629629629629626,
+                  "roi": 2.534679359149256,
+                  "profit": 62.961435281267505
+                }
+              },
+              "goalie_nights_total": 2298,
+              "goalie_nights_bet": 905
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2610,
+                "mean_predicted_p_over": 0.5520571168714594,
+                "actual_over_rate": 0.43409961685823756
+              },
+              "UNDER_favored": {
+                "n": 6270,
+                "mean_predicted_p_under": 0.5792515684594971,
+                "actual_under_rate": 0.532695374800638
+              }
+            },
+            "ev_threshold": 0.05
+          }
+        },
+        "model_vs_model_brier_deltas": {
+          "mixture_vs_control_val_disp": {
+            "mixture_brier_mean": 0.2558095686750424,
+            "control_val_disp_brier_mean": 0.25520570113166147,
+            "delta_mean": 0.0006038675433808737,
+            "delta_ci95_lower": -0.0012183623453219383,
+            "delta_ci95_upper": 0.002433784316849945,
+            "n_rows": 8880,
+            "n_clusters": 2298
+          },
+          "mixture_vs_control_train_disp": {
+            "mixture_brier_mean": 0.2558095686750424,
+            "control_train_disp_brier_mean": 0.2570770398853123,
+            "delta_mean": -0.001267471210269919,
+            "delta_ci95_lower": -0.0032101083764864715,
+            "delta_ci95_upper": 0.0006369053050969659,
+            "n_rows": 8880,
+            "n_clusters": 2298
+          }
+        }
+      },
+      "bettime": {
+        "per_model": {
+          "mixture": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.4902253307624036,
+              "one_per_goalie_night": 0.48614547867557223,
+              "n_rows": 7660,
+              "n_goalie_nights": 1973
+            },
+            "fold_wide_brier": 0.25591557842269047,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.25591557842269047,
+              "market_brier_mean": 0.24966227194013552,
+              "delta_mean": 0.006253306482554971,
+              "delta_ci95_lower": 0.0025468571745125793,
+              "delta_ci95_upper": 0.010031722529478898,
+              "n_rows": 7660,
+              "n_clusters": 1973,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 2260,
+                "bet_rate": 29.50391644908616,
+                "hit_rate": 51.991150442477874,
+                "roi": -2.8312060956876244,
+                "profit": -63.985257762540314
+              },
+              "roi_ci_row": {
+                "lower": -6.700123669834557,
+                "upper": 1.0661139071854624,
+                "n_bets": 2260
+              },
+              "roi_ci_cluster": {
+                "lower": -10.171305984627928,
+                "upper": 4.63179798029764,
+                "n_clusters": 691
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 471,
+                  "hit_rate": 49.681528662420384,
+                  "roi": -7.697839530986562,
+                  "profit": -36.25682419094671
+                },
+                "UNDER": {
+                  "bets": 1789,
+                  "hit_rate": 52.59921743991056,
+                  "roi": -1.5499403896922084,
+                  "profit": -27.72843357159361
+                }
+              },
+              "goalie_nights_total": 1973,
+              "goalie_nights_bet": 691
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2764,
+                "mean_predicted_p_over": 0.5520546741472746,
+                "actual_over_rate": 0.4475397973950796
+              },
+              "UNDER_favored": {
+                "n": 4896,
+                "mean_predicted_p_under": 0.5746081223084318,
+                "actual_under_rate": 0.5302287581699346
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_train_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.49835895108643585,
+              "one_per_goalie_night": 0.4945156602396737,
+              "n_rows": 7660,
+              "n_goalie_nights": 1973
+            },
+            "fold_wide_brier": 0.25685466513370425,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.25685466513370425,
+              "market_brier_mean": 0.24966227194013552,
+              "delta_mean": 0.007192393193568723,
+              "delta_ci95_lower": 0.002920480820600371,
+              "delta_ci95_upper": 0.01154417745747399,
+              "n_rows": 7660,
+              "n_clusters": 1973,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 2791,
+                "bet_rate": 36.43603133159269,
+                "hit_rate": 52.99175922608384,
+                "roi": -0.8811878111330597,
+                "profit": -24.593951808723695
+              },
+              "roi_ci_row": {
+                "lower": -4.39093520992219,
+                "upper": 2.5644148243068607,
+                "n_bets": 2791
+              },
+              "roi_ci_cluster": {
+                "lower": -7.5749583403754785,
+                "upper": 5.79427863976167,
+                "n_clusters": 836
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 557,
+                  "hit_rate": 44.34470377019748,
+                  "roi": -17.647186077855405,
+                  "profit": -98.29482645365461
+                },
+                "UNDER": {
+                  "bets": 2234,
+                  "hit_rate": 55.14771709937332,
+                  "roi": 3.2990543708563527,
+                  "profit": 73.70087464493092
+                }
+              },
+              "goalie_nights_total": 1973,
+              "goalie_nights_bet": 836
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2445,
+                "mean_predicted_p_over": 0.5598689499835334,
+                "actual_over_rate": 0.44826175869120655
+              },
+              "UNDER_favored": {
+                "n": 5215,
+                "mean_predicted_p_under": 0.5854816784114625,
+                "actual_under_rate": 0.5319271332694151
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_val_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.4983217160798519,
+              "one_per_goalie_night": 0.494447441916232,
+              "n_rows": 7660,
+              "n_goalie_nights": 1973
+            },
+            "fold_wide_brier": 0.2551048783287054,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.2551048783287054,
+              "market_brier_mean": 0.24966227194013552,
+              "delta_mean": 0.005442606388569852,
+              "delta_ci95_lower": 0.001517791059836921,
+              "delta_ci95_upper": 0.009483994647789453,
+              "n_rows": 7660,
+              "n_clusters": 1973,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 2519,
+                "bet_rate": 32.885117493472585,
+                "hit_rate": 53.63239380706629,
+                "roi": 0.5226611469997722,
+                "profit": 13.16583429292426
+              },
+              "roi_ci_row": {
+                "lower": -3.1557397246692864,
+                "upper": 4.193668656488296,
+                "n_bets": 2519
+              },
+              "roi_ci_cluster": {
+                "lower": -6.529488809571453,
+                "upper": 7.635781353292214,
+                "n_clusters": 755
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 357,
+                  "hit_rate": 46.778711484593835,
+                  "roi": -12.691514326158405,
+                  "profit": -45.3087061443855
+                },
+                "UNDER": {
+                  "bets": 2162,
+                  "hit_rate": 54.764107308048104,
+                  "roi": 2.7046503440013767,
+                  "profit": 58.47454043730976
+                }
+              },
+              "goalie_nights_total": 1973,
+              "goalie_nights_bet": 755
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2160,
+                "mean_predicted_p_over": 0.551228553546477,
+                "actual_over_rate": 0.4412037037037037
+              },
+              "UNDER_favored": {
+                "n": 5500,
+                "mean_predicted_p_under": 0.5792688722070922,
+                "actual_under_rate": 0.5301818181818182
+              }
+            },
+            "ev_threshold": 0.05
+          }
+        },
+        "model_vs_model_brier_deltas": {
+          "mixture_vs_control_val_disp": {
+            "mixture_brier_mean": 0.25591557842269047,
+            "control_val_disp_brier_mean": 0.2551048783287054,
+            "delta_mean": 0.0008107000939851194,
+            "delta_ci95_lower": -0.0011444302618465645,
+            "delta_ci95_upper": 0.0027848225149048394,
+            "n_rows": 7660,
+            "n_clusters": 1973
+          },
+          "mixture_vs_control_train_disp": {
+            "mixture_brier_mean": 0.25591557842269047,
+            "control_train_disp_brier_mean": 0.25685466513370425,
+            "delta_mean": -0.0009390867110137529,
+            "delta_ci95_lower": -0.0030277376683102777,
+            "delta_ci95_upper": 0.001142932021185923,
+            "n_rows": 7660,
+            "n_clusters": 1973
+          }
+        }
+      }
+    },
+    "predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_test_predictions.parquet",
+    "exposure_predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_a_exposure_predictions.parquet",
+    "test_idx_n": 2624,
+    "test_early_n": 164,
+    "fold_boundaries": {
+      "pool_date_range": [
+        "2022-10-07",
+        "2023-04-14"
+      ],
+      "train": {
+        "start": "2022-10-07",
+        "end": "2023-02-24",
+        "rows": 1864
+      },
+      "val": {
+        "start": "2023-02-25",
+        "end": "2023-04-14",
+        "rows": 760
+      },
+      "val_window_days": 49,
+      "test_season": 20232024,
+      "test_rows": 2624
+    }
+  },
+  "origin_b": {
+    "origin": "B",
+    "test_season": 20242025,
+    "core_feature_count": 104,
+    "exposure_feature_count": 108,
+    "exposure_only_extra_cols": [
+      "goalie_xg_per_shot_roll10",
+      "goalie_xg_per_shot_ema5",
+      "goalie_high_danger_share_ema5",
+      "goalie_rebound_rate_ema5"
+    ],
+    "control_shots_model": {
+      "winner": {
+        "config": "depth4_mcw20",
+        "hyperparams": {
+          "max_depth": 4,
+          "learning_rate": 0.05,
+          "min_child_weight": 20,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.678255475891961,
+        "val_poisson_deviance": 1.9723129792385343
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.680901002883911,
+          "val_poisson_deviance": 1.9764439414602717
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.6844655222362945,
+          "val_poisson_deviance": 1.9770588009432202
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.678255475891961,
+          "val_poisson_deviance": 1.9723129792385343
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.681181025505066,
+          "val_poisson_deviance": 1.962944271085563
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 5.680295697848002,
+          "val_poisson_deviance": 1.976007257916378
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.689199964205424,
+          "val_poisson_deviance": 1.98877038664326
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_control_shots_model.json"
+    },
+    "shared_save_rate_model": {
+      "winner": {
+        "config": "base",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_weighted_logloss": 0.319117493220247
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.319117493220247
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.31913854303482275
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.319539459826623
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.3192676229892156
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_weighted_logloss": 0.3191816151122197
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_weighted_logloss": 0.31958598924140397
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_shared_save_rate_model.json"
+    },
+    "control_dispersion_train": {
+      "alpha": 0.007854083942801175,
+      "method": "negative_binomial",
+      "diagnostics": {
+        "train_mean": 29.895715713500977,
+        "train_var": 36.984821755403274,
+        "mean_mu2": 902.6012573242188
+      }
+    },
+    "control_dispersion_val": {
+      "alpha": 0.02852173299997726,
+      "method": "negative_binomial_oos",
+      "diagnostics": {
+        "val_mean": 29.060911178588867,
+        "val_var": 53.32704633307355,
+        "mean_mu2": 850.7945556640625
+      }
+    },
+    "exposure_classifier": {
+      "winner": {
+        "config": "depth2",
+        "hyperparams": {
+          "max_depth": 2,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_logloss": 0.2203062080412704
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.22321218437633486
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2203062080412704
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.22695390439346766
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.2226010452197475
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_logloss": 0.22044033063321933
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_logloss": 0.22373547307811667
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_exposure_classifier.json",
+      "platt_coef": 0.38695805658822396,
+      "platt_intercept": -1.6767237001376707
+    },
+    "shots_rate60_model": {
+      "winner": {
+        "config": "base",
+        "hyperparams": {
+          "max_depth": 3,
+          "learning_rate": 0.05,
+          "min_child_weight": 10,
+          "subsample": 0.8,
+          "colsample_bytree": 0.8,
+          "n_estimators": 400,
+          "reg_lambda": 1.0
+        },
+        "val_mae": 5.537140259883811
+      },
+      "val_evaluations": [
+        {
+          "config": "base",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.537140259883811
+        },
+        {
+          "config": "depth2",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.538357416519543
+        },
+        {
+          "config": "depth4_mcw20",
+          "hyperparams": {
+            "max_depth": 4,
+            "learning_rate": 0.05,
+            "min_child_weight": 20,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.543672045237268
+        },
+        {
+          "config": "more_trees_lowlr",
+          "hyperparams": {
+            "max_depth": 3,
+            "learning_rate": 0.03,
+            "min_child_weight": 10,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 800,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.544364712610496
+        },
+        {
+          "config": "shallow_highreg",
+          "hyperparams": {
+            "max_depth": 2,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 400,
+            "reg_lambda": 5.0
+          },
+          "val_mae": 5.537767203058747
+        },
+        {
+          "config": "deep_reg",
+          "hyperparams": {
+            "max_depth": 5,
+            "learning_rate": 0.05,
+            "min_child_weight": 30,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "n_estimators": 300,
+            "reg_lambda": 1.0
+          },
+          "val_mae": 5.558532983725737
+        }
+      ],
+      "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_shots_rate60_model.json",
+      "train_winsor_cap": 53.10537227474634
+    },
+    "mixture_dispersion": {
+      "alpha": 0.013136105977444208,
+      "method": "negative_binomial_oos",
+      "diagnostics": {
+        "val_mean": 29.087280371063287,
+        "val_var": 40.5119696653441,
+        "mean_mu2": 869.7165898248657
+      }
+    },
+    "early_bins": [
+      [
+        0.017793594306049824,
+        2.5
+      ],
+      [
+        0.046263345195729534,
+        7.5
+      ],
+      [
+        0.08185053380782918,
+        12.5
+      ],
+      [
+        0.06405693950177936,
+        17.5
+      ],
+      [
+        0.2206405693950178,
+        22.5
+      ],
+      [
+        0.11743772241992882,
+        27.5
+      ],
+      [
+        0.09608540925266904,
+        32.5
+      ],
+      [
+        0.099644128113879,
+        37.5
+      ],
+      [
+        0.2099644128113879,
+        42.5
+      ],
+      [
+        0.046263345195729534,
+        47.5
+      ]
+    ],
+    "normal_bins": [
+      [
+        0.0011701380762930026,
+        50.5
+      ],
+      [
+        0.000468055230517201,
+        51.5
+      ],
+      [
+        0.0002340276152586005,
+        52.5
+      ],
+      [
+        0.000936110461034402,
+        53.5
+      ],
+      [
+        0.000936110461034402,
+        54.5
+      ],
+      [
+        0.005148607535689211,
+        55.5
+      ],
+      [
+        0.019658319681722443,
+        56.5
+      ],
+      [
+        0.07488883688275216,
+        57.5
+      ],
+      [
+        0.11935408378188626,
+        58.5
+      ],
+      [
+        0.23332553241282472,
+        59.5
+      ],
+      [
+        0.35548794757781416,
+        60.5
+      ],
+      [
+        0.03767844605663468,
+        61.5
+      ],
+      [
+        0.029019424292066463,
+        62.5
+      ],
+      [
+        0.026211092908963257,
+        63.5
+      ],
+      [
+        0.051018020126374915,
+        64.5
+      ],
+      [
+        0.0444652468991341,
+        65.5
+      ]
+    ],
+    "normal_ot_fraction_train": 0.22363166549213062,
+    "exposure_eval_test": {
+      "n": 2624,
+      "base_rate": 0.04801829268292683,
+      "raw": {
+        "logloss": 0.19866624950515088,
+        "brier": 0.04658264294266701,
+        "auc": 0.552138536225806
+      },
+      "calibrated": {
+        "logloss": 0.19290645889596647,
+        "brier": 0.045768305462260885
+      },
+      "constant_baseline": {
+        "logloss": 0.1926383605791005,
+        "brier": 0.045712536250743604
+      },
+      "auc_prior_ceiling": [
+        0.53,
+        0.56
+      ],
+      "reliability_table": [
+        {
+          "mean_pred": 0.03477710485280897,
+          "mean_actual": 0.042682926829268296,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.04262467315652801,
+          "mean_actual": 0.012195121951219513,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.047417854763006695,
+          "mean_actual": 0.06097560975609756,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.05182589816215788,
+          "mean_actual": 0.04573170731707317,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.05592885024706461,
+          "mean_actual": 0.06097560975609756,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.06073528370750469,
+          "mean_actual": 0.04573170731707317,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.06736107926534522,
+          "mean_actual": 0.042682926829268296,
+          "n": 328
+        },
+        {
+          "mean_pred": 0.08030746522200374,
+          "mean_actual": 0.07317073170731707,
+          "n": 328
+        }
+      ]
+    },
+    "intrinsic_quality_test": {
+      "mixture": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.409445313137639,
+        "shots_mae_naive": 6.049974593495934,
+        "mean_pmf_logloss_at_actual": 3.347658553105097,
+        "coverage_50pct_nominal_actual": 52.47713414634146,
+        "coverage_80pct_nominal_actual": 80.41158536585365,
+        "pit_histogram_10bins": [
+          0.11852134146341463,
+          0.11128048780487805,
+          0.10403963414634146,
+          0.09679878048780488,
+          0.09870426829268293,
+          0.09717987804878049,
+          0.0899390243902439,
+          0.08346036585365854,
+          0.09870426829268293,
+          0.1013719512195122
+        ],
+        "pit_bin_freq_min": 0.08346036585365854,
+        "pit_bin_freq_max": 0.11852134146341463,
+        "n_val_rows": 2624
+      },
+      "control_train_disp": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.41173150190493,
+        "shots_mae_naive": 6.049974593495934,
+        "mean_pmf_logloss_at_actual": 3.4884612223637297,
+        "coverage_50pct_nominal_actual": 47.86585365853659,
+        "coverage_80pct_nominal_actual": 73.70426829268293,
+        "pit_histogram_10bins": [
+          0.15167682926829268,
+          0.0861280487804878,
+          0.08803353658536585,
+          0.08079268292682927,
+          0.0899390243902439,
+          0.08841463414634146,
+          0.08422256097560976,
+          0.08955792682926829,
+          0.09603658536585366,
+          0.14519817073170732
+        ],
+        "pit_bin_freq_min": 0.08079268292682927,
+        "pit_bin_freq_max": 0.15167682926829268,
+        "n_val_rows": 2624
+      },
+      "control_val_disp": {
+        "naive_baseline_col": "shots_against_rolling_5",
+        "shots_mae_model": 5.41173150190493,
+        "shots_mae_naive": 6.049974593495934,
+        "mean_pmf_logloss_at_actual": 3.4113456246752616,
+        "coverage_50pct_nominal_actual": 53.887195121951216,
+        "coverage_80pct_nominal_actual": 80.33536585365853,
+        "pit_histogram_10bins": [
+          0.11242378048780488,
+          0.08841463414634146,
+          0.08689024390243902,
+          0.10060975609756098,
+          0.09603658536585366,
+          0.109375,
+          0.09527439024390244,
+          0.09603658536585366,
+          0.10594512195121951,
+          0.10899390243902439
+        ],
+        "pit_bin_freq_min": 0.08689024390243902,
+        "pit_bin_freq_max": 0.11242378048780488,
+        "n_val_rows": 2624
+      }
+    },
+    "shots_bias_test": {
+      "mixture": 0.3464278464929255,
+      "control_train_disp": 0.030831028775471014,
+      "control_val_disp": 0.030831028775471014
+    },
+    "coverage_results_test": {
+      "ALL": {
+        "mixture": {
+          "n": 2624,
+          "cov50_pct": 52.47713414634146,
+          "cov80_pct": 80.41158536585365,
+          "summed_coverage_deviation": 2.8887195121951166,
+          "pit_histogram_10bins": [
+            0.1185,
+            0.1113,
+            0.104,
+            0.0968,
+            0.0987,
+            0.0972,
+            0.0899,
+            0.0835,
+            0.0987,
+            0.1014
+          ]
+        },
+        "control_train_disp": {
+          "n": 2624,
+          "cov50_pct": 47.86585365853659,
+          "cov80_pct": 73.70426829268293,
+          "summed_coverage_deviation": 8.429878048780488,
+          "pit_histogram_10bins": [
+            0.1517,
+            0.0861,
+            0.088,
+            0.0808,
+            0.0899,
+            0.0884,
+            0.0842,
+            0.0896,
+            0.096,
+            0.1452
+          ]
+        },
+        "control_val_disp": {
+          "n": 2624,
+          "cov50_pct": 53.887195121951216,
+          "cov80_pct": 80.33536585365853,
+          "summed_coverage_deviation": 4.2225609756097455,
+          "pit_histogram_10bins": [
+            0.1124,
+            0.0884,
+            0.0869,
+            0.1006,
+            0.096,
+            0.1094,
+            0.0953,
+            0.096,
+            0.1059,
+            0.109
+          ]
+        }
+      },
+      "EARLY_SUBSET": {
+        "mixture": {
+          "n": 126,
+          "cov50_pct": 6.349206349206349,
+          "cov80_pct": 19.841269841269842,
+          "summed_coverage_deviation": 103.80952380952381,
+          "pit_histogram_10bins": [
+            0.8095,
+            0.1111,
+            0.0397,
+            0.0238,
+            0.0079,
+            0.0079,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "control_train_disp": {
+          "n": 126,
+          "cov50_pct": 6.349206349206349,
+          "cov80_pct": 17.46031746031746,
+          "summed_coverage_deviation": 106.1904761904762,
+          "pit_histogram_10bins": [
+            0.8333,
+            0.0952,
+            0.0397,
+            0.0079,
+            0.0238,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "control_val_disp": {
+          "n": 126,
+          "cov50_pct": 8.73015873015873,
+          "cov80_pct": 22.22222222222222,
+          "summed_coverage_deviation": 99.04761904761905,
+          "pit_histogram_10bins": [
+            0.8254,
+            0.0635,
+            0.0476,
+            0.0397,
+            0.0238,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "preregistered_pass_bar_section_7_4": {
+      "control_val_disp": {
+        "role": "PRIMARY",
+        "mixture_summed_dev": 103.80952380952381,
+        "baseline_summed_dev": 99.04761904761905,
+        "passed_point_comparison": false,
+        "early_subset_n": 126,
+        "cov50_indicator_diff_ci": {
+          "mean": -0.023809523809523808,
+          "lower": -0.05555555555555555,
+          "upper": 0.0,
+          "n_bets": 126,
+          "n_clusters": 126
+        },
+        "cov80_indicator_diff_ci": {
+          "mean": -0.023809523809523808,
+          "lower": -0.06349206349206349,
+          "upper": 0.015873015873015872,
+          "n_bets": 126,
+          "n_clusters": 126
+        }
+      },
+      "control_train_disp": {
+        "role": "SECONDARY",
+        "mixture_summed_dev": 103.80952380952381,
+        "baseline_summed_dev": 106.1904761904762,
+        "passed_point_comparison": true,
+        "early_subset_n": 126,
+        "cov50_indicator_diff_ci": {
+          "mean": 0.0,
+          "lower": 0.0,
+          "upper": 0.0,
+          "n_bets": 126,
+          "n_clusters": 126
+        },
+        "cov80_indicator_diff_ci": {
+          "mean": 0.023809523809523808,
+          "lower": 0.0,
+          "upper": 0.05555555555555555,
+          "n_bets": 126,
+          "n_clusters": 126
+        }
+      }
+    },
+    "lower_tail_calibration_test": {
+      "mixture__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 0.008187883497012913,
+          "actual_P_le_k": 0.007621951219512195,
+          "diff": 0.0005659322775007185,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.02516869944249411,
+          "actual_P_le_k": 0.027057926829268292,
+          "diff": -0.0018892273867741824,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.07342485741972386,
+          "actual_P_le_k": 0.08307926829268293,
+          "diff": -0.009654410872959068,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.23823902399591057,
+          "actual_P_le_k": 0.25647865853658536,
+          "diff": -0.018239634540674787,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5288286506663993,
+          "actual_P_le_k": 0.5583079268292683,
+          "diff": -0.02947927616286905,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7935632910102958,
+          "actual_P_le_k": 0.8064024390243902,
+          "diff": -0.01283914801409447,
+          "n": 2624
+        }
+      ],
+      "mixture__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 0.008268459304084314,
+          "actual_P_le_k": 0.15873015873015872,
+          "diff": -0.1504616994260744,
+          "n": 126
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.025237227146185547,
+          "actual_P_le_k": 0.5,
+          "diff": -0.47476277285381446,
+          "n": 126
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.07059642739889499,
+          "actual_P_le_k": 0.753968253968254,
+          "diff": -0.6833718265693589,
+          "n": 126
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.2252713459267428,
+          "actual_P_le_k": 0.9206349206349206,
+          "diff": -0.6953635747081778,
+          "n": 126
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5070724177782538,
+          "actual_P_le_k": 0.9920634920634921,
+          "diff": -0.48499107428523824,
+          "n": 126
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7749437605892429,
+          "actual_P_le_k": 1.0,
+          "diff": -0.22505623941075714,
+          "n": 126
+        }
+      ],
+      "control_train_disp__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 1.4400552632899153e-05,
+          "actual_P_le_k": 0.007621951219512195,
+          "diff": -0.007607550666879296,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.0023065635247821554,
+          "actual_P_le_k": 0.027057926829268292,
+          "diff": -0.024751363304486136,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.04392233540351816,
+          "actual_P_le_k": 0.08307926829268293,
+          "diff": -0.03915693288916477,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.23630961662714875,
+          "actual_P_le_k": 0.25647865853658536,
+          "diff": -0.020169041909436608,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5686477878536742,
+          "actual_P_le_k": 0.5583079268292683,
+          "diff": 0.010339861024405872,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.8387873656240553,
+          "actual_P_le_k": 0.8064024390243902,
+          "diff": 0.032384926599665076,
+          "n": 2624
+        }
+      ],
+      "control_train_disp__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 1.1244123125566049e-05,
+          "actual_P_le_k": 0.15873015873015872,
+          "diff": -0.15871891460703316,
+          "n": 126
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.0019352025393854764,
+          "actual_P_le_k": 0.5,
+          "diff": -0.49806479746061455,
+          "n": 126
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.03910272709962829,
+          "actual_P_le_k": 0.753968253968254,
+          "diff": -0.7148655268686257,
+          "n": 126
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.22041329284023797,
+          "actual_P_le_k": 0.9206349206349206,
+          "diff": -0.7002216277946827,
+          "n": 126
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5484967839047061,
+          "actual_P_le_k": 0.9920634920634921,
+          "diff": -0.44356670815878596,
+          "n": 126
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.8262074936021068,
+          "actual_P_le_k": 1.0,
+          "diff": -0.17379250639789323,
+          "n": 126
+        }
+      ],
+      "control_val_disp__ALL": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 0.00010941491207723263,
+          "actual_P_le_k": 0.007621951219512195,
+          "diff": -0.007512536307434962,
+          "n": 2624
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.007026421312810913,
+          "actual_P_le_k": 0.027057926829268292,
+          "diff": -0.02003150551645738,
+          "n": 2624
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.07328301144710861,
+          "actual_P_le_k": 0.08307926829268293,
+          "diff": -0.009796256845574322,
+          "n": 2624
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.27773974835012416,
+          "actual_P_le_k": 0.25647865853658536,
+          "diff": 0.021261089813538803,
+          "n": 2624
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5690592086348975,
+          "actual_P_le_k": 0.5583079268292683,
+          "diff": 0.01075128180562912,
+          "n": 2624
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.8060653170361489,
+          "actual_P_le_k": 0.8064024390243902,
+          "diff": -0.0003371219882413179,
+          "n": 2624
+        }
+      ],
+      "control_val_disp__EARLY_SUBSET": [
+        {
+          "k": 5,
+          "predicted_mean_P_le_k": 9.258111181528963e-05,
+          "actual_P_le_k": 0.15873015873015872,
+          "diff": -0.15863757761834343,
+          "n": 126
+        },
+        {
+          "k": 10,
+          "predicted_mean_P_le_k": 0.006219491420120978,
+          "actual_P_le_k": 0.5,
+          "diff": -0.49378050857987904,
+          "n": 126
+        },
+        {
+          "k": 15,
+          "predicted_mean_P_le_k": 0.06736844009528094,
+          "actual_P_le_k": 0.753968253968254,
+          "diff": -0.686599813872973,
+          "n": 126
+        },
+        {
+          "k": 20,
+          "predicted_mean_P_le_k": 0.26321930438358204,
+          "actual_P_le_k": 0.9206349206349206,
+          "diff": -0.6574156162513385,
+          "n": 126
+        },
+        {
+          "k": 25,
+          "predicted_mean_P_le_k": 0.5518062702265074,
+          "actual_P_le_k": 0.9920634920634921,
+          "diff": -0.4402572218369847,
+          "n": 126
+        },
+        {
+          "k": 30,
+          "predicted_mean_P_le_k": 0.7938280540700526,
+          "actual_P_le_k": 1.0,
+          "diff": -0.20617194592994736,
+          "n": 126
+        }
+      ]
+    },
+    "price_passes": {
+      "closing": {
+        "per_model": {
+          "mixture": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.5496193713062743,
+              "one_per_goalie_night": 0.5467521025230276,
+              "n_rows": 7463,
+              "n_goalie_nights": 2510
+            },
+            "fold_wide_brier": 0.25155754641633704,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.25155754641633704,
+              "market_brier_mean": 0.24880496259776322,
+              "delta_mean": 0.002752583818573858,
+              "delta_ci95_lower": -0.0014272054549359565,
+              "delta_ci95_upper": 0.006933378238613362,
+              "n_rows": 7463,
+              "n_clusters": 2510,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 3117,
+                "bet_rate": 41.766045826075306,
+                "hit_rate": 54.379210779595766,
+                "roi": 0.9608456186401474,
+                "profit": 29.94955793301339
+              },
+              "roi_ci_row": {
+                "lower": -2.254957841190852,
+                "upper": 4.174310201279035,
+                "n_bets": 3117
+              },
+              "roi_ci_cluster": {
+                "lower": -4.798987193251719,
+                "upper": 6.655754467394212,
+                "n_clusters": 1147
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 1303,
+                  "hit_rate": 50.115118956254804,
+                  "roi": -6.9887120686450865,
+                  "profit": -91.06291825444548
+                },
+                "UNDER": {
+                  "bets": 1814,
+                  "hit_rate": 57.44211686879823,
+                  "roi": 6.6710295582943155,
+                  "profit": 121.01247618745887
+                }
+              },
+              "goalie_nights_total": 2510,
+              "goalie_nights_bet": 1147
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 3226,
+                "mean_predicted_p_over": 0.5854819726250211,
+                "actual_over_rate": 0.5068195908245505
+              },
+              "UNDER_favored": {
+                "n": 4237,
+                "mean_predicted_p_under": 0.5873766495485592,
+                "actual_under_rate": 0.579183384470144
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_train_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.5505332418136804,
+              "one_per_goalie_night": 0.5471724469363236,
+              "n_rows": 7463,
+              "n_goalie_nights": 2510
+            },
+            "fold_wide_brier": 0.2541387266708202,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.2541387266708202,
+              "market_brier_mean": 0.24880496259776322,
+              "delta_mean": 0.005333764073056967,
+              "delta_ci95_lower": -8.783791331620196e-05,
+              "delta_ci95_upper": 0.01079246731155682,
+              "n_rows": 7463,
+              "n_clusters": 2510,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 4192,
+                "bet_rate": 56.17044084148466,
+                "hit_rate": 55.55820610687023,
+                "roi": 3.1507784345381498,
+                "profit": 132.08063197583925
+              },
+              "roi_ci_row": {
+                "lower": 0.3615668427891253,
+                "upper": 5.9666264202070955,
+                "n_bets": 4192
+              },
+              "roi_ci_cluster": {
+                "lower": -1.7609936465263574,
+                "upper": 7.998928849725346,
+                "n_clusters": 1521
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 1065,
+                  "hit_rate": 50.7981220657277,
+                  "roi": -5.71744488839674,
+                  "profit": -60.890788061425276
+                },
+                "UNDER": {
+                  "bets": 3127,
+                  "hit_rate": 57.17940518068436,
+                  "roi": 6.1711359142073725,
+                  "profit": 192.97142003726452
+                }
+              },
+              "goalie_nights_total": 2510,
+              "goalie_nights_bet": 1521
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2457,
+                "mean_predicted_p_over": 0.5911995181148424,
+                "actual_over_rate": 0.5185185185185185
+              },
+              "UNDER_favored": {
+                "n": 5006,
+                "mean_predicted_p_under": 0.6243913957228473,
+                "actual_under_rate": 0.5717139432680783
+              }
+            },
+            "ev_threshold": 0.05
+          },
+          "control_val_disp": {
+            "join_coverage_pct": 100.0,
+            "fold_wide_auc": {
+              "row_level": 0.5504774765456779,
+              "one_per_goalie_night": 0.5471134961954346,
+              "n_rows": 7463,
+              "n_goalie_nights": 2510
+            },
+            "fold_wide_brier": 0.2512895067562955,
+            "paired_brier_delta_vs_market": {
+              "model_brier_mean": 0.2512895067562955,
+              "market_brier_mean": 0.24880496259776322,
+              "delta_mean": 0.002484544158532298,
+              "delta_ci95_lower": -0.0023185823802482877,
+              "delta_ci95_upper": 0.007317753671117371,
+              "n_rows": 7463,
+              "n_clusters": 2510,
+              "devig_failures": 0
+            },
+            "policy_roi": {
+              "summary": {
+                "bets": 3801,
+                "bet_rate": 50.93126088704274,
+                "hit_rate": 56.14312023151802,
+                "roi": 4.350502423130048,
+                "profit": 165.36259710317313
+              },
+              "roi_ci_row": {
+                "lower": 1.438969273300496,
+                "upper": 7.368524701709598,
+                "n_bets": 3801
+              },
+              "roi_ci_cluster": {
+                "lower": -0.8378904318699536,
+                "upper": 9.435899802142755,
+                "n_clusters": 1389
+              },
+              "side_breakdown": {
+                "OVER": {
+                  "bets": 773,
+                  "hit_rate": 51.746442432082794,
+                  "roi": -3.824120592840044,
+                  "profit": -29.56045218265354
+                },
+                "UNDER": {
+                  "bets": 3028,
+                  "hit_rate": 57.26552179656539,
+                  "roi": 6.437353014723469,
+                  "profit": 194.92304928582666
+                }
+              },
+              "goalie_nights_total": 2510,
+              "goalie_nights_bet": 1389
+            },
+            "side_calibration": {
+              "OVER_favored": {
+                "n": 2235,
+                "mean_predicted_p_over": 0.5736390470899049,
+                "actual_over_rate": 0.5221476510067115
+              },
+              "UNDER_favored": {
+                "n": 5228,
+                "mean_predicted_p_under": 0.6108299005284136,
+                "actual_under_rate": 0.569433817903596
+              }
+            },
+            "ev_threshold": 0.05
+          }
+        },
+        "model_vs_model_brier_deltas": {
+          "mixture_vs_control_val_disp": {
+            "mixture_brier_mean": 0.25155754641633704,
+            "control_val_disp_brier_mean": 0.2512895067562955,
+            "delta_mean": 0.00026803966004155925,
+            "delta_ci95_lower": -0.002408014271121967,
+            "delta_ci95_upper": 0.0029959243648380626,
+            "n_rows": 7463,
+            "n_clusters": 2510
+          },
+          "mixture_vs_control_train_disp": {
+            "mixture_brier_mean": 0.25155754641633704,
+            "control_train_disp_brier_mean": 0.2541387266708202,
+            "delta_mean": -0.0025811802544831097,
+            "delta_ci95_lower": -0.005535704018661732,
+            "delta_ci95_upper": 0.0004016961203967762,
+            "n_rows": 7463,
+            "n_clusters": 2510
+          }
+        }
+      }
+    },
+    "predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_test_predictions.parquet",
+    "exposure_predictions_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_exposure_mixture_20260713_124712\\origin_b_exposure_predictions.parquet",
+    "test_idx_n": 2624,
+    "test_early_n": 126,
+    "fold_boundaries": {
+      "pool_date_range": [
+        "2022-10-07",
+        "2024-04-18"
+      ],
+      "train": {
+        "start": "2022-10-07",
+        "end": "2024-02-29",
+        "rows": 4528
+      },
+      "val": {
+        "start": "2024-03-01",
+        "end": "2024-04-18",
+        "rows": 720
+      },
+      "val_window_days": 49,
+      "test_season": 20242025,
+      "test_rows": 2624
+    }
+  },
+  "constants": {
+    "early_toi_threshold_min": 50.0,
+    "rate_target_toi_floor_min": 10.0,
+    "rate_target_winsor_pct": 99.5,
+    "early_bin_width_min": 5.0,
+    "normal_bin_width_min": 1.0,
+    "toi_bin_laplace": 1.0,
+    "lower_tail_ks": [
+      5,
+      10,
+      15,
+      20,
+      25,
+      30
+    ],
+    "origin_cap": 90,
+    "fixed_ev_threshold": 0.05,
+    "pit_seed": 123,
+    "primary_baseline": "control_val_disp",
+    "secondary_baseline": "control_train_disp",
+    "prior_exposure_auc_ceiling": [
+      0.53,
+      0.56
+    ],
+    "n_bootstrap_resamples": 10000,
+    "bootstrap_seed": 42
+  },
+  "methodology_notes": [
+    "Pre-registration alignment: this run implements Experiment 6 of docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md. The pass bar is section 7.4's summed lower-tail coverage deviation (|cov50-50| + |cov80-80|) on the TOI<50 subset of both origins' test folds, mixture vs single-NB2 baseline. Exposure-classifier AUC is reported only against the known 0.53-0.56 ceiling and is NOT part of the pass bar.",
+    "PRIMARY-baseline substitution, locked before this script's first full run: section 7.4 names 'Experiment 2's Gate-A candidate without the mixture' as the baseline, but Experiment 2 (season-normalized funnel) runs concurrently in a separate agent and its artifacts are not available here. control_val_disp (single NB2, validation-fitted dispersion -- Experiment 1's architecture with Experiment 3's dispersion fix layered on, per the pre-registration's own cross-experiment layering note) is the designated PRIMARY stand-in; control_train_disp (the literal existing recipe) is SECONDARY. Both comparisons are reported.",
+    "Exposure classifier features = base pre-game rolling features + line-independent engineered features + the pace goalie_workload_quality family (4 prior-only EMA/rolling columns), the candidate exposure-risk features named in pre-registration 7.2. FORBIDDEN_FEATURE_COLS (current-game saves, shots_against, goals_against, toi, decision, situational splits, team/opp current-game goals and shots) is asserted clean by the shared loader and by assert_feature_matrix_clean before every fit. Backup-goalie quality was NOT derived (would require pregame roster/depth-chart data this repo does not have) -- reported as a choice, not an oversight.",
+    "OT probability is NOT derived from moneyline/total market inputs (Component C is Experiment 5, separate). The pooled empirical TOI distribution for normal starts is used directly, which embeds the real historical OT/SO rate (~22% of normal starts have TOI>60min) -- the 'simpler historical game-state baseline' plan section 4.1 explicitly allows.",
+    "Save-rate model is trained ONCE per origin and shared between the controls and the mixture's per-state q, isolating the exposure-scaling mechanism as the sole difference under test (beyond the dispersion convention, which control_val_disp equalizes).",
+    "Dispersion for the mixture and control_val_disp is fit on VAL (out-of-sample) residuals, never train residuals. control_train_disp intentionally keeps the existing train-residual fit unchanged, since that is the literal existing single-process recipe.",
+    "Pooled (non-parametric, Laplace-smoothed) empirical TOI-bin distributions, fit on TRAIN rows only, are used for both exposure states rather than a per-row predictive TOI model -- matching plan section 9's disposition ('retain a pooled calibrated early-replacement mixture... do not claim individualized pull/injury skill').",
+    "Shots-per-60 rate model target is floored at 10 minutes TOI and winsorized at the 99.5th percentile (TRAIN only) before fitting, to prevent a handful of near-zero-TOI outings (min observed TOI 0.65 minutes) from producing unbounded implied rates.",
+    "The mixture's alpha is fit on VAL residuals of the rate60 model's actual-TOI-scaled mu (mu60 * actual_val_TOI / 60), so it captures rate dispersion beyond exposure; exposure variance itself is carried by the TOI-bin mixture at test time, not double-counted in alpha.",
+    "Each origin's TEST fold was priced exactly once, after all selection (classifier config, Platt calibration, rate60 config, dispersion, TOI bins) was locked on TRAIN/VAL. The worn December 2025-April 2026 fold was not touched."
+  ],
+  "wall_clock_seconds": 107.43306183815002
+}

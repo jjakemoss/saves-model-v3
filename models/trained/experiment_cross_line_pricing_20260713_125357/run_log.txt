@@ -1,0 +1,285 @@
+================================================================================
+Component G: cross-line outlier pricing -- DEVELOPMENT PHASE (2023-24 ONLY)
+Pre-registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md sections 1 and 8
+================================================================================
+Season fence: ALLOWED_DEV_SEASON_LABELS={'2023-24'}. This run touches ONLY 2023-24 (plus 2022-23-and-earlier outcomes for prior shape fitting). 2024-25/2025-26 are never loaded, filtered to, counted, or described. The 2024-25 closing-pass single touch is a separate later run, after lead-reviewer approval of the policy locked here.
+Loaded saves_lines_snapshots.parquet, filtered to season=2023-24 (2023-08-01..2024-07-31) with matched goalie_id: 33253 rows.
+  snapshot_pass breakdown: {'closing': 17791, 'bettime': 15462}
+  book breakdown: {'williamhill_us': 8316, 'draftkings': 8081, 'fanduel': 7754, 'bovada': 5948, 'betmgm': 3154}
+  NOTE (pre-reg 8.4 coverage-at-bettable-books): ZERO rows from executable books (['betonlineag']) in the 2023-24 archive -- the venue-accessible subset is empty by construction this season; it becomes scoreable on the 2024-25 touch.
+Loaded clean_training_data.parquet, filtered to season<=20222023 (prior-outcome shape fitting only): 2624 rows, 2022-10-07..2023-04-14.
+Loaded clean_training_data.parquet, filtered to season==20232024 (2023-24 outcomes/game_id join only): 2624 rows, 2023-10-10..2024-04-18.
+
+================================================================================
+BUILDING PER-BOOK-QUOTE TABLES
+================================================================================
+[bettime] 15462 raw rows -> dropped 132 later-duplicate-snapshot rows -> dropped 2 exact-duplicate rows -> 15328 rows.
+  [bettime] Both-sides pivot: 7660/7668 (event, goalie, book, line) groups have both sides.
+  [bettime (full table)] game_id/outcome join: 0/7660 rows unmatched (kept, saves_actual=NaN; still usable as LOO peers / for CLV, just not for outcome scoring).
+[closing] 17791 raw rows -> dropped 24 later-duplicate-snapshot rows -> dropped 2 exact-duplicate rows -> 17765 rows.
+  [closing] WARNING: 2 (key, side) groups have conflicting prices; took first.
+  [closing] Both-sides pivot: 8879/8884 (event, goalie, book, line) groups have both sides.
+  [closing (full table)] game_id/outcome join: 0/8879 rows unmatched (kept, saves_actual=NaN; still usable as LOO peers / for CLV, just not for outcome scoring).
+
+--- Candidate pool: goalie-nights with a full-save-or-more line spread (2023-24) ---
+  [bettime] 1973 goalie-nights, 209 (10.6%) with >=1.0 save spread. Plan 3.4/4.7 expectation: ~150-200 bettime nights (~11%), 16-18% at closing.
+  [closing] 2298 goalie-nights, 357 (15.5%) with >=1.0 save spread. Plan 3.4/4.7 expectation: ~150-200 bettime nights (~11%), 16-18% at closing.
+
+--- Prior-outcome (2022-23 and earlier) dispersion fit ---
+  mu proxy column: saves_rolling_10;  n rows: 2624
+  mean(mu proxy) = 26.5991;  mean(resid^2) = 101.4652
+  NB2 alpha (proxy fit) = 0.099828;  Normal sigma (proxy fit) = 10.072996
+  Reference held-out-fitted alpha on a 2022-23-trained MODEL: ~0.030.
+  Investigation: proxy alpha implies ~4.0 probability points per save of line at the center; the market's verified value is 5-6 points (plan 3.4), implying alpha ~0.025-0.053. The proxy fit is inflated by the rolling average's own prediction error (variance decomposition in fit_prior_shape_params docstring); it is retained only as the pre-declared conservative-wide candidate, and market-calibrated candidates bracketing the ~0.030 reference are fit below.
+
+--- 2023-24 dev-outcome (< 2024-01-15) dispersion fit (pre-reg 8.6 fallback branch) ---
+  mu proxy column: saves_rolling_10;  n rows: 1340
+  mean(mu proxy) = 26.6885;  mean(resid^2) = 67.1447
+  NB2 alpha (2023-24 dev fit) = 0.055713;  Normal sigma (2023-24 dev fit) = 8.194187
+  Reference held-out-fitted alpha on a 2022-23-trained MODEL: ~0.030 -- DISAGREES (same proxy-inflation mechanism as the prior-outcome fit).
+
+--- Outcome-Brier dispersion grid search (2023-24 first half, < 2024-01-15) ---
+  NB2 alpha=0.010: calib Brier=0.24930 (n=6745)
+  NB2 alpha=0.020: calib Brier=0.24928 (n=6745)
+  NB2 alpha=0.030: calib Brier=0.24926 (n=6745)
+  NB2 alpha=0.040: calib Brier=0.24926 (n=6745)
+  NB2 alpha=0.055: calib Brier=0.24927 (n=6745)
+  NB2 alpha=0.075: calib Brier=0.24925 (n=6745)
+  NB2 alpha=0.100: calib Brier=0.24924 (n=6744)
+  Normal sigma=5.5: calib Brier=0.24942 (n=6746)
+  Normal sigma=6.5: calib Brier=0.24937 (n=6746)
+  Normal sigma=7.5: calib Brier=0.24935 (n=6746)
+  Normal sigma=8.5: calib Brier=0.24934 (n=6746)
+  Normal sigma=9.5: calib Brier=0.24934 (n=6746)
+  Normal sigma=10.5: calib Brier=0.24934 (n=6746)
+  Normal sigma=11.5: calib Brier=0.24934 (n=6746)
+  Outcome-calibrated winners: NB2 alpha=0.100, Normal sigma=9.5
+  Reference held-out-fitted alpha ~0.030: outcome-calibrated alpha differs from the reference.
+
+Pre-declared translation candidates: nb2_prior_outcomes (alpha=0.099828), normal_prior_outcomes (sigma=10.072996), nb2_dev_proxy (alpha=0.055713), normal_dev_proxy (sigma=8.194187), nb2_outcome_calibrated (alpha=0.100000), normal_outcome_calibrated (sigma=9.500000)
+Alpha provenance note (pre-reg 8.6): NO dispersion parameter comes from the frozen production artifact. Experiment 3's validation-fitted alpha was not yet available, so the pre-reg fallback branch (fit on 2023-24 development / prior-outcome data only) is used.
+
+================================================================================
+TRANSLATION-METHOD COMPARISON (2023-24 second half, outcome Brier)
+================================================================================
+PRIMARY metric: Brier score of the shape-translated LOO peer-consensus fair OVER probability (at each book's own posted line) against the ACTUAL game result, on quotes dated >= 2024-01-15 (the half no dispersion parameter was fit on), ALL book quotes (not only off-modal). Lower wins. This is outcome-based and cannot be gamed by a flat shape (see module docstring correction note).
+  [brier/bettime/nb2_prior_outcomes] 18 rows failed mu inversion; own-mu left NaN.
+  [brier/bettime/nb2_prior_outcomes] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/nb2_prior_outcomes] 29 rows failed mu inversion; own-mu left NaN.
+  [brier/closing/nb2_prior_outcomes] 5188/5192 rows have a valid LOO peer consensus mu.
+
+  nb2_prior_outcomes (alpha=0.099828, provenance: moment-matched on 2022-23-and-earlier outcomes with saves_rolling_10 mu proxy):
+    pooled eval-half outcome Brier=0.25005  n=9710
+    [bettime] Brier=0.24978  n=4522
+    [closing] Brier=0.25028  n=5188
+  [brier/bettime/normal_prior_outcomes] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/normal_prior_outcomes] 5189/5192 rows have a valid LOO peer consensus mu.
+
+  normal_prior_outcomes (sigma=10.072996, provenance: residual std on 2022-23-and-earlier outcomes with saves_rolling_10 mu proxy):
+    pooled eval-half outcome Brier=0.25005  n=9711
+    [bettime] Brier=0.24980  n=4522
+    [closing] Brier=0.25028  n=5189
+  [brier/bettime/nb2_dev_proxy] 8 rows failed mu inversion; own-mu left NaN.
+  [brier/bettime/nb2_dev_proxy] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/nb2_dev_proxy] 17 rows failed mu inversion; own-mu left NaN.
+  [brier/closing/nb2_dev_proxy] 5189/5192 rows have a valid LOO peer consensus mu.
+
+  nb2_dev_proxy (alpha=0.055713, provenance: moment-matched on 2023-24 first-half (< 2024-01-15) outcomes, saves_rolling_10 mu proxy):
+    pooled eval-half outcome Brier=0.25006  n=9711
+    [bettime] Brier=0.24980  n=4522
+    [closing] Brier=0.25029  n=5189
+  [brier/bettime/normal_dev_proxy] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/normal_dev_proxy] 5189/5192 rows have a valid LOO peer consensus mu.
+
+  normal_dev_proxy (sigma=8.194187, provenance: residual std on 2023-24 first-half (< 2024-01-15) outcomes, saves_rolling_10 mu proxy):
+    pooled eval-half outcome Brier=0.25006  n=9711
+    [bettime] Brier=0.24981  n=4522
+    [closing] Brier=0.25027  n=5189
+  [brier/bettime/nb2_outcome_calibrated] 18 rows failed mu inversion; own-mu left NaN.
+  [brier/bettime/nb2_outcome_calibrated] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/nb2_outcome_calibrated] 29 rows failed mu inversion; own-mu left NaN.
+  [brier/closing/nb2_outcome_calibrated] 5188/5192 rows have a valid LOO peer consensus mu.
+
+  nb2_outcome_calibrated (alpha=0.100000, provenance: grid-searched minimizing outcome Brier on 2023-24 first-half (< 2024-01-15)):
+    pooled eval-half outcome Brier=0.25005  n=9710
+    [bettime] Brier=0.24978  n=4522
+    [closing] Brier=0.25028  n=5188
+  [brier/bettime/normal_outcome_calibrated] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/normal_outcome_calibrated] 5189/5192 rows have a valid LOO peer consensus mu.
+
+  normal_outcome_calibrated (sigma=9.500000, provenance: grid-searched minimizing outcome Brier on 2023-24 first-half (< 2024-01-15)):
+    pooled eval-half outcome Brier=0.25005  n=9711
+    [bettime] Brier=0.24980  n=4522
+    [closing] Brier=0.25027  n=5189
+
+LOCKED translation shape: nb2_outcome_calibrated (alpha=0.100000) -- lowest eval-half pooled outcome Brier (0.25005) among 6 pre-declared candidates.
+
+--- Secondary diagnostics for the locked shape (not used for selection) ---
+  [brier/bettime/nb2_outcome_calibrated] 18 rows failed mu inversion; own-mu left NaN.
+  [brier/bettime/nb2_outcome_calibrated] 4522/4531 rows have a valid LOO peer consensus mu.
+  [brier/closing/nb2_outcome_calibrated] 29 rows failed mu inversion; own-mu left NaN.
+  [brier/closing/nb2_outcome_calibrated] 5188/5192 rows have a valid LOO peer consensus mu.
+  Off-modal-line-only outcome Brier (eval half): 0.24968562105981643 (n=334)
+  [mae/bettime/nb2_outcome_calibrated] 1 rows failed mu inversion; own-mu left NaN.
+  [mae/bettime/nb2_outcome_calibrated] 422/422 rows have a valid LOO peer consensus mu.
+  [mae/closing/nb2_outcome_calibrated] 3 rows failed mu inversion; own-mu left NaN.
+  [mae/closing/nb2_outcome_calibrated] 734/734 rows have a valid LOO peer consensus mu.
+  Market self-consistency MAE (eval half, off-modal only, NOT the selection criterion -- see module docstring correction note): 0.01378493898938486 (n=334)
+
+================================================================================
+ATTACHING TRANSLATED FAIR PROBABILITIES UNDER LOCKED SHAPE: nb2_outcome_calibrated
+================================================================================
+NOTE: the locked shape's dispersion was fit on the season's first half; full-season flagging below therefore includes the calibration half in-sample for the shape. The genuinely out-of-sample check is the later 2024-25 touch.
+  [bettime/nb2_outcome_calibrated] 27 rows failed mu inversion; own-mu left NaN.
+  [bettime/nb2_outcome_calibrated] 7600/7660 rows have a valid LOO peer consensus mu.
+  [bettime] Attached translated fair probabilities + gaps for 7600/7660 rows.
+  [closing/nb2_outcome_calibrated] 44 rows failed mu inversion; own-mu left NaN.
+  [closing/nb2_outcome_calibrated] 8855/8879 rows have a valid LOO peer consensus mu.
+  [closing] Attached translated fair probabilities + gaps for 8855/8879 rows.
+
+Closing consensus table (per exact event/goalie/line): 2674 entries from 8879 closing book-quote rows.
+
+--- Unconditional bettime-to-close drift baseline (ALL 2023-24 bettime quotes) ---
+  7543/7660 bettime book quotes matched a closing consensus at their exact line.
+  Drift OVER  (closing consensus - bettime devig): mean=-0.00013  95% CI=[-0.00029, +0.00002]  n=7543  n_clusters=1957
+  Drift UNDER (closing consensus - bettime devig): mean=+0.00013  95% CI=[-0.00002, +0.00029]  n=7543  n_clusters=1957
+  Pre-reg 8.4 reference (OVER drift): mean=-0.00006 CI=[-0.00023, +0.00010] -- statistically zero for this season; the net-of-drift subtraction below is applied anyway per the mandatory rule (plan 4.6), and any material disagreement between this run's measurement and the reference is a red flag to investigate.
+  Agreement with reference within 0.1 probability points: YES
+
+================================================================================
+THRESHOLD SWEEP (2023-24 development data only)
+================================================================================
+Pre-declared grid: [0.02, 0.03, 0.04, 0.05, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2]
+Pre-declared locking rule: among thresholds with >= 20 graded bettime bets, prefer the SMALLEST threshold whose probability-CLV-net-of-drift cluster 95% CI is entirely above zero. If none qualifies, fall back to the threshold maximizing mean net CLV among eligible thresholds, reported as unresolved (not rounded up to an edge).
+
+--- threshold=0.02 ---
+  CLV coverage: 7/11 flagged bettime bets had a closing consensus at their exact line.
+  bettime: n_flagged=11 (OVER=2/UNDER=9)  ROI: mean=+41.36  95% CI=[-24.40, +89.20]  n=11  n_clusters=10
+           CLV net of drift: mean=+0.00781  95% CI=[-0.00009, +0.01508]  n=7  n_clusters=6
+  closing: n_flagged=42  ROI: mean=+16.90  95% CI=[-5.59, +42.76]  n=42  n_clusters=32
+
+--- threshold=0.03 ---
+  CLV coverage: 4/8 flagged bettime bets had a closing consensus at their exact line.
+  bettime: n_flagged=8 (OVER=1/UNDER=7)  ROI: mean=+47.12  95% CI=[-20.71, +99.22]  n=8  n_clusters=7
+           CLV net of drift: mean=+0.01369  95% CI=[-0.00013, +0.02021]  n=4  n_clusters=3
+  closing: n_flagged=21  ROI: mean=+17.52  95% CI=[-18.96, +53.00]  n=21  n_clusters=19
+
+--- threshold=0.04 ---
+  CLV coverage: 0/1 flagged bettime bets had a closing consensus at their exact line.
+  bettime: n_flagged=1 (OVER=0/UNDER=1)  ROI: mean=+91.00  95% CI=[+91.00, +91.00]  n=1  n_clusters=1
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=15  ROI: mean=+0.33  95% CI=[-45.71, +47.71]  n=15  n_clusters=14
+
+--- threshold=0.05 ---
+  CLV coverage: 0/1 flagged bettime bets had a closing consensus at their exact line.
+  bettime: n_flagged=1 (OVER=0/UNDER=1)  ROI: mean=+91.00  95% CI=[+91.00, +91.00]  n=1  n_clusters=1
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=12  ROI: mean=-5.67  95% CI=[-53.67, +42.75]  n=12  n_clusters=12
+
+--- threshold=0.06 ---
+  CLV coverage: 0/1 flagged bettime bets had a closing consensus at their exact line.
+  bettime: n_flagged=1 (OVER=0/UNDER=1)  ROI: mean=+91.00  95% CI=[+91.00, +91.00]  n=1  n_clusters=1
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=8  ROI: mean=-5.25  95% CI=[-76.38, +65.00]  n=8  n_clusters=8
+
+--- threshold=0.08 ---
+  bettime: n_flagged=0 (OVER=0/UNDER=0)  ROI: n/a (0 obs)
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=5  ROI: mean=+13.80  95% CI=[-63.60, +91.20]  n=5  n_clusters=5
+
+--- threshold=0.10 ---
+  bettime: n_flagged=0 (OVER=0/UNDER=0)  ROI: n/a (0 obs)
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=3  ROI: mean=-39.33  95% CI=[-100.00, +82.00]  n=3  n_clusters=3
+
+--- threshold=0.12 ---
+  bettime: n_flagged=0 (OVER=0/UNDER=0)  ROI: n/a (0 obs)
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=1  ROI: mean=+82.00  95% CI=[+82.00, +82.00]  n=1  n_clusters=1
+
+--- threshold=0.15 ---
+  bettime: n_flagged=0 (OVER=0/UNDER=0)  ROI: n/a (0 obs)
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=0  ROI: n/a (0 obs)
+
+--- threshold=0.20 ---
+  bettime: n_flagged=0 (OVER=0/UNDER=0)  ROI: n/a (0 obs)
+           CLV net of drift: n/a (0 obs)
+  closing: n_flagged=0  ROI: n/a (0 obs)
+
+LOCKED threshold: 0.02  status=insufficient_sample
+Rationale: No threshold produced >= 20 graded bettime bets. Fell back to the most-flagging threshold (0.02). INSUFFICIENT SAMPLE -- not a usable policy lock.
+
+================================================================================
+FINAL GRADING AT LOCKED THRESHOLD=0.02 (shape=nb2_outcome_calibrated)
+================================================================================
+  CLV coverage: 7/11 flagged bettime bets had a closing consensus at their exact line.
+
+--- [bettime FINAL] Overall ---
+  n_bets=11  n_push=0  hit_rate=72.72727272727273
+  ROI (%): mean=+41.36  95% CI=[-24.40, +89.20]  n=11  n_clusters=10
+
+--- [bettime FINAL] By side (mandatory split, plan 4.6) ---
+  OVER: n_bets=2  hit_rate=100.0  ROI: mean=+87.00  95% CI=[+85.00, +89.00]  n=2  n_clusters=2
+  UNDER: n_bets=9  hit_rate=66.66666666666666  ROI: mean=+31.22  95% CI=[-32.22, +88.75]  n=9  n_clusters=8
+
+--- [bettime FINAL] By book (pre-reg 8.4 concentration diagnostic) ---
+  bovada: n_flagged=1 (9.1% of flagged)  n_graded=1  ROI: mean=+105.00  95% CI=[+105.00, +105.00]  n=1  n_clusters=1
+  draftkings: n_flagged=1 (9.1% of flagged)  n_graded=1  ROI: mean=+120.00  95% CI=[+120.00, +120.00]  n=1  n_clusters=1
+  fanduel: n_flagged=9 (81.8% of flagged)  n_graded=9  ROI: mean=+25.56  95% CI=[-37.22, +87.22]  n=9  n_clusters=9
+  Max single-book share of flagged bets: 81.8% (pre-reg 8.5(c) bar for the eventual test: no more than roughly half).
+
+--- [bettime FINAL] By line-spread-size bucket ---
+  spread=0 (same line): n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  spread=0.5: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  spread=1.0: n_flagged=6  n_graded=6  ROI: mean=+33.83  95% CI=[-62.20, +102.43]  n=6  n_clusters=5
+  spread=1.5: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  spread=2.0+: n_flagged=5  n_graded=5  ROI: mean=+50.40  95% CI=[-24.80, +89.80]  n=5  n_clusters=5
+
+--- [bettime FINAL] Executable (BetOnline) vs research-only books (plan 1a / pre-reg 0.3) ---
+  executable_betonline: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  research_only: n_flagged=11  n_graded=11  ROI: mean=+41.36  95% CI=[-24.40, +89.20]  n=11  n_clusters=10
+  NOTE: 0 executable-book rows exist in 2023-24 (BetOnline coverage starts 2024-25); this cut is empty by construction during development, not because the filter fired.
+
+--- [closing FINAL] Overall ---
+  n_bets=42  n_push=0  hit_rate=61.904761904761905
+  ROI (%): mean=+16.90  95% CI=[-5.59, +42.76]  n=42  n_clusters=32
+
+--- [closing FINAL] By side (mandatory split, plan 4.6) ---
+  OVER: n_bets=16  hit_rate=50.0  ROI: mean=-4.69  95% CI=[-52.50, +50.57]  n=16  n_clusters=14
+  UNDER: n_bets=26  hit_rate=69.23076923076923  ROI: mean=+30.19  95% CI=[-6.12, +61.04]  n=26  n_clusters=25
+
+--- [closing FINAL] By book (pre-reg 8.4 concentration diagnostic) ---
+  bovada: n_flagged=5 (11.9% of flagged)  n_graded=5  ROI: mean=-59.00  95% CI=[-100.00, +23.00]  n=5  n_clusters=5
+  draftkings: n_flagged=7 (16.7% of flagged)  n_graded=7  ROI: mean=+35.29  95% CI=[-22.86, +92.00]  n=7  n_clusters=7
+  fanduel: n_flagged=28 (66.7% of flagged)  n_graded=28  ROI: mean=+27.86  95% CI=[-5.82, +60.57]  n=28  n_clusters=28
+  williamhill_us: n_flagged=2 (4.8% of flagged)  n_graded=2  ROI: mean=-11.00  95% CI=[-100.00, +78.00]  n=2  n_clusters=2
+  Max single-book share of flagged bets: 66.7% (pre-reg 8.5(c) bar for the eventual test: no more than roughly half).
+
+--- [closing FINAL] By line-spread-size bucket ---
+  spread=0 (same line): n_flagged=2  n_graded=2  ROI: mean=+2.50  95% CI=[-100.00, +105.00]  n=2  n_clusters=2
+  spread=0.5: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  spread=1.0: n_flagged=10  n_graded=10  ROI: mean=+52.40  95% CI=[-4.30, +91.80]  n=10  n_clusters=10
+  spread=1.5: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  spread=2.0+: n_flagged=30  n_graded=30  ROI: mean=+6.03  95% CI=[-17.50, +33.19]  n=30  n_clusters=20
+
+--- [closing FINAL] Executable (BetOnline) vs research-only books (plan 1a / pre-reg 0.3) ---
+  executable_betonline: n_flagged=0  n_graded=0  ROI: n/a (0 obs)
+  research_only: n_flagged=42  n_graded=42  ROI: mean=+16.90  95% CI=[-5.59, +42.76]  n=42  n_clusters=32
+  NOTE: 0 executable-book rows exist in 2023-24 (BetOnline coverage starts 2024-25); this cut is empty by construction during development, not because the filter fired.
+
+--- [bettime FINAL] Temporal CLV toward close (pre-reg 8.3 development diagnostic), raw and net of drift, by side ---
+  OVER: raw CLV: mean=+0.00000  95% CI=[+0.00000, +0.00000]  n=1  n_clusters=1
+  OVER: net CLV: mean=+0.00013  95% CI=[+0.00013, +0.00013]  n=1  n_clusters=1
+  UNDER: raw CLV: mean=+0.00922  95% CI=[+0.00000, +0.01708]  n=6  n_clusters=5
+  UNDER: net CLV: mean=+0.00908  95% CI=[-0.00013, +0.01695]  n=6  n_clusters=5
+  OVERALL: raw CLV: mean=+0.00790  95% CI=[+0.00000, +0.01518]  n=7  n_clusters=6
+  OVERALL: net CLV: mean=+0.00781  95% CI=[-0.00009, +0.01508]  n=7  n_clusters=6
+
+--- [bettime FINAL] CLV net of drift, by book ---
+  bovada: mean=-0.00013  95% CI=[-0.00013, -0.00013]  n=1  n_clusters=1
+  draftkings: mean=+0.04054  95% CI=[+0.04054, +0.04054]  n=1  n_clusters=1
+  fanduel: mean=+0.00285  95% CI=[-0.00013, +0.00869]  n=5  n_clusters=5
+
+Saved 53 flagged bets (locked threshold=0.02, both passes) to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_cross_line_pricing_20260713_125357\flagged_bets.parquet
+Saved metadata to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_cross_line_pricing_20260713_125357\metadata.json
