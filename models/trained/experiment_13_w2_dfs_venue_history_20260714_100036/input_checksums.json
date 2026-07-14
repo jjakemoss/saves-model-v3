@@ -1,0 +1,25 @@
+{
+  "betting_db_price_extract": {
+    "database_file_sha256": "e5acfc563cb7f20ca0f687acac6446200ef938c5cefcc88182a1d730f9c799b0",
+    "deterministic_row_checksum_sha256": "a24def58909e12b03673500cbc0101f3964ba50e929a6eacb2033f384055c3ba",
+    "max_game_date": "2026-04-13",
+    "outcome_columns_read": false,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\betting.db",
+    "query_label": "all_tracker_price_rows_ordered_by_id",
+    "row_count": 1789
+  },
+  "core_bettime_snapshots": {
+    "bytes": 1753036,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\core_bettime_202607_snapshots.parquet",
+    "sha256": "103b81c6f3e9647c72ad82538791bdbea1d6d8547eaae8c5f39d4ad815d79c6e"
+  },
+  "core_bettime_summary": {
+    "bytes": 12478,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\core_bettime_202607_snapshots_summary.json",
+    "sha256": "28e00daf002e329497740f82945deb7c7f27249eea8e926f3e972f919d3a61e0"
+  },
+  "execution_script": {
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\scripts\\experiment_13_w2_dfs_venue_history.py",
+    "sha256": "6b4b408716f4a23ac116823800a007e387363335bb3023f3a45839e5cc38788c"
+  }
+}

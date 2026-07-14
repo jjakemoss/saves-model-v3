@@ -1,0 +1,59 @@
+{
+  "code_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+  "completed_at": "2026-07-14T15:41:06.581148Z",
+  "confirmation_rows_loaded": 0,
+  "confirmation_stage_invoked": false,
+  "development_selections": {
+    "over": {
+      "development_status": "QUALIFIED",
+      "selected_grid_row": {
+        "blind_same_side_roi": -0.16007305669199298,
+        "bootstrap_empty_model_arm_rate": 0.0,
+        "bootstrap_empty_model_arm_resamples": 0,
+        "bootstrap_lower_ci95": -0.14486110869500413,
+        "bootstrap_upper_ci95": 0.048247547280799344,
+        "model_minus_blind_roi_delta": -0.047991145642637345,
+        "model_roi": -0.20806420233463033,
+        "n_eligible_goalie_nights": 804,
+        "n_eligible_nonpush_quotes": 3422,
+        "n_selected_goalie_nights": 264,
+        "n_selected_graded_bets": 1028,
+        "selection_eligible": true,
+        "side": "OVER",
+        "threshold": 0.03
+      },
+      "selection_reason": "Maximum bootstrap lower CI; larger threshold breaks ties.",
+      "side": "OVER",
+      "threshold": 0.03
+    },
+    "under": {
+      "development_status": "QUALIFIED",
+      "selected_grid_row": {
+        "blind_same_side_roi": 0.020113968439509057,
+        "bootstrap_empty_model_arm_rate": 0.0,
+        "bootstrap_empty_model_arm_resamples": 0,
+        "bootstrap_lower_ci95": -0.05015147811201546,
+        "bootstrap_upper_ci95": 0.11139080527789626,
+        "model_minus_blind_roi_delta": 0.029414260485471626,
+        "model_roi": 0.04952822892498068,
+        "n_eligible_goalie_nights": 804,
+        "n_eligible_nonpush_quotes": 3422,
+        "n_selected_goalie_nights": 327,
+        "n_selected_graded_bets": 1293,
+        "selection_eligible": true,
+        "side": "UNDER",
+        "threshold": 0.03
+      },
+      "selection_reason": "Maximum bootstrap lower CI; larger threshold breaks ties.",
+      "side": "UNDER",
+      "threshold": 0.03
+    }
+  },
+  "experiment": 12,
+  "frozen_recipe_sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc",
+  "interpretation": "2023-24 development evidence only; no confirmation claim.",
+  "run_dir": "models\\trained\\experiment_12_w1_cross_market_20260714_104047",
+  "stage": "development",
+  "started_at": "2026-07-14T15:40:47.562522Z",
+  "status": "DEVELOPMENT_FROZEN"
+}

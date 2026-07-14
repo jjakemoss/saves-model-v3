@@ -804,6 +804,30 @@ UNDER mechanism only to a 2026-27 shadow candidate; it does not establish a
 durable edge from a viewed 2024-25 season. Full contract, source clarification,
 verification, and artifacts are in preregistration section 14.11.
 
+**Experiment 13 W2 DFS census -- NULL (2026-07-14, Codex-verified).** The
+2024-25 development season contained 443 PrizePicks deviations from 1,868
+comparable goalie-nights. Its 420 gradeable non-push candidates hit 50.48%;
+the even-money outcome-grade CI95 was `[-8.57%, +10.48%]`. The 2025-26
+confirmation archive supplied only six deviations (five wins, CI95
+`[0.00%, +100.00%]`), which did not clear the strict lower-bound bar and
+cannot rescue the null development result. Per the locked consequence,
+historical DFS staleness is closed for this cycle rather than promoted to a
+model-EV filter. This is not PrizePicks ROI. Full result: preregistration
+section 16.9 and historical analysis section 9.7.
+
+**Experiment 12 W1 cross-market coherence -- NO OFFICIAL VERDICT,
+PROMISING SHADOW EVIDENCE (2026-07-14, Codex-verified).** The 2023-24 recipe
+was frozen before 2024-25. Its original touch failed before performance was
+computed; its registered recovery completed the calculation but crashed
+post-touch while writing metadata, consuming the only recovery. Independent
+reconstruction found no arithmetic defect: OVER beat blind OVER by `+7.17`
+points, CI95 `[+2.73, +11.64]`, but still lost `-8.34%`; UNDER returned
+`+11.12%` and beat blind UNDER by `+9.28` points, CI95
+`[+2.49, +16.02]`. Global Brier/log-loss were worse than the market and CLV
+was positive but tiny. Preserve the exact recipe for 2026-27 shadowing; do
+not call this an official PASS or proven edge. Full record: preregistration
+section 15.11 and historical analysis section 9.8.
+
 ## 6. Experimental protocol
 
 ### 6.1 Development versus confirmation
@@ -1190,7 +1214,8 @@ does not guarantee a beatable market.
    vendor facts are in section 5.7. Wave experiments, each requiring its
    own binding preregistration before any candidate run:
 
-   W1. **Cross-market coherence model** (concretizes old step 11). Use
+   W1. **Cross-market coherence model -- HISTORICAL TOUCH CLOSED; NO OFFICIAL
+   VERDICT, SHADOW CANDIDATE (2026-07-14).** Use
    the hockey identity E[saves] ~= E[opponent team SOG] - E[opponent
    goals]: aggregate opponent skater SOG lines into a coverage-adjusted
    team shots projection, estimate opponent goals from moneyline/total
@@ -1200,8 +1225,14 @@ does not guarantee a beatable market.
    preregistration: SOG props cover only listed skaters (the coverage
    adjustment is load-bearing), prop lines are medians not means,
    empty-net and backup-relief goals break the identity in the tails, and
-   book-level SOG coverage breadth is a probe gate.
-   W2. **DFS venue-history census.** Underdog/PrizePicks saves lines
+   book-level SOG coverage breadth is a probe gate. The frozen 2024-25
+   calculation met both selection-over-blind numerical bars, with profitable
+   UNDERs but losing OVERs, yet the registered recovery failed after the
+   touch and cannot receive an official verdict. Global proper scores were
+   worse than the market. Preserve the recipe for prospective shadowing; do
+   not rerun the historical fold.
+   W2. **DFS venue-history census -- COMPLETED, NULL (2026-07-14).**
+   Underdog/PrizePicks saves lines
    versus same-timestamp sportsbook consensus and versus outcomes, across
    every season the us_dfs archive reaches. Honest prior: two
    tracker-based analyses agree DFS lines overwhelmingly track consensus
@@ -1210,8 +1241,10 @@ does not guarantee a beatable market.
    4.3, versus 90.1% of 294 rows in the 2026-07-13 recon; different
    windows, comparators, units, and dedup rules -- the W2
    preregistration must reconcile the two before adopting either as its
-   prior). This is a census to find and size the deviating minority, not
-   a presumed edge.
+   prior). The registered census reconciled Underdog at 95.16%, found a
+   2024-25 PrizePicks deviation sample that graded at coin-flip with a wide
+   clustered CI, and had only six 2025-26 confirmation deviations. Close
+   historical DFS staleness for this cycle; do not promote it as an edge.
    W3 (zero credit). **Market-microstructure feature block.** Juice skew
    (same sign in both seasons at r of about 0.03, but exploratory:
    unclustered inference from unpersisted scripts, see

@@ -2391,6 +2391,38 @@ explicitly says the result survived the honest harness and uncertainty checks.
   preregistration section 14.11; completed artifacts:
   `models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/`.
 
+- **2026-07-14 (Codex-authored: Experiment 13 W2 DFS census NULL).** The
+  fixed 2024-25 development -> 2025-26 confirmation census is complete and
+  independently reproduced. PrizePicks differed from sportsbook consensus
+  on 443 of 1,868 comparable 2024-25 goalie-nights, but the 420 gradeable
+  non-push deviation candidates went 212-208: 50.48% hit rate and `+0.95%`
+  per bet under an even-money scoring convention, cluster CI95
+  `[-8.57%, +10.48%]`. The 2025-26 archive offered only six deviations;
+  five wins produced CI95 `[0.00%, +100.00%]`, which fails the registered
+  strict lower-bound bar and is not meaningful confirmation. This is not
+  PrizePicks ROI because historical multipliers are unavailable. The prior
+  rates now reconcile to Underdog `236/248 = 95.16%` and PrizePicks `51/57
+  = 89.47%` under one definition; the old 90.1% and 50/64 samples cannot be
+  exactly reconstructed. Close DFS staleness for this cycle. Final artifact:
+  `models/trained/experiment_13_w2_dfs_venue_history_20260714_100855/`;
+  full contract/result: preregistration section 16.9.
+
+- **2026-07-14 (Codex-authored: Experiment 12 W1 recovery consumed; observed
+  calculation encouraging).** The 2023-24 development recipe froze `0.03`
+  thresholds before touching 2024-25. The original touch failed before any
+  performance statistic; the registered 12R recovery completed calculations
+  but then crashed while writing metadata, so the recovery is consumed and
+  the official verdict is `NO VERDICT -- INFRASTRUCTURE FAILURE`. Independent
+  reconstruction exactly reproduced the persisted result and all 20,000
+  bootstrap draws. OVER lost `-8.34%` but beat blind OVER by `+7.17` points,
+  CI95 `[+2.73, +11.64]`; UNDER returned `+11.12%` and beat blind UNDER by
+  `+9.28` points, CI95 `[+2.49, +16.02]`. Global Brier/log-loss were worse
+  than the market, while selected probability CLV was positive but under one
+  tenth of a percentage point. Preserve the exact W1 recipe for a 2026-27
+  shadow run. Do not claim an official PASS, do not rerun 2024-25, and do not
+  infer that both sides were profitable. Full record: preregistration section
+  15.11 and historical analysis section 9.8.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need

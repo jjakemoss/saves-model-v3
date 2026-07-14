@@ -1,0 +1,90 @@
+{
+  "files": [
+    {
+      "bytes": 2943,
+      "path": "coverage_and_exclusion_counts.json",
+      "sha256": "0e6144a4bd4b35bba83845eaf224d9176907d8f6e8b1d9f44065bd93ea8e3724"
+    },
+    {
+      "bytes": 330250,
+      "path": "development_coverage_fit_universe.csv",
+      "sha256": "ea29ab992420e642f88c3fe2462fcaeaca0aa038f4e74634780ea19cd0219f46"
+    },
+    {
+      "bytes": 460670,
+      "path": "development_event_mapping.csv",
+      "sha256": "94c7d6a87a5c851ad11f82a8880c62e8fae64c15b3fcf123231df8c115253a69"
+    },
+    {
+      "bytes": 215998,
+      "path": "development_event_team_book_sog.parquet",
+      "sha256": "70261eccdb8ee6ab57056006674543a7f6dec5c8a192c7724eb267804af64bea"
+    },
+    {
+      "bytes": 128,
+      "path": "development_excluded_sog_lines.csv",
+      "sha256": "e3bd77ffaeab4ddd8fad8d731782dab1d9344633175fa7313233cacc8222e199"
+    },
+    {
+      "bytes": 271070,
+      "path": "development_market_goal_universe.csv",
+      "sha256": "05762f772edae1578ac87466cbed02dc1839681d6ec10c70f3fc6f1fbc8fccb9"
+    },
+    {
+      "bytes": 486091,
+      "path": "development_saves_quote_universe.parquet",
+      "sha256": "c54aeb4528327fb5dd309c3b24b6acf113d79a36315b4ad0b477194f1d8fdaa8"
+    },
+    {
+      "bytes": 782597,
+      "path": "development_sog_player_universe.parquet",
+      "sha256": "8482620367f6a352ffea679a9375d85d57271bf70715b7bbe31ff250be618e3a"
+    },
+    {
+      "bytes": 844886,
+      "path": "development_starter_translation_universe.csv",
+      "sha256": "b5bd50a7276e3df70d2904f6ab9b7d28f238365fa0eea3ae62803f2252554321"
+    },
+    {
+      "bytes": 1726,
+      "path": "development_threshold_sweep.csv",
+      "sha256": "f6b8775690a789db7b8e1094df7c9fd46691360c9ae8c3fbf1b0733b9c830226"
+    },
+    {
+      "bytes": 65881,
+      "path": "development_train_residuals.csv",
+      "sha256": "acd7c78a84ce952c4ad22c17af437fe394a6eabb843538aec9c9df9e028621ac"
+    },
+    {
+      "bytes": 235,
+      "path": "development_unmatched_events.csv",
+      "sha256": "3cc5fb8c553debc98626a97b0b29d8c5f43d03eb227290a229563b9484a738e3"
+    },
+    {
+      "bytes": 6819,
+      "path": "frozen_recipe.json",
+      "sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc"
+    },
+    {
+      "bytes": 264726,
+      "path": "input_checksums.json",
+      "sha256": "06abae36c038abb749d7667bc8b5353a9945060ab9c26e0b591a9c299f20caf2"
+    },
+    {
+      "bytes": 2377,
+      "path": "metadata.json",
+      "sha256": "72622b96b02cc85cbdfd344a8a2bc7315e8999e13aa9141475dcb8447b804784"
+    },
+    {
+      "bytes": 4965,
+      "path": "read_audit.json",
+      "sha256": "881e9662284c57a4d25a3fdcdd5efd24e563f3117570a5de3f1422c3d1c942a9"
+    },
+    {
+      "bytes": 915,
+      "path": "run_log.txt",
+      "sha256": "ddfe0717dd5af947f566d95fee17d0ecae2640e57125bd6091cfe9541c546644"
+    }
+  ],
+  "generated_at": "2026-07-14T15:42:24.156794Z"
+}

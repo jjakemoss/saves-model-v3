@@ -688,3 +688,55 @@ therefore earns a frozen 2026-27 shadow run, not a declaration that the model
 has a proven live edge. Independent reconstruction from the persisted
 universes reproduced the registered bootstrap exactly. See preregistration
 section 14.11 for the full audit trail and artifact paths.
+
+### 9.7 Experiment 13: PrizePicks disagreement census was null (Codex-authored, 2026-07-14)
+
+The fixed 2024-25 development census found 1,868 PrizePicks goalie-nights
+with a sportsbook consensus. PrizePicks matched it exactly on 76.28%; the
+443 deviations produced 420 gradeable non-push candidates under the locked
+direction rule (DFS above consensus means UNDER; below means OVER). They
+went 212-208: 50.48% hit rate, `+0.95%` per bet under an even-money scoring
+convention, goalie-night cluster CI95 `[-8.57%, +10.48%]`. This is not real
+PrizePicks ROI because historical payout multipliers are unavailable.
+
+The legacy 2025-26 confirmation reconstruction had only 57 comparable
+PrizePicks rows and six deviations. Five won, but six clusters yield CI95
+`[0.00%, +100.00%]`; the lower bound does not clear the registered strict
+bar, and the tiny slice cannot confirm a development sample that was itself
+null. Underdog was descriptive-only and matched consensus on `236/248 =
+95.16%` eligible rows.
+
+The earlier agreement claims are now reconciled rather than averaged: the
+registered definition reproduces Underdog at 95.16%, while the old 90.1%
+window/aggregation and PrizePicks 50/64 slice were not persisted and cannot
+be reconstructed. Legacy "last fetch" uses maximum append-order `bets.id`;
+true same-second timing remains unavailable. Conclusion: historical DFS
+line disagreement is not promoted as an edge or model filter this cycle.
+Full contract and audit trail: preregistration section 16.9.
+
+### 9.8 Experiment 12: cross-market coherence is promising but procedurally inconclusive (Codex-authored, 2026-07-14)
+
+W1 trained two simple robust affine translations on 2023-24: sportsbook
+skater-SOG prices to team shots, then projected shots minus implied goals to
+starter saves. The recipe and `0.03` thresholds were frozen before 2024-25.
+Development itself was weak: neither side's selection-over-blind interval
+cleared zero.
+
+The original historical touch failed before performance was computed because
+of a lossless CSV-float parsing mismatch. A preregistered recovery completed
+the frozen calculations but then crashed while writing metadata, so its touch
+was consumed and **Experiment 12R has no official verdict**. No third
+historical run is permitted.
+
+Independent reconstruction of the persisted calculation found sound
+arithmetic. OVER lost `-8.34%`, but beat a very weak blind-OVER baseline by
+`+7.17` points, CI95 `[+2.73, +11.64]`. UNDER returned `+11.12%` and beat
+blind UNDER by `+9.28` points, CI95 `[+2.49, +16.02]`. Both registered delta
+bars were met numerically, while only UNDER made money. Probability CLV was
+positive but tiny on both sides. Over the full quote universe, the coherence
+model was worse than the market on Brier and log-loss, so the result is a
+tail-ranking hypothesis rather than evidence of superior global pricing.
+
+Conclusion: preserve this exact recipe for a 2026-27 shadow run, but do not
+call the failed recovery an official PASS or a demonstrated edge. Full
+operational record and caveats: preregistration section 15.11.

@@ -1,0 +1,3 @@
+[2026-07-14T15:56:49.682157Z] Immutable IN_PROGRESS marker exists; beginning the single predicate-scoped 2024-25 touch
+[2026-07-14T15:56:54.108141Z] Predicate reads: SOG=182686, saves=16820, market=90968, outcomes=2624, closing=7463
+[2026-07-14T15:57:19.466812Z] Event maps: SOG 1301/0 unmatched; saves 1244/0; market 1311/1

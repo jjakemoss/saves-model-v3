@@ -1,0 +1,172 @@
+{
+  "betting": {
+    "blind_baseline": "same side on every non-push quote in identical eligible universe",
+    "cluster": "NHL game_id:goalie_id",
+    "payout": "quoted decimal actual price",
+    "pushes": "excluded",
+    "stake": "flat one unit",
+    "unit": "(saves_event_id, goalie_id, book, line)"
+  },
+  "code_path": "scripts\\experiment_12_w1_cross_market.py",
+  "code_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+  "coverage_model": {
+    "alpha": 0.0,
+    "coefficients": [
+      1.0307758766166872,
+      -1.5327154988187806
+    ],
+    "epsilon": 1.35,
+    "feature_names": [
+      "aggregate_player_mean",
+      "listed_player_count"
+    ],
+    "implementation": "sklearn.linear_model.HuberRegressor",
+    "intercept": 22.962617555479316,
+    "mae_in_sample": 4.970925264691314,
+    "max_iter": 2000,
+    "n_iter": 31,
+    "n_rows": 1692,
+    "scale": 4.265431151521769,
+    "tol": 1e-08
+  },
+  "development_dates": {
+    "fit": [
+      "2023-10-10",
+      "2024-02-15"
+    ],
+    "overall": [
+      "2023-10-10",
+      "2024-04-18"
+    ],
+    "split_unit": "NHL game/event",
+    "validation": [
+      "2024-02-16",
+      "2024-04-18"
+    ]
+  },
+  "event_mapping": "Eastern date plus unordered event teams; exactly one NHL game; retain source event id and game_id; fail closed on ambiguity.",
+  "experiment": 12,
+  "one_touch_confirmation_guard": {
+    "authorization_token_sha256": "a720f55d66fa4add227900440d5825f6956ecdb8998091cf45b4db9871b1326a",
+    "failure_policy": "Any marker, even from a failed touch, consumes the one touch and requires a new preregistration; never delete or overwrite it.",
+    "pre_read_sequence": [
+      "Verify DEVELOPMENT_FROZEN metadata, code SHA-256, frozen_recipe SHA-256, and all artifact hashes.",
+      "Require the deterministic confirmation authorization token from this freeze.",
+      "Search every Experiment 12 artifact directory for any prior confirmation_touch.json; refuse if any exists, including IN_PROGRESS or COMPLETED.",
+      "Atomically create confirmation_touch.json with status IN_PROGRESS before any predicate-level 2024-25 read.",
+      "Use only predicate-level 2024-25 scans and the frozen parameters; never refit or reselect.",
+      "Atomically finalize the marker as COMPLETED only after all confirmation artifacts and manifest hashes are durable."
+    ],
+    "required_resume_action": "User explicitly resumes Experiment 12 confirmation implementation/execution.",
+    "status": "DESIGN_FROZEN_CONFIRMATION_NOT_AUTHORIZED_OR_IMPLEMENTED_IN_THIS_ASSIGNMENT"
+  },
+  "opponent_goals": {
+    "consensus_total": "median totals point across books",
+    "formula": "consensus_total * shooting_team win probability",
+    "home_win_probability": "mean de-vigged home h2h probability across books",
+    "snapshot": "latest market requested_ts <= W1 SOG event anchor"
+  },
+  "pricing": {
+    "integer_line_comparison": "P(over)/(P(over)+P(under)); pushes void",
+    "market_gap": "model conditional P(over) minus exact-pair de-vigged saves-market P(over)",
+    "probabilities": "empirical residual P(over), P(under), P(push)"
+  },
+  "registration": "section 15.2a",
+  "residual_distribution": {
+    "artifact": "development_train_residuals.csv",
+    "n": 1690,
+    "sha256": "cc81d58c4d768020f733cfe0ab1da516ccb7e42fb78913e7c8f9eab122e0e4e8",
+    "source": "development-train starter actual saves minus fitted starter saves"
+  },
+  "sog_recipe": {
+    "aggregation": "sum player means event-team-book; cross-book median mean sum and median player count",
+    "attribution": "2023-24 season-team PBP roster membership among event teams; actual-game presence is not a filter",
+    "books": "sportsbooks only; DFS excluded",
+    "devig": "normalize reciprocal decimal probabilities within exact O/U pair",
+    "lines": "exact two-sided half-point only",
+    "poisson_inversion": "solve Poisson survival(floor(line), mean) == fair P(over)"
+  },
+  "stage": "DEVELOPMENT_FROZEN",
+  "starter_translation_model": {
+    "alpha": 0.0,
+    "coefficients": [
+      0.7910042286555599
+    ],
+    "epsilon": 1.35,
+    "feature_names": [
+      "coherence_raw_saves"
+    ],
+    "implementation": "sklearn.linear_model.HuberRegressor",
+    "intercept": 5.261424965088635,
+    "mae_in_sample": 5.734289973191214,
+    "max_iter": 2000,
+    "n_iter": 25,
+    "n_rows": 1690,
+    "scale": 4.630214207995777,
+    "tol": 1e-08
+  },
+  "threshold_selection": {
+    "bootstrap": {
+      "resamples": 10000,
+      "seed": 42
+    },
+    "criterion": "maximize goalie-night cluster bootstrap lower CI of model-minus-blind ROI delta per side",
+    "frozen_selections": {
+      "over": {
+        "development_status": "QUALIFIED",
+        "selected_grid_row": {
+          "blind_same_side_roi": -0.16007305669199298,
+          "bootstrap_empty_model_arm_rate": 0.0,
+          "bootstrap_empty_model_arm_resamples": 0,
+          "bootstrap_lower_ci95": -0.14486110869500413,
+          "bootstrap_upper_ci95": 0.048247547280799344,
+          "model_minus_blind_roi_delta": -0.047991145642637345,
+          "model_roi": -0.20806420233463033,
+          "n_eligible_goalie_nights": 804,
+          "n_eligible_nonpush_quotes": 3422,
+          "n_selected_goalie_nights": 264,
+          "n_selected_graded_bets": 1028,
+          "selection_eligible": true,
+          "side": "OVER",
+          "threshold": 0.03
+        },
+        "selection_reason": "Maximum bootstrap lower CI; larger threshold breaks ties.",
+        "side": "OVER",
+        "threshold": 0.03
+      },
+      "under": {
+        "development_status": "QUALIFIED",
+        "selected_grid_row": {
+          "blind_same_side_roi": 0.020113968439509057,
+          "bootstrap_empty_model_arm_rate": 0.0,
+          "bootstrap_empty_model_arm_resamples": 0,
+          "bootstrap_lower_ci95": -0.05015147811201546,
+          "bootstrap_upper_ci95": 0.11139080527789626,
+          "model_minus_blind_roi_delta": 0.029414260485471626,
+          "model_roi": 0.04952822892498068,
+          "n_eligible_goalie_nights": 804,
+          "n_eligible_nonpush_quotes": 3422,
+          "n_selected_goalie_nights": 327,
+          "n_selected_graded_bets": 1293,
+          "selection_eligible": true,
+          "side": "UNDER",
+          "threshold": 0.03
+        },
+        "selection_reason": "Maximum bootstrap lower CI; larger threshold breaks ties.",
+        "side": "UNDER",
+        "threshold": 0.03
+      }
+    },
+    "grid": [
+      0.03,
+      0.05,
+      0.07,
+      0.1,
+      0.12
+    ],
+    "insufficient_fallback": 0.05,
+    "maximum_empty_arm_rate": 0.01,
+    "minimum_selected": 100,
+    "tie_break": "larger threshold"
+  }
+}

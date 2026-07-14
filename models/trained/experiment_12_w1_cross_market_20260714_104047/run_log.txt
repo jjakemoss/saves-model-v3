@@ -1,0 +1,8 @@
+[2026-07-14T15:40:47.562522Z] Experiment 12 development started; code_sha256=48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d
+[2026-07-14T15:40:52.559202Z] All predicate-level input scans passed development max-date and season assertions
+[2026-07-14T15:40:54.452654Z] Event maps: core 1310 matched/0 unmatched; saves 1125/0; market 1312/1
+[2026-07-14T15:40:58.898736Z] Loaded 1312 development-only PBP files; max date 2024-04-18
+[2026-07-14T15:41:02.782393Z] SOG paired units 90940; attribution {'resolved': 90689, 'ambiguous': 239, 'unresolved': 12}; team rows 2620
+[2026-07-14T15:41:03.282842Z] Fits frozen on train only: coverage n=1692; starter translation/residual n=1690
+[2026-07-14T15:41:06.131429Z] Thresholds frozen: OVER=0.03 (QUALIFIED), UNDER=0.03 (QUALIFIED)
+[2026-07-14T15:41:06.784093Z] DEVELOPMENT_FROZEN: confirmation was not invoked and zero 2024-25 rows were materialized

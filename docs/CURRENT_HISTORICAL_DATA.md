@@ -220,7 +220,12 @@ The two 404 records (wildfire-postponed CGY@LAK 2025-01-08 and dead CHI@BUF
 The processed parquet is data-ready for registered Experiments 11-13.
 Experiment 11 has now consumed only its 2024-25 saves slice and produced the
 verified PASS recorded in `HISTORICAL_DATA_ANALYSIS.md` section 9.6;
-Experiments 12-13 have not run.
+Experiment 13 has now consumed its PrizePicks saves slice and closed as the
+verified null recorded in section 9.7. Experiment 12 consumed both its
+original and registered recovery touches. The persisted recovery calculation
+was numerically encouraging, but a post-touch metadata failure leaves the
+official verdict `NO VERDICT -- INFRASTRUCTURE FAILURE`; see section 9.8 and
+preregistration section 15.11. No further historical W1 touch is allowed.
 
 ## 5. Is this enough data?
 

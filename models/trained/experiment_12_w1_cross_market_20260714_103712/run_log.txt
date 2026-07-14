@@ -1,0 +1,6 @@
+[2026-07-14T15:37:12.603518Z] Experiment 12 development started; code_sha256=7fc1ef6687f9217545007caa001b09b3cbcdab4de6838c1797c7303321e73ad2
+[2026-07-14T15:37:17.247842Z] All predicate-level input scans passed development max-date and season assertions
+[2026-07-14T15:37:18.791115Z] Event maps: core 1310 matched/0 unmatched; saves 1125/0; market 1312/1
+[2026-07-14T15:37:44.213826Z] Loaded 1312 development-only PBP files; max date 2024-04-18
+[2026-07-14T15:39:20.596073Z] SOG paired units 90940; attribution {'resolved': 90689, 'ambiguous': 239, 'unresolved': 12}; team rows 2620
+[2026-07-14T15:39:20.680586Z] DEVELOPMENT_STOPPED: KeyError: 'game_date'

@@ -1,0 +1,83 @@
+{
+  "closing": {
+    "conflicting_quote_units_excluded": 0,
+    "eligible_rows": 7404,
+    "exact_duplicate_extra_rows": 0,
+    "input_rows": 7463,
+    "missing_identity_rows": 0,
+    "missing_projection_rows": 59
+  },
+  "event_mapping": {
+    "market_matched": 1311,
+    "market_unmatched": 1,
+    "saves_matched": 1244,
+    "saves_unmatched": 0,
+    "sog_matched": 1301,
+    "sog_unmatched": 0
+  },
+  "market_goals": {
+    "games_with_complete_projection": 1300,
+    "games_with_timing_safe_snapshot": 1300,
+    "h2h_conflict_groups_excluded": 0,
+    "rows_later_than_w1_anchor_excluded": 2476,
+    "totals_conflict_groups_excluded": 0
+  },
+  "saves_pairing": {
+    "conflicting_price_rows_excluded": 0,
+    "conflicting_side_groups_excluded": 0,
+    "exact_duplicate_extra_rows": 0,
+    "exact_paired_units_before_line_filter": 6430,
+    "excluded_non_half_point_pairs": 0,
+    "excluded_non_half_point_quote_rows": 0,
+    "incomplete_two_sided_units": 1,
+    "input_rows": 12993,
+    "invalid_price_rows": 0,
+    "missing_identity_rows": 132,
+    "paired_units_retained": 6430
+  },
+  "saves_pricing": {
+    "eligible_goalie_nights": 2142,
+    "eligible_quote_units": 6429,
+    "missing_projection_units": 1,
+    "paired_saves_units": 6430,
+    "push_units": 0,
+    "unmatched_goalie_units": 0
+  },
+  "sog_attribution": {
+    "ambiguous_quote_units": 221,
+    "ambiguous_unique_event_players": 49,
+    "poisson_inversion_failures": 0,
+    "resolved_quote_units": 85377,
+    "resolved_unique_event_players": 18253,
+    "unresolved_quote_units": 2,
+    "unresolved_unique_event_players": 1
+  },
+  "sog_coverage": {
+    "books_per_event_team": {
+      "3": 8,
+      "4": 175,
+      "5": 2254,
+      "6": 165
+    },
+    "event_team_book_rows": 12984,
+    "event_team_rows": 2602,
+    "events_with_both_teams": 1301
+  },
+  "sog_pairing": {
+    "conflicting_price_rows_excluded": 0,
+    "conflicting_side_groups_excluded": 0,
+    "exact_duplicate_extra_rows": 0,
+    "exact_paired_units_before_line_filter": 85600,
+    "excluded_non_half_point_pairs": 0,
+    "excluded_non_half_point_quote_rows": 0,
+    "incomplete_two_sided_units": 18,
+    "input_rows": 171218,
+    "invalid_price_rows": 0,
+    "missing_identity_rows": 0,
+    "paired_units_retained": 85600
+  },
+  "translation": {
+    "complete_rows": 2600,
+    "missing_rows": 24
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "authorization_token_verified": "a720f55d66fa4add227900440d5825f6956ecdb8998091cf45b4db9871b1326a",
+  "completed_at": "2026-07-14T15:56:06.050279Z",
+  "confirmation_runner_sha256": "dd569dafd55f25e59c8d847f42a37c4c10c4b0c42553227dccac0786765006e5",
+  "existing_touch_markers": [],
+  "frozen_recipe_sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc",
+  "frozen_script_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+  "manifest": {
+    "files_verified": 17,
+    "manifest_sha256": "9fcdf91eeee59162b1a5bae48de41d523373cb40dc458136dbda54695954d790"
+  },
+  "source_data_materialized": false,
+  "source_data_paths_opened": [],
+  "status": "PREFLIGHT_PASS",
+  "synthetic_tests": {
+    "bootstrap_seed42_determinism": "PASS",
+    "empirical_push_conditioning": "PASS",
+    "exact_pair_and_half_point": "PASS",
+    "poisson_inversion": "PASS",
+    "season_roster_non_dresser_rule": "PASS",
+    "utah_unordered_team_mapping": "PASS"
+  }
+}

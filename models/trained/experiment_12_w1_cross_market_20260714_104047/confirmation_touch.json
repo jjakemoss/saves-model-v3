@@ -1,0 +1,15 @@
+{
+  "authorization_token_verified": "a720f55d66fa4add227900440d5825f6956ecdb8998091cf45b4db9871b1326a",
+  "confirmation_runner": "scripts\\experiment_12_w1_cross_market_confirmation.py",
+  "confirmation_runner_sha256": "dd569dafd55f25e59c8d847f42a37c4c10c4b0c42553227dccac0786765006e5",
+  "created_at": "2026-07-14T15:56:49.655740Z",
+  "experiment": 12,
+  "frozen_recipe_sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc",
+  "frozen_run": "models\\trained\\experiment_12_w1_cross_market_20260714_104047",
+  "frozen_script_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+  "history_file": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_touch_history.jsonl",
+  "immutability": "This marker is never overwritten; completion/failure is append-only history plus a separate exclusive marker.",
+  "preflight_artifact": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_preflight.json",
+  "stage": "confirmation",
+  "status": "IN_PROGRESS"
+}

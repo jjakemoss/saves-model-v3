@@ -1,0 +1,101 @@
+{
+  "coverage_fit": {
+    "missing_actual_team_sog": 0,
+    "train_rows": 1692,
+    "validation_rows": 928
+  },
+  "event_mapping": {
+    "core_matched": 1310,
+    "core_unmatched": 0,
+    "mapping_rule": "Eastern game date plus unordered normalized team abbreviations; fail on ambiguity.",
+    "market_matched": 1312,
+    "market_unmatched": 1,
+    "saves_matched": 1125,
+    "saves_unmatched": 0
+  },
+  "market_goals": {
+    "games_with_complete_goals_projection": 1309,
+    "games_with_timing_safe_snapshot": 1309,
+    "h2h_book_conflict_groups_excluded": 0,
+    "rows_later_than_w1_anchor_excluded": 2796,
+    "totals_book_conflict_groups_excluded": 0
+  },
+  "saves_pairing": {
+    "conflicting_price_rows_excluded": 18,
+    "conflicting_side_groups_excluded": 9,
+    "exact_duplicate_extra_rows": 105,
+    "exact_paired_units_before_line_filter": 7665,
+    "excluded_non_half_point_pairs": 0,
+    "excluded_non_half_point_quote_rows": 0,
+    "incomplete_two_sided_units": 9,
+    "input_rows": 15682,
+    "invalid_price_rows": 0,
+    "missing_identity_rows": 220,
+    "paired_units_retained": 7665
+  },
+  "saves_pricing": {
+    "eligible_goalie_nights": 1974,
+    "eligible_push_quote_units": 0,
+    "eligible_quote_units": 7665,
+    "paired_saves_units": 7665,
+    "quote_units_missing_sog_or_market_projection": 0,
+    "unmatched_goalie_quote_units": 0
+  },
+  "sog_attribution": {
+    "ambiguous": 239,
+    "poisson_inversion_failures": 0,
+    "resolved": 90689,
+    "unresolved": 12
+  },
+  "sog_pairing": {
+    "conflicting_price_rows_excluded": 0,
+    "conflicting_side_groups_excluded": 0,
+    "exact_duplicate_extra_rows": 0,
+    "exact_paired_units_before_line_filter": 90941,
+    "excluded_non_half_point_pairs": 1,
+    "excluded_non_half_point_quote_rows": 2,
+    "incomplete_two_sided_units": 32370,
+    "input_rows": 214252,
+    "invalid_price_rows": 0,
+    "missing_identity_rows": 0,
+    "paired_units_retained": 90940
+  },
+  "sog_quote_coverage": {
+    "event_team_book_rows": 13572,
+    "event_team_cross_book_rows": 2620,
+    "event_team_rows_by_book_count": {
+      "2": 79,
+      "3": 250,
+      "4": 278,
+      "5": 526,
+      "6": 1487
+    },
+    "events_with_both_team_projections": 1310,
+    "paired_players_by_book": {
+      "betmgm": 16750,
+      "betonlineag": 17043,
+      "bovada": 15311,
+      "draftkings": 17712,
+      "fanduel": 11993,
+      "williamhill_us": 11880
+    },
+    "raw_rows_by_book": {
+      "betmgm": 33614,
+      "betonlineag": 34180,
+      "bovada": 30704,
+      "draftkings": 35571,
+      "fanduel": 56361,
+      "williamhill_us": 23822
+    }
+  },
+  "starter_translation": {
+    "all_missing_projection_rows": 6,
+    "train_rows": 1690,
+    "validation_complete_rows": 928
+  },
+  "validation": {
+    "eligible_quotes": 3422,
+    "goalie_nights": 804,
+    "pushes_excluded_per_side": 0
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "confirmation_output_dir": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_20260714_105649",
+  "error": "frozen residual distribution content hash mismatch",
+  "error_type": "ConfirmationFailure",
+  "experiment": 12,
+  "failed_at": "2026-07-14T15:57:22.883541Z",
+  "status": "FAILED_TOUCH_CONSUMED",
+  "traceback": "Traceback (most recent call last):\n  File \"S:\\Documents\\GitHub\\saves-model-v3\\scripts\\experiment_12_w1_cross_market_confirmation.py\", line 918, in run_confirmation\n    raise ConfirmationFailure(\"frozen residual distribution content hash mismatch\")\nConfirmationFailure: frozen residual distribution content hash mismatch\n"
+}

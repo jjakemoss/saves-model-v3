@@ -1827,6 +1827,68 @@ candidate, not a lock); the incoherence threshold and its units
 EV-ranked); the stake convention; which existing distributional-model
 components, if any, are reused for the shape-translation step.
 
+**15.2a Execution lock (Codex-authored, 2026-07-14, before W1 development
+price/outcome analysis).** The following resolves the remaining implementation
+freedom before the development runner is built:
+
+1. Development is chronological: fit/calibrate on `2023-10-10..2024-02-15`
+   and select the betting threshold on `2024-02-16..2024-04-18`. Events, not
+   book rows, are the split unit. The fitted development models are then
+   frozen unchanged; there is no refit on the validation period before the
+   2024-25 touch.
+2. Development and confirmation are separate runner stages. The development
+   stage must use predicate-level 2023-24 reads, assert the maximum input date,
+   and persist the complete recipe plus input hashes. The confirmation stage
+   must verify that frozen artifact before any predicate-level 2024-25 read,
+   write a one-touch marker, and refuse a second completed touch.
+3. SOG player-to-team attribution uses the season-team roster index from the
+   local play-by-play archive and only the two teams in the event. A player is
+   retained when exactly one event team is a season-roster match; unresolved
+   or two-team-ambiguous players are excluded and counted. Actual-game roster
+   presence may validate identity but may not be used to drop a quoted
+   non-dresser.
+4. Each sportsbook player's exact paired O/U quote is de-vigged first. Only
+   half-point SOG lines enter the model. The fair OVER probability is inverted
+   through a Poisson count distribution to an implied player mean, so prop
+   medians are not summed as expectations. Player means are summed within
+   event-team-book; the cross-book median aggregate and median listed-player
+   count form one event-team row. DFS books are excluded.
+5. The coverage model is a robust affine development-train regression from
+   aggregate player mean plus listed-player count to actual team SOG, one row
+   per event-team. No same-game actual coverage fraction is an inference-time
+   input. The registered opponent-goals heuristic is reproduced exactly, but
+   uses the latest h2h/totals snapshot with `requested_ts <=` the W1 core
+   snapshot anchor for that event; a later pregame snapshot is forbidden.
+6. Team-SOG projection minus market-implied opponent goals is translated to
+   starter saves by a second robust affine regression learned only on the
+   development-train goalie outcomes. This is the explicit starter-exposure
+   correction: it absorbs average relief/empty-net mismatch without using
+   current-game TOI, actual roster participation, or any other postgame input.
+   A development-train empirical residual distribution supplies
+   `P(over)`, `P(under)`, and `P(push)`; integer saves lines use the conditional
+   `P(over)/(P(over)+P(under))` comparison because pushes are void.
+7. Eligible saves quotes are exact paired sportsbook O/U records with matched
+   SOG projection, timing-safe goals projection, and starter outcome. The unit
+   is `(event_id, goalie_id, book, line)`; duplicate signal exposure is handled
+   only by the registered goalie-night cluster bootstrap. Flat one-unit stakes
+   use the quoted decimal payout. Pushes are excluded from grading.
+8. On the development-validation period, each side selects one probability-gap
+   threshold from the fixed grid `{0.03, 0.05, 0.07, 0.10, 0.12}`. Selection
+   maximizes that side's goalie-night-cluster bootstrap lower CI for
+   model-minus-blind ROI delta, subject to at least 100 graded selected bets
+   and at most 1% empty-arm resamples; ties choose the larger threshold. If no
+   threshold is eligible, freeze `0.05` and label the development side
+   insufficient. The full grid is persisted.
+9. Overall confirmation semantics: if no side reaches 100 selected bets, the
+   experiment is `INSUFFICIENT SAMPLE`. If exactly one side qualifies, that
+   side alone determines PASS/FAIL. If both qualify, overall PASS requires
+   both to pass; one pass and one fail is `MIXED / NO OVERALL PASS`; both fail
+   is FAIL. An `UNSTABLE` qualified side prevents overall PASS.
+
+This lock deliberately favors a small, interpretable market-identity model
+over a new high-dimensional feature search. Any alternative architecture is a
+new experiment, not an Experiment 12 rerun.
+
 **15.3 Data.** Development (2023-24, viewed per plan section 6.1, so
 hypothesis-support-tier evidence only): the new `sog-2023-24` pass (1,312
 of 1,313 events have SOG, `audit_summary.json`) plus the existing 2023-24
@@ -1933,6 +1995,105 @@ betting-edge confirmation -- both 2023-24 and 2024-25 outcomes were
 already viewed before this registration (Experiment 5/8's rolling-origin
 runs). Final confirmation is the frozen 2026-27 shadow run, out of scope
 here.
+
+**15.10 Confirmation-touch failure and recovery registration
+(Codex-authored, 2026-07-14, written before any recovery source read).** The
+original confirmation touch created its immutable marker at
+`2026-07-14T15:56:49Z`, predicate-loaded the five registered 2024-25 sources,
+and stopped before saves pricing. Pandas' default CSV float parser changed
+the last bits of the frozen residual values, so their canonical semantic hash
+did not match. The residual file's byte SHA-256 still matched the development
+manifest, and reading it with `float_precision="round_trip"` reproduces the
+registered semantic hash exactly.
+
+Per the frozen failure policy, that original touch is consumed and can never
+be resumed, deleted, or represented as an Experiment 12 result. It produced
+no quote universe, selected bets, grades, bootstrap draws, Brier/log-loss,
+CLV, or primary/secondary statistic. The only post-read work completed was
+event mapping and roster/SOG construction before the residual guard. The
+preserved records are `confirmation_touch.json`,
+`confirmation_touch_history.jsonl`, `confirmation_touch_failed.json`, and
+`confirmation_20260714_105649/`. **Original-touch verdict: NO VERDICT --
+INFRASTRUCTURE FAILURE.**
+
+Because no result or grading information was calculated or observed, one
+separately registered recovery touch is authorized as **Experiment 12R**.
+This is not a retry under the original marker. Its binding rules are:
+
+1. The development runner, frozen recipe, coefficients, residual file,
+   thresholds (`0.03` OVER and `0.03` UNDER), source predicates, primary bars,
+   and all interpretation rules remain byte-for-byte or value-for-value
+   unchanged. No refit, reselection, slice, or model alteration is allowed.
+2. The failed confirmation runner is retained unchanged as evidence. A new
+   recovery runner must differ only where needed to (a) load the residual CSV
+   with round-trip float parsing, (b) validate both its byte hash and semantic
+   hash during a source-free preflight, and (c) use distinct append-only
+   `recovery_touch` markers so the consumed original marker is never hidden.
+3. Before the recovery marker, preflight must verify every development
+   artifact hash, both frozen hashes, the authorization token, the exact
+   failed-touch records, the round-trip residual semantic hash, and synthetic
+   tests. It must open no 2024-25 source.
+4. `recovery_touch.json` is created atomically before the first predicate
+   source read. Any failure after that marker consumes Experiment 12R and no
+   further historical confirmation is permitted this cycle.
+5. The recovery report must disclose both touches. A valid 12R result is
+   interpreted under the original section 15.7 bars but carries the disclosed
+   operational deviation; it cannot erase the failed first attempt or be
+   described as a pristine single execution.
+
+This recovery is permitted solely because the failed run exposed no outcome
+grade or model-performance statistic. Had any primary or secondary result
+been computed, no recovery touch would be authorized.
+
+**15.11 Implemented result and consumed recovery
+(Codex-authored and independently verified, 2026-07-14).** Development
+completed on 2023-24 and froze `0.03` for both sides. Neither development
+validation interval cleared zero: OVER selected 1,028 quotes and returned a
+model-minus-blind delta of `-4.80` points (CI95 `[-14.49, +4.82]`); UNDER
+selected 1,293 with delta `+2.94` points (CI95 `[-5.02, +11.14]`). The frozen
+recipe and its 17 artifact hashes passed independent verification.
+
+The original confirmation touch then failed exactly as recorded in 15.10,
+before any price, grade, or performance statistic was produced. Experiment
+12R passed its source-free preflight, created its recovery marker, and
+completed the frozen calculations. It then failed while writing final
+metadata because the runner requested `preflight["manifest"]` while the
+preflight object exposed that record as `development_manifest`. Under 15.10,
+this post-marker failure consumes 12R. There is no completion marker, final
+metadata, output manifest, or official result JSON, and no further historical
+recovery is permitted this cycle.
+
+The persisted unofficial calculation was nevertheless reconstructed
+independently, including all 20,000 bootstrap draws, with no numerical
+discrepancy. Its 6,429 unique sportsbook quotes covered 2,142 goalie-nights,
+with zero duplicate units, pushes, timing violations, or grading/payout
+errors:
+
+| Side | Selected quotes | Selected ROI | Blind same-side ROI | Delta | Goalie-night CI95 |
+|---|---:|---:|---:|---:|---:|
+| OVER | 2,852 | -8.34% | -15.51% | +7.17 points | [+2.73, +11.64] |
+| UNDER | 1,597 | +11.12% | +1.84% | +9.28 points | [+2.49, +16.02] |
+
+Both sides therefore met the registered *selection-over-blind* numerical
+bars in the observed calculation, but only UNDER was profitable in absolute
+terms. Game-level and date-level sensitivity bootstraps retained positive
+lower bounds. The model was worse than the de-vigged market over all quotes:
+bettime Brier delta `+0.00306`; closing Brier delta `+0.00393`, CI95
+`[+0.00057, +0.00737]`; closing log-loss delta `+0.00819`, CI95
+`[+0.00123, +0.01531]`. Selected probability CLV was positive but tiny:
+approximately `+0.048` percentage points OVER and `+0.093` UNDER; OVER's
+decimal-price CLV interval crossed zero.
+
+**Official procedural verdict: Experiment 12R -- NO VERDICT,
+INFRASTRUCTURE FAILURE; recovery touch consumed.** Evidentiary
+interpretation: the frozen calculation reproducibly meets both registered
+selection-over-blind numerical bars and makes this recipe a worthwhile
+2026-27 shadow candidate. It is not an official registered PASS, does not
+show two profitable sides, does not overcome worse overall calibration, and
+does not establish a demonstrated betting edge. The authoritative directory
+is `models/trained/experiment_12_w1_cross_market_20260714_104047/`; both
+failed-touch records and the `recovery_20260714_111134/` artifacts must be
+retained unchanged.
 
 ---
 
@@ -2113,3 +2274,46 @@ before any confirmatory touch. Either outcome, the 95.2%/90.1%
 reconciliation itself (16.2) is retained as a standing correction to
 both prior documents' informal numbers, independent of what the rest of
 the census finds.
+
+**16.9 Implemented result (Codex-authored and independently verified,
+2026-07-14).** `scripts/experiment_13_w2_dfs_venue_history.py` completed the
+fixed `2024-25 development -> 2025-26 confirmation` census. For the legacy
+tracker slice, the registered last observation was reconstructed as the
+maximum SQLite `id` per goalie-night-book. That matches the append-only
+production write order, but it is not a wall-clock timestamp or a true
+same-second venue comparison; an identical or reverted quote that was not
+inserted cannot be recovered.
+
+The prior reconciliation explains why the informal percentages should not
+be mixed. Under the registered all-sportsbook-median definition, Underdog's
+eligible Jan-March and full persisted samples are both `236/248 = 95.16%`
+exact agreement. The old `90.1%` window and aggregation were not persisted
+and cannot be reproduced. The full eligible PrizePicks tracker sample is
+`51/57 = 89.47%`, not the old unreconstructable `50/64 = 78.1%` slice.
+
+PrizePicks had 1,868 comparable goalie-nights in 2024-25: 1,425 exact
+agreements (`76.28%`) and 443 deviations (249 DFS-above-consensus UNDER
+candidates; 194 DFS-below-consensus OVER candidates). Of 420 gradeable
+non-push deviations, 212 won: `50.48%` hit rate and `+0.95%` even-money
+profit per bet, with goalie-night cluster CI95 `[-8.57%, +10.48%]`. This is
+an explicitly labeled even-money outcome grade, not PrizePicks ROI. The
+2025-26 confirmation slice had only 57 comparable rows and six deviations;
+five won, but its six-cluster CI95 was `[0.00%, +100.00%]`, so it did not
+clear the strict `lower > 0` bar and is far too small to rescue the null
+development result. Underdog remained descriptive-only (`236/248` exact).
+
+**Verdict: CENSUS NULL FOR EDGE LANGUAGE.** The fixed chronological bar did
+not clear, so DFS venue staleness is closed for this cycle under 16.8. This
+does not say every future PrizePicks disagreement is bad; it says this
+historical rule did not demonstrate repeatable selection value. The final
+artifact is
+`models/trained/experiment_13_w2_dfs_venue_history_20260714_100855/`.
+Two construction stops (`100009`, `100036`) occurred before outcome access;
+`100623` stopped while writing post-grade reporting; and `100702` is retained
+as explicitly invalidated after a denominator audit. Independent verification
+matched all 1,875 development and 1,036 legacy normalized rows to source,
+found zero consensus or grading discrepancies, reproduced both registered
+bootstrap intervals, and confirmed every input hash. One cosmetic audit note
+is retained in final metadata: the pre-outcome normalized JSONL still carries
+a stale 2024-25 `grade_status` construction label. The graded CSV and summary
+are authoritative; the label has no numerical or verdict effect.

@@ -1,0 +1,4 @@
+2026-07-14T15:06:23.343701+00:00 Experiment 13 started. Chronological direction is fixed: 2024-25 development -> 2025-26 confirmation.
+2026-07-14T15:06:23.343701+00:00 No network/API calls are implemented. data/betting.db will be opened once through a read-only URI before any outcome data is read.
+2026-07-14T15:06:23.391187+00:00 Snapshot-pinned the sole tracker price extract before outcome grading: rows=1789, max_game_date=2026-04-13, row_checksum=a24def58909e12b03673500cbc0101f3964ba50e929a6eacb2033f384055c3ba.
+2026-07-14T15:06:24.236848+00:00 Snapshot-pinned the tracker outcome extract before grading: rows=1789, max_game_date=2026-04-13, row_checksum=f776bc34bee4f863200b9690e74f862f7f535460d3d38a50637581873aa859d8.

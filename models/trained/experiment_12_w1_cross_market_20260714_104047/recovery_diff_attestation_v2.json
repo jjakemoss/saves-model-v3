@@ -1,0 +1,195 @@
+{
+  "failed_runner_path": "scripts\\experiment_12_w1_cross_market_confirmation.py",
+  "failed_runner_sha256": "dd569dafd55f25e59c8d847f42a37c4c10c4b0c42553227dccac0786765006e5",
+  "protected_claims": {
+    "bootstrap_seed_draws_and_cluster_rules_unchanged": true,
+    "event_mapping_roster_pairing_and_joins_unchanged": true,
+    "grading_stakes_pushes_and_prices_unchanged": true,
+    "manifest_algorithm_unchanged_except_recovery_output_filename": true,
+    "model_coefficients_and_thresholds_unchanged": true,
+    "no_refit_or_reselection_path": true,
+    "primary_verdict_semantics_unchanged": true,
+    "secondary_scoring_and_clv_rules_unchanged": true,
+    "source_paths_predicates_and_columns_unchanged": true
+  },
+  "protected_constant_ast_hashes": [
+    {
+      "failed_ast_sha256": "19e704dbfcc07c00b450b48df2489ab0064409881c7bea2147863ec284664091",
+      "name": "CORE_SNAPSHOTS",
+      "recovery_ast_sha256": "19e704dbfcc07c00b450b48df2489ab0064409881c7bea2147863ec284664091"
+    },
+    {
+      "failed_ast_sha256": "9a532cf950996acc0ec518ccd4a018fb34beb27b1c6445a2b0a1e37630372666",
+      "name": "MARKET_FEATURES",
+      "recovery_ast_sha256": "9a532cf950996acc0ec518ccd4a018fb34beb27b1c6445a2b0a1e37630372666"
+    },
+    {
+      "failed_ast_sha256": "accb6061fe77446ac899cc200a117b37d3ffe5f3af910469350ea2309c930262",
+      "name": "OUTCOMES",
+      "recovery_ast_sha256": "accb6061fe77446ac899cc200a117b37d3ffe5f3af910469350ea2309c930262"
+    },
+    {
+      "failed_ast_sha256": "e72063d3ee059d080461416284928438477fc891619afcbbf06f1cb52d9006ce",
+      "name": "CLOSING",
+      "recovery_ast_sha256": "e72063d3ee059d080461416284928438477fc891619afcbbf06f1cb52d9006ce"
+    },
+    {
+      "failed_ast_sha256": "c6e19e17c3f3b7a3643655d06447799a0da76bc811583c6c62d5996ec3e666df",
+      "name": "CONFIRMATION_SEASON",
+      "recovery_ast_sha256": "c6e19e17c3f3b7a3643655d06447799a0da76bc811583c6c62d5996ec3e666df"
+    },
+    {
+      "failed_ast_sha256": "aee7e098b360832576456ddfbeec6f34bc69dca9a7789b4451732789f261ad4b",
+      "name": "CONFIRMATION_SEASON_CODE",
+      "recovery_ast_sha256": "aee7e098b360832576456ddfbeec6f34bc69dca9a7789b4451732789f261ad4b"
+    },
+    {
+      "failed_ast_sha256": "69446d1a13ca60bea54985e3e68f09ca887c8eaba72da0db87013bdfa35ada5c",
+      "name": "CONFIRMATION_START",
+      "recovery_ast_sha256": "69446d1a13ca60bea54985e3e68f09ca887c8eaba72da0db87013bdfa35ada5c"
+    },
+    {
+      "failed_ast_sha256": "289f41f56c79ac1b2e7dddb18ec31bcfb7ec97258c9c6f9390095f4673e19b39",
+      "name": "CONFIRMATION_END",
+      "recovery_ast_sha256": "289f41f56c79ac1b2e7dddb18ec31bcfb7ec97258c9c6f9390095f4673e19b39"
+    },
+    {
+      "failed_ast_sha256": "461f8c75743b0022129866aaf5f4c1754928375bbbb6dab7802edfa90b8a216b",
+      "name": "N_BOOTSTRAP",
+      "recovery_ast_sha256": "461f8c75743b0022129866aaf5f4c1754928375bbbb6dab7802edfa90b8a216b"
+    },
+    {
+      "failed_ast_sha256": "3186c0484793d9705661947373aabbde332ecb3932abb041f30e6d874b0ae8ec",
+      "name": "BOOTSTRAP_SEED",
+      "recovery_ast_sha256": "3186c0484793d9705661947373aabbde332ecb3932abb041f30e6d874b0ae8ec"
+    },
+    {
+      "failed_ast_sha256": "8650f3c2602be86dbad850b9d4bdcc1e9c273c0cd5dfcd472a99e4a169f9bd33",
+      "name": "THRESHOLDS",
+      "recovery_ast_sha256": "8650f3c2602be86dbad850b9d4bdcc1e9c273c0cd5dfcd472a99e4a169f9bd33"
+    },
+    {
+      "failed_ast_sha256": "91dac5a4b51d74dac5f84e3592b4fa67247560f549faddae334df9e28cba81fa",
+      "name": "DFS_BOOKS",
+      "recovery_ast_sha256": "91dac5a4b51d74dac5f84e3592b4fa67247560f549faddae334df9e28cba81fa"
+    },
+    {
+      "failed_ast_sha256": "bcdc42670b2d0c9fc90a41978cb515f2115a749dce96d453d83b7fe43e179c03",
+      "name": "CORE_SOG_COLUMNS",
+      "recovery_ast_sha256": "bcdc42670b2d0c9fc90a41978cb515f2115a749dce96d453d83b7fe43e179c03"
+    },
+    {
+      "failed_ast_sha256": "e473720df9a11ef24c5da763e57b0dd30a777ff6a78100c194e13f033c27bb8e",
+      "name": "CORE_SAVES_COLUMNS",
+      "recovery_ast_sha256": "e473720df9a11ef24c5da763e57b0dd30a777ff6a78100c194e13f033c27bb8e"
+    },
+    {
+      "failed_ast_sha256": "82dda265ade3eced6b3a01bef7334249d689c8b11ab4ce0f79e07dd6cfc96e94",
+      "name": "MARKET_COLUMNS",
+      "recovery_ast_sha256": "82dda265ade3eced6b3a01bef7334249d689c8b11ab4ce0f79e07dd6cfc96e94"
+    },
+    {
+      "failed_ast_sha256": "6d81d09d0631b2df7fdd5d3753ac81a2a5fda58b5cadf4f92788f38c7c4e524e",
+      "name": "OUTCOME_COLUMNS",
+      "recovery_ast_sha256": "6d81d09d0631b2df7fdd5d3753ac81a2a5fda58b5cadf4f92788f38c7c4e524e"
+    },
+    {
+      "failed_ast_sha256": "b624c8e440cd074510dc3fd8b1a3e460dc8761cbd53720fd6a35340ca557218f",
+      "name": "CLOSING_COLUMNS",
+      "recovery_ast_sha256": "b624c8e440cd074510dc3fd8b1a3e460dc8761cbd53720fd6a35340ca557218f"
+    },
+    {
+      "failed_ast_sha256": "9522dd4474d86d408ccad82b3263cd564200dafc898d97bbe5c367e7d50eaa6d",
+      "name": "TEAM_NAME_TO_ABBREV",
+      "recovery_ast_sha256": "9522dd4474d86d408ccad82b3263cd564200dafc898d97bbe5c367e7d50eaa6d"
+    }
+  ],
+  "protected_function_ast_hashes": [
+    {
+      "failed_ast_sha256": "70a01420a89b1a9874cb5546c99281654f6773b4791940097e7ab6046bb8de8b",
+      "name": "build_nhl_games",
+      "recovery_ast_sha256": "70a01420a89b1a9874cb5546c99281654f6773b4791940097e7ab6046bb8de8b"
+    },
+    {
+      "failed_ast_sha256": "fb783bf751bec551ecefc0a8447f98c38e259e1f14290953a5a7dd7adfc4acb6",
+      "name": "event_metadata",
+      "recovery_ast_sha256": "fb783bf751bec551ecefc0a8447f98c38e259e1f14290953a5a7dd7adfc4acb6"
+    },
+    {
+      "failed_ast_sha256": "60941d410a2f4db899581d0ad874c7c685d6cc230f96f12020a3a991da9294f8",
+      "name": "map_events",
+      "recovery_ast_sha256": "60941d410a2f4db899581d0ad874c7c685d6cc230f96f12020a3a991da9294f8"
+    },
+    {
+      "failed_ast_sha256": "f00ae3aabeb4cb928582976af87c97216881470fd3e9c003b1e26e4bc951c14e",
+      "name": "primary_bootstrap",
+      "recovery_ast_sha256": "f00ae3aabeb4cb928582976af87c97216881470fd3e9c003b1e26e4bc951c14e"
+    },
+    {
+      "failed_ast_sha256": "af2686b9e96b38412d73fb65252d78c5dfdd88eacd512d074b88a84779f8440a",
+      "name": "predicate_scan",
+      "recovery_ast_sha256": "af2686b9e96b38412d73fb65252d78c5dfdd88eacd512d074b88a84779f8440a"
+    },
+    {
+      "failed_ast_sha256": "be80f804e6515931b8c2dee68f9f0f0def5f447992a1c3c9b95f57761d37ef4b",
+      "name": "load_inputs",
+      "recovery_ast_sha256": "be80f804e6515931b8c2dee68f9f0f0def5f447992a1c3c9b95f57761d37ef4b"
+    },
+    {
+      "failed_ast_sha256": "3bf19fce967b4dcccc27c0dab0d5b541339a1cd08ba03f15cf42e1902480d974",
+      "name": "load_roster",
+      "recovery_ast_sha256": "3bf19fce967b4dcccc27c0dab0d5b541339a1cd08ba03f15cf42e1902480d974"
+    },
+    {
+      "failed_ast_sha256": "e3b10521d76e95d6fcce56d01160d8a1a012e35472ed98ad5cc09d5bc0cd6d06",
+      "name": "build_market_goals",
+      "recovery_ast_sha256": "e3b10521d76e95d6fcce56d01160d8a1a012e35472ed98ad5cc09d5bc0cd6d06"
+    },
+    {
+      "failed_ast_sha256": "eca91f74f945521ab6763b05d7f9611ea15d15f6214aa13be8664218dff6b292",
+      "name": "build_translation",
+      "recovery_ast_sha256": "eca91f74f945521ab6763b05d7f9611ea15d15f6214aa13be8664218dff6b292"
+    },
+    {
+      "failed_ast_sha256": "241382dd8516630ae5b3494f9c20c061fb48e462deacebbe30fdd15a7a5a3980",
+      "name": "price_quotes",
+      "recovery_ast_sha256": "241382dd8516630ae5b3494f9c20c061fb48e462deacebbe30fdd15a7a5a3980"
+    },
+    {
+      "failed_ast_sha256": "7784866be2075ae04e83f795a2a5a178d94608872b3bf6005e01596741d5f78f",
+      "name": "mean_cluster_bootstrap",
+      "recovery_ast_sha256": "7784866be2075ae04e83f795a2a5a178d94608872b3bf6005e01596741d5f78f"
+    },
+    {
+      "failed_ast_sha256": "e96d933b2b6c146074bd3ccd0bc6d5459eb449f47da3426b642692591cf87c7a",
+      "name": "scoring_secondary",
+      "recovery_ast_sha256": "e96d933b2b6c146074bd3ccd0bc6d5459eb449f47da3426b642692591cf87c7a"
+    },
+    {
+      "failed_ast_sha256": "2e6ccbfa52f0c7323df2634d3d637a9f7edb1dd16ac14b73c8c264eecd9ad3df",
+      "name": "build_closing_universe",
+      "recovery_ast_sha256": "2e6ccbfa52f0c7323df2634d3d637a9f7edb1dd16ac14b73c8c264eecd9ad3df"
+    },
+    {
+      "failed_ast_sha256": "0faf751f2669e08e27ec8ac5af99834c4f1bad93c9724bf2be457c3aaebec239",
+      "name": "selected_clv",
+      "recovery_ast_sha256": "0faf751f2669e08e27ec8ac5af99834c4f1bad93c9724bf2be457c3aaebec239"
+    },
+    {
+      "failed_ast_sha256": "1aa0a791497d02ec2d17303ce9e40d447bf33ce37e0f612bb11d1893f86e3c77",
+      "name": "overall_verdict",
+      "recovery_ast_sha256": "1aa0a791497d02ec2d17303ce9e40d447bf33ce37e0f612bb11d1893f86e3c77"
+    }
+  ],
+  "recovery_runtime_source_path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\recovery_runtime_source_v2.py",
+  "recovery_runtime_source_sha256": "b03f776c562ded5fe693be68e9c69f67f35994ec9940be2dc5bc14c87f322fc0",
+  "registered_transformations": {
+    "completion_status_label_replacements": 1,
+    "namespace_replacements_confirmation_to_recovery": 47,
+    "reverse_transform_is_byte_identical_to_failed_runner": true,
+    "round_trip_parser_replacements": 1,
+    "stage_label_replacements": 3,
+    "versioned_recovery_preflight_path_replacements": 1
+  },
+  "status": "DIFF_ATTESTATION_PASS"
+}

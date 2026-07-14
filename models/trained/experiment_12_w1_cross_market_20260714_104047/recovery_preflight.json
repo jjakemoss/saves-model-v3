@@ -1,0 +1,107 @@
+{
+  "authorization_token_verified": "a720f55d66fa4add227900440d5825f6956ecdb8998091cf45b4db9871b1326a",
+  "completed_at": "2026-07-14T16:07:57.106045Z",
+  "development_manifest": {
+    "files_verified": 17,
+    "manifest_sha256": "9fcdf91eeee59162b1a5bae48de41d523373cb40dc458136dbda54695954d790"
+  },
+  "development_script_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+  "diff_attestation_sha256": "284a495a2bebc4a766bacc5ca5f5d770a4317d0a6b4714b24aafcf621f8c5c79",
+  "experiment": "12R",
+  "failed_confirmation_runner_sha256": "dd569dafd55f25e59c8d847f42a37c4c10c4b0c42553227dccac0786765006e5",
+  "frozen_recipe_sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc",
+  "original_failed_touch": {
+    "completion_marker_absent": true,
+    "failed_output_files": [
+      {
+        "bytes": 696,
+        "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_20260714_105649\\confirmation_failed_metadata.json",
+        "sha256": "2d875d6f8887c42f173ba402f6c9ba33d56b506457b4c697a9be3d92b3201556"
+      },
+      {
+        "bytes": 328,
+        "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_20260714_105649\\confirmation_run_log.txt",
+        "sha256": "37809ecf1b2518d9a7a3ad9d9328e604d9129795baaa8769899cca1511bfdb92"
+      }
+    ],
+    "failure_marker": {
+      "content": {
+        "confirmation_output_dir": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_20260714_105649",
+        "error": "frozen residual distribution content hash mismatch",
+        "error_type": "ConfirmationFailure",
+        "experiment": 12,
+        "failed_at": "2026-07-14T15:57:22.883541Z",
+        "status": "FAILED_TOUCH_CONSUMED",
+        "traceback": "Traceback (most recent call last):\n  File \"S:\\Documents\\GitHub\\saves-model-v3\\scripts\\experiment_12_w1_cross_market_confirmation.py\", line 918, in run_confirmation\n    raise ConfirmationFailure(\"frozen residual distribution content hash mismatch\")\nConfirmationFailure: frozen residual distribution content hash mismatch\n"
+      },
+      "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_touch_failed.json",
+      "sha256": "0ae27c51e61fcbf643d19ed5912eacd460ad64018deddb21cfd319910057d2ad"
+    },
+    "history": {
+      "events": [
+        {
+          "marker_sha256": "ec1203581caa14f6caab21fd38428b9a67019be926a9a935281e58b09e7607b8",
+          "status": "IN_PROGRESS",
+          "timestamp": "2026-07-14T15:56:49.655740Z"
+        },
+        {
+          "confirmation_output_dir": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_20260714_105649",
+          "error": "frozen residual distribution content hash mismatch",
+          "error_type": "ConfirmationFailure",
+          "experiment": 12,
+          "failed_at": "2026-07-14T15:57:22.883541Z",
+          "status": "FAILED_TOUCH_CONSUMED",
+          "traceback": "Traceback (most recent call last):\n  File \"S:\\Documents\\GitHub\\saves-model-v3\\scripts\\experiment_12_w1_cross_market_confirmation.py\", line 918, in run_confirmation\n    raise ConfirmationFailure(\"frozen residual distribution content hash mismatch\")\nConfirmationFailure: frozen residual distribution content hash mismatch\n"
+        }
+      ],
+      "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_touch_history.jsonl",
+      "sha256": "897f324d567acc29603f833eb2345f7fca322078ad5d0de383c3fe83dcc6c3fd"
+    },
+    "original_touch_verdict": "NO VERDICT -- INFRASTRUCTURE FAILURE",
+    "touch_marker": {
+      "content": {
+        "authorization_token_verified": "a720f55d66fa4add227900440d5825f6956ecdb8998091cf45b4db9871b1326a",
+        "confirmation_runner": "scripts\\experiment_12_w1_cross_market_confirmation.py",
+        "confirmation_runner_sha256": "dd569dafd55f25e59c8d847f42a37c4c10c4b0c42553227dccac0786765006e5",
+        "created_at": "2026-07-14T15:56:49.655740Z",
+        "experiment": 12,
+        "frozen_recipe_sha256": "3fa2aadc12b231f7260676724abf1cd85dca6e4738ec88ed00cc87a73c4ba1fc",
+        "frozen_run": "models\\trained\\experiment_12_w1_cross_market_20260714_104047",
+        "frozen_script_sha256": "48ad28704e49def8b5bbf8d02f46b2f4fa370e258cd719591b48bdbf87f39f0d",
+        "history_file": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_touch_history.jsonl",
+        "immutability": "This marker is never overwritten; completion/failure is append-only history plus a separate exclusive marker.",
+        "preflight_artifact": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_preflight.json",
+        "stage": "confirmation",
+        "status": "IN_PROGRESS"
+      },
+      "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\confirmation_touch.json",
+      "sha256": "ec1203581caa14f6caab21fd38428b9a67019be926a9a935281e58b09e7607b8"
+    }
+  },
+  "original_markers_untouched": true,
+  "recovery_marker_absent": true,
+  "recovery_runner_sha256": "bd19276b4b16263eea8ecc3d6cfde927cb7fa44cef13cdd9ce77f2adc9da3006",
+  "recovery_runtime_source_sha256": "1f920ea9bc7f69c8d3ed5489e3aea63a07c1638418d1a947fa86743589eb08ce",
+  "residual_preflight": {
+    "byte_and_semantic_checks": "PASS",
+    "byte_sha256": "acd7c78a84ce952c4ad22c17af437fe394a6eabb843538aec9c9df9e028621ac",
+    "bytes": 65881,
+    "float_precision": "round_trip",
+    "manifest_byte_sha256": "acd7c78a84ce952c4ad22c17af437fe394a6eabb843538aec9c9df9e028621ac",
+    "path": "models\\trained\\experiment_12_w1_cross_market_20260714_104047\\development_train_residuals.csv",
+    "registered_semantic_sha256": "cc81d58c4d768020f733cfe0ab1da516ccb7e42fb78913e7c8f9eab122e0e4e8",
+    "round_trip_semantic_sha256": "cc81d58c4d768020f733cfe0ab1da516ccb7e42fb78913e7c8f9eab122e0e4e8",
+    "rows": 1690
+  },
+  "source_data_materialized": false,
+  "source_data_paths_opened": [],
+  "status": "RECOVERY_PREFLIGHT_PASS",
+  "synthetic_tests": {
+    "bootstrap_seed42_determinism": "PASS",
+    "empirical_push_conditioning": "PASS",
+    "exact_pair_and_half_point": "PASS",
+    "poisson_inversion": "PASS",
+    "season_roster_non_dresser_rule": "PASS",
+    "utah_unordered_team_mapping": "PASS"
+  }
+}

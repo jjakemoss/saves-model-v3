@@ -1,0 +1,188 @@
+{
+  "chronological_direction": "2024-25 development -> 2025-26 confirmation",
+  "confirmation_2025_26_census": {
+    "prizepicks": {
+      "exact_agreement_rate": 0.8947368421052632,
+      "mean_signed_deviation": -0.75,
+      "n_deviations": 6,
+      "n_dfs_above_consensus_prospective_under": 1,
+      "n_dfs_below_consensus_prospective_over": 5,
+      "n_goalie_night_dfs_book_rows": 113,
+      "n_with_sportsbook_consensus": 57,
+      "within_half_save_rate": 0.9122807017543859
+    },
+    "underdog": {
+      "exact_agreement_rate": 0.9516129032258065,
+      "mean_signed_deviation": -0.8333333333333334,
+      "n_deviations": 12,
+      "n_dfs_above_consensus_prospective_under": 1,
+      "n_dfs_below_consensus_prospective_over": 11,
+      "n_goalie_night_dfs_book_rows": 923,
+      "n_with_sportsbook_consensus": 248,
+      "within_half_save_rate": 0.9516129032258065
+    }
+  },
+  "development_2024_25_census": {
+    "prizepicks": {
+      "exact_agreement_rate": 0.76,
+      "mean_signed_deviation": 0.06884875846501129,
+      "n_deviations": 450,
+      "n_dfs_above_consensus_prospective_under": 249,
+      "n_dfs_below_consensus_prospective_over": 194,
+      "n_goalie_night_dfs_book_rows": 1875,
+      "n_with_sportsbook_consensus": 1868,
+      "within_half_save_rate": 0.9413333333333334
+    }
+  },
+  "ingestion": {
+    "new_pass_fanatics_rows": 0,
+    "new_pass_multi_line_goalie_book_units_excluded_fail_closed": 3,
+    "new_pass_paired_quote_rows": 8305,
+    "new_pass_saves_rows_before_pairing": 16820,
+    "new_pass_unpaired_side_rows_excluded": 18,
+    "new_pass_unresolved_goalie_quote_rows_excluded": 90
+  },
+  "outcome_grading": {
+    "bootstrap": {
+      "n_resamples": 10000,
+      "performed": true,
+      "seed": 42
+    },
+    "by_season_and_population": {
+      "2024-25": {
+        "agreeing_population": {
+          "n_gradeable_nonpush": 1424,
+          "n_rows": 1425,
+          "under_at_dfs_line_rate": 0.5646067415730337
+        },
+        "census": {
+          "exact_agreement_rate": 0.762847965738758,
+          "mean_signed_deviation": 0.06884875846501129,
+          "n_deviations": 443,
+          "n_dfs_above_consensus_prospective_under": 249,
+          "n_dfs_below_consensus_prospective_over": 194,
+          "n_goalie_night_dfs_book_rows": 1868,
+          "n_with_sportsbook_consensus": 1868,
+          "within_half_save_rate": 0.9448608137044968
+        },
+        "deviating_population": {
+          "n_gradeable_nonpush": 420,
+          "n_rows": 443,
+          "under_at_dfs_line_rate": 0.5095238095238095
+        },
+        "deviation_outcome_grade": {
+          "cluster_bootstrap_ci95": {
+            "lower": -0.08571428571428572,
+            "mean": 0.009523809523809525,
+            "n_bets": 420,
+            "n_clusters": 420,
+            "upper": 0.10476190476190476
+          },
+          "even_money_profit_per_bet": 0.009523809523809525,
+          "hit_rate": 0.5047619047619047,
+          "n_bets": 420
+        }
+      },
+      "2025-26": {
+        "agreeing_population": {
+          "n_gradeable_nonpush": 49,
+          "n_rows": 51,
+          "under_at_dfs_line_rate": 0.5510204081632653
+        },
+        "census": {
+          "exact_agreement_rate": 0.8947368421052632,
+          "mean_signed_deviation": -0.75,
+          "n_deviations": 6,
+          "n_dfs_above_consensus_prospective_under": 1,
+          "n_dfs_below_consensus_prospective_over": 5,
+          "n_goalie_night_dfs_book_rows": 57,
+          "n_with_sportsbook_consensus": 57,
+          "within_half_save_rate": 0.9122807017543859
+        },
+        "deviating_population": {
+          "n_gradeable_nonpush": 6,
+          "n_rows": 6,
+          "under_at_dfs_line_rate": 0.3333333333333333
+        },
+        "deviation_outcome_grade": {
+          "cluster_bootstrap_ci95": {
+            "lower": 0.0,
+            "mean": 0.6666666666666666,
+            "n_bets": 6,
+            "n_clusters": 6,
+            "upper": 1.0
+          },
+          "even_money_profit_per_bet": 0.6666666666666666,
+          "hit_rate": 0.8333333333333334,
+          "n_bets": 6
+        }
+      }
+    },
+    "even_money_approximation_reported": true,
+    "even_money_disclosure": "Profit per bet assumes +1 for a win and -1 for a loss. It is not PrizePicks payout economics and is not reported as ROI.",
+    "performed": true,
+    "prizepicks_only": true,
+    "real_roi_reported": false
+  },
+  "prior_reconciliation": [
+    {
+      "original_definition": "Jan-Mar 2026 Underdog goalie-nights versus one sharp book, not all-book median",
+      "original_denominator": 248,
+      "original_numerator": 236,
+      "prior_claim": "2026-07-07 95.2% exact agreement",
+      "registered_definition": "one goalie-night-DFS-book row per calendar day; last fetch; same-calendar-day median across all sportsbooks; exact primary and +/-0.5 secondary",
+      "registered_recompute_exact_agreement_rate": 0.9516129032258065,
+      "registered_recompute_n": 248,
+      "registered_recompute_reason": "This is the latest persisted distinct append, not a wall-clock fetch timestamp or true same-second alignment. A later identical or reverted quote can be skipped by the unique key and is not recoverable.",
+      "registered_recompute_status": "recomputed_with_max_id_latest_persisted_append_reconstruction",
+      "registered_recompute_within_half_save_rate": 0.9516129032258065,
+      "what_can_be_reproduced": "The Jan-Mar 2026 Underdog question can be recomputed under the registered all-book-median definition using max(id) latest persisted append rows.",
+      "what_cannot_be_reproduced": "The original scratch script and single-sharp-book pairing are not persisted, so 95.2% itself cannot be reproduced as the original computation."
+    },
+    {
+      "original_definition": "Underdog rows versus an unspecified sportsbook consensus over an unspecified window",
+      "original_denominator": 294,
+      "original_numerator": 265,
+      "prior_claim": "2026-07-13 90.1% exact agreement",
+      "registered_definition": "one goalie-night-DFS-book row per calendar day; last fetch; same-calendar-day median across all sportsbooks; exact primary and +/-0.5 secondary",
+      "registered_recompute_exact_agreement_rate": 0.9516129032258065,
+      "registered_recompute_n": 248,
+      "registered_recompute_reason": "This is the latest persisted distinct append, not a wall-clock fetch timestamp or true same-second alignment. A later identical or reverted quote can be skipped by the unique key and is not recoverable.",
+      "registered_recompute_status": "recomputed_with_max_id_latest_persisted_append_reconstruction",
+      "registered_recompute_within_half_save_rate": 0.9516129032258065,
+      "what_can_be_reproduced": "The full persisted tracker universe can be recomputed under the registered definition using max(id) latest persisted append rows.",
+      "what_cannot_be_reproduced": "The scratch script and its original window, aggregation, and row-level dedup are not persisted, so 90.1% itself cannot be reproduced as the original computation."
+    },
+    {
+      "original_definition": "PrizePicks tracker rows under the exploratory recon's unspecified consensus",
+      "original_denominator": 64,
+      "original_numerator": 50,
+      "prior_claim": "2026-07-13 PrizePicks 78.1% exact agreement",
+      "registered_definition": "one goalie-night-DFS-book row per calendar day; last fetch; same-calendar-day median across all sportsbooks; exact primary and +/-0.5 secondary",
+      "registered_recompute_exact_agreement_rate": 0.8947368421052632,
+      "registered_recompute_n": 57,
+      "registered_recompute_reason": "This is the latest persisted distinct append, not a wall-clock fetch timestamp or true same-second alignment. A later identical or reverted quote can be skipped by the unique key and is not recoverable.",
+      "registered_recompute_status": "recomputed_with_max_id_latest_persisted_append_reconstruction",
+      "registered_recompute_within_half_save_rate": 0.9122807017543859,
+      "what_can_be_reproduced": "The full persisted PrizePicks tracker universe can be recomputed under the registered definition using max(id) latest persisted append rows.",
+      "what_cannot_be_reproduced": "The original 64-row selection and consensus are not persisted, so 78.1% itself cannot be reproduced as the original computation."
+    }
+  ],
+  "tracker_last_fetch_reconstruction": {
+    "excluded_non_sportsbook_books": [
+      "manual",
+      "prizepicks",
+      "underdog",
+      "unknown"
+    ],
+    "last_fetch_reconstruction": "max(id) per game_date, game_id, goalie_id, book",
+    "limitation": "This is the latest persisted distinct append, not a wall-clock fetch timestamp or true same-second alignment. A later identical or reverted quote can be skipped by the unique key and is not recoverable.",
+    "line_snapshots_historical_rows": 0,
+    "named_sportsbook_rows_after_last_append_reconstruction": 253,
+    "tracker_dfs_rows_after_last_append_reconstruction": 1036,
+    "tracker_rows_after_last_append_reconstruction": 1477,
+    "tracker_rows_before_last_append_reconstruction": 1789,
+    "why_allowed": "BettingDB.append_games inserts distinct quotes in SQLite AUTOINCREMENT order; record_bet and fetch_and_predict both select the current line by descending id/insertion order."
+  },
+  "underdog": "Descriptive only. No Underdog outcome grading, CI, or ROI is performed."
+}

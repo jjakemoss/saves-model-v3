@@ -1,0 +1,35 @@
+{
+  "agreement_definition": {
+    "comparator": "same-calendar-day median line across all sportsbooks",
+    "dedup": "max(id) latest persisted distinct append per calendar day/book; established production insertion-order reconstruction",
+    "primary_tolerance": "exact",
+    "secondary_tolerance": "+/-0.5 saves",
+    "unit": "one goalie-night-DFS-book quote per calendar day"
+  },
+  "artifacts": {
+    "graded_deviation_rows": "graded_deviation_rows.csv",
+    "input_checksums": "input_checksums.json",
+    "normalized_census_rows": "normalized_census_rows.jsonl",
+    "prior_reconciliation_rows": "prior_reconciliation_rows.csv",
+    "run_log": "run_log.txt",
+    "summary": "census_summary.json"
+  },
+  "chronological_direction_fixed_before_results": {
+    "confirmation": "2025-26",
+    "development": "2024-25"
+  },
+  "completed_census": false,
+  "exact_consequence": "DFS venue staleness is not pursued further this cycle. This is a census finding, not a bettable-edge claim.",
+  "exact_verdict": "CENSUS NULL FOR EDGE LANGUAGE: the PrizePicks deviation-grade result does not clear the fixed 2024-25 development -> 2025-26 confirmation bar.",
+  "experiment": "Experiment 13 - W2 DFS venue-history census",
+  "limitations": [
+    "Pre-migration line_snapshots has zero rows, so true same-second matching is unavailable.",
+    "This is the latest persisted distinct append, not a wall-clock fetch timestamp or true same-second alignment. A later identical or reverted quote can be skipped by the unique key and is not recoverable.",
+    "The original 95.2%, 90.1%, and 78.1% scripts/definitions were not persisted, so their exact original computations cannot be reproduced.",
+    "PrizePicks and Underdog tracker prices are placeholder values and are never used for ROI."
+  ],
+  "registration": "docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 16",
+  "invalidation": "Post-run artifact audit found that seven development rows without a sportsbook consensus were included in summary deviation denominators. No outcome grade, input, or verdict changed, but the summary was not a valid section 16 census record.",
+  "run_status": "invalidated_post_run_reporting_audit",
+  "started_at_utc": "2026-07-14T15:07:03.757234+00:00"
+}

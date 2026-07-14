@@ -1,0 +1,172 @@
+{
+  "api_credits_used": 0,
+  "betting_db_accesses": 0,
+  "network_calls": 0,
+  "old_21_event_fragment_loaded": false,
+  "pbp": {
+    "file_manifest_sha256": "5f5afad231e0e74b4e95daf2eec10f8000298b4cd6d048e9319a703aaef3bfb6",
+    "files_loaded": 1312,
+    "max_game_date_loaded": "2025-04-17",
+    "season_assertion": 20242025
+  },
+  "predicate_level_reads_only": true,
+  "reads": [
+    {
+      "columns": [
+        "season",
+        "event_id",
+        "requested_ts",
+        "true_commence_time",
+        "effective_gap_minutes",
+        "game_date_eastern",
+        "home_team",
+        "away_team",
+        "book_key",
+        "market_key",
+        "player_name_raw",
+        "side",
+        "line",
+        "price_decimal"
+      ],
+      "input_name": "core_2024_25_sog",
+      "loaded_seasons": [
+        "2024-25"
+      ],
+      "max_date_loaded": "2025-04-17",
+      "min_date_loaded": "2024-10-04",
+      "path": "data\\processed\\core_bettime_202607_snapshots.parquet",
+      "predicate": "season == '2024-25' AND market_key == 'player_shots_on_goal'",
+      "predicate_applied_before_materialization": true,
+      "predicate_content_sha256": "7e58000fb098e946d0b51676b709722f37c62b222694e84109a8bb054dbde26b",
+      "rows_loaded": 182686,
+      "source_mtime_utc": "2026-07-14T13:38:37.072258+00:00",
+      "source_schema_sha256": "0588e0d5551097b973d715ac848cb7bceaf277dbcbb3c7a990708e5edcce48d4",
+      "source_size_bytes": 1753036
+    },
+    {
+      "columns": [
+        "season",
+        "event_id",
+        "requested_ts",
+        "true_commence_time",
+        "effective_gap_minutes",
+        "game_date_eastern",
+        "home_team",
+        "away_team",
+        "book_key",
+        "market_key",
+        "player_name_raw",
+        "side",
+        "line",
+        "price_decimal",
+        "goalie_id",
+        "goalie_name_matched"
+      ],
+      "input_name": "core_2024_25_saves",
+      "loaded_seasons": [
+        "2024-25"
+      ],
+      "max_date_loaded": "2025-04-17",
+      "min_date_loaded": "2024-10-04",
+      "path": "data\\processed\\core_bettime_202607_snapshots.parquet",
+      "predicate": "season == '2024-25' AND market_key == 'player_total_saves'",
+      "predicate_applied_before_materialization": true,
+      "predicate_content_sha256": "8b791de6b56449b6d48dfcda78f8c554f97d120939511f41635cf0079b2cc96c",
+      "rows_loaded": 16820,
+      "source_mtime_utc": "2026-07-14T13:38:37.072258+00:00",
+      "source_schema_sha256": "0588e0d5551097b973d715ac848cb7bceaf277dbcbb3c7a990708e5edcce48d4",
+      "source_size_bytes": 1753036
+    },
+    {
+      "columns": [
+        "event_id",
+        "game_date_eastern",
+        "home_team",
+        "away_team",
+        "home_abbrev",
+        "away_abbrev",
+        "requested_ts",
+        "book",
+        "market",
+        "outcome_label",
+        "point",
+        "price_decimal",
+        "implied_prob_devig"
+      ],
+      "input_name": "market_state_2024_25",
+      "loaded_seasons": [],
+      "max_date_loaded": "2025-04-17",
+      "min_date_loaded": "2024-10-05",
+      "path": "data\\processed\\market_game_features.parquet",
+      "predicate": "2024-10-04 <= game_date_eastern <= 2025-04-17",
+      "predicate_applied_before_materialization": true,
+      "predicate_content_sha256": "7fa817b91e74294e5dd79f3b1e64a2339a81455a1e52e5b4c4d93f1dd900843f",
+      "rows_loaded": 90968,
+      "source_mtime_utc": "2026-07-10T02:56:50.152518+00:00",
+      "source_schema_sha256": "9410490920d4955095b367d548b74af8f18eec27b1edd1f48a81248b50d5d039",
+      "source_size_bytes": 1207104
+    },
+    {
+      "columns": [
+        "game_id",
+        "game_date",
+        "season",
+        "goalie_id",
+        "goalie_name",
+        "team_abbrev",
+        "opponent_team",
+        "is_home",
+        "saves",
+        "team_shots"
+      ],
+      "input_name": "starter_outcomes_2024_25",
+      "loaded_seasons": [
+        "20242025"
+      ],
+      "max_date_loaded": "2025-04-17",
+      "min_date_loaded": "2024-10-04",
+      "path": "data\\processed\\clean_training_data.parquet",
+      "predicate": "season == 20242025",
+      "predicate_applied_before_materialization": true,
+      "predicate_content_sha256": "06549386369b3f93c8771f2943f8865b055429fc5cd78163a6472ed1419ab2ae",
+      "rows_loaded": 2624,
+      "source_mtime_utc": "2026-07-07T20:20:33.538606+00:00",
+      "source_schema_sha256": "4a672ae07a97179cff9eae7beb17c52d2bfeebd51a40303974070a86808fde93",
+      "source_size_bytes": 2434196
+    },
+    {
+      "columns": [
+        "game_id",
+        "game_date",
+        "season",
+        "goalie_id",
+        "goalie_name",
+        "team_abbrev",
+        "opponent_team",
+        "is_home",
+        "saves",
+        "betting_line",
+        "odds_over_decimal",
+        "odds_under_decimal",
+        "book_key"
+      ],
+      "input_name": "closing_saves_2024_25",
+      "loaded_seasons": [
+        "20242025"
+      ],
+      "max_date_loaded": "2025-04-17",
+      "min_date_loaded": "2024-10-04",
+      "path": "data\\processed\\multibook_classification_training_data.parquet",
+      "predicate": "season == 20242025",
+      "predicate_applied_before_materialization": true,
+      "predicate_content_sha256": "0f26431f0e7c3019e208c0db37daf9f908653f21c7bfce15fc8222bcb72e16f7",
+      "rows_loaded": 7463,
+      "source_mtime_utc": "2026-07-07T20:34:38.438851+00:00",
+      "source_schema_sha256": "48fe5574e529b1299527fa1c167eb315566425a827cd9823dec0959395d75a55",
+      "source_size_bytes": 2491340
+    }
+  ],
+  "stage": "recovery",
+  "touch_marker_created_before_materialization": true,
+  "touch_marker_sha256": "7de7cc3dd45b5a57dd09acaf93f4db942ab17f8899a663356cb9ddeb751204dd"
+}
