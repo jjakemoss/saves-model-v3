@@ -1,0 +1,31 @@
+EXPERIMENT 11 -- FROZEN-ORIGIN-B P2 RE-TEST (SECTION 14)
+STEP 1: mandatory closing wiring gate. New core bettime parquet has not been opened.
+Loading only frozen-gate inputs; new bettime snapshots remain unopened.
+Raw clean_training_data.parquet: 10496 rows, 114 columns.
+Base pre-game/context features: 89
+Engineered features (line-dependent ones omitted): 15 -> ['save_efficiency_3', 'save_efficiency_5', 'save_efficiency_10', 'es_saves_proportion_5', 'es_saves_proportion_10', 'opp_vs_team_shots_5', 'opp_vs_team_shots_10', 'saves_cv_5', 'saves_cv_10', 'saves_momentum', 'shots_against_momentum', 'goals_against_momentum', 'save_pct_momentum', 'expected_workload_diff', 'rest_x_performance']
+Raw game_context_features.parquet: 10496 rows, 44 columns.
+Context join keys: ['game_id', 'goalie_id']; coverage 10496/10496 (100.00%).
+Context feature columns: 32 -> ['ctx_team_s2d_games_prior', 'ctx_team_s2d_shots_against_avg', 'ctx_team_s2d_shots_against_std', 'ctx_team_s2d_shots_against_ema5', 'ctx_opponent_s2d_games_prior', 'ctx_opponent_s2d_shots_for_avg', 'ctx_opponent_s2d_shots_for_std', 'ctx_opponent_s2d_shots_for_ema5', 'ctx_goalie_s2d_starts_prior', 'ctx_goalie_s2d_shots_against_avg', 'ctx_goalie_s2d_shots_against_std', 'ctx_goalie_s2d_shots_against_ema5', 'ctx_goalie_shots_against_roll5_rel_s2d', 'ctx_goalie_shots_against_roll5_z_s2d', 'ctx_team_shots_against_roll5_rel_s2d', 'ctx_team_shots_against_roll5_z_s2d', 'ctx_opponent_shots_for_roll5_rel_s2d', 'ctx_opponent_shots_for_roll5_z_s2d', 'ctx_goalie_shots_against_roll10_rel_s2d', 'ctx_goalie_shots_against_roll10_z_s2d', 'ctx_team_shots_against_roll10_rel_s2d', 'ctx_team_shots_against_roll10_z_s2d', 'ctx_opponent_shots_for_roll10_rel_s2d', 'ctx_opponent_shots_for_roll10_z_s2d', 'ctx_team_days_since_prev_game', 'ctx_team_is_back_to_back', 'ctx_team_games_last_4_days', 'ctx_team_is_3_in_4', 'ctx_opponent_days_since_prev_game', 'ctx_opponent_is_back_to_back', 'ctx_opponent_games_last_4_days', 'ctx_opponent_is_3_in_4']
+Context feature NaNs retained for XGBoost missing-value handling (nonzero null counts: {'ctx_team_s2d_shots_against_avg': 128, 'ctx_team_s2d_shots_against_std': 256, 'ctx_team_s2d_shots_against_ema5': 128, 'ctx_opponent_s2d_shots_for_avg': 128, 'ctx_opponent_s2d_shots_for_std': 256, 'ctx_opponent_s2d_shots_for_ema5': 128, 'ctx_goalie_s2d_shots_against_avg': 390, 'ctx_goalie_s2d_shots_against_std': 743, 'ctx_goalie_s2d_shots_against_ema5': 390, 'ctx_goalie_shots_against_roll5_rel_s2d': 390, 'ctx_goalie_shots_against_roll5_z_s2d': 755, 'ctx_team_shots_against_roll5_rel_s2d': 128, 'ctx_team_shots_against_roll5_z_s2d': 260, 'ctx_opponent_shots_for_roll5_rel_s2d': 128, 'ctx_opponent_shots_for_roll5_z_s2d': 258, 'ctx_goalie_shots_against_roll10_rel_s2d': 390, 'ctx_goalie_shots_against_roll10_z_s2d': 755, 'ctx_team_shots_against_roll10_rel_s2d': 128, 'ctx_team_shots_against_roll10_z_s2d': 260, 'ctx_opponent_shots_for_roll10_rel_s2d': 128, 'ctx_opponent_shots_for_roll10_z_s2d': 258, 'ctx_team_days_since_prev_game': 128, 'ctx_opponent_days_since_prev_game': 128}).
+Note: 1 row(s) with shots_against==0; valid for shots model, excluded from save-rate training.
+market_game_features.parquet: 305940 rows / 3956 distinct events total; 170924 rows / 3954 distinct events at is_latest_pregame_snapshot==True (the timing-safe last-snapshot-before-commence view -- the only rows used anywhere below).
+Event-level market-state table: 3954 distinct events; 3954 with an h2h summary, 3954 with a totals summary, 3954 with both.
+
+Market-state join to modeling frame: 7866/10496 rows matched (74.94% overall across ALL seasons combined -- see the per-origin/split breakdown below for the number that actually determines trainability).
+Market feature NaN counts (retained for XGBoost native missing-value handling; NaN exactly where mkt_matched==0 or a sub-market was unquoted for a matched event): {'mkt_consensus_total': 2630, 'mkt_team_win_prob_devigged': 2630, 'mkt_opponent_win_prob_devigged': 2630, 'mkt_favorite_underdog_strength': 2630, 'mkt_total_dispersion': 2630, 'mkt_h2h_dispersion': 2630, 'mkt_opponent_expected_goals_approx': 2630}
+[Experiment 11 Origin B gate] train/val carve: train 2022-10-07..2024-02-29 (n=4528); val 2024-03-01..2024-04-18 (n=720), the last 49 days of the training-pool date range ['2022-10-07', '2024-04-18'].
+[Experiment 11 Origin B gate] test date range 2024-10-04..2025-04-17 (n=2624)
+
+Raw multibook_classification_training_data.parquet: 13192 rows, 138 columns.
+After both-side-odds filter + chronological sort: 13192 rows.
+[gate no_pace_control] pmf normalization check: n=2624, min_sum=0.999999, max_sum=1.000000, rows below 0.999: 0
+[gate no_pace_control closing] join coverage: 7463/7463 rows matched (100.00%).
+[gate control_plus_market_state] pmf normalization check: n=2624, min_sum=1.000000, max_sum=1.000000, rows below 0.999: 0
+[gate control_plus_market_state closing] join coverage: 7463/7463 rows matched (100.00%).
+[Experiment 11 frozen-Origin-B closing wiring gate] paired Brier delta (control_plus_market_state - no_pace_control): mean=-0.0041404240194266384 95% CI=[-0.007196770975912929, -0.0011800274158189096] n_rows=7463 n_clusters=2510 (negative means the market-state variant was BETTER)
+Gate expected: mean=-0.0041404240194266384, n_bets=7463, n_clusters=2510
+Gate observed: mean=-0.0041404240194266384, n_bets=7463, n_clusters=2510
+Gate absolute mean difference=0.000000000000; tolerance=0.0001; passed=True
+WIRING GATE PASSED. STEP 2: opening registered new and old bettime snapshot inputs exactly once.
+STOPPED: RuntimeError: REGISTRATION_AMBIGUITY: overlapping old/new events have different requested bettime anchors for 8 events; no anchor-priority rule was registered.

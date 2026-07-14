@@ -664,5 +664,27 @@ new 2024-25 event ids overlap the old 21-event bettime fragment, so downstream
 joins must deduplicate that fragment rather than concatenate it blindly.
 
 Interpretation: acquisition and ingestion are complete, but this is still a
-data result, not evidence of edge. No Experiment 11-13 model or outcome test
-has consumed the new price-level artifact yet.
+data result, not evidence of edge. At that checkpoint no Experiment 11-13
+model or outcome test had consumed the artifact; Experiment 11 in section
+9.6 is the first subsequent touch.
+
+### 9.6 Experiment 11: executable BetOnline UNDER selection passed (2026-07-14)
+
+The frozen Origin B model was tested exactly as preregistered in section 14.
+Its closing wiring gate reproduced bit-for-bit before the new pass was
+opened. On 1,719 paired BetOnline quotes, the fixed 0.05 UNDER rule selected
+473 bets: `+12.29%` ROI versus `+2.63%` for blind UNDER on the same universe,
+delta `+9.66` points, goalie-night cluster CI95 `[+2.49, +16.72]`. The
+train-dispersion sensitivity remained positive (`+9.47`, CI95
+`[+2.35, +16.52]`), and the all-books comparison also cleared zero.
+
+This is the strongest executable outcome-selection result produced by the
+honest harness so far, but its limits matter. The season's outcomes were
+already viewed before registration, so this is development evidence rather
+than untouched confirmation. More importantly, BetOnline full-policy CLV net
+of drift was statistically neutral (`+0.0167` probability points, CI95
+`[-0.0627, +0.0979]`) even though all-books CLV was positive. The result
+therefore earns a frozen 2026-27 shadow run, not a declaration that the model
+has a proven live edge. Independent reconstruction from the persisted
+universes reproduced the registered bootstrap exactly. See preregistration
+section 14.11 for the full audit trail and artifact paths.

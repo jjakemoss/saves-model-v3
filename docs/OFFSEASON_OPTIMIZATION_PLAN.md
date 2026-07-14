@@ -2370,9 +2370,26 @@ explicitly says the result survived the honest harness and uncertainty checks.
   null line/price, invalid side, or sub-10-minute row survived. Eleven new
   2024-25 events overlap the old 21-event bettime fragment and must be
   deduplicated downstream. No registered experiment has touched the new
-  price-level data. The immediate analysis step is Experiment 11's frozen
-  wiring gate followed by its one-touch P2 re-test; the credit remainder is
-  still 12,895.
+  price-level data. At that checkpoint the immediate analysis step was
+  Experiment 11's frozen wiring gate and one-touch P2 re-test; the next log
+  entry records its completion. The credit remainder is still 12,895.
+
+- **2026-07-14 (Codex-authored: Experiment 11 frozen-Origin-B P2 PASS).**
+  The mandatory closing wiring gate reproduced exactly before the new pass
+  was opened. The new-pass-only BetOnline primary had 1,719 paired quotes and
+  473 fixed-threshold UNDER selections: model ROI `+12.29%`, blind-UNDER ROI
+  `+2.63%`, delta `+9.66` points, goalie-night cluster CI95
+  `[+2.49, +16.72]`. Train-fitted dispersion agreed (`+9.47`, CI95
+  `[+2.35, +16.52]`), as did the all-books secondary. Independent
+  reconstruction from persisted row-level universes reproduced the result
+  exactly. BetOnline venue CLV did not confirm the outcome result: full-policy
+  CLV net of drift was `+0.0167` probability points with CI95
+  `[-0.0627, +0.0979]`; all-books CLV was positive. Per the locked consequence
+  mapping, promote only to a frozen 2026-27 shadow candidate. This is the
+  best honest executable selection evidence so far, but it is still from an
+  already-viewed season and is not proof of durable edge. Full result:
+  preregistration section 14.11; completed artifacts:
+  `models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/`.
 
 ## 7. Appendix: what was checked and found sound
 

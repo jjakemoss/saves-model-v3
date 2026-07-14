@@ -1,0 +1,47 @@
+{
+  "artifact_directory": "models/trained/experiment_11_frozen_origin_b_p2_20260714_090012",
+  "created_by": "Codex independent verification, 2026-07-14",
+  "files": {
+    "bettime_frame_allbooks.parquet": {
+      "bytes": 1255078,
+      "sha256": "481be9071281919be9caf96aaf0c5c2f2fdb78a8cc2ee8862bdea1519c9b5cf5"
+    },
+    "bettime_predictions.parquet": {
+      "bytes": 198460,
+      "sha256": "0e764dc339a519e8bea1eb0fb4462ec309e4cb8cff5bbc062b26c1d6c63925ca"
+    },
+    "bettime_snapshot_rows_new_pass_only.parquet": {
+      "bytes": 194014,
+      "sha256": "71dc4e0490996f635641ac060898d3badce1b238508ea9328a1f1bf627185cf1"
+    },
+    "flagged_bets_with_clv.parquet": {
+      "bytes": 674539,
+      "sha256": "514dbcfea3087254b18dcafec61eddea7a6053132b9129fdef956fd886c2334c"
+    },
+    "gate_predictions.parquet": {
+      "bytes": 62466,
+      "sha256": "9221ef6fe9f578d4b536bcbccc8a4755ff7a8cc5cdced84b7ece1fafeca0c57e"
+    },
+    "metadata.json": {
+      "bytes": 27562,
+      "sha256": "80fc0d4a14b23fcceb01ed189c54b5fb9eed6404d4e694895fb7663fab894a65"
+    },
+    "p2_allbooks_universe.parquet": {
+      "bytes": 1365767,
+      "sha256": "da7244a83e7277e6c5934ea9a64f6793503787ab76c4d942528ed972d780a9a9"
+    },
+    "p2_primary_betonlineag_universe.parquet": {
+      "bytes": 694168,
+      "sha256": "7d814eba05163b797f533d82e2ed28aba786186d602e6636c0c40c16a095ee12"
+    },
+    "run_log.txt": {
+      "bytes": 10451,
+      "sha256": "bc6e44b67f9fb4a4e0d60c1a378fa7fb04bc4bce2e88d63d3d8eed7ec1c09b46"
+    }
+  },
+  "runner": {
+    "path": "scripts/experiment_11_frozen_origin_b_p2.py",
+    "bytes": 28256,
+    "sha256": "ac76d889d6987d5d7a015186eed46ad22e02e62fda165a14eae41b771ce8e183"
+  }
+}

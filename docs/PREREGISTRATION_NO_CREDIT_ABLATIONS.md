@@ -1575,6 +1575,23 @@ raw event identifiers not opened for this registration) and must be
 resolved by the ingestion script's own dedup logic (14.5 rule 2) before
 grading, not assumed a priori.
 
+**14.3a Source-population clarification (Codex, 2026-07-14, before the P2
+touch).** The first execution attempt passed the section 14.4 wiring gate,
+then stopped before model pricing, outcome grading, bootstrap calculation,
+or any secondary after finding that 8 of the 11 overlapping event ids had
+different old/new requested anchors. This exposed an ambiguity in the final
+sentence above: "resolved" did not mean concatenate the old fragment into
+the new population and choose an anchor. The first sentence is controlling:
+Experiment 11's bettime population is the newly purchased
+`core_bettime_202607` pass only. The pre-existing 21-event fragment is not
+appended and contributes zero quotes to U; therefore its 11 overlapping ids
+cannot double-count the new pass and require no price or anchor tie-break.
+The old parquet remains relevant only as provenance for the historical
+coverage statement, not as an Experiment 11 input. This clarification is
+source-based, was fixed without viewing any P2 statistic, and does not alter
+the registered model, venue, threshold, bootstrap, pass bar, or consequence
+mapping. The stopped gate-only artifact is retained as an audit record.
+
 **14.4 Wiring gate (mandatory, before any new bettime quote is loaded).**
 Reload all three frozen Origin B model files per 14.2, reprice BOTH
 variants (each under its own recorded val-fitted alpha) on the EXISTING
@@ -1712,6 +1729,57 @@ or a new season of bettime coverage. UNSTABLE: report as a
 wiring/sample-structure finding, not a verdict on the mechanism.
 INSUFFICIENT SAMPLE: report the all-books secondary and the closing-pass
 context, and stop -- this neither promotes nor closes the mechanism.
+
+**14.11 Implemented result -- PASS (Codex-authored and independently
+verified, 2026-07-14).** `scripts/experiment_11_frozen_origin_b_p2.py`
+first reproduced the frozen closing wiring gate exactly: paired Brier delta
+`-0.0041404240194266384`, CI95
+`[-0.007196770975912929, -0.0011800274158189096]`, 7,463 rows / 2,510
+goalie-night clusters. The first attempt then stopped before model pricing,
+grading, bootstrap calculation, or secondaries when the old/new source
+ambiguity described in 14.3a surfaced. After 14.3a was recorded, the completed
+run used only the new pass and performed the first P2 touch.
+
+PRIMARY BetOnline result: U = 1,719 paired non-push quotes / 1,719
+goalie-night clusters; 473 UNDER bets qualified at the frozen 0.05 edge.
+Model-arm ROI was `+12.2895%` versus `+2.6329%` from blind UNDER on the same
+quote universe, a `+9.6566` percentage-point delta. The registered 10,000-draw
+cluster bootstrap (seed 42) gave CI95 `[+2.4891, +16.7200]`, with zero empty
+model-arm resamples. This clears the registered PASS bar.
+
+The train-fitted-dispersion sensitivity used alpha `0.023324830664020284`
+versus headline alpha `0.026775577916660614`: 477 qualified bets, delta
+`+9.4697` points, CI95 `[+2.3506, +16.5206]`. The sign did not flip, so the
+result is not dispersion-fragile. Frozen JSON reload parity was exactly zero
+for both shots means and save rates.
+
+Registered secondaries agreed on outcomes: all-books selection-over-blind
+delta `+10.2195` points, CI95 `[+4.1973, +16.3162]` (1,848 model bets / 6,430
+quotes). Bettime all-books policy ROI was `+9.61%`; BetOnline policy ROI was
+`+10.77%`, with BetOnline UNDER `+12.29%` and OVER `+7.19%`. CLV is the main
+caveat: full-policy CLV net of unconditional drift was positive all-books
+(`+0.2718` probability points, CI95 `[+0.2226, +0.3219]`, 2,446 matched), but
+BetOnline itself was only `+0.0167` points, CI95 `[-0.0627, +0.0979]` (647),
+consistent with zero.
+
+Independent verification reconstructed EV, payouts, model-arm membership,
+point ROIs, and the paired cluster bootstrap directly from the persisted
+universes and reproduced every primary, all-books, train-dispersion, and CLV
+number. Seeds 7 and 20260714 also left the primary lower bound above zero;
+this is an unregistered robustness diagnostic, not an additional gate. The
+2024-25 closing input contains zero `betonline` alias rows, so the runner's
+`{betonlineag, betonline}` closing-secondary mask is numerically identical to
+`betonlineag` alone. Reused helper log messages say 2023-24/2025-26 in two
+places, but the pinned frames and filters are 2024-25; this is cosmetic.
+
+Artifacts: completed run
+`models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/`, including
+row-level universes and `output_manifest.json`; retained gate-only stop
+`experiment_11_frozen_origin_b_p2_20260714_085614/`. Consequence per 14.10:
+promote the mechanism only to 2026-27 shadow-candidacy consideration. This is
+encouraging development evidence on an already-viewed season, not proof of a
+durable executable edge, particularly because venue-specific CLV did not
+confirm it.
 
 ---
 

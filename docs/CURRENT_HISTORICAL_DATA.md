@@ -217,8 +217,10 @@ Applied exclusions and checks:
 
 The two 404 records (wildfire-postponed CGY@LAK 2025-01-08 and dead CHI@BUF
 2024-01-18) remain covered under reissued ids elsewhere in the raw pass.
-The processed parquet is data-ready for registered Experiments 11-13; no
-model experiment has consumed it yet.
+The processed parquet is data-ready for registered Experiments 11-13.
+Experiment 11 has now consumed only its 2024-25 saves slice and produced the
+verified PASS recorded in `HISTORICAL_DATA_ANALYSIS.md` section 9.6;
+Experiments 12-13 have not run.
 
 ## 5. Is this enough data?
 

@@ -786,8 +786,23 @@ rows survived; saves-row goalie matching is 98.93%. Eleven event ids overlap
 the old 21-event 2024-25 bettime fragment and must be deduplicated at join
 time. Experiments 11-13 -- frozen-Origin-B P2, W1 coherence, and W2 DFS
 census -- are now preregistered in sections 14-16 and data-ready. No model
-experiment has touched the new price-level data. The unallocated remainder
-is still 12,895 credits.
+experiment had touched the new price-level data at that ingestion checkpoint;
+the Experiment 11 result immediately below is the first touch. The unallocated
+remainder is still 12,895 credits.
+
+**Experiment 11 frozen-Origin-B P2 re-test -- PASS (2026-07-14,
+Codex-verified).** After the closing wiring gate reproduced exactly, the
+new-pass-only BetOnline universe held 1,719 paired quotes and 473 frozen
+UNDER selections. Selected ROI was `+12.29%` versus `+2.63%` for blind UNDER
+on the same universe: delta `+9.66` points, goalie-night cluster CI95
+`[+2.49, +16.72]`. Train-fitted dispersion also passed (delta `+9.47`, CI95
+`[+2.35, +16.52]`). All-books outcome selection agreed. The important
+counterweight is venue CLV: BetOnline full-policy CLV net of drift was only
+`+0.0167` probability points, CI95 `[-0.0627, +0.0979]`, while all-books CLV
+was positive. Per the preregistered consequence this promotes the frozen
+UNDER mechanism only to a 2026-27 shadow candidate; it does not establish a
+durable edge from a viewed 2024-25 season. Full contract, source clarification,
+verification, and artifacts are in preregistration section 14.11.
 
 ## 6. Experimental protocol
 
