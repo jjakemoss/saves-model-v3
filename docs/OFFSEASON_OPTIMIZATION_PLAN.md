@@ -2423,6 +2423,32 @@ explicitly says the result survived the honest harness and uncertainty checks.
   infer that both sides were profitable. Full record: preregistration section
   15.11 and historical analysis section 9.8.
 
+- **2026-07-14 (Experiment 14 W6 BetOnline convergence CLOSED).** The
+  registered clustered re-derivation (preregistration section 17)
+  re-tested the exploratory scratchpad lead (r=-0.147, nominal
+  p=2.0e-10, n=1,851 unclustered correlated rows, 2025-26 only) under
+  goalie-night-unit, UNDER-side-collapse, >=2-book-consensus
+  definitions on both available seasons. Phase A (2025-26, discovery
+  season, in-sample): r=-0.05019, CI95 [-0.10550, +0.00543], n=931
+  goalie-nights -- roughly one third the original magnitude and
+  including zero. Phase B (2024-25, already-viewed development data):
+  r=-0.05829, CI95 [-0.12429, +0.00488], n=1,380 goalie-nights, also
+  including zero. Sign was negative in both seasons but neither CI
+  cleared the registered below-zero bar. The 17.5 EV-stacked filter
+  test on the 473 frozen Experiment 11 model-arm bets was run anyway
+  as EXPLORATORY-ONLY per protocol: agree-arm (n=260) ROI delta
+  -9.1613 points vs. the full-population reference, CI95 [-20.384,
+  +1.761]; non-agree-arm (n=111) delta +9.1871 points, CI95 [-7.688,
+  +25.661] -- the opposite ordering from the registered sign
+  rationale, both CIs crossing zero, neither reported as a finding.
+  All 11 structural reconciliation checks against the preregistration's
+  data-inventory counts passed exactly. Per the fixed consequence
+  mapping, the lead is CLOSED this cycle with no shadow-candidate
+  registration, matching the steam-recon and DFS-census precedents.
+  Full result: preregistration section 17.9; historical analysis
+  section 9.9. Artifact:
+  `models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need

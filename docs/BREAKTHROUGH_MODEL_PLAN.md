@@ -1268,14 +1268,20 @@ does not guarantee a beatable market.
    2026-07-13, caught by user review: an earlier version of this entry
    wrongly declared no play-by-play exists on disk after checking only
    `data/raw/boxscores/`.)
-   W6 (deferred until the 2024-25 pass lands). **BetOnline
-   convergence-filter policy.** The exploratory lead that BetOnline's
-   bettime deviations from consensus revert by closing (r=-0.147,
-   nominal p=2e-10 on n=1,851 correlated quote rows, unclustered,
-   2025-26 only) is the recon's strongest but loses to the vig as a
-   standalone rule; preregister only as a filter stacked on model EV,
-   only after clustered re-verification from a persisted script, and
-   only once a second season of BetOnline bettime coverage exists.
+   W6. **BetOnline convergence-filter policy -- CLOSED, NULL
+   (2026-07-14).** The exploratory lead that BetOnline's bettime
+   deviations from consensus revert by closing (r=-0.147, nominal
+   p=2e-10 on n=1,851 correlated quote rows, unclustered, 2025-26 only)
+   was registered and re-derived under clustered, goalie-night-unit
+   definitions on both available seasons. 2025-26 (discovery season,
+   in-sample): r=-0.05019, CI95 [-0.10550, +0.00543], n=931
+   goalie-nights. 2024-25 (already-viewed development season): r=
+   -0.05829, CI95 [-0.12429, +0.00488], n=1,380 goalie-nights. Both
+   CIs include zero, so neither phase passed; the sign was consistent
+   but the lead does not clear this project's statistical bar on
+   either season. No shadow-candidate registration follows. Full
+   result: preregistration section 17.9; historical analysis section
+   9.9.
 
    Steps 7-9 below (opening anchor and the opening-to-close movement
    model) are deprioritized, not deleted: the zero-credit recon found

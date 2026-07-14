@@ -1,0 +1,41 @@
+2026-07-14T19:25:06.224178+00:00 EXPERIMENT 14 -- W6 BETONLINE BETTIME-TO-CLOSE CONVERGENCE (SECTION 17)
+2026-07-14T19:25:06.224178+00:00 No network calls. data/betting.db is never opened, per 17.6.2.
+2026-07-14T19:25:06.239489+00:00 Input checksums pinned before any parsing.
+2026-07-14T19:25:06.239489+00:00 STEP 1: loading saves_lines_snapshots.parquet, deriving season via build_odds_snapshots.season_from_eastern_date.
+2026-07-14T19:25:06.802959+00:00 saves_lines_snapshots dedup (whole-frame, per snapshot_pass): {'groups_with_duplicates': 1072, 'extra_rows_dropped': 1072, 'row_order_tiebreak_groups': 12, 'rows_before': 79884, 'rows_after': 78812}
+2026-07-14T19:25:06.840835+00:00 STEP 2: loading core_bettime_202607_snapshots.parquet for the new-pass structural check.
+2026-07-14T19:25:07.097258+00:00 STEP 3: loading Experiment 11's frozen p2_primary_betonlineag_universe.parquet (read-only reuse).
+2026-07-14T19:25:07.129385+00:00 STEP 4: reconciling constructed universes against 17.8's persisted structural counts BEFORE any Phase A/B/17.5 statistic.
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] betonlineag_bettime_2025_26_raw_rows: expected=2662, observed=2662
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] betonlineag_bettime_2025_26_deduped_rows: expected=2474, observed=2474
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] joined_bettime_closing_pairs_total: expected=2063, observed=2063
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] joined_bettime_closing_pairs_line_identical: expected=1927, observed=1927
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] joined_bettime_closing_pairs_line_changed: expected=136, observed=136
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] joined_unique_goalie_nights_any_side: expected=1032, observed=1032
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] new_pass_betonlineag_saves_rows: expected=3498, observed=3498
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] new_pass_betonlineag_saves_events: expected=1050, observed=1050
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] new_pass_betonlineag_within_pass_duplicate_groups: expected=0, observed=0
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] exp11_universe_rows: expected=1719, observed=1719
+2026-07-14T19:25:07.129385+00:00 RECONCILIATION [PASS] exp11_model_arm_rows: expected=473, observed=473
+2026-07-14T19:25:07.129385+00:00 All structural reconciliation checks passed. Proceeding to Phase A.
+2026-07-14T19:25:07.129385+00:00 STEP 5: Phase A -- 2025-26 clustered re-derivation (17.3).
+2026-07-14T19:25:07.177231+00:00 Phase A: betonlineag bettime paired quotes=1237, betonlineag closing paired quotes=1962, other-book bettime paired quotes=4710 across books=['betmgm', 'bovada', 'draftkings', 'fanatics', 'fanduel'].
+2026-07-14T19:25:07.881746+00:00 PHASE A STATISTIC (FINAL, REGISTERED): r=-0.05019347165148147, CI95=[-0.10550077988050377, 0.005427384587194252], n=931, degenerate=0 (0.0000%), verdict=CLOSED.
+2026-07-14T19:25:07.881746+00:00 Phase A exclusions: gate=60, no_closing_data=186, line_changed=60, primary=931, total=1237.
+2026-07-14T19:25:07.881746+00:00 Phase A bootstrap determinism re-check (same seed, same input): identical=True.
+2026-07-14T19:25:07.891396+00:00 STEP 6: Phase B -- 2024-25 second-season replication (17.4).
+2026-07-14T19:25:07.941252+00:00 Phase B: commence-drift filter (effective_gap_minutes >= 10): 16820 -> 16820 rows (0 excluded).
+2026-07-14T19:25:08.041409+00:00 Phase B new-pass dedup: {'groups_with_duplicates': 23, 'extra_rows_dropped': 23, 'row_order_tiebreak_groups': 23, 'rows_before': 16820, 'rows_after': 16797}
+2026-07-14T19:25:08.048467+00:00 Phase B: betonlineag new-pass paired bettime quotes=1749, other-book paired bettime quotes=4747 across books=['betmgm', 'bovada', 'draftkings', 'williamhill_us'].
+2026-07-14T19:25:08.141741+00:00 Phase B: existing-archive 2024-25 closing betonlineag paired quotes=1956 (old 21-event bettime fragment is never loaded for Phase B's bettime side, per 17.4's 11-event-overlap resolution).
+2026-07-14T19:25:09.073414+00:00 PHASE B STATISTIC (FINAL, REGISTERED): r=-0.05829157793567338, CI95=[-0.12429245812046397, 0.0048848362618009], n=1380, degenerate=0 (0.0000%), verdict=FAIL.
+2026-07-14T19:25:09.082403+00:00 Phase B exclusions: gate=302, no_closing_data=23, line_changed=44, primary=1380, total=1749.
+2026-07-14T19:25:09.082403+00:00 Phase B bootstrap determinism re-check (same seed, same input): identical=True.
+2026-07-14T19:25:09.085435+00:00 STEP 7: 17.5 EV-stacked filter test on the frozen Experiment 11 model arm.
+2026-07-14T19:25:09.092400+00:00 17.5 population=473; no new-pass quote at matching (event_id, goalie_id)=0; line mismatch=0; line-matched but fails >=2-books gate (not computable)=102; computable=371; agree-arm=260; non-agree-arm=111.
+2026-07-14T19:25:09.111517+00:00 17.5 PRIMARY (agree-arm ROI minus full-473 ROI): full_roi=0.12289460515018798, {'n': 260, 'point_roi': 0.03128160170550268, 'reference_roi_fixed': 0.12289460515018798, 'point_delta': -0.09161300344468529, 'ci95_lower': -0.20383616201294968, 'ci95_upper': 0.017608606119587564, 'n_bootstrap': 10000, 'seed': 42}, verdict=FAIL.
+2026-07-14T19:25:09.111517+00:00 17.5 SECONDARY (non-agree-arm ROI minus full-473 ROI): {'n': 111, 'point_roi': 0.2147654830923322, 'reference_roi_fixed': 0.12289460515018798, 'point_delta': 0.09187087794214423, 'ci95_lower': -0.07687980470632244, 'ci95_upper': 0.2566096571799589, 'n_bootstrap': 10000, 'seed': 42}, verdict=FAIL.
+2026-07-14T19:25:09.111517+00:00 17.5 CLV secondary: {'agree_arm': {'n_matched': 252, 'n_total': 260, 'mean_clv_prob_net_of_drift': -0.003983958328588968}, 'non_agree_arm': {'n_matched': 107, 'n_total': 111, 'mean_clv_prob_net_of_drift': 0.005276930565923437}}
+2026-07-14T19:25:09.111517+00:00 OVERALL VERDICT: phase_a=CLOSED, phase_b=FAIL, filter_test_exploratory_only=True.
+2026-07-14T19:25:09.111517+00:00 At least one of Phase A / Phase B's cluster-bootstrap CI95 includes zero. Per 17.7, this lead is CLOSED this cycle, matching the steam-recon and DFS-census precedents. It does not reopen without a new architecture or a new season of bettime coverage.
+2026-07-14T19:25:09.183306+00:00 Artifacts saved under S:\Documents\GitHub\saves-model-v3\models\trained\experiment_14_w6_betonline_convergence_20260714_142506

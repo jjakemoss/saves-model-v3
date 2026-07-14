@@ -503,7 +503,10 @@ cluster-bootstrap confidence intervals, and exact deduplication rules.
   laggards but are not bettable venues for this project. Plan: wave W6 --
   clustered re-verification from a persisted script first, then revisit
   only as a filter stacked on model EV once a second season of BetOnline
-  bettime coverage exists.
+  bettime coverage exists. Registered re-derivation (Experiment 14)
+  closed this lead on both seasons -- neither 2025-26 nor 2024-25
+  clustered CI95 excludes zero; see section 9.9 and preregistration
+  section 17.9.
 - **Operational note (corrected 2026-07-13 after user review):**
   `betting.db`'s `line_snapshots` table has 0 rows, but NOT because the
   logging was never built. Snapshot insertion is already wired into the
@@ -740,3 +743,33 @@ tail-ranking hypothesis rather than evidence of superior global pricing.
 Conclusion: preserve this exact recipe for a 2026-27 shadow run, but do not
 call the failed recovery an official PASS or a demonstrated edge. Full
 operational record and caveats: preregistration section 15.11.
+
+### 9.9 Experiment 14: BetOnline convergence lead closed (2026-07-14)
+
+The registered clustered re-derivation did not confirm the original
+scratchpad finding on either season. Phase A (2025-26, the discovery
+season itself, in-sample): goalie-night cluster-bootstrap Pearson
+`r = -0.05019`, CI95 `[-0.10550, +0.00543]`, n = 931 goalie-nights --
+roughly one third the magnitude of the original unclustered `r =
+-0.147` (n = 1,851 correlated rows), and the CI includes zero. Phase B
+(2024-25, already-viewed development data via Experiment 11's own
+bettime pass): `r = -0.05829`, CI95 `[-0.12429, +0.00488]`, n = 1,380
+goalie-nights, also including zero. Both seasons agree on sign
+(negative, i.e. same direction as the original lead) but neither
+clears the registered CI95-below-zero bar, and that is the honest
+characterization -- not a near-miss.
+
+The 17.5 exploratory stack test (run anyway per the registered
+protocol, but non-confirmatory since Phase A failed) split the 473
+frozen Experiment 11 model-arm UNDER bets by agreement with BetOnline's
+own bettime stale-high signal: the agree arm (n=260) underperformed the
+full-population reference ROI by 9.1613 points (CI95 `[-20.384,
++1.761]`), while the non-agree arm (n=111) outperformed it by 9.1871
+points (CI95 `[-7.688, +25.661]`) -- the opposite ordering from the
+registered sign rationale, with both CIs crossing zero. Neither result
+is reported as a finding; the non-agree arm's positive point estimate
+is an n=111 subsample on an already-viewed season and is not a lead.
+Verdict: the W6 BetOnline convergence lead is CLOSED this cycle, with
+no shadow-candidate registration. Full result and disclosed judgment
+calls: preregistration section 17.9; artifacts:
+`models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.

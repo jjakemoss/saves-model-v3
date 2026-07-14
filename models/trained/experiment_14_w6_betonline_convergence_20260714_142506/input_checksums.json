@@ -1,0 +1,26 @@
+{
+  "core_bettime_202607_snapshots": {
+    "bytes": 1753036,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\core_bettime_202607_snapshots.parquet",
+    "sha256": "103b81c6f3e9647c72ad82538791bdbea1d6d8547eaae8c5f39d4ad815d79c6e"
+  },
+  "execution_script": {
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\scripts\\experiment_14_w6_betonline_convergence.py",
+    "sha256": "d41e8a7ccf43208a2d552bb511930a835dac472a780ede5f062c6141180bf6ed"
+  },
+  "exp11_flagged_bets_with_clv": {
+    "bytes": 674539,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_11_frozen_origin_b_p2_20260714_090012\\flagged_bets_with_clv.parquet",
+    "sha256": "514dbcfea3087254b18dcafec61eddea7a6053132b9129fdef956fd886c2334c"
+  },
+  "exp11_p2_primary_betonlineag_universe": {
+    "bytes": 694168,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_11_frozen_origin_b_p2_20260714_090012\\p2_primary_betonlineag_universe.parquet",
+    "sha256": "7d814eba05163b797f533d82e2ed28aba786186d602e6636c0c40c16a095ee12"
+  },
+  "saves_lines_snapshots": {
+    "bytes": 556156,
+    "path": "S:\\Documents\\GitHub\\saves-model-v3\\data\\processed\\saves_lines_snapshots.parquet",
+    "sha256": "e81ca4ea01b1dfb3f69068782b75e18b4d174bef82dd34d8e341b59cbc94ed56"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "betting_db_touched": false,
+  "completed_at_utc": "2026-07-14T19:25:09.183306+00:00",
+  "experiment": "Experiment 14 - W6 BetOnline bettime-to-close convergence",
+  "filter_test_17_5": {
+    "agree_arm_primary": {
+      "bootstrap": {
+        "ci95_lower": -0.20383616201294968,
+        "ci95_upper": 0.017608606119587564,
+        "n": 260,
+        "n_bootstrap": 10000,
+        "point_delta": -0.09161300344468529,
+        "point_roi": 0.03128160170550268,
+        "reference_roi_fixed": 0.12289460515018798,
+        "seed": 42
+      },
+      "verdict": "FAIL"
+    },
+    "clv_secondary": {
+      "agree_arm": {
+        "mean_clv_prob_net_of_drift": -0.003983958328588968,
+        "n_matched": 252,
+        "n_total": 260
+      },
+      "non_agree_arm": {
+        "mean_clv_prob_net_of_drift": 0.005276930565923437,
+        "n_matched": 107,
+        "n_total": 111
+      }
+    },
+    "exploratory_only": true,
+    "full_473_roi_fixed_reference": 0.12289460515018798,
+    "labeled_exploratory_only_reason": "Phase A verdict != PASS",
+    "n_agree_arm": 260,
+    "n_computable": 371,
+    "n_excluded_line_mismatch": 0,
+    "n_excluded_no_new_pass_quote": 0,
+    "n_excluded_not_computable_gate": 102,
+    "n_non_agree_arm": 111,
+    "n_population_model_arm": 473,
+    "non_agree_arm_secondary": {
+      "bootstrap": {
+        "ci95_lower": -0.07687980470632244,
+        "ci95_upper": 0.2566096571799589,
+        "n": 111,
+        "n_bootstrap": 10000,
+        "point_delta": 0.09187087794214423,
+        "point_roi": 0.2147654830923322,
+        "reference_roi_fixed": 0.12289460515018798,
+        "seed": 42
+      },
+      "verdict": "FAIL"
+    }
+  },
+  "judgment_calls": [
+    "Goalie-night identity for within-file grouping (Phase A's internal consensus/pairing, and the 17.8 structural-reconciliation join) uses goalie_name_raw directly for saves_lines_snapshots.parquet rows, matching the literal (event_id, goalie_name_raw, book, side) dedup key 17.2 specifies. The cross-parquet goalie_key (goalie_id, else goalie_name_matched, else goalie_name_raw) used for Phase A/B consensus grouping and Phase B's new-bettime-to-old-closing join was verified empirically to reproduce the identical 2,063 / 1,927 / 136 / 1,032 structural counts as a goalie_name_raw-only key would, so no reconciliation ambiguity resulted from this choice.",
+    "The registration does not name an explicit exclusion bucket for 'gate-passed quotes with zero closing counterpart at any line' (distinct from 'line-changed', which presupposes a closing quote exists). This runner reports n_excluded_no_closing_data_available as its own count so each phase's exclusion funnel sums exactly to its total population; 17.3/17.4 only explicitly name the gate and line-changed counts.",
+    "17.5's PRIMARY/SECONDARY ROI-delta bootstrap resamples only the arm under test and subtracts the FIXED (non-resampled) full-473 ROI, per a literal reading of 17.5's own construction language -- this differs from Experiment 11's own paired-bootstrap convention (14.6), which resamples both arms from the same draw. The registration's own text for 17.5 is explicit enough (the reference is described as fixed) that this reading was treated as unambiguous rather than a judgment call requiring flagging, but is noted here for transparency.",
+    "17.5 does not name an explicit PASS/FAIL bar the way 17.3/17.4 do; this runner applies the same CI95-entirely-above-zero bar per arm (mirroring 17.5's own aside describing 'a clean pass... CI95 entirely above zero'), gated by the registered 100-bet-per-arm floor for INSUFFICIENT_SAMPLE.",
+    "Numpy's default_rng(42) is used for every bootstrap (Phase A, Phase B, and 17.5), per this task's own instruction; section 17 itself pins the seed (42) and resample count (10,000) but not the RNG class. Prior experiments in this doc family (Experiment 11/13) used np.random.RandomState instead."
+  ],
+  "network_calls": false,
+  "notes": [
+    "No prior artifact exists for this Phase A/B re-derivation (17.1 point 1) -- there is no wiring gate to reproduce, only 17.8's structural counts.",
+    "2025-26 is the only season with BetOnline bettime coverage and is also the discovery season (17.1 point 2): Phase A is in-sample with respect to the original lead.",
+    "2024-25 is already-viewed development data (17.1 point 3): Phase B and 17.5 are development evidence, not confirmation."
+  ],
+  "phase_a": {
+    "determinism_verified": true,
+    "n_excluded_fewer_than_2_books_gate": 60,
+    "n_excluded_line_changed": 60,
+    "n_excluded_no_closing_data_available": 186,
+    "n_primary_universe": 931,
+    "n_total_betonlineag_bettime_paired_quotes": 1237,
+    "ols_secondary": {
+      "intercept": -0.002123510987475731,
+      "slope": -0.07148410669176927
+    },
+    "statistic": {
+      "ci95_lower": -0.10550077988050377,
+      "ci95_upper": 0.005427384587194252,
+      "clusters_one_to_one_with_rows": true,
+      "n_bootstrap": 10000,
+      "n_clusters": 931,
+      "n_degenerate_resamples": 0,
+      "n_goalie_nights": 931,
+      "pass_bar_ci95_entirely_below_zero": false,
+      "pct_degenerate_resamples": 0.0,
+      "point_r": -0.05019347165148147,
+      "seed": 42,
+      "unstable": false
+    },
+    "verdict": "CLOSED"
+  },
+  "phase_b": {
+    "dedup_stats": {
+      "extra_rows_dropped": 23,
+      "groups_with_duplicates": 23,
+      "row_order_tiebreak_groups": 23,
+      "rows_after": 16797,
+      "rows_before": 16820
+    },
+    "determinism_verified": true,
+    "n_drift_excluded": 0,
+    "n_excluded_fewer_than_2_books_gate": 302,
+    "n_excluded_line_changed": 44,
+    "n_excluded_no_closing_data_available": 23,
+    "n_primary_universe": 1380,
+    "n_total_betonlineag_bettime_paired_quotes": 1749,
+    "n_with_both_bettime_and_closing_any_line": 1424,
+    "ols_secondary": {
+      "intercept": -0.00023164620781349404,
+      "slope": -0.04590003547182036
+    },
+    "statistic": {
+      "ci95_lower": -0.12429245812046397,
+      "ci95_upper": 0.0048848362618009,
+      "clusters_one_to_one_with_rows": true,
+      "n_bootstrap": 10000,
+      "n_clusters": 1380,
+      "n_degenerate_resamples": 0,
+      "n_goalie_nights": 1380,
+      "pass_bar_ci95_entirely_below_zero": false,
+      "pct_degenerate_resamples": 0.0,
+      "point_r": -0.05829157793567338,
+      "seed": 42,
+      "unstable": false
+    },
+    "verdict": "FAIL"
+  },
+  "registration": "docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 17",
+  "run_status": "completed",
+  "started_at_utc": "2026-07-14T19:25:06.224178+00:00",
+  "structural_reconciliation": {
+    "all_passed": true,
+    "expected": {
+      "betonlineag_bettime_2025_26_deduped_rows": 2474,
+      "betonlineag_bettime_2025_26_raw_rows": 2662,
+      "exp11_model_arm_rows": 473,
+      "exp11_universe_rows": 1719,
+      "joined_bettime_closing_pairs_line_changed": 136,
+      "joined_bettime_closing_pairs_line_identical": 1927,
+      "joined_bettime_closing_pairs_total": 2063,
+      "joined_unique_goalie_nights_any_side": 1032,
+      "new_pass_betonlineag_saves_events": 1050,
+      "new_pass_betonlineag_saves_rows": 3498,
+      "new_pass_betonlineag_within_pass_duplicate_groups": 0
+    },
+    "observed": {
+      "betonlineag_bettime_2025_26_deduped_rows": 2474,
+      "betonlineag_bettime_2025_26_raw_rows": 2662,
+      "exp11_model_arm_rows": 473,
+      "exp11_universe_rows": 1719,
+      "joined_bettime_closing_pairs_line_changed": 136,
+      "joined_bettime_closing_pairs_line_identical": 1927,
+      "joined_bettime_closing_pairs_total": 2063,
+      "joined_unique_goalie_nights_any_side": 1032,
+      "new_pass_betonlineag_saves_events": 1050,
+      "new_pass_betonlineag_saves_rows": 3498,
+      "new_pass_betonlineag_within_pass_duplicate_groups": 0
+    }
+  },
+  "verdict_mapping": {
+    "both_phases_pass": false,
+    "either_phase_fails": true,
+    "filter_test_agree_arm": "FAIL",
+    "filter_test_non_agree_arm": "FAIL",
+    "overall_consequence": "At least one of Phase A / Phase B's cluster-bootstrap CI95 includes zero. Per 17.7, this lead is CLOSED this cycle, matching the steam-recon and DFS-census precedents. It does not reopen without a new architecture or a new season of bettime coverage.",
+    "phase_a": "CLOSED",
+    "phase_b": "FAIL"
+  }
+}

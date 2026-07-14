@@ -2317,3 +2317,537 @@ bootstrap intervals, and confirmed every input hash. One cosmetic audit note
 is retained in final metadata: the pre-outcome normalized JSONL still carries
 a stale 2024-25 `grade_status` construction label. The graded CSV and summary
 are authoritative; the label has no numerical or verdict effect.
+
+---
+
+## 17. Experiment 14 -- W6 BetOnline bettime-to-close convergence
+
+Registered 2026-07-14 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, before any convergence statistic was computed on any season.
+This is plan section 10's W6 ("BetOnline convergence-filter policy,"
+deferred until the 2024-25 pass landed) and
+`HISTORICAL_DATA_ANALYSIS.md` section 8's "BetOnline price convergence"
+exploratory lead, now operationalized as a binding registration per that
+section's own statistical-standard caveat.
+
+**17.1 Hypothesis and honesty note.** The hypothesis: when BetOnline's
+(`book_key`/`book` `betonlineag`) bettime implied probability deviates
+from the other books' bettime consensus at the same line, BetOnline's own
+price reverts toward that consensus by closing. This must be read against
+three honesty constraints, stated plainly rather than rounded up:
+
+1. The discovery statistic (r=-0.147, nominal p=2.0e-10, n=1,851
+   correlated quote rows) was computed by an unpersisted scratchpad
+   script that no longer exists and was never clustered by goalie-night
+   (HISTORICAL_DATA_ANALYSIS.md section 8's own statistical-standard
+   caveat, added 2026-07-13). Even this registration's Phase A (17.3) is
+   therefore a RE-DERIVATION from raw snapshot rows, not a confirmation
+   of the original number -- there is no prior artifact to reproduce a
+   wiring gate against, unlike Experiment 11.
+2. 2025-26 is the ONLY season with BetOnline bettime coverage in the
+   existing archive and is also the discovery season -- the season the
+   original scratchpad recon was run on. Any Phase A result is therefore
+   IN-SAMPLE with respect to the original lead, not an out-of-sample
+   check, even after clustering fixes the inference.
+3. 2024-25 outcomes and prices have already been opened repeatedly by
+   this document family -- Experiment 11 (section 14) priced and graded
+   the frozen Origin B model against the same `combined-2024-25`
+   BetOnline bettime pass this experiment's Phase B and 17.5 reuse, and
+   Experiment 12 (section 15) additionally viewed 2024-25 outcomes.
+   Phase B is therefore DEVELOPMENT EVIDENCE on an already-viewed season,
+   exactly as sections 14.10/15.9/16.8 already state for their own
+   2024-25 touches, NOT confirmation of edge on an untouched season.
+
+There is no untouched season available for this lead anywhere in this
+project's current data. Per plan section 6.1's interpretation hierarchy,
+the strongest possible outcome of Experiment 14 is promotion of the
+convergence filter to 2026-27 shadow candidacy, stacked on model EV
+-- never a standalone strategy and never "edge" language, regardless of
+how cleanly every bar below clears.
+
+**17.2 Registered definitions.** Exact and fail-closed, fixed before any
+deviation or reversion value is computed on any row:
+
+- **De-vig method.** Proportional (multiplicative) normalization of the
+  two-sided quote at the SAME book, SAME line, SAME snapshot pass, SAME
+  goalie-night -- never mixing books or sides (the odds-averaging-bug
+  rule, `docs/HISTORICAL_DATA_ANALYSIS.md` section 1, restated as
+  binding here). From that book's own paired decimal prices:
+  `raw_p_over = 1 / price_decimal_over`, `raw_p_under = 1 /
+  price_decimal_under`, `overround = raw_p_over + raw_p_under`,
+  `p_over_devigged = raw_p_over / overround`, `p_under_devigged = 1 -
+  p_over_devigged`. A book contributes a de-vigged probability only when
+  BOTH sides of that exact line are present for that book at that
+  goalie-night (the existing pairing convention, section 14.5 rule 1) --
+  a single-sided quote is not de-vigged and does not contribute.
+- **Other-books rule (DFS exclusion, not a fixed book list).** "OTHER
+  books" excludes `betonlineag` itself and excludes DFS venues
+  (`prizepicks`, `underdog`) by name, not any other book_key --
+  whichever non-DFS sportsbook keys are actually present on a given row
+  are automatically eligible. DFS venues are excluded because they do
+  not run genuine two-sided vig-priced markets: `underdog` carries zero
+  saves-market rows in any pass (HISTORICAL_DATA_ANALYSIS.md section
+  9.3; reconfirmed in 17.8), and the new pass's own `prizepicks` saves
+  quotes were independently found (17.8) to carry simultaneous
+  alternate lines on the same side for the same player (e.g. Filip
+  Gustavsson `Over 24.5` and `Over 28.5` on the same event) -- a
+  different quoting structure than a single fixed-line two-sided market,
+  and not a valid consensus input regardless of the separate
+  hardcoded-placeholder-price caveat that already applies to
+  `betting.db`'s PrizePicks rows (section 16.3).
+- **Consensus.** For a given `betonlineag` bettime quote (event,
+  goalie-night, side, line), `consensus_p_side = MEDIAN` of the
+  de-vigged probability for that side across all OTHER qualifying books
+  quoting the EXACT SAME line at bettime for the same goalie-night.
+  Require at least 2 other qualifying books at that exact line, else the
+  quote is EXCLUDED from the deviation universe; the excluded count is
+  recorded and reported (17.3/17.4/17.5), never silently dropped.
+- **Deviation metric.** `deviation_under(goalie-night) =
+  betonline_p_under_bettime_devigged - consensus_p_under_bettime`
+  (UNDER side only, per the side-collapse rule below). "BetOnline is
+  stale-high on the Under side" is DEFINED as `deviation_under >
+  0` (BetOnline's own bettime de-vigged UNDER probability exceeds the
+  same-line other-book median). Exact ties (`deviation_under == 0`) are
+  registered as NOT stale-high. This sign is fixed now and is not
+  revisited after seeing any Phase A, Phase B, or 17.5 number.
+- **Reversion metric.** `reversion_under(goalie-night) =
+  betonline_p_under_closing_devigged - betonline_p_under_bettime_devigged`,
+  computed ONLY within the PRIMARY universe: pairs where BetOnline's
+  saves line is IDENTICAL at bettime and closing for that goalie-night.
+  Line-changed pairs are EXCLUDED from every quantitative
+  deviation/reversion computation in this experiment and are counted and
+  reported as a coverage statistic only (17.8). No secondary
+  all-pairs/line-changed analysis will be run in Experiment 14 -- bound
+  now. Rationale: translating a probability-space reversion across a
+  change in the underlying point line requires a shape/translation
+  model (the kind of machinery Experiment 12 built for a different
+  purpose); building one here would itself be exactly the kind of
+  post-registration feature/model construction 17.6 forbids.
+- **Units, clustering, and side convention.** Over and Under of the same
+  book/line/goalie-night are mirror images after de-vigging
+  (`p_over_devigged = 1 - p_under_devigged` at both BetOnline and
+  consensus), so carrying both sides as independent observations
+  double-counts every goalie-night. Registered convention: keep exactly
+  ONE observation per goalie-night -- the UNDER side -- for every
+  deviation/reversion statistic in Phase A, Phase B, and 17.5. Rationale:
+  this matches Origin B's UNDER-only construction (section 14.2),
+  Experiment 11's UNDER-only P2 universe (section 14.6), and the live
+  betting record's structural UNDER lean (section 0.1) -- an established
+  project convention, not an ad hoc choice for this experiment. A
+  goalie-night whose UNDER-side quote fails the >=2-other-books gate or
+  the line-identical requirement is excluded outright and is never
+  backfilled by its OVER-side mirror. On top of this one-row-per-
+  goalie-night collapse, inference is a goalie-night cluster bootstrap,
+  10,000 resamples, seed 42, resampling goalie-night clusters with
+  replacement -- matching sections 14.6/15.7/16.5's convention exactly.
+- **Dedup (multiple snapshots per pass).** Verified against the actual
+  parquet row structure (17.8), not assumed:
+  - `data/processed/saves_lines_snapshots.parquet` (Phase A's sole
+    source, and Phase B's closing-side source): within a single
+    `snapshot_pass` label, duplicate rows sharing `(event_id,
+    goalie_name_raw, book, side)` do occur -- most densely in 2025-26
+    `bettime` (914 of 11,897 natural-key groups, a 7.68% group rate;
+    188 of 2,474 `betonlineag`-only groups, a 7.60% group rate) and
+    negligibly in 2025-26 `closing` (4 of 18,216 groups, 0.02%; zero
+    among `betonlineag`-only closing rows) and in both 2024-25 passes
+    (zero duplicate groups in either). Registered rule: within each
+    `snapshot_pass` label, for rows sharing the natural key, keep only
+    the row with the MAXIMUM `resolved_ts` (the latest actually-observed
+    API response timestamp among fetches bucketed into that pass); ties
+    broken by maximum `requested_ts`, and any remaining tie broken
+    deterministically by original row order, with the tie count logged.
+    Rationale: `resolved_ts` is the actually-observed wall-clock capture
+    time, versus `requested_ts`'s nominal target -- consistent with this
+    document family's existing preference for observed timestamps over
+    nominal ones (section 14.5 rule 4's use of API-returned
+    `commence_time` over the requested anchor is the precedent). This
+    rule applies uniformly to both `bettime` and `closing` buckets.
+  - `data/processed/core_bettime_202607_snapshots.parquet` (Phase B and
+    17.5's bettime source): the `betonlineag` saves population itself
+    has ZERO within-pass duplicate `(event_id, player_name_raw,
+    book_key, side)` groups (3,498 rows / 3,498 groups) and exactly one
+    `requested_ts`/`fetched_at` per event -- no dedup is needed for the
+    `betonlineag` side of this parquet. The all-books saves population
+    has 23 duplicate-key groups, entirely attributable to `prizepicks`
+    alternate-line offerings (already excluded by the DFS rule above),
+    not duplicate fetches of the same market. If the runner nonetheless
+    encounters a within-pass duplicate on a qualifying non-DFS book, the
+    same max-`resolved_ts` rule above applies by reference.
+
+**17.3 Phase A -- clustered re-derivation on 2025-26.** Source:
+`data/processed/saves_lines_snapshots.parquet`, season 2025-26 (games
+with `game_date_eastern` in the 2025-26 hockey season), `snapshot_pass`
+in `{bettime, closing}`, `book == betonlineag` for the deviation/
+reversion target plus qualifying other books for consensus, all per
+17.2's definitions and dedup rule. Build `deviation_under` and
+`reversion_under` per goalie-night, restricted to the PRIMARY (line-
+identical bettime-to-close) universe, gated by the >=2-other-books-at-
+the-same-line requirement, UNDER side only.
+
+Registered statistic (PRIMARY): cluster-bootstrap CI95 (10,000
+resamples, seed 42, resampling goalie-night clusters) of the Pearson
+correlation `r` between `deviation_under` and `reversion_under` across
+goalie-nights. Pearson `r` is PRIMARY because it matches the original
+discovery statistic's own units; an OLS slope
+(`reversion_under ~ deviation_under`) is computed and reported as a
+SECONDARY diagnostic only and does not gate the result.
+
+PASS bar: CI95 entirely BELOW zero (replicating the original lead's
+negative-correlation direction, now with clustered inference). If the
+CI includes zero, Phase A is CLOSED and Phase B / 17.5 still run per
+17.7 but are labeled EXPLORATORY-ONLY in the final report, not
+confirmatory of anything. Degenerate-resample rule (the Pearson-`r`
+analogue of section 14.6's empty-model-arm rule): any bootstrap draw
+in which `r` is undefined (zero variance in the resampled
+`deviation_under` or `reversion_under` vector) is counted as a
+degenerate resample; if more than 1% of the 10,000 draws are
+degenerate, report the Phase A result as UNSTABLE alongside the CI,
+not as a clean pass or fail. Also report, unconditionally: n
+goalie-nights in the PRIMARY universe; n excluded by the
+>=2-other-books gate; n excluded as line-changed; and the degenerate-
+resample count.
+
+**17.4 Phase B -- second-season replication on 2024-25.** Bettime side:
+`data/processed/core_bettime_202607_snapshots.parquet`,
+`pass_name == "combined-2024-25"`, `market_key == "player_total_saves"`,
+`book_key == betonlineag` for the deviation target plus qualifying other
+non-DFS books at the same line, per 17.2. Closing side: the EXISTING
+archive, `data/processed/saves_lines_snapshots.parquet`, season 2024-25,
+`snapshot_pass == "closing"`, `book == betonlineag` (3,912 rows / 1,094
+events, 17.8) -- the new purchased pass carries bettime rows only
+(verified in 17.8; this is consistent with the task design, not a
+contradiction requiring a stop) and cannot supply a closing side itself.
+
+**11-event-overlap dedup (bound now, identical to Experiment 11's
+14.3a resolution).** The pre-existing 21-event 2024-25 `bettime`
+fragment already inside `saves_lines_snapshots.parquet` (season 2024-25,
+`snapshot_pass == "bettime"`, 258 rows) contributes ZERO rows to Phase
+B's bettime population. Only the newly purchased `combined-2024-25` pass
+is used for the bettime side. "New pass wins" is operationalized as
+TOTAL EXCLUSION of the old fragment, not a row-level merge or an
+anchor-level tie-break -- this is the exact clarification 14.3a made
+after Experiment 11's first attempt stopped mid-run over 8 of the 11
+overlapping event ids having different old/new requested anchors;
+registering it identically here means that ambiguity cannot recur.
+
+Join key between the new-pass bettime rows and the existing-archive
+closing rows for the same goalie-night: `event_id` plus resolved goalie
+identity (`goalie_id` where both sides' pipelines resolved it; otherwise
+`goalie_name_matched`/`goalie_name_raw` fallback), matching Experiment
+11's own wiring-gate join convention (section 14.4) -- not re-derived
+here.
+
+Registered statistic, bar, and degenerate-resample rule: identical to
+17.3 (Pearson `r`, 10,000-resample seed-42 goalie-night cluster
+bootstrap, CI95 entirely below zero to PASS, OLS slope secondary, >1%
+degenerate-resample draws makes it UNSTABLE). Also report,
+unconditionally: n goalie-nights with both a new-pass bettime and an
+existing-archive closing `betonlineag` row; n in the PRIMARY (line-
+identical) universe; n excluded by the >=2-other-books gate; n excluded
+as line-changed.
+
+**17.5 EV-stacked filter test (2024-25 only, persisted frozen artifacts,
+no model rerun).** Reuse, unchanged and read-only,
+`models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/
+p2_primary_betonlineag_universe.parquet` (verified in 17.8: 1,719 rows /
+135 columns, one row per goalie-night quote, `cluster_id` already
+1-to-1 with rows; 473 rows have `is_model_arm == True` at the frozen
+`ev_under >= 0.05` threshold; `ev_under`, `is_model_arm`,
+`profit_if_under`, `cluster_id`, `event_id`, `goalie_id`, `game_id`,
+`book_key`, `betting_line`, `odds_over_decimal`, `odds_under_decimal`
+all present). No repricing, no retraining, no re-selection of the 473.
+
+Population: the 473 `is_model_arm == True` rows only. For each, compute
+`deviation_under` per 17.2 (deviation ONLY -- 17.5 needs no reversion
+and no closing-side line-identity check, since it tests agreement with
+a bet placed AT bettime, not a bettime-to-close comparison), using the
+SAME `combined-2024-25` pass as Phase B, joined to the frozen universe
+by `(event_id, goalie_id)`, with `book_key == betonlineag` verified and
+the frozen `betting_line` checked against the deviation metric's own
+BetOnline bettime line. Any row where the two lines do not match exactly
+is excluded and counted, not silently trusted. Any of the 473 lacking a
+computable `deviation_under` (fewer than 2 other qualifying books at
+BetOnline's exact bettime line) is excluded from the filter test and
+counted, not imputed.
+
+**Sign convention (registered now, bound regardless of which way the
+split later favors either arm).** "Agree-arm" = model-arm UNDER bets
+where `deviation_under(goalie-night) > 0`, i.e. BetOnline is stale-high
+on the Under side per 17.2. "Non-agree arm" = model-arm UNDER bets where
+`deviation_under <= 0` (computable, not stale-high; includes exact
+zero). Rows lacking a computable `deviation_under` are excluded from
+BOTH arms, not folded into non-agree. Rationale for why stale-high
+is registered as "agreeing" with a model-arm UNDER bet, stated for
+auditability, not as an empirical claim: a model-arm UNDER bet already
+means the frozen model finds UNDER underpriced against BetOnline's raw
+bettime price. If BetOnline is ALSO already stale-high on Under (its own
+price is currently LESS favorable to an UNDER bettor than the sharp
+consensus would justify, not more), the model's edge estimate survives
+despite, not because of, a currently generous BetOnline number -- a
+stronger case for the edge being real rather than an artifact of
+BetOnline's own temporary underpricing. This reasoning is not verified
+by any of the data examined for this registration; it motivates the
+choice but does not substitute for the result.
+
+Metrics: PRIMARY = ROI delta, agree-arm ROI minus the FULL 473-bet
+model-arm ROI, using the persisted `profit_if_under` values verbatim (no
+repricing), cluster-bootstrapped (10,000 resamples, seed 42) over the
+agree-arm's own `cluster_id` values. SECONDARY = the identical
+construction for the non-agree arm vs. the full model arm; plus each
+arm's CLV where matchable, reusing
+`models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/
+flagged_bets_with_clv.parquet` (verified in 17.8: 2,539 rows / 140
+columns, includes `bet_side`, `clv_prob`, `clv_prob_net_of_drift`,
+`bettime_devig_prob_chosen_side`, `closing_consensus_prob_chosen_side`)
+joined to each arm's bets by `(event_id, goalie_id, book_key)` -- this
+file has more rows than `p2_primary` (2,539 vs. 1,719), so the runner
+must join-filter it down to each arm's exact keys, never assume row
+alignment. No fresh CLV computation.
+
+Honesty bar (100-bet minimum per arm, registered per the task's own
+instruction): any arm with fewer than 100 graded bets is
+INSUFFICIENT SAMPLE for that arm specifically, not a fail; if both arms
+fall below 100, the whole 17.5 test is INSUFFICIENT SAMPLE. Stated
+plainly: with only 473 total model-arm bets split two ways, and further
+trimmed by the >=2-other-books coverage gate, INSUFFICIENT SAMPLE in one
+or both arms is a realistic outcome, not a remote one, and must be
+reported as such rather than the split being redrawn to avoid it. Even a
+clean pass (both bars clear, agree-arm delta CI95 entirely above zero)
+is development evidence only, on an already-viewed 2024-25 season (per
+17.1) -- it cannot by itself promote anything if Phase A fails (17.7).
+
+**17.6 Forbidden.**
+
+1. No retraining, no repricing of the frozen Origin B model or its
+   inputs, no feature or threshold search beyond the exact definitions
+   registered in 17.2.
+2. No touching `data/betting.db` -- reads are forbidden too, unlike
+   section 16.3's carve-out for Experiment 13; this experiment does not
+   need that table and may not open it.
+3. No Odds API credit spending, no network calls.
+4. No modification of any pre-existing file in `models/trained/`,
+   including the Experiment 11 artifact directory reused here --
+   read-only reuse only.
+5. No writes to any existing parquet (`saves_lines_snapshots.parquet`,
+   `core_bettime_202607_snapshots.parquet`, or any file already under
+   `data/processed/` or `models/trained/`). Any new output goes to a new
+   artifact directory only, following this document family's existing
+   convention (e.g. `models/trained/experiment_14_.../`).
+6. No post-hoc slicing (by book, date range, or threshold) reported as
+   a result once Phase A, Phase B, or 17.5 have been computed.
+7. No changing the 17.2 side convention or the 17.5 stale-high sign
+   convention after seeing any deviation, reversion, correlation, or ROI
+   number -- both are fixed by this registration.
+8. One registered execution. If the runner crashes mid-run, it may be
+   fixed and rerun ONLY if NO phase's registered statistic (Phase A's
+   `r`/CI, Phase B's `r`/CI, or 17.5's ROI-delta CIs) was yet computed
+   and printed or logged; otherwise the computed phases' numbers stand
+   as-is and must be reported. Explicit clarification, stated so it is
+   not misapplied later: 2024-25 is already-viewed development data
+   (17.1; plan section 6.1; Experiments 11 and 12's own disclosures),
+   NOT a virgin confirmatory touch -- so section 15.10's touch-
+   consumption / one-shot-marker recovery machinery (built to protect a
+   genuinely untouched season) does NOT apply to Phase B or 17.5. A
+   Phase B or 17.5 crash before its statistic is computed may simply be
+   fixed and rerun under this same registration, with no 12R-style
+   recovery sub-registration required, precisely because there is no
+   virgin touch to protect here.
+
+**17.7 Consequence mapping (fixed in advance).** Phase A AND Phase B
+BOTH PASS (CI95 entirely below zero on both) -> the convergence filter
+is registered as a 2026-27 shadow-candidate filter stacked on model EV,
+joining the Experiment 11 and Experiment 12 shadow candidates already on
+record (sections 14.11, 15.11) -- it is NOT promoted to live betting and
+is NOT edge language, regardless of how the 17.5 EV-stack result lands.
+EITHER phase FAILS (CI95 includes zero) -> the lead is CLOSED this
+cycle, matching the steam-recon (section 8's first bullet) and
+DFS-census (section 16.8) precedents; per the task's own instruction,
+17.5 is still computed and reported in this case but is labeled
+EXPLORATORY-ONLY and cannot reopen or promote the lead on its own.
+17.5 INSUFFICIENT SAMPLE (either or both arms) does not by itself close
+or promote the lead -- it is reported as a scale finding. UNSTABLE
+(either phase's degenerate-resample rate exceeds 1%) is reported as a
+methods/sample-structure finding, not a verdict, mirroring section
+14.10's UNSTABLE handling.
+
+**17.8 Data inventory (verified 2026-07-14).** Read-only Python against
+the two parquets and the Experiment 11 artifact directory; no
+deviation, reversion, correlation, ROI, or outcome-linked quantity was
+computed.
+
+`data/processed/saves_lines_snapshots.parquet`: 79,884 rows / 15
+columns; `snapshot_pass` values `{bettime: 28,751; closing: 51,133}`;
+`book` values (8, no DFS venue present anywhere in this parquet):
+`barstool, betmgm, betonlineag, bovada, draftkings, fanatics, fanduel,
+williamhill_us`; `side` values are exactly `{Over, Under}`. Rows by
+`snapshot_pass` x season: `bettime` 2023-24 15,682 / 2024-25 258 /
+2025-26 12,811; `closing` 2023-24 17,959 / 2024-25 14,954 / 2025-26
+18,220. `betonlineag`-only rows by the same cut: `bettime` 2024-25 76 /
+20 events, 2025-26 2,662 / 725 events; `closing` 2024-25 3,912 / 1,094
+events, 2025-26 3,926 / 1,046 events -- this independently reconfirms
+the task's stated 2024-25 closing figures (3,912 rows / 1,094 events)
+exactly. 2025-26 bettime books present with row counts: `betmgm` 2,964,
+`draftkings` 2,902, `betonlineag` 2,662, `bovada` 2,377, `fanduel`
+1,878, `fanatics` 28 (`barstool`/`williamhill_us` do not appear in this
+specific cut). Some events carry two distinct `requested_ts` values
+within the same `bettime` label (max 2, mean 1.087 per event across 781
+2025-26 bettime events) -- the source of the dedup finding in 17.2,
+inspected on one example event (`01060baa72bf643120a46cda7c3e04c1`,
+`requested_ts` `2026-04-02T22:30:00Z` and `2026-04-03T00:00:00Z`) where
+prices were mostly stable across the two fetches with a few single-cent
+drifts. Phase A join-coverage check (structural line-match count only,
+not a deviation/reversion value): after the 17.2 dedup rule, 2025-26
+`betonlineag` bettime rows 2,662 -> 2,474 deduped; closing rows 3,926 ->
+3,926 (no change). Joined `(event, goalie, side)` pairs with both a
+deduped bettime and closing `betonlineag` row: 2,063, of which 1,927
+(93.4%) are line-identical (the PRIMARY-eligible pairs) and 136 (6.6%)
+are line-changed; 1,032 unique goalie-nights have both a bettime and a
+closing `betonlineag` quote on at least one side.
+
+`data/processed/core_bettime_202607_snapshots.parquet`: 413,758 rows /
+23 columns; `pass_name` values `{combined-2024-25, sog-2023-24}`;
+`season` values `{2024-25, 2023-24}`; `snapshot_pass` is `bettime` ONLY
+(zero closing rows anywhere in this parquet -- confirmed, consistent
+with the task's design that Phase B's closing side must come from the
+existing archive, not a contradiction); `market_key` values
+`{player_shots_on_goal, player_total_saves}`. `player_total_saves` rows:
+16,820 / 1,244 events, all `season == "2024-25"` -- matches the task's
+and `CURRENT_HISTORICAL_DATA.md` section 4.2's stated 1,244 saves
+events exactly. `betonlineag` saves rows: 3,498 / 1,050 events --
+matches the task's stated 1,050 exactly. Saves `book_key` values:
+`betmgm, bovada, betonlineag, prizepicks, williamhill_us, draftkings`
+(no `fanatics`, consistent with the expected-absent rule in section
+14.5 rule 5; no `underdog`, consistent with its zero-saves finding; no
+`barstool` in this specific saves cut). `betonlineag` saves rows carry
+zero within-pass duplicate-key groups and exactly one `requested_ts`/
+`fetched_at` per event (1,050 events, both stats identically 1.0 mean /
+1.0 max) -- no dedup needed for the `betonlineag` population itself. The
+23 duplicate-key groups found in the all-books saves population are
+entirely `book_key == prizepicks` (e.g. Filip Gustavsson `Over 24.5` and
+`Over 28.5` on the same event) -- alternate-line offerings, not
+duplicate fetches, and moot under 17.2's DFS exclusion.
+
+Experiment 11 artifact directory
+`models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/`
+exists and contains `bettime_frame_allbooks.parquet`,
+`bettime_predictions.parquet`, `bettime_snapshot_rows_new_pass_only.
+parquet`, `flagged_bets_with_clv.parquet`, `gate_predictions.parquet`,
+`metadata.json`, `output_manifest.json`,
+`p2_primary_betonlineag_universe.parquet`, `p2_allbooks_universe.
+parquet`, `run_log.txt`. `p2_primary_betonlineag_universe.parquet`:
+1,719 rows / 135 columns; `is_model_arm` is `True` for exactly 473 rows
+and `False` for 1,246; `cluster_id` has 1,719 unique values (already
+1-to-1 with rows, confirming the artifact's "quote" unit is already
+one-row-per-goalie-night, matching this registration's own UNDER-only
+collapse); `ev_under`, `is_model_arm`, `profit_if_under`, `cluster_id`,
+`event_id`, `game_id`, `goalie_id`, `book_key`, `betting_line`,
+`odds_over_decimal`, `odds_under_decimal` are all present, exactly as
+the task described. `flagged_bets_with_clv.parquet`: 2,539 rows / 140
+columns, including `bet_side`, `devig_prob_over`, `devig_prob_under`,
+`consensus_prob_over`, `consensus_prob_under`, `n_closing_books`,
+`closing_consensus_prob_chosen_side`, `bettime_devig_prob_chosen_side`,
+`clv_prob`, `clv_prob_net_of_drift` -- larger than `p2_primary` (2,539
+vs. 1,719 rows), so 17.5's CLV secondary must join-filter this file down
+to each arm's exact `(event_id, goalie_id, book_key)` keys rather than
+assume row alignment (recorded in 17.5 itself, restated here as a
+verified structural fact).
+
+No contradiction of any assumption in the task brief was found: the
+2025-26 archive has both `betonlineag` bettime and closing rows at
+usable scale; the 2024-25 closing archive figures (3,912 rows / 1,094
+events) match exactly; the new pass's `betonlineag` saves figures (1,050
+events) match exactly; and the Experiment 11 artifact has every column
+the task named. The one genuine surprise -- within-`bettime`-pass
+duplicate fetches in the EXISTING `saves_lines_snapshots.parquet` at a
+7.68% natural-key group rate in 2025-26 bettime -- was not previously
+documented anywhere
+in this document family and required the fresh dedup rule registered in
+17.2.
+
+**17.9 Implemented result -- LEAD CLOSED (Sonnet sub-agent execution
+under lead-reviewer direction, independently verified, 2026-07-14).**
+`scripts/experiment_14_w6_betonline_convergence.py` completed both
+phases and 17.5 under the exact 17.2 definitions. All 11 pre-statistic
+structural reconciliation checks against 17.8's registered counts
+passed exactly, independently recomputed by the lead reviewer from the
+persisted row-level universes and matching to the row: 2,662 -> 2,474
+dedup; 2,063 joined bettime/closing pairs (1,927 line-identical, 136
+line-changed); 1,032 goalie-nights; 3,498 rows / 1,050 events for the
+new-pass `betonlineag` saves population; 1,719 rows / 473 model-arm
+bets in the reused Experiment 11 universe.
+
+Phase A (2025-26 clustered re-derivation): Pearson `r =
+-0.05019347165148147`, cluster-bootstrap CI95
+`[-0.10550077988050377, +0.005427384587194252]`, n = 931 goalie-nights
+(one row per night, PRIMARY universe). OLS slope secondary
+`-0.07148410669176927`. Zero degenerate resamples of 10,000. Exclusion
+funnel from 1,237 paired `betonlineag` bettime UNDER quotes: 60 failed
+the >=2-other-books gate, 186 had no closing-side quote at all, 60 were
+line-changed, leaving 931 primary. The CI includes zero -> **Phase A
+verdict CLOSED**. Context that must stay attached to this number: the
+original scratchpad discovery statistic was `r = -0.147` (nominal
+`p = 2.0e-10`) on 1,851 unclustered correlated quote rows; under the
+registered definitions (goalie-night units, UNDER-side collapse,
+within-pass dedup, >=2-book same-line consensus) the same season yields
+roughly one third that magnitude and does not clear zero. The lost
+scratchpad's exact definitions are unrecoverable, so how much of the
+shrinkage is pseudo-replication versus definitional difference cannot
+be decomposed.
+
+Phase B (2024-25 second-season replication, new-pass bettime joined to
+the existing closing archive): `r = -0.05829157793567338`, CI95
+`[-0.12429245812046397, +0.0048848362618009]`, n = 1,380 goalie-nights.
+OLS slope secondary `-0.04590003547182036`. Zero degenerate resamples.
+Exclusion funnel from 1,749 new-pass `betonlineag` UNDER quotes: 302
+failed the books gate, 23 had no closing data, 44 were line-changed,
+leaving 1,380 primary. The CI includes zero -> **Phase B verdict
+FAIL**. The sign was negative in both seasons (a consistent direction)
+but neither CI95 excludes zero at the registered bar -- that is
+reported here exactly as that, not rounded up to a near-miss.
+
+17.5 EV-stacked filter test (EXPLORATORY-ONLY per 17.7, since Phase A
+did not pass): of the 473 frozen Experiment 11 model-arm bets, 102
+lacked a computable `deviation_under` (books gate) and were excluded,
+leaving agree-arm n = 260 (`deviation_under > 0`) and non-agree n = 111.
+Full-473 reference ROI `+12.2895%`. Agree-arm ROI `+3.1282%`, delta
+`-9.1613` points, CI95 `[-20.384, +1.761]` -> **FAIL**. Non-agree-arm
+ROI `+21.4765%`, delta `+9.1871` points, CI95 `[-7.688, +25.661]` ->
+**FAIL**. CLV secondary: agree-arm mean `clv_prob_net_of_drift =
+-0.00398` (252 of 260 matched), non-agree-arm `+0.00528` (107 of 111
+matched). Both arms' CIs cross zero; the numeric ordering ran OPPOSITE
+to the registered 17.5 sign rationale, but per 17.6.7 the convention is
+not revisited after the fact, and per 17.7 an exploratory 17.5 cannot
+reopen or promote anything regardless. The non-agree arm's `+21%` is
+not a lead -- it is an n=111 exploratory subsample on an already-viewed
+season with a CI spanning `[-7.7, +25.7]`.
+
+Disclosed judgment calls (from the run's own `metadata.json`,
+summarized faithfully): goalie-night identity for within-file grouping
+used `goalie_name_raw` directly where 17.2's dedup key names it
+literally, while the cross-parquet `goalie_key` (falling back through
+`goalie_id`, `goalie_name_matched`, `goalie_name_raw`) used for
+consensus grouping and the Phase B join was verified to reproduce the
+identical structural counts either way, so no ambiguity resulted; the
+runner added its own `n_excluded_no_closing_data_available` count
+(distinct from "line-changed," which presupposes a closing quote
+exists) so each phase's exclusion funnel sums exactly to its
+population, since 17.3/17.4 name only the books-gate and line-changed
+buckets explicitly; 17.5's ROI-delta bootstrap resamples only the arm
+under test against the FIXED (non-resampled) full-473 ROI rather than
+Experiment 11's paired-both-arms convention (14.6), read as unambiguous
+from 17.5's own "fixed reference" language rather than as a flagged
+deviation; 17.5's per-arm PASS/FAIL bar (CI95 entirely above zero,
+gated by the 100-bet floor) was inferred from 17.5's own descriptive
+aside since no bar is named explicitly the way 17.3/17.4 do; and every
+bootstrap used `numpy.random.default_rng(42)` per this task's own
+instruction, where section 17 pins the seed and resample count but not
+the RNG class, and where Experiments 11 and 13 had used
+`np.random.RandomState` instead.
+
+Registered consequence (17.7): either phase's CI95 includes zero, so
+the W6 BetOnline convergence lead is **CLOSED this cycle**, matching
+the steam-recon (section 8) and DFS-census (section 16.8) precedents.
+No shadow-candidate registration follows. It does not reopen without a
+new architecture or a new season of BetOnline bettime coverage.
+Artifacts:
+`models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.
