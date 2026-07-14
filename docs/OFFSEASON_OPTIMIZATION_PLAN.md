@@ -2351,6 +2351,29 @@ explicitly says the result survived the honest harness and uncertainty checks.
   data; decide the 12,895-credit remainder, starting with the 1-2k
   alternate-ladder pilot.
 
+- **2026-07-14 (Codex-authored: core-pass ingestion independently
+  verified).** The frozen-Origin-B P2 re-test, W1 cross-market coherence
+  model, and W2 DFS census are now bindingly preregistered as Experiments
+  11-13 in `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` sections 14-16.
+  `scripts/build_core_bettime_pass_snapshots.py` then produced a new,
+  non-mutating processed artifact with 413,758 rows / 23 columns: 2023-24
+  SOG 214,252 rows / 1,310 events, 2024-25 SOG 182,686 / 1,301, and 2024-25
+  saves 16,820 / 1,244. The registered 10-minute true-puck-drop floor
+  excluded exactly three events (BUF@NJD -24.8 minutes, BOS@PHI 5.0,
+  PHI@OTT 9.2), not all 80 events flagged by the audit's different
+  cached-commence drift diagnostic. After those exclusions, 5,282 exact
+  duplicate outcome copies were dropped. The audit's old 5,296 total used
+  a price-omitting key: 5,293 were truly identical before drift exclusion,
+  while three were conflicting-price groups. All six rows in those groups
+  were excluded fail-closed, not tie-broken. Independent reconstruction
+  from all 2,626 raw records matched every final outcome key; no Fanatics,
+  null line/price, invalid side, or sub-10-minute row survived. Eleven new
+  2024-25 events overlap the old 21-event bettime fragment and must be
+  deduplicated downstream. No registered experiment has touched the new
+  price-level data. The immediate analysis step is Experiment 11's frozen
+  wiring gate followed by its one-touch P2 re-test; the credit remainder is
+  still 12,895.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need

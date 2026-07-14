@@ -1,0 +1,435 @@
+{
+  "exclusion_rule2_duplicates": {
+    "audit_expected_per_season_book_market": [
+      {
+        "book_key": "betmgm",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 4,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "fanduel",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 5280,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "bovada",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 2,
+        "season": "2024-25"
+      },
+      {
+        "book_key": "prizepicks",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 10,
+        "season": "2024-25"
+      }
+    ],
+    "audit_expected_total": 5296,
+    "n_extra_copies_all_200_records_no_drift_exclusion": 5293,
+    "n_extra_copies_dropped_post_drift_exclusion": 5282,
+    "per_season_book_market_all_200_records": [
+      {
+        "book_key": "betmgm",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 4,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "fanduel",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 5277,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "bovada",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 2,
+        "season": "2024-25"
+      },
+      {
+        "book_key": "prizepicks",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 10,
+        "season": "2024-25"
+      }
+    ],
+    "per_season_book_market_post_drift_exclusion": [
+      {
+        "book_key": "betmgm",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 4,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "fanduel",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 5266,
+        "season": "2023-24"
+      },
+      {
+        "book_key": "bovada",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 2,
+        "season": "2024-25"
+      },
+      {
+        "book_key": "prizepicks",
+        "market_key": "player_shots_on_goal",
+        "n_extra_copies": 10,
+        "season": "2024-25"
+      }
+    ]
+  },
+  "exclusion_rule3_conflicting_price": {
+    "groups": [
+      {
+        "book_key": "fanduel",
+        "event_id": "9399889e640f2ec2b674608040012ade",
+        "line": 5.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "David Pastrnak",
+        "price": -105,
+        "price_decimal": 1.95,
+        "season": "2023-24",
+        "side": "Over"
+      },
+      {
+        "book_key": "fanduel",
+        "event_id": "9399889e640f2ec2b674608040012ade",
+        "line": 5.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "David Pastrnak",
+        "price": 106,
+        "price_decimal": 2.06,
+        "season": "2023-24",
+        "side": "Over"
+      },
+      {
+        "book_key": "fanduel",
+        "event_id": "988f099ad199dbe0ca772b40467e0346",
+        "line": 5.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "Nathan MacKinnon",
+        "price": 110,
+        "price_decimal": 2.1,
+        "season": "2023-24",
+        "side": "Over"
+      },
+      {
+        "book_key": "fanduel",
+        "event_id": "988f099ad199dbe0ca772b40467e0346",
+        "line": 5.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "Nathan MacKinnon",
+        "price": 122,
+        "price_decimal": 2.22,
+        "season": "2023-24",
+        "side": "Over"
+      },
+      {
+        "book_key": "fanduel",
+        "event_id": "f3c16b76ffe8571db32931e044e8c16d",
+        "line": 1.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "Darnell Nurse",
+        "price": -189,
+        "price_decimal": 1.53,
+        "season": "2023-24",
+        "side": "Over"
+      },
+      {
+        "book_key": "fanduel",
+        "event_id": "f3c16b76ffe8571db32931e044e8c16d",
+        "line": 1.5,
+        "market_key": "player_shots_on_goal",
+        "player_name_raw": "Darnell Nurse",
+        "price": -175,
+        "price_decimal": 1.57,
+        "season": "2023-24",
+        "side": "Over"
+      }
+    ],
+    "matches_expectation": true,
+    "n_groups": 3
+  },
+  "exclusion_rule4_drift": {
+    "events_excluded": [
+      {
+        "away_team": "Buffalo Sabres",
+        "effective_gap_minutes": -24.783333333333335,
+        "event_id": "8d7e2592786731cf1eddf700a77375b5",
+        "home_team": "New Jersey Devils",
+        "pass_name": "combined-2024-25",
+        "requested_ts": "2024-10-05T14:40:00Z",
+        "season": "2024-25",
+        "true_commence_time": "2024-10-05T14:15:13Z"
+      },
+      {
+        "away_team": "Boston Bruins",
+        "effective_gap_minutes": 5.0,
+        "event_id": "57a8adc7af023f4d7b12e13b2bec8c2f",
+        "home_team": "Philadelphia Flyers",
+        "pass_name": "sog-2023-24",
+        "requested_ts": "2024-01-27T17:25:00Z",
+        "season": "2023-24",
+        "true_commence_time": "2024-01-27T17:30:00Z"
+      },
+      {
+        "away_team": "Philadelphia Flyers",
+        "effective_gap_minutes": 9.216666666666667,
+        "event_id": "7b0c750574319a4993dc947f6c137b18",
+        "home_team": "Ottawa Senators",
+        "pass_name": "sog-2023-24",
+        "requested_ts": "2023-10-14T16:50:47Z",
+        "season": "2023-24",
+        "true_commence_time": "2023-10-14T17:00:00Z"
+      }
+    ],
+    "floor_minutes": 10.0,
+    "n_events_excluded": 3,
+    "n_rows_dropped": 318
+  },
+  "exclusion_rule5_fanatics": {
+    "n_rows_found": 0
+  },
+  "final_counts_by_season_book_market": [
+    {
+      "book_key": "betmgm",
+      "events": 1259,
+      "market_key": "player_shots_on_goal",
+      "rows": 33614,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "betonlineag",
+      "events": 1217,
+      "market_key": "player_shots_on_goal",
+      "rows": 34180,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "bovada",
+      "events": 1155,
+      "market_key": "player_shots_on_goal",
+      "rows": 30704,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "draftkings",
+      "events": 1310,
+      "market_key": "player_shots_on_goal",
+      "rows": 35571,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "fanduel",
+      "events": 1271,
+      "market_key": "player_shots_on_goal",
+      "rows": 56361,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "williamhill_us",
+      "events": 884,
+      "market_key": "player_shots_on_goal",
+      "rows": 23822,
+      "season": "2023-24"
+    },
+    {
+      "book_key": "betmgm",
+      "events": 1282,
+      "market_key": "player_shots_on_goal",
+      "rows": 33828,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "betmgm",
+      "events": 1217,
+      "market_key": "player_total_saves",
+      "rows": 4172,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "betonlineag",
+      "events": 1297,
+      "market_key": "player_shots_on_goal",
+      "rows": 35219,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "betonlineag",
+      "events": 1050,
+      "market_key": "player_total_saves",
+      "rows": 3498,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "bovada",
+      "events": 1277,
+      "market_key": "player_shots_on_goal",
+      "rows": 32316,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "bovada",
+      "events": 786,
+      "market_key": "player_total_saves",
+      "rows": 2561,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "draftkings",
+      "events": 1298,
+      "market_key": "player_shots_on_goal",
+      "rows": 33943,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "draftkings",
+      "events": 262,
+      "market_key": "player_total_saves",
+      "rows": 850,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "fanduel",
+      "events": 1254,
+      "market_key": "player_shots_on_goal",
+      "rows": 33104,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "prizepicks",
+      "events": 1091,
+      "market_key": "player_shots_on_goal",
+      "rows": 5781,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "prizepicks",
+      "events": 1139,
+      "market_key": "player_total_saves",
+      "rows": 3827,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "underdog",
+      "events": 1133,
+      "market_key": "player_shots_on_goal",
+      "rows": 5687,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "williamhill_us",
+      "events": 104,
+      "market_key": "player_shots_on_goal",
+      "rows": 2808,
+      "season": "2024-25"
+    },
+    {
+      "book_key": "williamhill_us",
+      "events": 562,
+      "market_key": "player_total_saves",
+      "rows": 1912,
+      "season": "2024-25"
+    }
+  ],
+  "final_counts_by_season_market": [
+    {
+      "events": 1310,
+      "market_key": "player_shots_on_goal",
+      "rows": 214252,
+      "season": "2023-24"
+    },
+    {
+      "events": 1301,
+      "market_key": "player_shots_on_goal",
+      "rows": 182686,
+      "season": "2024-25"
+    },
+    {
+      "events": 1244,
+      "market_key": "player_total_saves",
+      "rows": 16820,
+      "season": "2024-25"
+    }
+  ],
+  "generated_at": "2026-07-14T13:38:37Z",
+  "goalie_match_rate_saves_rows": 0.9892984542211652,
+  "n_records_total": 2626,
+  "n_rows_final": 413758,
+  "n_rows_null_line": 0,
+  "n_rows_null_price": 0,
+  "n_rows_pre_exclusion": 419364,
+  "non200_records": [
+    {
+      "event_id": "7c0a03ea0b11ff0edfaa40ba9b84b18f",
+      "pass_name": "combined-2024-25",
+      "status_code": 404
+    },
+    {
+      "event_id": "c9b4e903f451775cc210c14503de80cd",
+      "pass_name": "sog-2023-24",
+      "status_code": 404
+    }
+  ],
+  "overlap_with_existing_2024_25_bettime_archive": {
+    "existing_2024_25_bettime_events": 21,
+    "existing_2024_25_bettime_rows": 258,
+    "n_overlapping_events": 11,
+    "new_pass_2024_25_included_events": 1301,
+    "overlapping_event_ids": [
+      "24259d94ce86fabcc2469501e99fe896",
+      "614d0746f6c0429463aef1ffeb50063a",
+      "6c259aa51c3e3cd235d583a3dc2fbe11",
+      "75254383e926508a4c8ffb09e8c28004",
+      "8559e341dfb69d90a8764337755446a7",
+      "bbbdad8ca7da439e69cf021aeed1ad5e",
+      "c1c86627576754e0acb6110b6382a54a",
+      "c56564be1baf962a95ff5dfadd767a83",
+      "c8be79daf44535c58b12495ab8310a5c",
+      "dec13b2e7c2b05607efea4c366bd7e0a",
+      "e25156b6ea2ec943c6cd1fc9df878ada"
+    ]
+  },
+  "pre_exclusion_coverage_reconciliation": {
+    "all_match": true,
+    "expected": {
+      "2023-24_sog_events": 1312,
+      "2024-25_betonlineag_saves_events": 1050,
+      "2024-25_prizepicks_saves_events": 1139,
+      "2024-25_saves_events": 1244,
+      "2024-25_sog_events": 1301,
+      "2024-25_underdog_saves_events": 0,
+      "fanatics_rows_anywhere": 0
+    },
+    "found": {
+      "2023-24_sog_events": 1312,
+      "2024-25_betonlineag_saves_events": 1050,
+      "2024-25_prizepicks_saves_events": 1139,
+      "2024-25_saves_events": 1244,
+      "2024-25_sog_events": 1301,
+      "2024-25_underdog_saves_events": 0,
+      "fanatics_rows_anywhere": 0
+    },
+    "matches": {
+      "2023-24_sog_events": true,
+      "2024-25_betonlineag_saves_events": true,
+      "2024-25_prizepicks_saves_events": true,
+      "2024-25_saves_events": true,
+      "2024-25_sog_events": true,
+      "2024-25_underdog_saves_events": true,
+      "fanatics_rows_anywhere": true
+    }
+  },
+  "price_format_note": "Raw API 'price' field is decimal odds (The Odds API default; no oddsFormat param was requested by purchase_core_bettime_passes.py, same convention as build_odds_snapshots.py's price_decimal column). Output column 'price' is converted to American odds via src/betting/odds_utils.decimal_to_american (the existing repo utility) to match the column's requested semantics; the untouched raw decimal value is preserved verbatim in 'price_decimal'.",
+  "sanity_checks": {
+    "n_rows_bad_gap": 0,
+    "n_rows_bad_side": 0,
+    "n_rows_bad_snapshot_pass": 0
+  },
+  "sog_rows_with_non_null_goalie_id": 0,
+  "source_pass_dir": "data\\raw\\betting_lines\\passes\\core_bettime_202607"
+}

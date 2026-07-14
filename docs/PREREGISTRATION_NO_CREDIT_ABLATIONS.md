@@ -1483,3 +1483,565 @@ authorized, and purchases remain blocked. Revisit only if a materially
 different executable venue or quote product creates a much larger
 pre-registered candidate universe; do not loosen the off-modal rule or
 minimum after seeing this count.
+
+---
+
+## 14. Experiment 11 -- Frozen-Origin-B P2 re-test on the 2024-25 bettime pass
+
+Registered 2026-07-14 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, BEFORE any parsing or analysis of the core_bettime_202607
+records beyond the persisted audit
+(`data/raw/betting_lines/passes/core_bettime_202607/audit_summary.json`,
+generated 2026-07-14T05:31:14Z). This is plan section 5.7's stated
+rationale for the 2024-25 saves pass, operationalized as a binding test.
+
+**14.1 Hypothesis and honesty note.** Experiment 8's P2 (section 11.7)
+tested whether the frozen Origin B `control_plus_market_state` model's
+UNDER selection beats a blind-UNDER baseline on the executable
+`betonlineag` bettime venue, and returned INSUFFICIENT SAMPLE (85
+qualified UNDERs against a 100-bet floor, section 11.12). The purchased
+2024-25 bettime pass makes that same test runnable, for the first time at
+meaningful scale, on the season Origin B's model was actually built and
+tested for. Stated plainly, per this document's own discipline:
+Experiment 5 already measured Origin B's 2024-25 CLOSING accuracy result
+(paired Brier delta vs. control `-0.0041404`, sections 10.1/11.5), 2024-25
+outcomes are already viewed (plan section 6.1), and the live 2025-26
+betting record is UNDER-heavy by construction (section 0.1;
+`docs/OFFSEASON_OPTIMIZATION_PLAN.md` section 4). None of that is new.
+What IS genuinely new is the EXECUTABLE bettime BetOnline selection test
+itself, on a season the frozen model never trained or validated on
+(14.2's fold boundaries), at roughly double Experiment 8's qualified-bet
+sample -- BREAKTHROUGH_MODEL_PLAN.md section 5.7's own estimate, not
+independently re-derived here since doing so requires the price-level
+join this document is not allowed to perform before registration.
+
+**14.2 Frozen recipe -- nothing may be reselected.** Reuse, unchanged, the
+Origin B `control_plus_market_state` artifact from
+`models/trained/experiment_market_state_20260710_213106/metadata.json`:
+112-column shots feature list (104 no-pace-control columns + 7 `mkt_*` +
+`mkt_matched`); shots model config `shallow_highreg`
+(`max_depth=2, learning_rate=0.05, min_child_weight=30, subsample=0.8,
+colsample_bytree=0.8, n_estimators=400, reg_lambda=5.0`,
+`origin_b_control_plus_market_state_shots_model.json`); shared save-rate
+model config `base` (`max_depth=3, learning_rate=0.05,
+min_child_weight=10, subsample=0.8, colsample_bytree=0.8,
+n_estimators=400, reg_lambda=1.0`,
+`origin_b_shared_save_rate_model.json`); dispersion
+`alpha=0.026775577916660614` (negative-binomial, fit on `val_idx` --
+validation residuals, per the Experiment 3 correction, section 10.1 item
+1); `ORIGIN_CAP=90`; fixed EV threshold `0.05`. Origin B's fold
+boundaries are unchanged and not re-carved: train 2022-10-07 to
+2024-02-29 (4,528 rows), val 2024-03-01 to 2024-04-18 (720 rows), test
+season 20242025 (2,624 rows). No model is retrained -- this is INFERENCE
+ONLY: THREE frozen model JSON files are reloaded bit-identical (XGBoost
+JSON round-trips exactly, the same reload convention Experiment 8's
+script used for its train-fitted-dispersion sensitivity pass):
+`origin_b_control_plus_market_state_shots_model.json`,
+`origin_b_no_pace_control_shots_model.json` (the control leg -- required
+because the 14.4 wiring gate reproduces a paired delta AGAINST the
+no-pace control variant), and `origin_b_shared_save_rate_model.json`
+(shared by both variants). The control leg's own frozen recipe is
+likewise not re-derived: winner config `depth4_mcw20` (`max_depth=4,
+learning_rate=0.05, min_child_weight=20, subsample=0.8,
+colsample_bytree=0.8, n_estimators=400, reg_lambda=1.0`), val-fitted
+dispersion `alpha=0.02852173299997726` (both verified in `metadata.json`
+at `origin_b/variants/no_pace_control`). Each variant is repriced under
+its own recorded val-fitted alpha from `metadata.json` (market-state
+`0.026775577916660614`, control `0.02852173299997726`) via the shared
+harness functions (`join_and_price`, `compute_distribution_predictions`,
+section 1). The control model exists solely to compute the 14.4
+wiring-gate delta and any vs-control secondary; P2 itself uses only the
+market-state variant. No new features, no grid changes, no threshold
+changes, no re-fitting of dispersion against the new data.
+
+**14.3 Data inventory (verified 2026-07-14).** Existing archive, directly
+re-read from `data/processed/saves_lines_snapshots.parquet` (independent
+of `audit_summary.json`): 2024-25 bettime pre-purchase = 258 rows / 21
+unique `event_id` (negligible, matches section 1.2's "2024-25 has no
+bettime pass"); 2024-25 closing = 14,954 rows / 1,288 unique events, of
+which `betonlineag` closing = 3,912 rows / 1,094 unique events; 2023-24
+bettime = 15,682 rows / 1,125 unique events (cross-checks the audit's
+`n_parquet_2023_24_bettime_saves_events: 1125` exactly -- independent
+confirmation). New purchase, from `audit_summary.json` (not independently
+re-derived, since that requires opening the raw records): the
+`combined-2024-25` pass covers 1,313 events; saves present on 1,244;
+`betonlineag` saves on 1,050; `prizepicks` saves on 1,139; `underdog`
+saves on 0 (SOG only); 1,233 of the 1,244 saves events intersect the
+existing 2024-25 closing archive (`n_2024_25_clv_usable_intersection`).
+The 1,050 `betonlineag` events from the new pass are Experiment 11's
+primary bettime population; whether any overlap with the pre-existing
+21-event archive is not established here (checking would require joining
+raw event identifiers not opened for this registration) and must be
+resolved by the ingestion script's own dedup logic (14.5 rule 2) before
+grading, not assumed a priori.
+
+**14.4 Wiring gate (mandatory, before any new bettime quote is loaded).**
+Reload all three frozen Origin B model files per 14.2, reprice BOTH
+variants (each under its own recorded val-fitted alpha) on the EXISTING
+2024-25 CLOSING pass (`multibook_classification_training_data.parquet`,
+season `20242025`) through the new script's own code path, and reproduce
+`experiment_market_state_20260710_213106`'s recorded model-vs-control
+paired Brier delta (`brier_vs_control_closing`: mean
+`-0.0041404240194266384`, CI95
+`[-0.007196770975912929, -0.0011800274158189096]`) to within `1e-4` on
+the mean, with n_bets=7,463 and n_clusters=2,510 exact. If it does not
+reproduce, STOP and report -- do not load the new bettime pass.
+
+**14.5 Binding ingestion rules for `core_bettime_202607` (global -- also
+binding on Experiments 12 and 13 by reference).** Fixed here, before any
+price-level record is opened:
+1. **Raw-record parsing and pairing.** The raw pass records are NOT in
+   the snapshot-parquet schema: they are `core_event=*.json` envelopes
+   whose `raw_body` holds the verbatim API response, and the canonical
+   parser `scripts/build_odds_snapshots.py` (the script that built
+   `saves_lines_snapshots.parquet`) scans a different directory layout
+   and keeps only `player_total_saves`. Parsing into snapshot-schema
+   rows MUST reuse that script's conventions -- one row per (event,
+   snapshot, book, player, side); goalie identity matched by its
+   last-name-plus-opponent convention against
+   `clean_training_data.parquet`; `goalie_name_raw`/player name kept
+   verbatim; no cross-book or cross-side averaging (the odds-averaging-
+   bug rule, `docs/HISTORICAL_DATA_ANALYSIS.md` section 1) -- adapted to
+   the pass-record envelope and extended to `player_shots_on_goal`.
+   Output goes to NEW parquet artifacts; the existing
+   `data/processed/saves_lines_snapshots.parquet` is never mutated by
+   these experiments' ingestion. Pairing then uses the same generalized
+   pairing function Experiment 8 used for its bettime frame --
+   `experiment_rolling_origin.build_season_multibook_frame`, which calls
+   `clv_audit_pace_policy.pivot_both_sides` -- the concrete
+   implementation of the pattern section 11.4 pointed to in
+   `scripts/experiment_cross_line_pricing.py`. Both sides required at
+   the exact `(event_id, goalie_id, book, line)` key.
+2. **Duplicate outcomes.** Drop byte-identical duplicate outcome records
+   before pairing (the FanDuel 2023-24 SOG case: 5,280 duplicate pairs
+   per `audit_summary.json`'s
+   `exact_duplicate_extra_copies_per_season_book_market`).
+3. **Conflicting-price groups.** The 3 known FanDuel 2023-24 SOG
+   conflicting-price duplicate groups (`duplicate_groups_with_conflicting_
+   price: 3`) are excluded entirely, not tie-broken by taking either
+   price -- if the raw schema does not cleanly distinguish a
+   standard-market entry from an alternate-market echo of the same line,
+   abort and report those groups as excluded rather than guess
+   (fail-closed, per Experiment 10's precedent). This is 2023-24 SOG
+   only, so it cannot affect Experiment 11's own 2024-25 saves universe;
+   it is stated once here for Experiment 12 to reference.
+4. **Commence-drift handling.** For every event, recompute
+   `effective_gap_minutes = (API-returned commence_time) - (requested
+   bettime anchor used for that event's call)`, where the anchor is the
+   purchase script's own formula (`min(22:30Z on the game's Eastern
+   date, cached_commence_time - 30 minutes)`,
+   `scripts/purchase_core_bettime_passes.py::compute_bettime_ts`).
+   Exclude any event where `effective_gap_minutes < 10`. This excludes at
+   least the one event `audit_summary.json` already flags as
+   anchor-at-or-after-commence (2024-10-05 BUF@NJD, requested anchor
+   14:40:00Z vs. true commence 14:15:13Z, `effective_gap_minutes`
+   approximately -24.8 -- excluded a fortiori). The audit's
+   `n_drift_gt_5min=80` / `n_drift_gt_30min=3` figures measure a
+   DIFFERENT quantity (`|cached_commence - true_commence|`, not the
+   anchor-to-commence gap) and are not a substitute count; the exact
+   number of additional events excluded by the `<10`-minute rule is not
+   yet known and must be computed and reported by the ingestion script
+   before any price-level join, not estimated here.
+5. **Fanatics.** Expected absent from both new-pass seasons
+   (`book_keys_never_seen: ["fanatics"]`, confirmed in the audit); if the
+   ingestion script finds any Fanatics row, treat it as a schema surprise
+   and report before proceeding, not silently include it.
+6. **Pushes.** Excluded from grading per standard convention (saves ==
+   line), matching section 11.7's P2 language exactly.
+
+**14.6 Universe, PRIMARY metric, and pass bar (mirrors 11.7 P2 exactly).**
+Universe U = paired, gradeable `betonlineag` bettime quotes for Origin
+B's 2024-25 test-fold games, built per 14.5 (pushes excluded from
+grading). Model arm = UNDER bets where the frozen model's
+`EV(UNDER) >= 0.05` (`calculate_ev`'s literal probability-edge
+convention -- model probability minus raw vig-inclusive implied
+probability, unchanged, per section 11.12's confirmation that this
+convention was correctly preserved in Experiment 8). Blind arm = UNDER
+on every quote in U. Per goalie-night cluster bootstrap resample (10,000
+resamples, seed 42, both arms computed within the same resample draw),
+`delta = ROI_model - ROI_blind`. American-odds profit convention: win
+pays `odds/100` (positive) or `100/|odds|` (negative); loss = -1.
+PASS = CI95 entirely above zero. Resamples with an empty model arm are
+counted and reported; `>1%` of resamples empty makes P2 UNSTABLE (no
+pass). Fewer than 100 graded model-arm bets makes P2 INSUFFICIENT SAMPLE
+(no pass, not a fail -- report and stop there), per section 11.7's
+identical construction.
+
+**14.7 SECONDARY metrics (report, no gate).** All-books bettime
+selection-over-blind delta (same construction as 14.6, all books instead
+of `betonlineag` only); OVER/UNDER ROI splits at the fixed threshold,
+both passes (bettime and closing), all-books and BetOnline cuts;
+bettime-to-close CLV of the model's flagged bets, net of the
+unconditional 2024-25 drift baseline (same matched-quote convention as
+Experiment 8/Component G), measurable for the first time this season
+since both passes now exist; shots-model signed bias and MAE reused
+verbatim from the frozen artifact (`workload_shots_against_test`: mean
+bias `+0.5219091642193678`, MAE `5.337973478363781`, n=2,624 -- not
+recomputed, since no model is retrained); join coverage by book.
+
+**14.8 Dispersion and sensitivity policy.** Headline results use the
+frozen model's validation-fitted dispersion
+(`alpha=0.026775577916660614`), matching section 11.9's convention
+exactly, not because it is an adopted default. A train-fitted-dispersion
+sensitivity pass is produced side-by-side by reloading the same shots
+model and refitting `alpha` on `train_idx` via the same shared
+`experiments.distributional_saves.fit_dispersion` function, then
+repricing test-fold predictions under that alpha (same
+reload-and-sanity-check convention as Experiment 8, including the
+`<1e-9` reload-parity assertion before either arm is trusted). If P2's
+sign flips under train-fitted dispersion, the result is reported as
+DISPERSION-FRAGILE (no pass).
+
+**14.9 Forbidden.** No retraining, no feature changes, no hyperparameter
+or threshold reselection of any kind -- this is inference against a
+frozen artifact, not a new model. No re-running after seeing P2 (one
+shot: if the wiring gate passes and the run completes, the first P2
+number is the result). No post-hoc slices reported as results. No Odds
+API credit or network use. No touching `data/betting.db`.
+
+**14.10 Consequence mapping (fixed in advance, symmetrical to 11.11,
+consistent with plan section 6.1).** PASS: the bettime UNDER-selection
+mechanism is promoted to 2026-27 shadow-candidacy consideration -- this
+is development evidence on a viewed season (per 6.1), not proof of edge,
+and must be reported as such even on a pass. FAIL (CI95 not entirely
+above zero, with >=100 qualified bets): the Origin B UNDER-selection
+effect is treated as NOT demonstrated at the executable venue in either
+available season (2025-26 per Experiment 8, 2024-25 per this experiment)
+and drops from candidacy; it does not reopen without a new architecture
+or a new season of bettime coverage. UNSTABLE: report as a
+wiring/sample-structure finding, not a verdict on the mechanism.
+INSUFFICIENT SAMPLE: report the all-books secondary and the closing-pass
+context, and stop -- this neither promotes nor closes the mechanism.
+
+---
+
+## 15. Experiment 12 -- W1 cross-market coherence model
+
+Registered 2026-07-14 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, BEFORE any parsing or analysis of the core_bettime_202607
+records beyond the persisted audit. This is plan section 10's W1 (NEXT
+WAVE block; section 5.7's SOG-purchase rationale).
+
+**15.1 Hypothesis and identity.** The hockey identity
+`E[saves] ~= E[opponent team SOG] - E[opponent goals]` is near-exact by
+boxscore construction for realized values: `saves = shots_against -
+goals_against` holds exactly in 10,425/10,496 = 99.3% of
+`clean_training_data.parquet` rows (verified 2026-07-14); 71 rows differ
+by exactly 1 (likely shootout-goal bookkeeping, not investigated further
+here). The hypothesis is that two INDEPENDENTLY MARKET-DERIVED estimates
+of the right-hand side -- opponent team SOG aggregated from listed-skater
+SOG props, and opponent goals from moneyline/total -- can be combined
+into an implied saves distribution that is sometimes materially
+incoherent with the saves market's own quoted line, and that betting only
+the incoherent cases beats a blind baseline on the same quote universe.
+This is development work, not a re-test of an existing frozen artifact --
+no locked recipe exists yet, unlike Experiment 11.
+
+**15.2 What is bound now versus development freedom.** Development
+experiments cannot freeze every implementation detail before seeing any
+data; the freedom that follows is made explicit rather than assumed.
+BOUND NOW: the identity itself (15.1); the data sources (15.3); the
+mandatory hazards as constraints, not suggestions (15.4); the global
+ingestion rules (15.5, by reference to section 14.5); the freeze protocol
+(15.6); and the confirmatory bars for the single 2024-25 touch (15.7),
+fixed before any 2024-25 row is loaded. LEFT TO DEVELOPMENT (chosen on
+2023-24 data only, and must be written into the frozen artifact per 15.6
+before the touch, but the CHOICE itself is not pre-specified here): the
+exact coverage-adjustment functional form (e.g. a fixed book-season
+multiplier vs. a per-team/per-game regression); the skater-to-team
+attribution method for SOG props (which team a listed skater's line
+counts toward, and how unresolved or non-dressing skaters are handled --
+section 14.5 rule 1 binds only the row-level parsing conventions, not
+this attribution step; the W1 probe's roster-archive approach resolved
+347/347 sampled names, HISTORICAL_DATA_ANALYSIS.md 9.2, and is a
+candidate, not a lock); the incoherence threshold and its units
+(probability points vs. saves); the bet rule (fixed-threshold vs.
+EV-ranked); the stake convention; which existing distributional-model
+components, if any, are reused for the shape-translation step.
+
+**15.3 Data.** Development (2023-24, viewed per plan section 6.1, so
+hypothesis-support-tier evidence only): the new `sog-2023-24` pass (1,312
+of 1,313 events have SOG, `audit_summary.json`) plus the existing 2023-24
+bettime saves archive (`saves_lines_snapshots.parquet`, 15,682 rows /
+1,125 unique events, independently reverified 2026-07-14, section 14.3).
+Confirmatory single touch (2024-25): the new `combined-2024-25` pass (SOG
+on 1,301 events, saves on 1,244, per `audit_summary.json`) -- one pass
+supplies both legs for this season, unlike 2023-24 which needs the SOG
+purchase joined to the pre-existing bettime archive. Opponent-goals
+estimation reuses the existing consensus-building convention from
+`scripts/experiment_market_state_features.py`
+(`build_market_state_events`, `attach_market_state_features` --
+consensus total = median of the totals point value across books at the
+latest pregame snapshot, approximate opponent expected goals =
+`consensus_total * opponent_win_prob_devigged`, per that module's own
+design notes, already reused by Experiments 5 and 8), joined via
+`market_game_features.parquet` (305,940 rows, 2023-10-10 to 2026-04-19,
+section 1.1 -- covers both development and confirmatory seasons).
+Team-SOG coverage-adjustment CALIBRATION (development only, never
+touching 2024-25) uses the existing actual `team_shots` column already
+present in `multibook_classification_training_data.parquet` and the
+underlying boxscore features of `clean_training_data.parquet`.
+
+**15.4 Known hazards, bound as mandatory model-development constraints
+(from plan section 10's NEXT WAVE W1 entry and the W1 probe,
+BREAKTHROUGH_MODEL_PLAN.md section 5.7 / HISTORICAL_DATA_ANALYSIS.md
+section 9.2, not re-derived here).**
+1. SOG props cover only listed skaters -- median 12-15 skaters per event,
+   roughly 47%-61% of actual combined team SOG at the book-season median
+   (probe-verified, HISTORICAL_DATA_ANALYSIS.md 9.2). The coverage
+   adjustment is load-bearing and MUST be estimated on 2023-24
+   development data only, never against 2024-25.
+2. Prop lines are medians, not means -- do not treat a summed set of
+   listed-skater median lines as if it were a summed set of means; any
+   aggregation must explicitly account for this or be justified as
+   robust to it.
+3. Empty-net and backup-relief goals break the identity in the tails --
+   `saves = shots_against - goals_against` holds closely for realized
+   totals (15.1), but the MARKET-implied opponent-goals estimate (from
+   moneyline/total) does not cleanly separate empty-net scoring or a
+   relief goalie's shots/goals from the starter's. This is a known
+   source of tail error, not a bug to be silently patched away.
+4. Book-level SOG coverage breadth is a probe gate, already passed: at
+   least two usable books on 8/8 sampled events in every season,
+   both-side completeness 98.53%/100%/99.69% across
+   2023-24/2024-25/2025-26 (section 9.2) -- broad enough for W1
+   development, with the coverage adjustment still the load-bearing open
+   question, not a solved one.
+
+**15.5 Global ingestion rules.** Per section 14.5, referenced not
+restated: pairing convention, duplicate/conflicting-price handling (the
+FanDuel 2023-24 SOG case directly applies here, unlike Experiment 11),
+the commence-drift `>=10`-minute rule, the Fanatics-absent expectation,
+push exclusion.
+
+**15.6 Freeze protocol.** After development on 2023-24 ONLY, the full
+pipeline -- feature construction, coverage adjustment, incoherence
+threshold, bet rule, stake convention -- is frozen and written into the
+run's persisted metadata (mirroring this document's existing artifact
+convention) BEFORE the single 2024-25 touch. The 2024-25 run happens
+exactly once. There is no prior frozen recipe to reproduce via a wiring
+gate (unlike Experiment 11, which reuses an existing artifact) -- the
+freeze event IS this registration's 15.2/15.6 discipline plus the
+development-stage artifact it produces; the analogous protection is that
+the frozen parameters must be visible in that artifact BEFORE the
+2024-25 file is opened, not derived afterward.
+
+**15.7 Confirmatory bars for the 2024-25 touch, preregistered NOW.**
+PRIMARY: selection-over-blind delta on the same-side blind baseline
+within the identical quote universe -- the Experiment 8 P2 design
+(section 11.7) generalized to whichever side the coherence rule selects.
+Side handling (a judgment call made here, since the coherence rule can
+flag either side depending on incoherence direction, unlike Origin B's
+model which only ever selects UNDER): compute the delta SEPARATELY per
+side (OVER-flagged vs. UNDER-flagged) against that side's own
+blind-every-quote baseline in the same universe; a side's delta is
+PRIMARY only if it has >=100 graded model-arm bets, goalie-night cluster
+bootstrap (10,000 resamples, seed 42), CI95 entirely above zero to PASS.
+If only one side clears the 100-bet floor, that side alone is the
+primary result and the other is reported as INSUFFICIENT SAMPLE, not
+folded into a pooled number; if neither side clears 100 bets, the
+experiment's primary verdict is INSUFFICIENT SAMPLE overall. The same
+`>1%` empty-model-arm-resample UNSTABLE rule from section 14.6/11.7
+applies per side. SECONDARY: Brier or log-loss of the implied saves
+distribution versus the de-vigged saves market (closing and bettime,
+both seasons); CLV where pairable against the existing 2024-25 closing
+archive (1,233 pairable events per `audit_summary.json`'s
+`n_2024_25_clv_usable_intersection`). Per plan section 6.1: passing on
+viewed 2024-25 is development evidence for the 2026-27 shadow season,
+not proof of edge, regardless of which bars clear.
+
+**15.8 Forbidden.** No 2024-25 looks of any kind during development
+(feature construction, threshold selection, coverage-adjustment fitting,
+or exploratory plotting). No threshold reselection after the 2024-25
+touch. No post-hoc slices (by side, book, or date range) reported as
+results once the touch has happened. No credits, no network calls. No
+touching `data/betting.db`.
+
+**15.9 Interpretation hierarchy.** As section 0.1: 2023-24 development
+results are hypothesis support only. The single locked 2024-25 touch is
+stronger chronological evidence but remains development evidence for a
+2026-27 shadow candidate (plan section 6.1), not an untouched
+betting-edge confirmation -- both 2023-24 and 2024-25 outcomes were
+already viewed before this registration (Experiment 5/8's rolling-origin
+runs). Final confirmation is the frozen 2026-27 shadow run, out of scope
+here.
+
+---
+
+## 16. Experiment 13 -- W2 DFS venue-history census
+
+Registered 2026-07-14 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, BEFORE any parsing or analysis of the core_bettime_202607
+records beyond the persisted audit. This is plan section 10's W2 (NEXT
+WAVE block). Unlike Experiments 11 and 12, this is explicitly a CENSUS,
+not an edge search: its bars are about definitional discipline, and any
+claim beyond "census finding" requires the same statistical standard
+CLAUDE.md sets for this whole project.
+
+**16.1 Question and scope.** Do PrizePicks (and, as a prospective note
+only, Underdog) saves lines deviate materially from same-timestamp
+sportsbook consensus, and if so, how large and which direction is the
+deviating minority, and does it outcome-grade favorably? Scope:
+PrizePicks saves for 2024-25 (the new pass) and 2025-26 (existing
+archive, verified below); Underdog gets a one-paragraph
+prospective-collection note only, per 16.3 -- it has no historical saves
+in any season, probe-verified (HISTORICAL_DATA_ANALYSIS.md section 9.3:
+"Underdog returned no saves market in either season" of the W1 probe;
+confirmed again in the new purchase, `underdog` saves = 0 events in
+`audit_summary.json`).
+
+**16.2 Reconciling the 95.2%/90.1% priors -- registered procedure, not a
+result.** Two existing analyses report different DFS-vs-consensus
+agreement rates and disagree on window, comparator, units, and dedup:
+`OFFSEASON_OPTIMIZATION_PLAN.md` section 4.3 (2026-07-07): 95.2% exact
+agreement, 248 goalie-nights, Jan-Mar 2026 only, comparator = a SINGLE
+"sharp" book (BetOnline Jan-Feb, BetMGM March, never both at once, no
+sharp rows at all in April -- by that section's own admission, "sharp
+consensus" here is always one book), source = `data/betting.db`.
+`HISTORICAL_DATA_ANALYSIS.md` section 8 (2026-07-13): 90.1% exact
+agreement, 265/294 ROWS (not goalie-nights), comparator = "sportsbook
+consensus" (unspecified aggregation), window unspecified beyond the
+recon date; PrizePicks separately at 78.1% (50/64) with the caveat that
+"its stored prices are hardcoded placeholders, so only hit-rate, never
+ROI, is legitimate there." Both were unpersisted, exploratory scripts
+(section 8's own statistical-standard caveat) and, per verification done
+for this registration (16.3), both necessarily drew their DFS-side data
+from `data/betting.db`, since no processed parquet contains any
+PrizePicks row and only a season-20252026 Underdog slice exists in
+`multibook_classification_training_data.parquet`.
+
+Before Experiment 13 grades anything, it must register ONE agreement
+definition and recompute BOTH prior questions under it as its FIRST
+deliverable, so the 95.2%/90.1% gap is explained rather than adopted.
+The registered definition:
+- **Units of analysis:** one row per goalie-night-book quote (`game_id,
+  goalie_id, DFS_book`, one row per calendar day) -- not per re-fetch,
+  not per book-pair comparison. This matches the goalie-night cluster
+  convention used throughout this document family, rather than either
+  prior's row-level or night-level-with-single-comparator convention.
+- **Same-timestamp comparator set:** the median line across all
+  sportsbooks present in `data/betting.db` (or `saves_lines_snapshots.
+  parquet` where a season has processed coverage) for that goalie-night,
+  captured within the SAME calendar-day fetch as the DFS quote --
+  explicitly NOT a single "sharp" book (correcting section 4.3's
+  single-book comparator) and explicitly NOT an unspecified "consensus"
+  (correcting section 8's underspecified one). A true same-SECOND
+  comparison is not reconstructable for pre-migration data
+  (`betting.db`'s `line_snapshots` table has 0 rows before the
+  2026-07-09 migration, per HISTORICAL_DATA_ANALYSIS.md section 8's
+  operational note) -- this is a real limitation of the underlying data,
+  not a modeling choice, and must be stated as such rather than papered
+  over.
+- **Dedup rule:** if multiple fetches of the same goalie-night-book
+  occurred on the same calendar day, use the LAST fetch (closest to game
+  time), matching the production pipeline's own daily-overwrite
+  behavior.
+- **Agreement tolerance:** exact match (line difference = 0.0 saves) as
+  the primary definition (matching both priors' apparent convention);
+  report a secondary +/-0.5-save tolerance band as a robustness check,
+  since half-point lines are common and both priors' own summary
+  statistics implicitly carried a wider tolerance's worth of rounding
+  (e.g. section 4.3's "range [-1.0, +1.0]" for the deviations that DID
+  occur).
+
+Recomputing both prior windows (the Jan-Mar 2026 sharp-comparator sample;
+the 2026-07-13 recon's sample) under this single definition, side by side
+with the two original numbers, is the FIRST deliverable of Experiment
+13's execution -- not performed in this registration, which by
+construction has not opened `data/betting.db` or any price-level record.
+
+**16.3 Data, verified 2026-07-14.** New purchase: PrizePicks saves on
+1,139 of 1,244 saves-covered events in the `combined-2024-25` pass
+(`audit_summary.json`, `key_questions["2024-25_events_with_prizepicks_
+saves"]`). Existing 2025-26 archive: independently checked every
+processed parquet in `data/processed/` for any PrizePicks row --
+`saves_lines_snapshots.parquet`, `multibook_classification_training_
+data.parquet`, `classification_training_data.parquet`, `market_game_
+features.parquet`, `clv_audit_bets.parquet`, `multibook_frame_2023_24.
+parquet`, `multibook_frame_2023_24_bettime.parquet` -- NONE contain a
+PrizePicks row, in any season. The only DFS-book presence anywhere in
+the processed parquets is `book_key == "underdog"` in
+`multibook_classification_training_data.parquet`, season `20252026`,
+927 rows, sourced via that build script's `parse_betting_db()` path from
+`data/betting.db` (not independently reverified against `betting.db`
+itself here, per this task's constraint). This means the 2025-26
+PrizePicks comparator that both prior analyses (16.2) and this census
+need lives ONLY in `data/betting.db` -- `docs/CURRENT_HISTORICAL_
+DATA.md` records 128 PrizePicks rows there as of 2026-07-02 (the season
+was still in progress; the current count is unverified here). Reading
+`data/betting.db` read-only IS therefore necessary for Experiment 13's
+execution -- this is standard practice elsewhere in this repo (section
+4.3 itself is a `betting.db` analysis) and is not restricted by this
+registration's own "do not touch `data/betting.db`" constraint, which
+binds only the writing of this document, not the future authorized
+script. That script must snapshot-pin whatever subset of `betting.db` it
+reads (row count, max `game_date`, a checksum of the extracted rows)
+BEFORE any outcome grading, mirroring Experiment 10's SHA-256
+input-pinning discipline, so the census's own input cannot silently
+drift between the reconciliation step and the grading step.
+
+A second binding caveat, carried from section 8: `betting.db`'s stored
+PrizePicks/Underdog PRICES are hardcoded placeholders, not real market
+prices -- only hit-rate and line-comparison analysis is legitimate on
+that slice, never ROI. The new purchase's PrizePicks prices ARE real
+API-sourced prices, but the W1 probe found no PrizePicks payout
+multiplier in any season (the new pass's saves outcomes likewise show
+`n_non_null_multiplier: 0`; the W1 probe's 222 non-null multipliers were
+exclusively Underdog 2025-26 SOG, HISTORICAL_DATA_ANALYSIS.md 9.3) -- so
+even the new pass cannot support a true DFS-parlay ROI calculation; any
+ROI-style number reported must use the standard straight-bet
+approximation explicitly flagged as such, not real PrizePicks payout
+economics.
+
+**16.4 Global ingestion rules.** Per section 14.5, referenced not
+restated, for the new-pass records: pairing, duplicate/conflicting-price
+handling, the commence-drift `>=10`-minute rule, the Fanatics-absent
+expectation, push exclusion.
+
+**16.5 Census deliverables.** Under the section 16.2 registered
+definition: deviation rate by season (2024-25, 2025-26) and venue
+(PrizePicks only for grading; Underdog descriptive-only per 16.6); size
+and direction of deviations (signed, in saves); outcome grading of the
+deviating minority with goalie-night cluster bootstrap CIs (10,000
+resamples, seed 42); same-timestamp sportsbook-consensus comparison (the
+16.2 definition, applied uniformly). Report the majority (agreeing)
+population's base rate alongside the minority's, since a census needs
+both to be legible.
+
+**16.6 Any-edge-language bar.** This experiment produces census findings
+by default. Any claim beyond "census finding" -- i.e. any language
+suggesting a bettable deviation -- requires BOTH: (a) goalie-night
+cluster-bootstrap CI95 clearing zero on the deviating minority's outcome
+grade, AND (b) a chronological split holding (2024-25 develops, 2025-26
+confirms, or the reverse if 2025-26's larger sample makes it the
+development season -- either order must be stated up front in the
+execution script, not chosen after seeing which way it points). Per
+CLAUDE.md's standing instruction, a marginal p-value or a small,
+non-clustered sample must be reported as statistically weak, not rounded
+up. Even a result clearing both bars is development evidence for a
+2026-27 shadow candidate (plan section 6.1), never immediate proof of
+edge. Underdog is excluded from any edge-language claim entirely --
+descriptive note only (927 rows, `book_key=="underdog"`, season
+`20252026`, `multibook_classification_training_data.parquet`, no CI, no
+ROI, prospective-collection note per plan section 5.7/10 W2).
+
+**16.7 Forbidden.** No threshold or window reselection after seeing
+deviation rates. No post-hoc slicing presented as a result once the 16.2
+reconciliation and 16.5 census have run. No PrizePicks/Underdog ROI
+claim using betting.db's placeholder prices. No credits, no network
+calls. No writes to `data/betting.db` (read-only access only, per 16.3).
+
+**16.8 Consequence mapping.** This is a census; "pass/fail" does not
+apply the way it does to Experiments 11/12. If the deviation rate is
+small and/or the deviating minority does not clear 16.6's bar: close the
+census as a null finding, matching Component G's precedent (section 13's
+"closed without an outcome touch" disposition) -- DFS venue staleness is
+not pursued further this cycle. If 16.6's bar clears on a chronological
+split: the deviation-selection mechanism becomes a development candidate
+for a filter stacked on model EV (matching the W6 disposition already on
+record for the BetOnline convergence lead, plan section 10 NEXT WAVE),
+not a standalone strategy, and is queued for its own preregistration
+before any confirmatory touch. Either outcome, the 95.2%/90.1%
+reconciliation itself (16.2) is retained as a standing correction to
+both prior documents' informal numbers, independent of what the rest of
+the census finds.

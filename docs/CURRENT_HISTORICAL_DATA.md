@@ -190,16 +190,35 @@ reconciled against response headers.
   with at least two paired books on essentially every event; every existing
   2023-24 bettime-saves event now has matching SOG.
 
-Known caveats for ingestion (full detail in `audit_summary.json`): FanDuel
-2023-24 SOG repeats each main line inside its alternate block (5,280
-byte-identical duplicate pairs to drop; 3 conflicting-price pairs need an
-explicit tie-break); Fanatics returned zero events in both seasons; two 404
-events (wildfire-postponed CGY@LAK 2025-01-08 and dead CHI@BUF 2024-01-18)
-are both covered under reissued event ids elsewhere in the pass; one stale
-cached commence time (2024-10-05 BUF@NJD, likely preseason) produced an
-in-game anchor that returned zero bookmakers; 80 events show >5min drift
-between cached and true commence times -- ingestion should re-anchor or flag
-drifted events.
+Ingestion is complete under `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section
+14.5. `scripts/build_core_bettime_pass_snapshots.py` produced
+`data/processed/core_bettime_202607_snapshots.parquet` without mutating the
+existing snapshots parquet. Final contents: 413,758 rows / 23 columns --
+2023-24 SOG 214,252 rows across 1,310 events; 2024-25 SOG 182,686 / 1,301;
+2024-25 saves 16,820 / 1,244. Saves-row goalie matching is 98.93%.
+
+Applied exclusions and checks:
+
+- Three events failed the registered `effective_gap_minutes >= 10` rule:
+  BUF@NJD 2024-10-05 (-24.8), BOS@PHI 2024-01-27 (5.0), and PHI@OTT
+  2023-10-14 (9.2). The audit's 80 cached-to-true drift events measured a
+  different quantity and were not blanket-excluded.
+- A price-aware outcome key finds 5,293 exact duplicate extras across all
+  200 responses and 5,282 after drift exclusion. The audit's 5,296 total
+  omitted price from its grouping key and therefore included three
+  conflicting-price groups.
+- The three FanDuel conflicts contain six rows and were excluded entirely;
+  no tie-break was used. Fanatics remained absent.
+- There are no null lines, null prices, invalid sides, or surviving
+  sub-10-minute rows. An independent raw-record reconstruction matched every
+  one of the 413,758 final outcome keys.
+- Eleven new 2024-25 event ids overlap the old 21-event bettime fragment;
+  downstream joins must deduplicate them.
+
+The two 404 records (wildfire-postponed CGY@LAK 2025-01-08 and dead CHI@BUF
+2024-01-18) remain covered under reissued ids elsewhere in the raw pass.
+The processed parquet is data-ready for registered Experiments 11-13; no
+model experiment has consumed it yet.
 
 ## 5. Is this enough data?
 

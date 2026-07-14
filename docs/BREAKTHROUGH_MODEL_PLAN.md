@@ -764,14 +764,30 @@ intersect the existing 2024-25 closing archive (the CLV/W6-usable set).
 2023-24 has SOG on 1,312 events with two-plus paired books essentially
 everywhere, covering 100% of the existing bettime-saves events there. Two
 HTTP 404s (both free) correspond to postponed/dead games whose replacement
-ids were purchased, so no game is missing. Binding ingestion caveats: drop
-FanDuel 2023-24's 5,280 byte-identical duplicate SOG outcomes and define a
-tie-break for 3 conflicting-price pairs; expect no Fanatics data; re-anchor
-or exclude the 80 events whose cached commence drifted >5 minutes from the
-true commence (one, likely-preseason BUF@NJD 2024-10-05, produced an in-game
-anchor that returned zero bookmakers). W1 and the frozen-Origin-B P2 re-test
-are now data-complete pending their preregistrations; the remainder for the
-follow-up decision is 12,895 credits.
+ids were purchased, so no game is missing.
+
+**Core-pass ingestion complete and independently reconciled (2026-07-14).**
+The binding ingestion contract is now registered in
+`PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 14.5 and implemented by
+`scripts/build_core_bettime_pass_snapshots.py`. The builder produced
+`data/processed/core_bettime_202607_snapshots.parquet`: 413,758 rows across
+23 columns (2023-24 SOG 214,252 rows / 1,310 events; 2024-25 SOG 182,686 /
+1,301; 2024-25 saves 16,820 / 1,244). An independent raw-record-to-parquet
+reconciliation matched all 413,758 outcome keys exactly. Three events were
+excluded because the true puck-drop gap was under the registered 10-minute
+floor: BUF@NJD 2024-10-05 (-24.8 minutes), BOS@PHI 2024-01-27 (5.0), and
+PHI@OTT 2023-10-14 (9.2). After those exclusions, 5,282 byte-identical
+outcome copies were dropped. The purchase audit's earlier 5,296 count used
+a key that omitted price: on a price-aware key the all-200-record total is
+5,293 exact copies, while the remaining three are conflicting-price groups.
+Those three FanDuel groups (six rows) were excluded entirely, not tie-broken.
+No Fanatics rows, null lines, null prices, invalid sides, or sub-10-minute
+rows survived; saves-row goalie matching is 98.93%. Eleven event ids overlap
+the old 21-event 2024-25 bettime fragment and must be deduplicated at join
+time. Experiments 11-13 -- frozen-Origin-B P2, W1 coherence, and W2 DFS
+census -- are now preregistered in sections 14-16 and data-ready. No model
+experiment has touched the new price-level data. The unallocated remainder
+is still 12,895 credits.
 
 ## 6. Experimental protocol
 

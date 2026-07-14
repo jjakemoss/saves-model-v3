@@ -615,6 +615,54 @@ prizepicks saves 1,139, underdog saves 0); 1,233 events pair with the
 existing 2024-25 closing archive for CLV and the W6 replication. 2023-24 SOG
 on 1,312 events, two-plus paired books essentially everywhere, 100% overlap
 with the existing bettime-saves events. Ingestion caveats (binding): FanDuel
-2023-24 duplicate-outcome rule (5,280 identical pairs, 3 conflicting), zero
-Fanatics data, two 404 games covered under reissued ids, and 80 events with
->5min commence drift that need re-anchoring or exclusion.
+2023-24 duplicate outcomes, zero Fanatics data, two 404 games covered under
+reissued ids, and cached-to-true commence drift. These were resolved by the
+registered ingestion described next rather than handled ad hoc in an
+experiment.
+
+### 9.5 Core-pass ingestion completed and verified (2026-07-14)
+
+Sections 14-16 of `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` were written
+before price-level analysis: Experiment 11 freezes the Origin B P2 re-test,
+Experiment 12 registers W1, and Experiment 13 registers the W2 census. Their
+shared ingestion contract is section 14.5. The implementation,
+`scripts/build_core_bettime_pass_snapshots.py`, writes a new artifact and
+does not mutate `saves_lines_snapshots.parquet`.
+
+Final artifact: `data/processed/core_bettime_202607_snapshots.parquet`,
+413,758 rows / 23 columns:
+
+| Season | Market | Rows | Events |
+|---|---|---:|---:|
+| 2023-24 | Player shots on goal | 214,252 | 1,310 |
+| 2024-25 | Player shots on goal | 182,686 | 1,301 |
+| 2024-25 | Goalie saves | 16,820 | 1,244 |
+
+The registered true-puck-drop rule excluded exactly three events whose
+requested anchor was under 10 minutes before the API-returned commence:
+BUF@NJD 2024-10-05 (-24.8 minutes), BOS@PHI 2024-01-27 (5.0), and PHI@OTT
+2023-10-14 (9.2). This is the correct action set; the purchase audit's 80
+events with more than five minutes of cached-to-true commence drift measured
+a different quantity and was never itself the exclusion rule.
+
+Duplicate reconciliation also required one clarification. The purchase
+audit grouped outcomes without price, so its 5,296 "exact duplicate" extras
+combined 5,293 genuinely identical copies with three conflicting-price
+groups. Using a price-aware identity key gives 5,293 exact copies across all
+200 responses and 5,282 after the three short-gap events are removed. The
+three FanDuel conflicting groups -- David Pastrnak 5.5, Nathan MacKinnon 5.5,
+and Darnell Nurse 1.5, all OVER -- contain six rows and were excluded in full
+under the fail-closed rule. No quote was selected by a tie-break.
+
+Independent verification rebuilt the expected universe directly from all
+2,626 raw records without using the ingestion builder and matched the final
+parquet outcome-for-outcome: expected-minus-actual 0 and
+actual-minus-expected 0 across all 413,758 keys. The final artifact has zero
+Fanatics rows, null lines, null prices, invalid sides, or surviving
+sub-10-minute gaps; its saves-row goalie match rate is 98.93%. Eleven of the
+new 2024-25 event ids overlap the old 21-event bettime fragment, so downstream
+joins must deduplicate that fragment rather than concatenate it blindly.
+
+Interpretation: acquisition and ingestion are complete, but this is still a
+data result, not evidence of edge. No Experiment 11-13 model or outcome test
+has consumed the new price-level artifact yet.
