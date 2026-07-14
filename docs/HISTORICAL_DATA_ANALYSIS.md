@@ -433,3 +433,87 @@ ROIs. The pure-market findings (A1, C, D) use the full two-season sample and are
 correspondingly more robust. As more seasons accumulate, the UNDER/OVER finding
 in particular is worth re-confirming, and the whole parlay question re-running on
 a UNDER-only basis.
+
+## 8. Market-microstructure recon (2026-07-13, exploratory, zero credits)
+
+A read-only reconnaissance over the snapshot archive
+(`saves_lines_snapshots.parquet`), `market_game_features.parquet`, and
+`betting.db`, run to generate ideas before the July 2026 credit-expiry
+purchases. Everything here is EXPLORATORY -- multiple angles were viewed,
+nothing was preregistered, and 2025-26 outcomes were already known. None of
+these findings clears this project's bar for "an edge" on its own.
+
+Statistical-standard caveat (added 2026-07-13 after user review): the
+recon's correlations and p-values are ordinary Pearson statistics on rows
+that are correlated by goalie-night, book, and (where not collapsed)
+mirrored over/under sides, and the recon scripts were scratchpad-only and
+were not persisted. Before any bullet below is promoted from "exploratory
+lead" to "finding," it needs: a persisted reproducible script/artifact,
+one-observation-per-goalie-night units or explicitly clustered inference,
+cluster-bootstrap confidence intervals, and exact deduplication rules.
+
+- **Bettime-to-closing steam: null, with a methods lesson.** A naive
+  book-level test of "line moved toward a side predicts it hits" showed
+  chi2 p=4.3e-9; after collapsing mirror-image Over/Under rows and
+  per-book duplicates of the same physical move down to independent
+  game-goalie units (n=317), the effect is p=0.13 with a season sign-flip
+  ("fade the steam" ROI +24.5% in 2023-24, -2.4% in 2025-26). Always
+  dedupe to independent goalie-night units before trusting a p-value on
+  the snapshots parquet.
+- **Game-total moved but saves line flat: null.** Pre-specified continuous
+  correlation on the full sample: r=-0.016, p=0.39, n=2,789, null in both
+  seasons individually. An earlier threshold-based pass that looked
+  dramatic was 12 cherry-picked cells on n=34-98 each -- a fishing
+  artifact, recorded here as a warning. Unvalidated loose end: on the
+  subset where the saves line ALSO moved, r=-0.213, p=0.009, n=148.
+- **DFS staleness in the live tracker: null, but two internal numbers
+  need reconciling.** This recon found Underdog's line exactly matching
+  the sportsbook consensus 90.1% of the time (265/294 rows); the earlier
+  2026-07-07 venue-discrepancy analysis
+  (OFFSEASON_OPTIMIZATION_PLAN.md section 4.3) found 95.2% exact
+  agreement on 248 goalie-nights against a sharp-book comparator. Same
+  direction, different rates -- different windows, comparators, units,
+  and dedup rules, and the difference is unreconciled; the W2
+  preregistration must reconcile the two before adopting either as its
+  prior. PrizePicks matched 78.1% (50/64; its stored prices are
+  hardcoded placeholders, so only hit-rate, never ROI, is legitimate
+  there). The deviating-case subsamples (n=9-29) flip sign across
+  thresholds -- definitional noise. The W2 census purchase
+  (BREAKTHROUGH_MODEL_PLAN.md section 5.7) exists to answer this
+  properly.
+- **Juice skew: directionally consistent, small, feature-grade
+  (exploratory).** Same-book same-line over/under price asymmetry
+  predicts the outcome at r=0.032 overall, with the same sign in both
+  seasons independently (2023-24 r=0.039, nominal p=0.0005; 2025-26
+  r=0.028, nominal p=0.019; unclustered -- rows share goalie-nights
+  across books, so these p-values are inflated), but betting the
+  skew-favored side loses -6.98% ROI against a ~7.1% average vig,
+  negative in every bucket tested. Candidate model feature (wave W3),
+  explicitly not a standalone bet and not yet a verified finding.
+- **BetOnline price convergence: the strongest exploratory lead, still
+  sub-vig and not yet verified to this project's standard.** When
+  BetOnline's bettime implied probability deviates from the other books'
+  bettime consensus at the same line, BetOnline's own price reverts
+  toward that consensus by closing: r=-0.147, nominal p=2.0e-10 on
+  n=1,851 correlated quote rows (unclustered). Single-season evidence
+  only (2025-26 is the only season with BetOnline bettime coverage).
+  Naive "bet the side BetOnline underprices" loses -4.85% to -5.05% ROI.
+  A book-lead tabulation says BetOnline mostly leads rather than lags
+  (13.4% laggard rate); bovada (65.3%) and fanduel (34.0%) are the real
+  laggards but are not bettable venues for this project. Plan: wave W6 --
+  clustered re-verification from a persisted script first, then revisit
+  only as a filter stacked on model EV once a second season of BetOnline
+  bettime coverage exists.
+- **Operational note (corrected 2026-07-13 after user review):**
+  `betting.db`'s `line_snapshots` table has 0 rows, but NOT because the
+  logging was never built. Snapshot insertion is already wired into the
+  live fetch (`scripts/fetch_and_predict.py` calls
+  `insert_line_snapshots` on every run); the tracking-schema migration
+  (`scripts/add_tracking_tables.py`, applied 2026-07-09) simply
+  postdates the season's last game (2026-04-16), so no post-migration
+  game has occurred yet. The table will populate on its own next season.
+  The real open decision is whether to enable the currently
+  commented-out closing-fetch schedule in
+  `.github/workflows/fetch_predictions.yml`, without which closing lines
+  (and therefore CLV and any prospective DFS-vs-close census) are not
+  captured.

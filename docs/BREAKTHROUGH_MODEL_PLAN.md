@@ -615,6 +615,83 @@ available.
   adequate.
 - Another full season of the same conventional boxscore features.
 
+### 5.7 Revised acquisition plan (2026-07-13: expiring balance)
+
+The user reports approximately 50,000 credits remaining that EXPIRE at the
+end of July 2026. That changes this section's decision calculus: sections
+5.1-5.6 treated credits as a scarce persistent resource and gated every
+purchase behind experiment evidence; expiring credits have zero value after
+2026-07-31, so the correct policy is to spend nearly all of them on the
+highest-information archives this month, keeping the probe-first discipline
+but compressing the sequence. Verified facts feeding this revision (Claude,
+cross-checked against an independent Codex research round, 2026-07-13):
+
+- The Odds API has a `us_dfs` region with `underdog` and `prizepicks` as
+  named bookmaker keys -- two of the user's three executable venues.
+  Historical availability depth for these books is UNKNOWN (the props
+  archive starts 2023-05-03, but DFS books were added to the platform at a
+  later, undocumented date); the probe must establish per-season coverage
+  empirically. Empty responses cost nothing.
+- Pinnacle does not offer NHL goalie saves in any region (NHL player props
+  are US-bookmakers-only; the EU prop set for NHL excludes saves). There
+  is no sharp anchor to buy. Settled; do not re-check.
+- `betonlineag` is in the plain `us` region alongside draftkings, fanduel,
+  betmgm, and bovada -- no region multiplier for the standard book set.
+- The "every group of 10 named bookmakers bills as 1 region" rule is
+  documented on the standard odds endpoint, and the historical event-odds
+  endpoint states it takes the same parameters, so the rule should carry
+  over; it is not restated with historical cost examples, so the probe
+  should still confirm actual billing from the responses' usage headers
+  before any full pass relies on it. If it holds, one pass carries the us
+  majors plus underdog and prizepicks at no extra cost.
+- `includeMultipliers=true` returns DFS multipliers per outcome where
+  available; the vendor warns DFS pricing can be indicative and
+  user-dependent. Historical support: verify in the probe.
+- Dense intraday snapshot passes remain ruled out (roughly 131,000 credits
+  per season at hourly granularity).
+
+Revised probe (about 1,000-1,500 credits, run first): 18-24 games
+stratified across 2023-24, 2024-25, and 2025-26; markets
+`player_total_saves`, `player_total_saves_alternate`,
+`player_shots_on_goal` (and its alternate); named bookmakers = us majors
+plus `betonlineag`, `underdog`, `prizepicks`; `includeMultipliers=true`;
+anchored at the bettime convention used by the existing snapshot archive.
+Gates: (a) per-season us_dfs coverage depth, (b) the billing rule on
+historical endpoints read from usage headers, (c) SOG listed-skater
+breadth per the 5.2 gate, (d) alternate-lines coverage per 5.2a, (e)
+multiplier presence.
+
+Revised purchase table (maximums; final mix decided after the probe):
+
+| Item | Maximum credits |
+|---|---:|
+| Probes (all of the above) | 1,500 |
+| Player SOG, 2023-24 + 2024-25, one bettime-convention snapshot | 26,230 |
+| 2024-25 saves pass at the bettime anchor, named-bookmaker set including DFS books if billing confirms (else `us` region only) | 13,110 |
+| Remainder: 2023-24 DFS saves development sample if us_dfs history reaches it; else alternate-saves partial pass or a targeted follow-up | 8,000-9,000 |
+| **Total** | **approx. 48,800-49,800** |
+
+Rationale links: the SOG purchase feeds the cross-market coherence model
+(section 10 NEXT WAVE, W1) and targets the diagnosed shots-volume weakness
+with the one mechanism that reproducibly helped (market information; the
+market-state block passed its accuracy primary on two origins). The
+2024-25 saves pass is triple-purpose regardless of outcome: it enables a
+P2-style selection-over-blind-baseline test at roughly double Experiment
+8's sample -- using the FROZEN Origin B market-state model, whose test
+season is 2024-25 and whose training never touched it (never Origin C:
+its training pool extends into February 2025 and would leak) -- gives the
+exploratory BetOnline convergence lead (HISTORICAL_DATA_ANALYSIS.md
+section 8) a second season, and completes a three-season bettime archive
+before the 2026-27 shadow season. The DFS history census tests venue-level
+staleness at the actual products bet. The live tracker analyses found
+90.1%-95.2% agreement with sportsbook consensus, depending on the sample,
+comparator, and deduplication rules; W2 must reconcile those definitions
+before treating either rate as the prior.
+
+All 2023-24 and 2024-25 outcomes remain viewed (section 6.1): every
+positive result from these purchases is development evidence grading into
+a 2026-27 shadow candidate, never immediate proof of edge.
+
 ## 6. Experimental protocol
 
 ### 6.1 Development versus confirmation
@@ -993,6 +1070,77 @@ does not guarantee a beatable market.
    architecture bars on both shots level and Brier. Reconsider purchases
    only after a new preregistered architecture clears its own gate or a
    future untouched bettime season supplies a valid replication target.
+
+   **NEXT WAVE (2026-07-13, decided after the 6a-6e readout; supersedes
+   the sequencing of steps 7-12 below).** The user redirected the
+   remaining research effort at historical data, with approximately
+   50,000 credits expiring 2026-07-31. Acquisition specifics and verified
+   vendor facts are in section 5.7. Wave experiments, each requiring its
+   own binding preregistration before any candidate run:
+
+   W1. **Cross-market coherence model** (concretizes old step 11). Use
+   the hockey identity E[saves] ~= E[opponent team SOG] - E[opponent
+   goals]: aggregate opponent skater SOG lines into a coverage-adjusted
+   team shots projection, estimate opponent goals from moneyline/total
+   information, produce an implied saves distribution, and bet only where
+   the saves market is materially incoherent with it. Develop on 2023-24,
+   single touch on 2024-25. Known modeling hazards to bind in the
+   preregistration: SOG props cover only listed skaters (the coverage
+   adjustment is load-bearing), prop lines are medians not means,
+   empty-net and backup-relief goals break the identity in the tails, and
+   book-level SOG coverage breadth is a probe gate.
+   W2. **DFS venue-history census.** Underdog/PrizePicks saves lines
+   versus same-timestamp sportsbook consensus and versus outcomes, across
+   every season the us_dfs archive reaches. Honest prior: two
+   tracker-based analyses agree DFS lines overwhelmingly track consensus
+   but disagree on the exact rate (95.2% of 248 goalie-nights in the
+   2026-07-07 venue analysis, OFFSEASON_OPTIMIZATION_PLAN.md section
+   4.3, versus 90.1% of 294 rows in the 2026-07-13 recon; different
+   windows, comparators, units, and dedup rules -- the W2
+   preregistration must reconcile the two before adopting either as its
+   prior). This is a census to find and size the deviating minority, not
+   a presumed edge.
+   W3 (zero credit). **Market-microstructure feature block.** Juice skew
+   (same sign in both seasons at r of about 0.03, but exploratory:
+   unclustered inference from unpersisted scripts, see
+   HISTORICAL_DATA_ANALYSIS.md section 8's statistical-standard caveat)
+   plus related bettime-observable price-shape features, tested as model
+   inputs against the no-pace control under Gate-A-style bars.
+   W4 (zero credit). **Rink scorer-effect adjustment.** Official saves
+   settle on officially recorded SOG, and published rink-to-rink
+   recording bias is persistent; build a prior-season, heavily shrunk
+   venue adjustment and test out of sample. Likely failure mode: books
+   already price it.
+   W5 (zero credit; data already on disk). **Score-state elasticity.**
+   `data/raw/play_by_play/` already holds 5,248 event-level play-by-play
+   files covering 2022-23 through 2025-26 (a sampled file has 323 events
+   under `plays` with `situationCode`, timestamps, and `rosterSpots`;
+   the archive is documented in MODEL_TRAINING_GUIDE.md and is consumed
+   by `shot_quality_features.py` in the dead pipeline). Parse that
+   archive -- do not re-fetch anything -- to estimate team-specific
+   score-state shot generation and suppression elasticities, and combine
+   with pregame moneyline/total win-probability inputs. (Correction
+   2026-07-13, caught by user review: an earlier version of this entry
+   wrongly declared no play-by-play exists on disk after checking only
+   `data/raw/boxscores/`.)
+   W6 (deferred until the 2024-25 pass lands). **BetOnline
+   convergence-filter policy.** The exploratory lead that BetOnline's
+   bettime deviations from consensus revert by closing (r=-0.147,
+   nominal p=2e-10 on n=1,851 correlated quote rows, unclustered,
+   2025-26 only) is the recon's strongest but loses to the vig as a
+   standalone rule; preregister only as a filter stacked on model EV,
+   only after clustered re-verification from a persisted script, and
+   only once a second season of BetOnline bettime coverage exists.
+
+   Steps 7-9 below (opening anchor and the opening-to-close movement
+   model) are deprioritized, not deleted: the zero-credit recon found
+   bettime-to-closing steam resolves to noise after deduplication, so an
+   opening purchase now needs a specific surviving hypothesis to justify
+   it against the W1/W2 purchases. Step 10's condition is superseded by
+   section 5.7 (the SOG purchase proceeds on its own probe gate; the
+   movement model it was conditioned on is deprioritized). Step 12
+   stands. Steps 13-14 (the shadow season) remain the terminal arbiter
+   for anything this wave produces.
 7. Freeze the opening anchor and full-purchase rules.
 8. Purchase the 2024-25 opening saves pass if its probe gate passes.
 9. Build and test the opening-to-close movement model (drift-baseline and

@@ -2235,6 +2235,53 @@ explicitly says the result survived the honest harness and uncertainty checks.
   strategy is arithmetically nonviable in this archive and is closed
   without an outcome touch. Purchases remain blocked.
 
+- **2026-07-13 (Claude-authored: next-wave ideation, dual-sourced, and
+  the expiring-credit reframe).** After the 6a-6e readout closed the
+  prior queue, the user redirected effort at historical data with
+  approximately 50,000 Odds API credits expiring 2026-07-31 -- which
+  flips the plan's purchase posture from "blocked pending evidence" to
+  "spend on the highest-information archives this month." Two parallel
+  Sonnet research agents (one mining on-disk data, one external) plus an
+  independent Codex ideation round converged on the same headline
+  discovery: The Odds API's `us_dfs` region carries `underdog` and
+  `prizepicks` as named historical bookmaker keys -- venue-exact history
+  the project previously assumed was only collectable prospectively.
+  Claude independently verified the key vendor facts: no Pinnacle NHL
+  saves in any region (settled), `betonlineag` in plain `us`, the
+  10-bookmaker billing rule documented for live but NOT historical
+  endpoints (probe-verifiable), `includeMultipliers` real, dense intraday
+  passes unaffordable. Amended same day after user review: one Codex
+  claim was merely softened and one Claude "correction" was itself wrong.
+  (a) The 10-bookmaker billing rule is documented on the standard odds
+  endpoint whose parameters the historical event-odds endpoint states it
+  inherits -- the probe should still confirm actual billing from usage
+  headers, but calling the rule undocumented for historical calls was
+  overstated. (b) Claude wrongly declared the play-by-play files
+  nonexistent after checking only `data/raw/boxscores/`;
+  `data/raw/play_by_play/` holds exactly the 5,248 event-level files
+  Codex described (already documented in MODEL_TRAINING_GUIDE.md), so
+  wave W5 parses the existing archive rather than fetching anything.
+  The same review also flagged: the W2 prior must be reconciled with the
+  2026-07-07 venue analysis (95.2% exact agreement on 248 nights vs the
+  recon's 90.1% on 294 rows -- different windows/comparators/dedup
+  rules); the recon's microstructure statistics are unclustered and
+  script-less, so W3/W6 stay exploratory leads pending clustered
+  re-verification from persisted scripts; the 2024-25 P2 re-test must
+  use the frozen Origin B market-state model, never Origin C (whose
+  training pool extends into 2024-25 and would leak); and the
+  `line_snapshots` table is already wired into the live fetch
+  (`scripts/fetch_and_predict.py`) but the 2026-07-09 migration
+  postdates the season's last game -- the real open item is the
+  commented-out closing-fetch schedule. The zero-credit recon results
+  (steam null after
+  dedup, DFS tracker staleness null, total-vs-saves-line null, juice
+  skew replicated but sub-vig, BetOnline convergence the strongest
+  exploratory lead but still unclustered, unpersisted, and sub-vig)
+  are written into HISTORICAL_DATA_ANALYSIS.md section 8. The finalized
+  acquisition plan and next experiment wave (W1-W6) are in
+  BREAKTHROUGH_MODEL_PLAN.md sections 5.7 and 10. No credits spent yet;
+  probes await user authorization.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need
