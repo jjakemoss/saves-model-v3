@@ -156,6 +156,51 @@ usable betting-line-labeled data is **just under 2 full NHL seasons**.
 `data/raw/boxscores/` now shows all 5,248 games (all 4 seasons) as finalized
 (`OFF` state) — no stale placeholders remain anywhere.
 
+### 4.1 W1 market-coverage probe (Codex-authored, 2026-07-13)
+
+The repository now also holds 24 append-only historical event-odds probe
+responses under `data/raw/betting_lines/probes/w1_market_coverage/` (eight
+games per season across 2023-24, 2024-25, and 2025-26). They contain standard
+and alternate goalie saves plus player SOG for a nine-book named set at the
+bettime anchor. The probe cost 800 credits and left 51,465. (The season-scale
+purchase it gated has since been executed -- see section 4.2.)
+
+Coverage implications: sportsbook SOG is broad enough for the planned W1
+development pass; PrizePicks goalie-saves history is available from 2024-25
+onward; Underdog historical goalie saves and all 2023-24 DFS props were absent
+from the sample; and alternate saves after 2023-24 are over-only rather than a
+paired probability curve. See `HISTORICAL_DATA_ANALYSIS.md` section 9 for the
+verified counts and schema cautions.
+
+### 4.2 Core bet-time passes (Claude-authored, 2026-07-14)
+
+`data/raw/betting_lines/passes/core_bettime_202607/` holds 2,626 append-only
+event-odds records from the two authorized core purchases (script:
+`scripts/purchase_core_bettime_passes.py`; independent audit:
+`scripts/audit_core_bettime_passes.py` and `audit_summary.json` alongside the
+records). Total spend 38,570 credits, balance 51,465 -> 12,895, every credit
+reconciled against response headers.
+
+- `combined-2024-25`: 1,313 events at the bettime anchor, markets
+  `player_total_saves,player_shots_on_goal`, nine named books. 1,301 events
+  have SOG, 1,244 have saves (betonlineag saves 1,050; prizepicks saves
+  1,139; underdog saves 0 -- SOG only). 1,233 of the saves events intersect
+  the existing 2024-25 closing archive: that is the CLV/W6-usable set.
+- `sog-2023-24`: 1,313 events, `player_shots_on_goal` only. 1,312 have SOG
+  with at least two paired books on essentially every event; every existing
+  2023-24 bettime-saves event now has matching SOG.
+
+Known caveats for ingestion (full detail in `audit_summary.json`): FanDuel
+2023-24 SOG repeats each main line inside its alternate block (5,280
+byte-identical duplicate pairs to drop; 3 conflicting-price pairs need an
+explicit tie-break); Fanatics returned zero events in both seasons; two 404
+events (wildfire-postponed CGY@LAK 2025-01-08 and dead CHI@BUF 2024-01-18)
+are both covered under reissued event ids elsewhere in the pass; one stale
+cached commence time (2024-10-05 BUF@NJD, likely preseason) produced an
+in-game anchor that returned zero bookmakers; 80 events show >5min drift
+between cached and true commence times -- ingestion should re-anchor or flag
+drifted events.
+
 ## 5. Is this enough data?
 
 Workable, but thin. Two full seasons of betting-line-labeled data (4,755-6,916
@@ -220,9 +265,10 @@ walk-forward evaluation with only 2 seasons total.
 
 ## 7. Open follow-ups
 
-- Confirm whether The Odds API offers historical odds access further back
-  than 2024-10-04, and at what cost, before assuming more historical betting
-  data is obtainable at all.
+- Historical player props are vendor-available after 2023-05-03, but the W1
+  probe found no Underdog/PrizePicks data in the sampled 2023-24 games. Treat
+  2024-25 as the practical start of the DFS archive unless a later targeted
+  probe demonstrates otherwise.
 - As each new NHL season completes, re-run the same extension pattern used
   in §3 (refresh boxscores → `create_clean_features.py` →
   `merge_betting_lines.py` → `add_market_features.py` →

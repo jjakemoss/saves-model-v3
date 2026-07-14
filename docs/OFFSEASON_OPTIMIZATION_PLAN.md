@@ -2280,7 +2280,76 @@ explicitly says the result survived the honest harness and uncertainty checks.
   are written into HISTORICAL_DATA_ANALYSIS.md section 8. The finalized
   acquisition plan and next experiment wave (W1-W6) are in
   BREAKTHROUGH_MODEL_PLAN.md sections 5.7 and 10. No credits spent yet;
-  probes await user authorization.
+  probes awaited user authorization at the time of that entry (superseded
+  immediately below).
+
+- **2026-07-13 (Codex-authored: revised W1 acquisition probe executed and
+  independently verified).** The user authorized the bounded probe only.
+  `scripts/probe_opening_markets.py` made 24 historical event-odds calls
+  (eight per season) for standard/alternate saves and SOG across nine named
+  books with `includeMultipliers=true`; all returned HTTP 200. Actual spend
+  was 800 credits (170/310/320 by season), leaving 51,465. The two core
+  purchase maximums (26,230 SOG + 13,110 saves) would leave up to 12,125 for
+  a probe-informed remainder. Billing is settled:
+  every call's `x-requests-last` equaled `10 * unique returned markets`, so
+  nine named books cost one region-equivalent. `scripts/audit_w1_probe.py`
+  independently rebuilt the raw responses and joined all 24 games to the NHL
+  archives; a Luna audit separately verified every request signature, scope,
+  response event, quota transition, and coverage count. Standard sportsbook
+  SOG passes the coverage gate: at least two usable books on 24/24 events,
+  player-event paired-line completeness 98.53%/100%/99.69% by season, exact
+  season-team resolution 347/347, and median 12-15 listed skaters accounting
+  for about 47%-61% of actual combined SOG at the book-season median. DFS
+  saves are narrower: no DFS data in 2023-24; PrizePicks saves 7/8 in each of
+  2024-25 and 2025-26; Underdog saves 0/8 in both. Alternate saves are absent
+  in 2023-24 and available mainly at BetOnline thereafter, but all 455 sampled
+  outcomes are over-only. Non-null multipliers exist only for Underdog
+  2025-26 SOG, never saves. **Consequence:** the two-season sportsbook SOG
+  pass clears its acquisition gate and named-book billing for the 2024-25
+  saves pass is confirmed, but neither full purchase was authorized or run.
+  Close the 2023-24 DFS allocation; narrow W2 to PrizePicks history plus
+  prospective Underdog; use alternate-saves credits only for an explicitly
+  one-sided ladder design. Full actuals are in BREAKTHROUGH_MODEL_PLAN.md
+  section 5.7 and HISTORICAL_DATA_ANALYSIS.md section 9.
+
+- **2026-07-13 (Claude-authored: core purchases authorized; remainder
+  decision revised).** The user authorized both core purchases: the
+  two-season sportsbook SOG pass and the 2024-25 bettime saves pass. Two
+  remainder proposals were rejected before execution. Codex's ~11,000-credit
+  alternate-saves ladder purchase was scaled back (over-only quotes cannot be
+  de-vigged without an unverified one-sided model; a 1-2k pilot must come
+  first). Claude's counter-proposal to buy a 2024-25 closing saves pass was
+  itself wrong and was withdrawn after direct verification against
+  `saves_lines_snapshots.parquet`: 2024-25 already holds 14,954 closing rows
+  across 1,288 events; only the bettime side is missing (258 rows, 21
+  events). CLV grading and the W6 second-season pairing therefore unlock as
+  soon as the bettime pass lands, at zero extra cost. Execution design: a new
+  dedicated script `scripts/purchase_core_bettime_passes.py` following the
+  probe's append-only signature-cached record pattern (records under
+  `data/raw/betting_lines/passes/core_bettime_202607/`), 2024-25 fetched as
+  one combined call per event (`player_total_saves,player_shots_on_goal`, 20
+  credits max/event), 2023-24 as SOG-only (10 max/event), nine named books at
+  the bettime anchor, credit floor 11,500 protecting the remainder. The
+  remainder allocation itself is deferred until purchase actuals land.
+
+- **2026-07-14 (Claude-authored: core purchases executed and independently
+  audited).** Both passes completed: 2,626 append-only records under
+  `data/raw/betting_lines/passes/core_bettime_202607/`, total spend 38,570
+  credits, balance 51,465 -> 12,895, reconciled exactly against response
+  headers by a persisted audit (`scripts/audit_core_bettime_passes.py` +
+  `audit_summary.json`). One mid-run fix: the first combined-2024-25 run
+  aborted at call 649 on an HTTP 404 (the wildfire-postponed CGY@LAK
+  2025-01-08, whose event id was reissued); the script was amended to treat
+  404/EVENT_NOT_FOUND as a cached, free, per-event answer and continue,
+  while all other non-200s still abort. Both 404 games (the other:
+  CHI@BUF 2024-01-18, already documented as a dead event) are covered under
+  replacement ids, so no game is missing. Headline coverage and the binding
+  ingestion caveats (FanDuel duplicate rule, zero Fanatics, commence-drift
+  re-anchoring) are recorded in HISTORICAL_DATA_ANALYSIS.md section 9.4 and
+  CURRENT_HISTORICAL_DATA.md section 4.2. Next actions: preregister W1/W2
+  (and the frozen-Origin-B P2 re-test) before any analysis touches the new
+  data; decide the 12,895-credit remainder, starting with the 1-2k
+  alternate-ladder pilot.
 
 ## 7. Appendix: what was checked and found sound
 

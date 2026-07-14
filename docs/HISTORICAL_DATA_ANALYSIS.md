@@ -517,3 +517,104 @@ cluster-bootstrap confidence intervals, and exact deduplication rules.
   `.github/workflows/fetch_predictions.yml`, without which closing lines
   (and therefore CLV and any prospective DFS-vs-close census) are not
   captured.
+
+## 9. W1 market-coverage probe (2026-07-13, Codex-authored, 800 credits)
+
+This was a data-availability and billing probe, not a model experiment and not
+evidence of betting edge. Twenty-four games (eight each from 2023-24, 2024-25,
+and 2025-26) were queried at the existing bettime anchor for standard and
+alternate goalie saves plus standard and alternate player SOG. Each call used
+the same nine named-book set, including BetOnline, Underdog, and PrizePicks,
+with `includeMultipliers=true`.
+
+The raw records live under
+`data/raw/betting_lines/probes/w1_market_coverage/`. The acquisition script is
+`scripts/probe_opening_markets.py`; `scripts/audit_w1_probe.py` independently
+rebuilds the results from those raw records and joins the sampled events to the
+held NHL play-by-play and boxscore archives. A separate Luna audit recomputed
+request signatures, response scope, quota arithmetic, and coverage directly
+from all 24 raw files.
+
+### 9.1 Billing is settled
+
+- 24/24 calls returned HTTP 200.
+- Actual spend was 800 credits: 170 in 2023-24, 310 in 2024-25, and 320 in
+  2025-26. The remaining balance is 51,465.
+- On every call, `x-requests-last` equaled 10 times the number of unique markets
+  returned. Nine named bookmakers therefore count as one region-equivalent on
+  the historical event-odds endpoint.
+- Usage and remaining-header deltas reconcile for every sequential call.
+
+### 9.2 SOG coverage passes the acquisition gate
+
+Every sampled event in every season had at least two books with usable paired
+standard SOG lines (8/8, 8/8, 8/8). After exact deduplication and treating a
+player-event as usable when it has at least one paired central line, both-side
+completeness was 604/613 (98.53%) in 2023-24, 516/516 (100%) in 2024-25, and
+642/644 (99.69%) in 2025-26. The held NHL roster archive resolved all 347 unique
+event-player names to exactly one of the two teams. Actual same-game rosters
+matched 340/347 because seven posted players did not dress, which is an
+availability issue rather than an identity failure.
+
+For ordinary sportsbooks, the median event listed 12-15 skaters across both
+teams and those players produced roughly 47%-61% of actual combined team SOG at
+the book-season median. That is broad enough to develop W1 and clearly not a
+two-or-three-star feed, but it is not a complete team projection: the
+coverage-adjustment method remains the experiment's load-bearing choice. DFS
+SOG breadth was much thinner (typically one to four listed players per event)
+and should not be substituted for the sportsbook aggregation.
+
+One schema trap matters: 2023-24 FanDuel contained 47 exact duplicate standard
+SOG outcomes and mixed one-sided milestone points into the standard market.
+Future builders must deduplicate `(event, book, player, point, side)` and select
+the paired central line before measuring breadth.
+
+### 9.3 DFS saves and alternate saves are narrower than hoped
+
+- Neither Underdog nor PrizePicks appeared in 2023-24.
+- PrizePicks standard saves appeared in 7/8 sampled events in both 2024-25 and
+  2025-26. Underdog returned no saves market in either season, despite returning
+  SOG markets.
+- Alternate saves were absent in 2023-24. BetOnline supplied them in 7/8 events
+  in 2024-25 and 8/8 in 2025-26; other books were thinner.
+- All 455 alternate-saves outcomes were over-only. They are potentially useful
+  ladder observations, but they are not paired prices and cannot directly form
+  the de-vigged multi-line probability curve Component G originally imagined.
+- All 8,825 outcomes contained a `multiplier` field, but only 222 values were
+  non-null, all from Underdog's 2025-26 SOG markets. No saves multiplier was
+  available; PrizePicks returned none.
+
+**Consequence:** sportsbook SOG purchasing clears the data gate, but this says
+nothing yet about whether W1 can beat the saves market. Historical W2 is now a
+PrizePicks-only saves census beginning in 2024-25; Underdog must be collected
+prospectively. The planned 2023-24 DFS remainder has no data to buy. Alternate
+saves should receive credits only under a preregistered one-sided-ladder use,
+not as a presumed two-sided distribution. After reserving the maximum 26,230
+for SOG and 13,110 for the 2024-25 saves pass, the exact post-probe balance
+would leave up to 12,125 credits for that targeted remainder.
+
+**Post-probe decision (2026-07-13):** the user authorized both core purchases
+(execution details in BREAKTHROUGH_MODEL_PLAN.md section 5.7). One relevant
+fact settled during that decision: 2024-25 CLOSING saves are already owned
+(14,954 rows across 1,288 events in `saves_lines_snapshots.parquet`) -- only
+the bettime side is missing (258 rows, 21 events). A proposed closing
+purchase was therefore redundant and was dropped; CLV grading and a W6
+second-season replication become possible the moment the 2024-25 bettime
+pass lands. The alternate-saves remainder is capped at a 1-2k pilot until a
+one-sided ladder model is shown to work.
+
+### 9.4 Core purchase executed and audited (2026-07-14)
+
+Both core passes ran to completion via
+`scripts/purchase_core_bettime_passes.py` and were independently audited from
+the raw records by `scripts/audit_core_bettime_passes.py` (summary JSON
+alongside the records in `data/raw/betting_lines/passes/core_bettime_202607/`).
+Spend 38,570 credits, balance 12,895, every credit reconciled. Coverage:
+2024-25 saves on 1,244 events / SOG on 1,301 (betonlineag saves 1,050,
+prizepicks saves 1,139, underdog saves 0); 1,233 events pair with the
+existing 2024-25 closing archive for CLV and the W6 replication. 2023-24 SOG
+on 1,312 events, two-plus paired books essentially everywhere, 100% overlap
+with the existing bettime-saves events. Ingestion caveats (binding): FanDuel
+2023-24 duplicate-outcome rule (5,280 identical pairs, 3 conflicting), zero
+Fanatics data, two 404 games covered under reissued ids, and 80 events with
+>5min commence drift that need re-anchoring or exclusion.
