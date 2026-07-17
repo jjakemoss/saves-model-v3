@@ -1,0 +1,16 @@
+{
+  "pre_gate": {
+    "clean_training_data": "43024859f92725350c866fc7b8e413728f6948ad99c798666d491130d254ac77",
+    "game_context_features": "34d9fca33d4128b082e8be4c911a9507620c45067a92882993a074f74ced7adb",
+    "multibook_classification_training_data": "6f0d1c6d97178c17045c0f340e2f795590926103b3282dd72f567466fb37d475",
+    "market_game_features": "f402bc372c333e281aa0b5358e6e06a7e42e37e12be3d153be4e2160567b5bee",
+    "multibook_frame_2023_24": "f28e96a8e425aca0de309deb5c9aaa36eb4b47f56639c325d4bb7bd4e5b573a2",
+    "frozen_ab_metadata": "cf46bfc8bb7ba08e119406cb4ff5ed45396d22f021439d97f97006783e9be33c",
+    "frozen_c_metadata": "785a048e9a92ad7ecfb776ffae19288c952030d375bd37ea5db62e26523f9134"
+  },
+  "post_gate": {
+    "saves_lines_snapshots": "e81ca4ea01b1dfb3f69068782b75e18b4d174bef82dd34d8e341b59cbc94ed56",
+    "core_bettime_202607_snapshots": "103b81c6f3e9647c72ad82538791bdbea1d6d8547eaae8c5f39d4ad815d79c6e",
+    "multibook_frame_2023_24_bettime": "11e9347fec31951f7ffbed7bbc1f3b132b560c7af6797015f6c8eab30c7175d0"
+  }
+}

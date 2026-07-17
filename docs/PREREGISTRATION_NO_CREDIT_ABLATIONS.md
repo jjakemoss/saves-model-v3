@@ -2851,3 +2851,1938 @@ No shadow-candidate registration follows. It does not reopen without a
 new architecture or a new season of BetOnline bettime coverage.
 Artifacts:
 `models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.
+
+---
+
+## 18. Experiment 15 -- W3 saves-market microstructure feature block (juice skew)
+
+Registered 2026-07-14 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, before any microstructure feature value was computed on any
+season. This is `BREAKTHROUGH_MODEL_PLAN.md` section 10 NEXT WAVE's W3
+entry (zero credit): "Market-microstructure feature block. Juice skew
+... plus related bettime-observable price-shape features, tested as
+model inputs against the no-pace control under Gate-A-style bars," and
+`HISTORICAL_DATA_ANALYSIS.md` section 8's "Juice skew" exploratory
+lead, operationalized as a binding registration per that section's own
+statistical-standard caveat (added 2026-07-13). Architecturally this
+experiment is a direct sibling of Experiment 5 (section 6, the
+`control_plus_market_state` block) -- same variant mechanics, same
+script lineage (`scripts/experiment_market_state_features.py`) --
+extended with a second, book-agnostic feature family instead of the
+market-game-state one.
+
+**Amendment (2026-07-14, lead-reviewer directed, still before any
+microstructure feature value was computed on any season).** As first
+registered, this section gated on Origin A and Origin B agreeing.
+The lead reviewer independently verified the structural disclosure in
+18.1 item 4 (Origin A's train+val pool, 2022-10-07 to 2023-04-14,
+predates the entire bettime saves archive, which starts 2023-11-02;
+Experiment 5's own Origin A market-state result never beat control
+there: `brier_vs_control_closing` mean `+0.000537819408872642`, CI95
+`[-0.0001351793045926375, +0.0012345894289141777]`) and ruled that a
+registration must not gate on an origin that cannot train the
+features -- disclosure of a structurally unclearable bar is not
+enough. The project's own precedent resolves this: the two origins on
+which the market-state block actually demonstrated a CI-excluding-zero
+improvement are Origin B (Experiment 5, section 10 table row 5) and
+Origin C (Experiment 8, section 11.12 P1 PASS). Under this amendment
+the GATING origin set is **{Origin B, Origin C}**; Origin A is
+reclassified as a registered PLACEBO / NEGATIVE CONTROL (18.3a),
+explicitly non-gating. Everything below is written in the amended
+form; no feature value, correlation, Brier, or ROI had been computed
+when the amendment was made, so this is a pre-execution registration
+change, not a post-result revision.
+
+**18.1 Hypothesis and honesty note.** Saves-market microstructure at
+bettime (juice skew and price-shape) carries predictive information
+about the saves outcome beyond the no-pace control's features. This
+must be read against the same kind of honesty constraints section
+17.1 stated for BetOnline convergence, restated for this lead
+specifically:
+
+1. The discovery statistics (same-book same-line over/under price
+   asymmetry predicts the outcome at r=0.032 overall; 2023-24 r=0.039,
+   nominal p=0.0005; 2025-26 r=0.028, nominal p=0.019) were computed by
+   an unpersisted scratchpad script that no longer exists and was
+   never clustered by goalie-night (`HISTORICAL_DATA_ANALYSIS.md`
+   section 8's own caveat: "rows share goalie-nights across books, so
+   these p-values are inflated"). There is no prior artifact to
+   reproduce a wiring gate against for the discovery statistic itself
+   -- only Experiment 5's architecture is reproducible, not the
+   original juice-skew number. Whatever this experiment measures is a
+   RE-DERIVATION under new, stricter, feature-block definitions
+   (18.2), not a confirmation of r=0.032.
+2. All three test seasons are already-viewed. 2024-25 outcomes
+   (Origin B's test fold) have been opened repeatedly by this document
+   family (Experiments 5, 8, 11, 12, 14 all touched 2024-25 in some
+   form). 2023-24 (Origin A's placebo test fold) has been a viewed
+   development fold since the rolling-origin experiment (section 0.1).
+   2025-26 (Origin C's test fold, per the amendment) is the worst of
+   the three in honesty terms: it is simultaneously the juice-skew
+   DISCOVERY season (the original scratchpad recon ran on it) and the
+   live-bet season -- doubly viewed. Any Origin C result is therefore
+   IN-SAMPLE with respect to the original juice-skew lead, exactly the
+   caveat section 17.1 item 2 attached to Experiment 14's Phase A on
+   the same season, even though no MODEL in this repo was ever trained
+   or validated on 2025-26 (Origin C's folds, 18.3). There is no
+   untouched season available for this lead anywhere in this project's
+   current data. Per plan section 6.1's interpretation hierarchy, the
+   strongest possible outcome of this experiment is promotion of the
+   block to 2026-27 shadow candidacy for a future model rebuild --
+   never confirmation of edge on an untouched season.
+3. The standalone-bet result is already known and is NOT being
+   re-tested: betting the skew-favored side loses -6.98% ROI against a
+   ~7.1% average vig, negative in every bucket tested
+   (`HISTORICAL_DATA_ANALYSIS.md` section 8). This experiment tests
+   only whether the underlying price-shape signal improves the
+   distributional saves MODEL as an input feature -- a materially
+   different and weaker claim than "this beats the vig on its own,"
+   and section 18.5 computes no betting-policy ROI at all.
+4. A structural fact that shaped the amended architecture: Origin A's
+   train+val pool lies entirely inside the 2022-23 season (2022-10-07
+   to 2023-04-14), and the saves-market bettime archive this block's
+   training-season features come from (`saves_lines_snapshots.parquet`)
+   does not begin until 2023-11-02 (18.8) -- fully seven months after
+   Origin A's pool ends. Origin A's `control_plus_microstructure`
+   shots model therefore has 0% real training exposure to any `juice_*`
+   value, exactly the same structural problem Experiment 5's
+   `control_plus_market_state` block had on Origin A (section 6's
+   module docstring: "the tree has no non-missing training exposure to
+   split on"), and exactly why Experiment 5's block failed its own
+   both-origins bar despite a real, CI-excluding-zero Origin B result.
+   Per the 2026-07-14 amendment, Origin A therefore does NOT gate this
+   experiment: it is a registered PLACEBO / NEGATIVE CONTROL (18.3a)
+   whose paired deltas estimate the procedure's noise floor, and the
+   gating set is {Origin B, Origin C} -- the two origins on which
+   market-state actually passed (Experiment 5 Origin B; Experiment 8
+   Origin C P1), both of which have real `juice_*` training exposure:
+   Origin B 29.79% of train rows / 86.81% of val rows, Origin C 49.34%
+   of train rows / 80.89% of val rows (verified join counts, 18.8).
+
+**18.2 Registered feature block.** Fixed here, before any feature
+value is computed on any row. All features derive ONLY from bettime
+`player_total_saves`-market quotes for the goalie's own saves market
+(no `player_shots_on_goal` rows, no closing-pass quotes, no
+cross-market machinery -- W1's cross-market coherence model, section
+15, owns that territory and is closed to further historical touches).
+All features are book-agnostic aggregates across whichever qualifying
+books are present on a given goalie-night -- never keyed to
+`betonlineag` or any other single book -- because `betonlineag` is
+verified absent (zero rows, both `bettime` and `closing`) from the
+entire 2023-24 `saves_lines_snapshots.parquet` archive (18.8): a
+venue-specific feature would be an all-NaN column throughout training
+on that origin's test fold, and this document family already flagged
+the identical problem for Component G (section 10, "Consequence for
+Component G": "that book has zero quotes in the archive for that
+season").
+
+*De-vig method (reused verbatim from section 17.2, restated as binding
+here).* Proportional (multiplicative) normalization of the two-sided
+quote at the SAME book, SAME line, SAME bettime snapshot, SAME
+goalie-night -- never mixing books or sides (the odds-averaging-bug
+rule, `HISTORICAL_DATA_ANALYSIS.md` section 1). From a qualifying
+book's own paired decimal prices: `raw_p_over = 1 / price_decimal_over`,
+`raw_p_under = 1 / price_decimal_under`, `overround = raw_p_over +
+raw_p_under`, `p_under_devigged = raw_p_under / overround`. A book
+contributes only when BOTH sides of the exact same line are present
+for that book at that goalie-night (14.5 rule 1's pairing convention,
+reused via `experiment_rolling_origin.build_season_multibook_frame` /
+`clv_audit_pace_policy.pivot_both_sides`, unchanged); a single-sided
+quote is not de-vigged and does not contribute anything to any
+feature below -- not to a median, not to `juice_n_books`, not to the
+modal-line computation (17.2's precedent, restated as binding).
+DFS venues (`prizepicks`, `underdog`) are excluded from the book
+universe at every step, per 17.2's Other-books/DFS-exclusion rule,
+restated as binding here: they do not run genuine two-sided vig-priced
+markets (`underdog` carries zero saves rows in any pass; the new
+pass's `prizepicks` saves quotes carry simultaneous alternate lines on
+the same side for the same player, 17.8/18.8).
+
+*Modal line.* For a goalie-night with at least one qualifying
+(two-sided) book, `L*` = the line value quoted by the most qualifying
+books; ties among tied-for-most lines are broken by the LOWEST
+numeric line value, fixed now and never revisited after seeing any
+feature value. "At-modal" qualifying books = the subset whose own line
+equals `L*`.
+
+*The six registered features plus one indicator (within the 5-8
+range; `juice_matched` is registered as an indicator, not counted
+toward the 5-8, mirroring how `mkt_matched` was not counted among
+Experiment 5's "7 `mkt_*`"):*
+
+1. `juice_p_under_consensus` -- MEDIAN of `p_under_devigged` across
+   at-modal qualifying books. This is the skew itself: >0.5 means the
+   book-median devigged price currently favors UNDER being priced as
+   more likely than a fair coin at that line; <0.5 the reverse. No
+   separate centered ("minus 0.5") column is registered -- an XGBoost
+   tree splits identically on `p` or `p - 0.5`, so a second derived
+   column would be redundant fishing surface, not a new degree of
+   freedom.
+2. `juice_overround_median` -- MEDIAN of `overround` across at-modal
+   qualifying books (vig magnitude at the consensus line).
+3. `juice_p_under_dispersion` -- population standard deviation
+   (`ddof=0`) of `p_under_devigged` across at-modal qualifying books;
+   `0.0` (NOT NaN) when exactly one at-modal qualifying book exists,
+   mirroring `mkt_h2h_dispersion`/`mkt_total_dispersion`'s
+   `.fillna(0.0)` convention exactly (`build_market_state_events`,
+   section 6's script) -- a single observation has zero empirical
+   spread by construction, which is a fact about the data, not a
+   missing value.
+4. `juice_n_books` -- COUNT of qualifying (two-sided) books at the
+   goalie-night, ANY line (not restricted to the modal line) --
+   overall market depth, independent of line agreement.
+5. `juice_line_dispersion` -- population standard deviation (`ddof=0`)
+   of the LINE value across qualifying books at the goalie-night, ANY
+   line; `0.0` when only one distinct line is quoted or only one
+   qualifying book exists (same `fillna(0.0)` convention as #3). This
+   averages LINE point values across books, not odds/probabilities --
+   explicitly NOT the odds-averaging bug, per Experiment 5's own
+   module docstring precedent (section 6's script, point 3: "Averaging
+   LINE values across books is not the odds-averaging bug ... which
+   was arithmetic averaging of vig-inclusive American odds").
+6. `juice_line_minus_baseline` -- `L* - saves_rolling_5`, where
+   `saves_rolling_5` is the goalie's own trailing-5-game rolling saves
+   average, a column already present in the no-pace-control 104-column
+   shots feature list (verified in `experiment_market_state_
+   20260710_213106/metadata.json`'s `feature_sets.no_pace_control`,
+   18.8) -- a plain arithmetic difference between two already-existing
+   pregame-known quantities, expressible without any new modeling
+   machinery, per the task's own instruction that this candidate is
+   admissible "only if expressible without new modeling machinery."
+   NaN if `L*` is undefined (no qualifying book) OR `saves_rolling_5`
+   itself is NaN (goalie has fewer than 5 rolling starts of history) --
+   the second condition is inherited from an existing column, not
+   newly introduced here.
+7. `juice_matched` -- 0/1 indicator, `1` iff the goalie-night has at
+   least one qualifying (two-sided, non-DFS) bettime saves quote at
+   any line (i.e., `L*` is defined and features 1-5 are computable),
+   mirroring `mkt_matched` exactly.
+
+*Registered missing-data rule.* Features 1, 2, 3, 6 are NaN wherever
+`juice_matched == 0`; feature 6 is additionally NaN wherever
+`saves_rolling_5` is NaN even if `juice_matched == 1`. For features 4
+and 5, `juice_matched == 0` is reachable only through "no qualifying
+book," and the binding rule in that case is: `juice_n_books` is `0` (a
+real count, not missing) when no qualifying book exists;
+`juice_line_dispersion` is NaN in that same case (no line data exists
+to compute a spread over). All NaN routing uses XGBoost's native
+missing-value handling; nothing is ever imputed, mirroring Experiment
+5's convention exactly (module docstring point 5: "A market feature is
+left as NaN ... Never silently imputed").
+
+*Fail-closed rules for degenerate cases.* One-sided quotes (a book
+posts only Over or only Under, not both) contribute NOTHING to any
+feature -- not counted in `juice_n_books`, not eligible for modal-line
+selection, not part of any median or dispersion (17.2's precedent,
+restated as binding). Single-book nights are NOT excluded --
+`juice_matched = 1` and features 1, 2, 6 are computed normally from
+that one book's own de-vigged pair; only the dispersion features (3,
+5) fail closed to `0.0` rather than NaN or undefined, per the
+`fillna(0.0)` convention above. Zero-qualifying-book nights:
+`juice_matched = 0`, features 1, 2, 3, 6 all NaN, feature 4 = `0`,
+feature 5 = NaN (no line data). `betonlineag` receives no special
+handling anywhere in this block -- it is one qualifying book among
+however many are present on a given night, which is exactly what
+makes the block trainable on 2023-24 without an all-NaN column.
+
+**18.3 Architecture and origins (amended 2026-07-14).** Three rolling
+origins. Origins A and B mirror Experiment 5 exactly; Origin C mirrors
+Experiment 8 (section 11.3) exactly. All three are carved with
+`experiment_rolling_origin.py`'s `carve_origin_split`/`season_date_
+range`, `VAL_WINDOW_DAYS=49` (val = final 49 days of each origin's
+pool date range). Origin A/B boundaries cross-checked against
+`experiment_market_state_20260710_213106/metadata.json`'s
+`fold_boundaries`; Origin C boundaries registered BY VALUE from
+`models/trained/experiment_market_state_origin_c_20260713_140706/
+metadata.json`'s `origin_c_fold_boundaries` (18.8):
+
+| | Origin A (PLACEBO, 18.3a) | Origin B (GATING) | Origin C (GATING) |
+|---|---|---|---|
+| Pool | 2022-10-07 to 2023-04-14 | 2022-10-07 to 2024-04-18 | 2022-10-07 to 2025-04-17 |
+| Train | 2022-10-07 to 2023-02-24 (1,864 rows) | 2022-10-07 to 2024-02-29 (4,528 rows) | 2022-10-07 to 2025-02-27 (7,134 rows) |
+| Val | 2023-02-25 to 2023-04-14 (760 rows) | 2024-03-01 to 2024-04-18 (720 rows) | 2025-02-28 to 2025-04-17 (738 rows) |
+| Test | season 2023-24 (2,624 rows) | season 2024-25 (2,624 rows) | season 2025-26 (2,624 rows) |
+
+Origin C pool = seasons 2022-23 + 2023-24 + 2024-25, exactly as
+Experiment 8 registered it (11.3: "validation = final 49 days of the
+pool date range; train = the rest. Test = season 20252026"). Same
+hyperparameter search space and procedure for Origin C as for A/B
+(`SHOTS_CONFIGS`/`SAVE_RATE_CONFIGS` unchanged, val-MAE /
+weighted-log-loss selection), same val-fitted dispersion convention
+(one alpha per variant, fit on `val_idx` residuals) -- all identical
+to what Experiment 8's own run recorded for its two Origin C variants
+(winner config `shallow_highreg` for both; val-fitted alphas
+`0.027718386433224374` control / `0.026939644644863918` market-state,
+18.8).
+
+**Leakage guard for Origin C (registered explicitly).** Origin C
+variants are evaluated ONLY on Origin C's own registered test fold --
+season 2025-26, strictly after its train+val window -- and NEVER on
+the 2024-25 season in any form: the ENTIRE 2024-25 season lies inside
+Origin C's train+val (train ends 2025-02-27, val ends 2025-04-17), so
+any 2024-25 evaluation of an Origin C model would score the model on
+its own training/validation data. This is the standing reason
+Experiment 11 was required to reuse the frozen ORIGIN B artifact for
+its 2024-25 P2 test, never Origin C (section 14.2's fold rationale:
+"a season the frozen model never trained or validated on"). Origin
+B's 2024-25 test fold and Origin C's train window overlap by
+construction -- that is a property of the rolling-origin design shared
+with Experiments 5/8, not leakage, because no statistic ever compares
+an Origin C prediction against a 2024-25 outcome.
+
+Four shots-model variants are trained per origin, all sharing ONE
+save-rate model trained once per origin on the no-pace-control feature
+list (mirrors section 6's "shared by both variants... literally trained
+once, not twice," extended from 2 variants to 4):
+
+- `no_pace_control` -- the literal 104-column control feature list,
+  RETRAINED FRESH within this experiment's own script run (not read
+  from the frozen artifact directly), same `SHOTS_CONFIGS`/`SAVE_RATE_
+  CONFIGS` grid and val-MAE/weighted-log-loss selection procedure,
+  unchanged (`src/experiments/distributional_saves.py`'s
+  `train_shots_model`/`train_save_rate_model`, both with `random_
+  state=42` fixed in the reused code, verified at lines 366/419).
+  Needed both as the PRIMARY comparison baseline and as one leg of the
+  mandatory wiring gate below.
+- `control_plus_microstructure` -- `no_pace_control`'s 104 columns
+  plus the 6 `juice_*` features plus `juice_matched` (7 new columns,
+  111 total shots features), added to the SHOTS-AGAINST model ONLY.
+  Verified this is where `mkt_*` actually went for Experiment 5 (not
+  assumed): `experiment_market_state_20260710_213106/metadata.json`'s
+  `feature_sets.no_pace_control` has 104 entries, and `origin_a`/
+  `origin_b`'s `control_plus_market_state` variant's
+  `shots_feature_count` is 112 (104 + 7 `mkt_*` + `mkt_matched`); the
+  save-rate model's `feature_cols` in both origins' `rate_model` block
+  is the 104-column no-pace list, confirming it is shared and
+  unchanged across variants. No surprise or contradiction found here.
+- `control_plus_market_state` -- RETRAINED FRESH (not reused from
+  either frozen artifact), 112-column list unchanged (104 + 7 `mkt_*` +
+  `mkt_matched`), same grid/procedure. Retraining, rather than reusing
+  `experiment_market_state_20260710_213106`'s (Origins A/B) or
+  `experiment_market_state_origin_c_20260713_140706`'s (Origin C)
+  frozen shots-model JSONs directly, is registered because a fair
+  PAIRED comparison (18.5) requires all variants' predictions to come
+  from the SAME script execution on the SAME row indices with the SAME
+  bootstrap draws -- exactly the property Experiment 5's own internal
+  `paired_brier_delta_vs_variant`/`paired_shots_mae_delta` functions
+  already assume for its two variants. This is explicitly allowed by
+  the task's own instruction ("training is not rationed; grading is")
+  and is bound by the mandatory wiring gate below rather than trusted
+  blind.
+- `control_plus_market_state_plus_microstructure` -- the 112-column
+  `control_plus_market_state` list plus the 7 `juice_*`/`juice_matched`
+  columns (119 total shots features), same placement, same shared
+  save-rate model, its own val-fitted dispersion.
+
+**Mandatory wiring gate (before any microstructure quote is loaded).**
+The runner must first retrain `no_pace_control` and `control_plus_
+market_state` fresh on ALL THREE origins through this experiment's own
+code path and reproduce the recorded numbers to within `1e-4` on every
+mean (the same tolerance Experiments 11/14 used; because
+`random_state=42` is fixed and no feature or data change is involved,
+bit-identical reproduction is actually expected, and `1e-4` is
+registered as the acceptance bar, not evidence that looser
+reproduction is tolerated).
+
+From `experiment_market_state_20260710_213106/metadata.json`
+(Experiment 5):
+- Origin A `brier_vs_control_closing`: mean `0.000537819408872642`,
+  CI95 `[-0.0001351793045926375, 0.0012345894289141777]`, n_bets=8,880,
+  n_clusters=2,298.
+- Origin B `brier_vs_control_closing`: mean `-0.0041404240194266384`,
+  CI95 `[-0.007196770975912929, -0.0011800274158189096]`, n_bets=7,463,
+  n_clusters=2,510.
+- Origin A `shots_mae_delta_vs_control`: mean `0.009711408033603576`,
+  CI95 `[-0.0032097097758839767, 0.02256776296147486]`, n=2,624.
+- Origin B `shots_mae_delta_vs_control`: mean `-0.07375802354114812`,
+  CI95 `[-0.12168046450469552, -0.023554074546185938]`, n=2,624.
+
+From `experiment_market_state_origin_c_20260713_140706/metadata.json`
+(Experiment 8):
+- Origin C P1 paired Brier delta vs control (closing, val-fitted
+  headline): mean `-0.003111099251412182`, CI95
+  `[-0.005038647618850264, -0.0011919729523759111]`, n_bets=5,729,
+  n_clusters=2,070, n_push_excluded=0.
+- Origin C `no_pace_control` shots workload on test: mean bias
+  `+0.23460506447931614`, MAE `5.407952885075313`, n=2,624.
+- Origin C `control_plus_market_state` shots workload on test: mean
+  bias `+0.42204831794994635`, MAE `5.3598914618899185`, n=2,624.
+
+Registered caveat on the Origin C gate targets, so the runner is not
+later accused of inventing one: Experiment 8 did NOT record an
+Experiment-5-style paired shots-`|error|`-delta-vs-control CI for
+Origin C (its `secondaries.shots_bias_mae` carries only the
+per-variant point values gated on above), so the Origin C wiring gate
+reproduces the P1 Brier delta (mean to `1e-4`, n_bets and n_clusters
+exact) plus both variants' workload bias/MAE point values (each to
+`1e-4`); the fresh paired shots-delta CI this experiment computes on
+Origin C is a NEW statistic with no reproduction target, and is gated
+only prospectively by 18.5's bar.
+
+If ANY origin's reproduction fails, STOP and report -- do not load any
+`juice_*` quote. This mirrors the Experiment 11 (14.4) / Experiment 8
+(11.5) wiring-gate convention exactly, extended to all three origins.
+
+Dispersion: val-idx-fitted NB2 alpha per VARIANT (four separate fits
+per origin, one per shots-variant, each via `fit_dispersion(shots_
+model, df_full, val_idx, ...)`), matching Experiment 5's dispersion
+procedure exactly (module docstring point 6: fit on validation
+residuals, not training residuals, per the Experiment 3 correction,
+section 10.1 item 1). Recorded reference alphas from the frozen
+artifacts for the wiring gate's two retrained variants: Origin A
+`no_pace_control` alpha `0.033265130249687844`, `control_plus_market_
+state` alpha `0.03312151062457906`; Origin B `no_pace_control` alpha
+`0.02852173299997726`, `control_plus_market_state` alpha
+`0.026775577916660614`; Origin C `no_pace_control` alpha
+`0.027718386433224374`, `control_plus_market_state` alpha
+`0.026939644644863918`. `ORIGIN_CAP=90`, fixed EV threshold `0.05`
+(unused for any policy decision in this experiment, carried only
+because `join_and_price`/`grade_bets` are reused unchanged), goalie-
+night cluster bootstrap 10,000 resamples seed 42 throughout, matching
+section 1's shared conventions exactly.
+
+**Correction on the task's framing of Experiment 8's bar.** The
+original task brief states "the block must beat the control on BOTH
+origins to PASS (that is what Experiments 5 and 8 required)." This is
+verified TRUE for Experiment 5 (section 6.4's bar, and the actual
+computed `pre_registered_pass_bar.overall_pass` in
+`experiment_market_state_20260710_213106/metadata.json`, which
+literally contains a `passes_on_both_origins` boolean per metric). It
+is NOT accurate for Experiment 8 as stated: Experiment 8 (section 11)
+is a SINGLE-origin replication (Origin C only) whose registered bar
+was "P1 AND P2 both pass" on that one origin (section 11.7), not
+"both origins" -- there was only one origin to test. Under the
+2026-07-14 amendment, this experiment retains Experiment 5's
+TWO-ORIGIN-AGREEMENT structure but re-bases it onto {Origin B, Origin
+C} -- which happens to make the gating set exactly the pair of origins
+on which the market-state block's improvement was actually
+demonstrated (Experiment 5's Origin B row; Experiment 8's Origin C
+P1). Flagged here as a correction rather than silently designing
+around the imprecise premise.
+
+**18.3a Origin A: registered PLACEBO / NEGATIVE CONTROL (added by the
+2026-07-14 amendment, non-gating).** Origin A runs the identical
+four-variant pipeline as B and C (same shared save-rate model, same
+grid, same val-fitted alphas, same metrics computed), but its results
+CANNOT pass or fail this experiment. Rationale, restated from 18.1
+item 4: Origin A's training pool has ZERO `juice_*` exposure (the
+archive starts 2023-11-02, seven months after its pool ends), so its
+`control_plus_microstructure` shots model cannot have learned anything
+from the block -- every `juice_*` column is all-NaN across its entire
+train+val, and XGBoost's trees have no non-missing value to split on.
+Its paired deltas vs control on the 2023-24 test fold therefore
+estimate the PROCEDURE'S NOISE FLOOR: the spread injected purely by
+adding seven never-informative columns to the feature matrix (tree
+tie-breaking, column subsampling under `colsample_bytree=0.8`, and
+downstream dispersion refitting), with no possible signal content.
+
+Registered placebo expectation: both Origin A paired-delta CI95s
+(shots `|error|` delta and closing Brier delta,
+`control_plus_microstructure` minus `no_pace_control`) CONTAIN zero.
+Registered interpretation rule, fixed now: if either Origin A placebo
+CI95 EXCLUDES zero in EITHER direction, that is a red flag for a
+pipeline bug or evaluation artifact (feature leakage through the join,
+row misalignment, dispersion contamination, or an evaluation-code
+defect), and the runner must STOP-AND-INVESTIGATE before any Origin B
+or Origin C result is trusted or any verdict is issued -- the placebo
+cannot pass or fail the experiment itself, and a placebo anomaly does
+not become a "finding" about microstructure under any reading. The
+SECONDARY comparison (`control_plus_market_state_plus_microstructure`
+minus `control_plus_market_state`) is ALSO computed on Origin A and is
+part of the same placebo readout under the same anomaly rule (both
+variants have zero `juice_*` training exposure there, so this delta is
+equally signal-free by construction); it is not dropped, because a
+second placebo statistic doubles the wiring-check surface at zero
+marginal cost.
+
+**18.4 Feature data sources and joins.** 2023-24 bettime features
+(feeding Origin A's placebo test fold, Origin B's train-window
+2023-24 portion, and Origin C's train-window 2023-24 portion):
+`data/processed/saves_lines_snapshots.parquet`,
+`snapshot_pass == "bettime"`, season 2023-24 (`game_date_eastern`
+2023-10-10 to 2024-04-18) -- 15,682 raw rows / 1,125 events (18.8).
+Apply section 17.2's max-`resolved_ts`-within-pass dedup rule by
+reference (natural key `(event_id, goalie_name_raw, book, side)`);
+18.8 additionally verifies this pass carries no DFS venue at all, so
+the DFS-exclusion rule is trivially satisfied for 2023-24 without
+dropping anything.
+
+Test-season (2024-25) bettime features for Origin B: `data/processed/
+core_bettime_202607_snapshots.parquet`, `pass_name == "combined-2024-
+25"`, `market_key == "player_total_saves"` -- 16,820 raw rows / 1,244
+events (18.8), non-DFS subset (`book_key != "prizepicks"`) for feature
+construction per 18.2's DFS-exclusion rule. Per section 17.4's
+11-event-overlap-dedup precedent (identical to 14.3a's resolution),
+the pre-existing 21-event 2024-25 `bettime` fragment already inside
+`saves_lines_snapshots.parquet` (258 rows, season 2024-25,
+`snapshot_pass == "bettime"`) contributes ZERO rows to this
+experiment's 2024-25 bettime population -- TOTAL EXCLUSION of the old
+fragment, not a row-level merge or anchor tie-break, bound now by
+reference to 17.4/14.3a exactly as section 17.4 itself bound it.
+
+Origin B's closing-pass and (new, for the first time in this document
+family) bettime-pass BETTING/GRADING universes for the Gate-A-style
+metrics (18.5) are built the same way Experiment 11 already built its
+own bettime frame from this exact purchased pass
+(`bettime_frame_allbooks.parquet`,
+`models/trained/experiment_11_frozen_origin_b_p2_20260714_090012/`):
+reuse `experiment_rolling_origin.build_season_multibook_frame`
+(which calls `clv_audit_pace_policy.pivot_both_sides`) unchanged,
+rather than re-deriving new plumbing, per 14.5 rule 1's own citation
+of this pattern.
+
+Outcomes: `data/processed/clean_training_data.parquet` ONLY, `saves`
+column. `data/betting.db` is FORBIDDEN, reads included (mirrors 17.6
+item 2's stricter carve-out, not 16.3's read-allowed exception).
+Goalie matching: reuse established conventions (`goalie_id` where
+resolved; last-name-plus-opponent matching per `scripts/build_odds_
+snapshots.py` for any unresolved rows) by reference, per 14.5 rule 1;
+join key `(event_id, goalie_id)` with `attach_game_id`'s `(goalie_id,
+game_date_eastern)` `+/-1`-day fallback (`clv_audit_pace_policy.py`),
+by reference.
+
+**2024-25 new pass: dual role, registered explicitly.** Under the
+amended architecture the `combined-2024-25` pass serves TWO distinct
+roles: (a) Origin B's TEST-fold feature source (above), and (b) Origin
+C's TRAIN- and VAL-window feature source for its 2024-25 rows (train
+window rows with `game_date_eastern <= 2025-02-27`; val window rows
+2025-02-28 to 2025-04-17). The same parquet, the same dedup and DFS
+rules, split by date against Origin C's registered fold boundaries.
+This dual use is a property of the rolling-origin design (Origin B's
+test season is inside Origin C's pool by construction, exactly as in
+Experiments 5/8) and is not leakage under the 18.3 leakage guard,
+because no Origin C prediction is ever scored against a 2024-25
+outcome.
+
+**Test-season (2025-26) bettime features for Origin C (amended
+2026-07-14; the original registration excluded 2025-26 entirely, the
+amendment brings it in as Origin C's test fold).** Source:
+`data/processed/saves_lines_snapshots.parquet`, `snapshot_pass ==
+"bettime"`, 2025-26 season window (`game_date_eastern` 2025-10-07 to
+2026-04-19) -- 12,811 raw rows / 781 events, books `{betmgm,
+draftkings, betonlineag, bovada, fanduel, fanatics}` (18.8; no DFS
+venue exists anywhere in this parquet, so the DFS rule is trivially
+satisfied). Section 17.2's max-`resolved_ts` within-pass dedup rule
+applies -- this is the exact pass 17.2's rule was originally written
+for (914 of 11,897 natural-key groups duplicated, 7.68%), and 18.8
+records the dedup's row effect (12,811 -> 11,897). Coverage honesty,
+registered up front: this archive covers only 781 of the season's
+events (the live tracker fetched bettime snapshots only on days the
+pipeline ran), so Origin C's test-fold `juice_matched` coverage is
+structurally the lowest of the three origins -- 53.12% verified
+(18.8), clearing 18.5's registered 50% COVERAGE-INSUFFICIENT floor,
+but narrowly; that floor is NOT being adjusted to accommodate this
+fact, and if a production run's join conventions land below 50%, the
+floor triggers as registered. The in-sample honesty caveat attached to
+any Origin C result (2025-26 is the juice-skew discovery season and
+the live-bet season, 18.1 item 2) travels with every Origin C number.
+
+Origin C's closing-pass grading universe:
+`multibook_classification_training_data.parquet`, season `20252026`
+(5,729 paired quotes / 2,070 goalie-night clusters, per Experiment 8's
+recorded P1 -- section 11.4's inventory: 2025-10-07..2026-04-13). Its
+bettime grading universe for the SECONDARY reporting is built from the
+deduped 2025-26 snapshot rows via the same `build_season_multibook_
+frame`/`pivot_both_sides` path as the other origins (Experiment 8's
+own recorded bettime frame was 5,763 rows / 1,370 clusters, 18.8).
+
+**18.5 Registered metrics and Gate-A-style bars.** PRIMARY universe:
+CLOSING pass, mirroring Experiment 5's own precedent -- verified
+directly from `experiment_market_state_20260710_213106/metadata.json`:
+the actual computed `pre_registered_pass_bar` dict contains only
+`brier_vs_control_closing` and `shots_mae_delta_vs_control` keys; there
+is no bettime entry in the pass bar anywhere (Origin A's bettime frame
+was priced only as an unconditional `price_passes["bettime"]` entry,
+never fed into `pre_registered_pass_bar`; Origin B's Experiment 5 run
+had no bettime frame available at all, section 1.2). Experiment 8's
+Origin C P1 was likewise gated on the CLOSING pass ("model probability
+at each posted line, closing pass, all books," section 11.7), with
+bettime confined to its P2/secondaries -- so the closing-primary
+convention holds independently on both frozen precedents. CLOSING is
+therefore PRIMARY here too, by direct mirroring, not a fresh choice.
+
+Two metrics per origin, both mirrored from Experiment 5's own two
+pass-bar metrics, computed on ALL THREE origins for
+`control_plus_microstructure` MINUS `no_pace_control`:
+- (a) paired shots `|error|` delta, goalie-night cluster bootstrap
+  (10,000 resamples, seed 42), same `paired_shots_mae_delta`
+  construction (negative = microstructure variant more accurate).
+- (b) paired per-quote Brier delta on the CLOSING quote universe, same
+  `paired_brier_delta_vs_variant` construction, goalie-night cluster
+  bootstrap (negative = microstructure variant better).
+
+PASS on a given metric requires CI95 upper bound `< 0` on BOTH GATING
+origins -- Origin B AND Origin C -- independently. This retains
+Experiment 5's `passes_on_both_origins` two-origin-agreement logic
+verbatim (verified in `metadata.json`: Experiment 5's actual computed
+`overall_pass` was `False` because neither metric's `ci_excludes_zero_
+improvement` was `True` on both of ITS origins simultaneously -- its
+Origin A failed both metrics, its Origin B passed both, 18.8),
+re-based per the 2026-07-14 amendment onto the two origins that can
+actually train the block. Origin A's deltas are computed and reported
+unconditionally but are the 18.3a placebo readout -- they enter no
+pass computation. **PRIMARY PASS** (`control_plus_microstructure` vs
+`no_pace_control`) = TRUE if EITHER metric clears BOTH Origin B and
+Origin C, exactly mirroring `metadata.json`'s
+`overall_pass = any(...)` logic verbatim.
+
+**Origin C scale honesty, registered in advance.** Origin C's
+registered universes are smaller than Origin B's but of the same order
+-- verified from Experiment 8's recorded artifacts, not guessed:
+closing 5,729 paired quotes / 2,070 goalie-night clusters (vs. Origin
+B's 7,463 / 2,510), bettime 5,763 rows / 1,370 clusters, shots-delta
+n=2,624 (identical row count on every origin's test fold). (For the
+record: Experiment 8's much-quoted 85 was its P2 EV-THRESHOLD-QUALIFIED
+BetOnline bettime UNDER count -- a betting-policy universe this
+experiment does not use anywhere, since 18.5 computes no policy ROI;
+it does not describe the Brier universes above.) Bound now: if either
+registered PRIMARY CI on Origin C is too wide to exclude zero --
+whether from scale, from the test fold's lower `juice_matched`
+coverage (53.12%, 18.8), or from genuine absence of signal -- that is
+a FAIL under the bar as registered, not an excuse, and no
+post-hoc "underpowered, rerun with more data" reframing is available
+within this registration.
+
+BETTIME is reported as a SECONDARY, unconditionally, on all three
+origins (Origin B's is newly possible in this document family, since
+Experiment 5 had no 2024-25 bettime frame at all; Origin C's mirrors
+Experiment 8's own bettime frame) -- identical paired-delta
+construction against the bettime quote universes built per 18.4, no
+gate.
+
+**SECONDARY comparison** (the incremental-over-current-best question,
+registered per the task's own instruction): `control_plus_market_
+state_plus_microstructure` MINUS the RETRAINED `control_plus_market_
+state` (18.3), identical construction (both metrics, Origins B and C;
+Origin A's copy is part of the 18.3a placebo readout), CLOSING primary
++ bettime secondary, reported unconditionally, NO PASS/FAIL gate on
+this document's PRIMARY consequence mapping (18.7).
+It answers whether microstructure is REDUNDANT with the already-
+promoted market-state block (no further CI-excluding-zero gain on
+either metric on either origin) or ADDITIVE (a further gain survives
+on top of market-state) -- informs, does not gate, promotion.
+
+No betting-policy ROI is computed anywhere in this experiment -- this
+is a feature-block gate only, exactly matching how Experiment 5 itself
+reported policy ROI only as an unconditional secondary under section
+6.3, never as part of its own pass bar. Betting-policy testing (EV
+threshold selection, bet-level ROI, CLV) of any block promoted here is
+explicitly a SEPARATE future registration, not covered by this one --
+mirroring the family's existing separation between feature-gate
+registrations (Experiment 5, this one) and policy registrations built
+on top of an already-gated block (Experiment 8's P1-vs-P2 split,
+Experiment 11's entirely separate P2 registration).
+
+**Coverage floor and UNSTABLE/degenerate rules.** The cluster-
+bootstrap MAE/Brier deltas here cannot produce the kind of degenerate
+(undefined-statistic) resample that Experiment 14/17's Pearson-`r`
+bootstrap could -- `cluster_bootstrap_mean_ci` always returns a
+defined mean as long as at least one cluster is drawn. The registered
+degenerate case for THIS experiment is instead a coverage floor,
+applied to the GATING origins (B and C): if a gating origin's
+TEST-fold `juice_matched` rate is below 50% (a coverage floor, not a
+p-value bound -- chosen because a feature block with less than half
+real-quote exposure on its own test fold cannot be interpreted as
+evidence about the features regardless of which way the point estimate
+lands), that origin's PRIMARY result is reported as
+COVERAGE-INSUFFICIENT rather than PASS or FAIL and excluded from the
+two-gating-origins computation. 18.8's verified TEST-fold coverage:
+Origin B 81.94% all-books / 81.67% non-DFS (comfortably above the
+floor); Origin C 53.12% (above the floor, but NARROWLY -- stated
+plainly, and the floor is not being adjusted to accommodate it; if a
+production run's join conventions land Origin C below 50%, the floor
+triggers as registered). Origin A's test-fold coverage (75.23%) is
+recorded for completeness but the floor is moot there -- Origin A is
+the 18.3a placebo and enters no pass computation regardless; its
+genuinely zero TRAIN+VAL coverage is the placebo's defining property,
+not a COVERAGE-INSUFFICIENT trigger.
+
+**18.6 Forbidden.** No feature additions, removals, or reweighting of
+the 18.2 block after seeing any result. No hyperparameter search
+beyond `SHOTS_CONFIGS`/`SAVE_RATE_CONFIGS` reused unchanged. No
+threshold or policy search of any kind -- this experiment computes no
+ROI and selects no EV threshold. No touching `data/betting.db`, reads
+included. No Odds API credit or network use. No modification of any
+pre-existing `models/trained/` directory, including
+`experiment_market_state_20260710_213106` and
+`experiment_market_state_origin_c_20260713_140706` themselves -- their
+`metadata.json` files are read-only reused for the wiring-gate
+expected values (18.3) only. New artifacts only under a new
+`models/trained/experiment_15_*` directory. No evaluation of any
+Origin C variant against any 2024-25 quote or outcome, in any form,
+primary or secondary or diagnostic -- the 18.3 leakage guard restated
+as a prohibition. No reclassifying Origin A out of placebo status, and
+no issuing any Origin B/C verdict while an 18.3a placebo anomaly
+(either placebo CI95 excluding zero) stands uninvestigated -- the STOP
+is mandatory, and the investigation's outcome must be reported before
+any verdict language is used. Crash-rerun rule identical to 17.6 item
+8: one registered execution; if the runner crashes mid-run, it may be
+fixed and rerun ONLY if NO phase's registered statistic (any origin's
+wiring gate, either PRIMARY metric on either gating origin, the
+placebo readout, the SECONDARY comparison) was yet computed and
+printed/logged; otherwise the computed phases' numbers stand as-is and
+must be reported. Unlike 17.6 item 8's Phase B (which explicitly
+waived one-shot protection because 2024-25 was already-viewed
+development data with no virgin touch to protect), this experiment's
+test folds (2023-24, 2024-25, 2025-26) are ALL already-viewed
+development data throughout (plan section 6.1; this document's own
+section 0.1; 18.1 item 2 for 2025-26's doubly-viewed status) -- so
+this crash-rerun rule exists for procedural discipline and artifact
+hygiene, not because a virgin touch needs protecting, and there is no
+12R-style touch-consumption machinery to invoke either way. No
+post-hoc slicing (by book, date sub-window, or threshold) reported as
+a result once any origin's metrics are computed.
+
+**18.7 Consequence mapping (fixed in advance; amended 2026-07-14 to
+the {Origin B, Origin C} gating set).** PRIMARY PASS
+(`control_plus_microstructure` beats `no_pace_control` with CI95
+entirely below zero on either registered metric, on BOTH Origin B and
+Origin C) -> the block is promoted to candidate status for the 2026-27
+model rebuild and queued for a SEPARATE future betting-policy
+registration -- NOT promoted to live betting by this registration
+alone, mirroring 17.7's shadow-candidate language exactly. The
+SECONDARY comparison (on B and C) is then read (not gated) to decide
+whether the block is REDUNDANT with the already-promoted market-state
+block or ADDITIVE on top of it. PRIMARY FAIL on BOTH gating origins ->
+the juice-skew feature lead is CLOSED this cycle, joining the section
+8 closure precedents (steam-recon, DFS-census section 16.8,
+BetOnline-convergence section 17.9) -- it does not reopen without a
+new architecture or a genuinely new season of bettime coverage.
+ONE-OF-TWO (clears the bar on exactly one of Origin B / Origin C, on
+whichever metric) -> recorded as NOT REPLICATED, CLOSED, per
+Experiment 5's own two-origin-agreement standard -- a single-origin
+result cannot promote the block, exactly as Experiment 5's own real
+Origin B improvement did not survive its both-origins bar. PLACEBO
+ANOMALY (either Origin A placebo CI95 excludes zero, 18.3a) -> STOP:
+no verdict of any kind is issued for the experiment until the
+investigation required by 18.3a is completed and reported; the
+computed B/C numbers stand as artifacts (17.6.8-style) but carry no
+verdict language while the anomaly is open, and if the investigation
+finds a pipeline defect, the entire run's numbers are reported as
+INVALIDATED-BY-WIRING, not as pass or fail. COVERAGE-INSUFFICIENT on a
+gating origin (18.5's 50% floor) -> that origin is excluded from the
+PRIMARY verdict computation, and with only one usable gating origin
+remaining the block-level verdict is reported as INSUFFICIENT SAMPLE
+rather than forced to PASS or FAIL, mirroring the family's general
+"report and stop" discipline (Experiments 8/11's INSUFFICIENT SAMPLE
+handling) -- a single surviving origin cannot satisfy a
+two-origin-agreement bar and is not permitted to try.
+
+**18.8 Data inventory (verified 2026-07-14, read-only Python; no
+skew value, correlation, Brier, or ROI was computed against any
+season).**
+
+`data/processed/saves_lines_snapshots.parquet` (79,884 rows / 15
+columns, independently reconfirmed): 2023-24 season window
+(`game_date_eastern` 2023-10-10 to 2024-04-18) `bettime` = 15,682 rows
+/ 1,125 events; books `{barstool, betmgm, bovada, draftkings, fanduel,
+williamhill_us}` (6, no DFS venue). **`betonlineag` is confirmed
+ABSENT with ZERO rows from BOTH the 2023-24 `bettime` (0 of 15,682) AND
+2023-24 `closing` (0 of 17,959) passes** -- the task's assumption is
+verified, not contradicted, and independently confirms section 10's
+"Consequence for Component G" note ("that book has zero quotes in the
+archive for that season"). 2024-25: `bettime` = 258 rows / 21 events
+(pre-purchase fragment, excluded per 18.4), `closing` = 14,954 rows /
+1,288 events, `betonlineag` closing = 3,912 rows / 1,094 events.
+2025-26 (Origin C's test-fold feature source under the 2026-07-14
+amendment): `bettime` = 12,811 rows / 781 events, books with row
+counts `{betmgm: 2,964; draftkings: 2,902; betonlineag: 2,662;
+bovada: 2,377; fanduel: 1,878; fanatics: 28}` (independently
+reconfirming section 17.8's book list for this cut exactly);
+`betonlineag` bettime = 2,662 rows / 725 events; 17.2's
+max-`resolved_ts` dedup takes this pass 12,811 -> 11,897 rows
+(consistent with 17.8's 914-duplicate-group / 7.68% finding).
+
+**Surprise #1 (not previously documented anywhere in this document
+family, disclosed per the task's contradiction-reporting instruction
+even though it does not contradict any stated assumption):** the
+2023-24 `bettime` pass has its own within-pass duplicate natural-key
+groups -- 126 of 15,556 `(event_id, goalie_name_raw, book, side)`
+groups (0.81%) -- smaller than 2025-26 `bettime`'s 7.68% rate (17.2)
+but nonzero and not covered by 17.2's own dedup table, which
+enumerated 2025-26 `bettime`/`closing` and "both 2024-25 passes"
+explicitly but was silent on 2023-24. Section 17.2's max-`resolved_ts`
+dedup rule is registered here as applying uniformly to 2023-24 as well
+(by reference, generalized), and this 126-group/0.81% figure is now
+the first record of that fact.
+
+**Surprise #2 (a structural coverage gap, distinct from and in
+addition to the `betonlineag`-absence confirmation the task asked
+for):** the 2023-24 `bettime` archive's own earliest `game_date_
+eastern` is 2023-11-02, even though the season (and Origin A's test
+fold) begins 2023-10-10 -- 288 of 2,624 (10.98%) `clean_training_data`
+2023-24 goalie-games fall in the 2023-10-10-to-2023-11-01 window and
+therefore cannot have ANY bettime saves quote from ANY book,
+structurally, regardless of the microstructure block's design. This is
+folded into the coverage join count below, not a separate exclusion
+rule.
+
+**Coverage JOIN COUNT, 2023-24 (training-season features, a join
+count, not a statistic).** Starting from the 15,682 `bettime` rows:
+220 rows (1.40%) have null `goalie_id` and are dropped (no name-based
+fallback attempted in this inventory-only check; a production run
+would apply 14.5 rule 1's name-matching fallback and could recover
+some of these). The remaining 15,462 rows all resolve a `game_id` via
+`attach_game_id`'s `(goalie_id, game_date_eastern)` `+/-1`-day lookup
+against the 2,624 2023-24 `clean_training_data` goalie-games (0
+unmatched). Pivoting to `(event_id, game_id, goalie_id, book, line)`
+groups yields 7,678 groups, of which 7,670 have both Over and Under
+present (8 single-sided groups dropped, per the fail-closed rule).
+Collapsing to unique `(game_id, goalie_id)`: **1,974 of 2,624 (75.23%)
+2023-24 goalie-games have at least one qualifying two-sided bettime
+saves quote at some book/line.**
+
+`data/processed/core_bettime_202607_snapshots.parquet` (413,758 rows /
+23 columns, matches the task's stated schema exactly: `pass_name`,
+`season`, `event_id`, `book_key`, `market_key`, `player_name_raw`,
+`side`, `line`, `price_decimal`, `goalie_id` all present;
+`snapshot_pass` is `bettime` ONLY for all 413,758 rows). `pass_name`
+values `{sog-2023-24: 214,252; combined-2024-25: 199,506}`,
+independently confirming `player_total_saves` rows (16,820) are 100%
+`season == "2024-25"` / `pass_name == "combined-2024-25"` -- ZERO
+`player_total_saves` rows exist anywhere under `sog-2023-24`,
+independently confirming the task's assumption that 2023-24 saves
+features must come from the old `saves_lines_snapshots.parquet`
+archive only, not this purchase. `player_total_saves` = 16,820 rows /
+1,244 events (matches the task's stated figures exactly). Saves
+`book_key` values: `{betmgm: 4,172; prizepicks: 3,827; betonlineag:
+3,498; bovada: 2,561; williamhill_us: 1,912; draftkings: 850}` -- 6
+books, no `fanatics`, no `underdog`, no `barstool`, matching section
+17.8 exactly. `betonlineag` saves = 3,498 rows / 1,050 events, matching
+the task's stated figure and section 14.3 exactly. Duplicate-key check
+independently reconfirmed: 23 duplicate `(event_id, player_name_raw,
+book_key, side)` groups in the full saves population, ALL 23
+`prizepicks`, ZERO for `betonlineag` or any other book; `betonlineag`
+carries exactly one `requested_ts`/event (mean = max = 1.0) -- exact
+match to section 17.8, no contradiction.
+
+**Coverage JOIN COUNT, 2024-25 new pass (test-season features for
+Origin B, a join count, not a statistic).** Starting from the 16,820
+`player_total_saves` rows: 180 rows (1.07%) have null `goalie_id` and
+are dropped (same caveat as above -- no name-fallback attempted here).
+The remaining 16,640 rows all resolve a `game_id` via the same `+/-1`-
+day lookup against 2024-25's 2,624 `clean_training_data` goalie-games
+(0 unmatched). Pivoting to `(event_id, game_id, goalie_id, book_key,
+line)` groups across ALL 6 books yields 8,329 groups, of which 8,311
+have both sides present. Collapsing to unique `(game_id, goalie_id)`:
+**2,150 of 2,624 (81.94%) 2024-25 goalie-games have at least one
+qualifying two-sided bettime saves quote at ANY book (including
+`prizepicks`)**; restricting to the registered non-DFS universe
+(excluding `prizepicks` per 18.2's DFS-exclusion rule): **2,143 of
+2,624 (81.67%)** -- `prizepicks` contributes only 7 additional
+goalie-nights uniquely, confirming the DFS exclusion costs negligible
+coverage.
+
+**Experiment 5 metadata facts relied on (`experiment_market_state_
+20260710_213106/metadata.json`, independently re-read, not assumed):**
+`feature_sets.no_pace_control` has exactly 104 entries, including
+`saves_rolling_5` (confirming feature 6's baseline reference is a real,
+already-available column, not a new one). `market_feature_cols` has
+exactly 7 entries plus the separate `market_indicator_col` (`mkt_
+matched`); `control_plus_market_state`'s `shots_feature_count` is 112
+in both origins, confirming `mkt_*` went into the SHOTS model only and
+the save-rate model's `feature_cols` is the 104-column no-pace list in
+both origins, shared and unchanged across variants -- no contradiction
+of the task's assumption. `join_coverage`: Origin A train 0/1,864
+(0.00%), val 0/760 (0.00%), test 2,622/2,624 (99.92%); Origin B train
+1,902/4,528 (42.01%), val 720/720 (100.00%), test 2,622/2,624 (99.92%).
+Recorded bars, independently re-read from `pre_registered_pass_bar`:
+`brier_vs_control_closing` Origin A mean `+0.000537819408872642` (NOT
+a CI-excluding-zero improvement), Origin B mean
+`-0.0041404240194266384` (IS a CI-excluding-zero improvement);
+`shots_mae_delta_vs_control` Origin A mean `+0.009711408033603576`
+(NOT an improvement), Origin B mean `-0.07375802354114812` (IS an
+improvement); `overall_pass: false` (neither metric cleared BOTH
+origins) -- exactly reproducing section 10's summary-table verdict
+("FAIL (both-origins bar)"), no contradiction.
+
+**Experiment 8 metadata facts relied on for the amended Origin C leg
+(`models/trained/experiment_market_state_origin_c_20260713_140706/
+metadata.json`, independently re-read 2026-07-14, not assumed).**
+`origin_c_fold_boundaries`: pool 2022-10-07 to 2025-04-17; train
+2022-10-07 to 2025-02-27 (7,134 rows); val 2025-02-28 to 2025-04-17
+(738 rows, `val_window_days` 49); test season 20252026 (2,624 rows) --
+independently re-derived from `clean_training_data.parquet` for this
+registration: the same date windows reproduce exactly 7,134 / 738 /
+2,624 rows. P1 (val-fitted headline): mean `-0.003111099251412182`,
+CI95 `[-0.005038647618850264, -0.0011919729523759111]`, n_bets=5,729,
+n_clusters=2,070, n_push_excluded=0, `pass: true`; train-fitted
+sensitivity mean `-0.003170803847077501` (sign-stable). Both Origin C
+variants selected winner config `shallow_highreg` (`max_depth=2,
+learning_rate=0.05, min_child_weight=30, subsample=0.8,
+colsample_bytree=0.8, n_estimators=400, reg_lambda=5.0`); shots
+feature counts 104 (`no_pace_control`) and 112
+(`control_plus_market_state`), confirming the identical
+shots-model-only placement on Origin C as on A/B. Val-fitted alphas:
+`no_pace_control` `0.027718386433224374`, `control_plus_market_state`
+`0.026939644644863918` (both `fit_on: val_idx`). Workload on test
+(`secondaries.shots_bias_mae`): `no_pace_control` mean bias
+`+0.23460506447931614` / MAE `5.407952885075313`;
+`control_plus_market_state` mean bias `+0.42204831794994635` / MAE
+`5.3598914618899185` (both n=2,624). Experiment 8's own recorded
+bettime frame: 5,763 rows / 1,370 goalie-night clusters
+(`brier_vs_market_bettime_allbooks`). Its `join_coverage_origin_c`
+(market-game-state features, NOT this experiment's juice features):
+train 4,506/7,134 (63.16%), val 738/738 (100%), test 2,622/2,624
+(99.92%). No Experiment-5-style paired shots-`|error|`-delta CI was
+recorded for Origin C anywhere in this metadata -- the basis for the
+Origin C wiring-gate caveat in 18.3.
+
+**Coverage JOIN COUNTS for the gating origins' train/val windows and
+Origin C's test fold (verified 2026-07-14, join counts, not
+statistics; same method as the season-level counts above --
+`goalie_id`-resolved rows only, no name-fallback attempted in this
+inventory check, `attach_game_id` +/-1-day lookup, two-sided
+`pivot_both_sides` presence).**
+- Origin B TRAIN window (2022-10-07 to 2024-02-29, 4,528 rows):
+  **1,349 (29.79%)** goalie-games with at least one qualifying
+  two-sided bettime saves quote (all from the 2023-24 archive; the
+  2022-23 portion is structurally zero). Origin B VAL window
+  (2024-03-01 to 2024-04-18, 720 rows): **625 (86.81%)**.
+- Origin C TRAIN window (2022-10-07 to 2025-02-27, 7,134 rows):
+  **3,520 (49.34%)** -- the union of the 2023-24 archive's 1,974
+  qualifying goalie-nights and the new pass's non-DFS 2024-25 rows
+  with `game_date_eastern <= 2025-02-27` (9,597 rows -> 4,759
+  two-sided groups -> 1,546 qualifying goalie-nights). Origin C VAL
+  window (2025-02-28 to 2025-04-17, 738 rows): **597 (80.89%)** from
+  the new pass's 3,396 val-window non-DFS rows. This verifies the
+  amendment's premise: Origin C's training window has real
+  bettime-archive coverage, spanning the 2023-24 archive from
+  2023-11-02 onward plus the new pass's 2024-25 rows through its
+  train-end date.
+- Origin C TEST fold (season 2025-26, 2,624 rows): after the 17.2
+  dedup (12,811 -> 11,897 rows), 148 rows dropped for null
+  `goalie_id`, 0 game_id-unmatched, 5,876 `(event, game, goalie, book,
+  line)` groups of which 5,873 are two-sided: **1,394 of 2,624
+  (53.12%)** goalie-games with at least one qualifying two-sided
+  bettime quote -- above 18.5's 50% COVERAGE-INSUFFICIENT floor, but
+  narrowly, as 18.4 discloses. The structural cause is archive
+  breadth (781 of the season's events have any bettime snapshot), not
+  book pairing.
+
+**One correction of the task's own framing, not a contradiction of
+verified data:** the original task brief states this "P1-style"
+both-origins bar is "what Experiments 5 and 8 required." Verified true
+for Experiment 5. Verified FALSE as stated for Experiment 8, which
+tested a single fresh origin (Origin C, 2025-26 only) against a "P1
+AND P2 both pass" bar on that one origin (section 11.7) -- there were
+never two origins to require agreement across. Under the 2026-07-14
+amendment this experiment retains Experiment 5's two-origin-agreement
+STRUCTURE but applies it to {Origin B, Origin C} (18.3), so the
+correction is doubly relevant: the "Experiments 5 and 8" framing must
+not be repeated as fact in a future document, and the agreement bar in
+force here derives its authority from Experiment 5's registered logic
+alone, applied to the amended origin set.
+
+No other contradiction of any assumption in the task brief was found:
+`core_bettime_202607_snapshots.parquet`'s schema matches the stated 23
+columns exactly; `betonlineag` absence from 2023-24 is confirmed, not
+contradicted; the new pass's `betonlineag` saves figures (1,050
+events) match exactly; and Experiment 5's `mkt_*` placement (shots
+model only) matches exactly.
+
+**18.9 Implemented result -- LEAD CLOSED (Sonnet sub-agent execution
+under lead-reviewer direction, independently verified, 2026-07-16).**
+`scripts/experiment_15_w3_microstructure.py` completed all three
+origins' wiring gates, the 18.3a placebo, and both the PRIMARY and
+SECONDARY comparisons in one execution, wall clock 183.1s, no crash.
+Every number below was independently recomputed by the lead reviewer
+from the persisted `bootstrap_cluster_inputs.parquet` and quote
+universes, point estimates matching to 10 decimals, and the 18.2
+feature formulas verified by hand against raw snapshot rows for a
+sample goalie-night.
+
+Wiring gate: BIT-IDENTICAL (abs diff exactly 0.0) against every
+recorded Experiment 5 Origin A/B and Experiment 8 Origin C value --
+Brier-vs-control means, ns, cluster counts, workload bias/MAE pairs,
+all six val-fitted alphas. Coverage reconciliation exact on all seven
+registered 18.8 counts. Coverage floor: Origin B 81.67% non-DFS,
+Origin C 53.125% -- both SUFFICIENT.
+
+Placebo (Origin A, zero `juice_*` training exposure): NO ANOMALY -- all
+four registered anomaly-surface CIs (closing Brier and shots `|error|`,
+PRIMARY and SECONDARY) contain zero. PRIMARY closing Brier
+`+0.00022468387361090333`, CI95 `[-0.00044703079794508187,
++0.0008851610428282828]`. One disclosure: the NON-registered placebo
+SECONDARY bettime Brier CI `[-0.0014621365511030798,
+-0.000016680192124909426]` marginally excludes zero by 1.7e-5 -- outside
+the registered 18.3a surface (which names closing Brier and shots
+`|error|` only), one of six placebo CIs at 95%, recorded as a
+noise-floor calibration fact, triggers no rule.
+
+PRIMARY (`control_plus_microstructure` minus `no_pace_control`;
+negative = block helped; PASS required CI95 upper `< 0` on both gating
+origins on either metric):
+- Origin B closing Brier: mean `-0.0010586603482554456`, CI95
+  `[-0.0029536449440400203, +0.0008505503511136891]`, n=7,463 / 2,510
+  clusters -- right direction, does not clear.
+- Origin B shots `|error|`: mean `-0.028319315939414794`, CI95
+  `[-0.058235809243306874, +0.0015836850717300132]`, n=2,624 -- right
+  direction, narrowly does not clear.
+- Origin C closing Brier: mean `+0.0004815237825549298`, CI95
+  `[-0.0005084216363560196, +0.0014548538581875285]`, n=5,729 / 2,070
+  -- wrong direction.
+- Origin C shots `|error|`: mean `+0.011691479421243435`, CI95
+  `[-0.0036416111559402654, +0.02691749608734759]`, n=2,624 -- wrong
+  direction.
+
+Bettime secondaries agreed with the closing readout: Origin B mean
+`-0.0004335398581977066`, CI95 `[-0.0025017811918127656,
++0.0016738888469758511]`; Origin C mean `+0.001133996788670537`, CI95
+`[-0.0003436422726257154, +0.002663959185821192]`.
+
+SECONDARY (`control_plus_market_state_plus_microstructure` minus
+`control_plus_market_state`, the redundancy question): no gain
+anywhere -- all Origin B/C means weakly positive (weakly worse), e.g.
+Origin B closing `+0.0004724257158626342`, CI95
+`[-0.00047223716260126326, +0.0014621754617122253]`; Origin C closing
+`+0.0006841048542424979`, CI95 `[-0.000052200637443091104,
++0.0014507269606154575]`. Read plainly: on top of the already-promoted
+market-state block, microstructure is redundant-to-slightly-harmful.
+
+**Verdict (18.5/18.7): PRIMARY FAIL on both gating origins** -- not
+ONE-OF-TWO; neither origin cleared either metric. The juice-skew
+feature lead is **CLOSED this cycle**, joining the section 8 closure
+precedents (steam recon, DFS census 16.9, BetOnline convergence 17.9).
+It does not reopen without a new architecture or a genuinely new
+season of bettime coverage.
+
+Context, stated plainly: the placebo arm's own noise floor (all-NaN
+columns moving Brier by up to ~0.0007 in either direction) means
+Origin B's `-0.0011` closing mean is barely above procedure noise; the
+original unclustered discovery `r=0.032` is consistent with
+pseudo-replication inflation, the same lesson as W6; and the SECONDARY
+readout suggests the game-level `mkt_*` block already carries whatever
+market information the saves-market microstructure would add.
+
+Disclosed judgment calls (full list in the run's `metadata.json`
+`judgment_calls` key and the lead reviewer's records): before any
+statistic was computed, the runner's own pre-execution self-review
+caught and fixed a pass-bar direction bug -- the PASS criterion had
+been implemented two-sided where 18.5 registers a one-sided CI95-
+upper-bound-below-zero bar -- and corrected it prior to computing
+anything. Other disclosed calls: all bettime-archive loading deferred
+until after the wiring gate passed (stricter than the registered gate
+targets strictly require); `juice_n_books` computed via `nunique()` on
+book, verified empirically equivalent to a row count under the 17.2
+dedup key; and Origin C's SECONDARY bettime grading universe built via
+`build_season_multibook_frame`'s own internal cleaning rather than
+pre-applying the 17.2 dedup, per 18.4's own anchor to Experiment 8's
+recorded frame -- this reproduced Experiment 8's recorded 5,763/1,370
+bettime frame exactly. Artifacts:
+`models/trained/experiment_15_w3_microstructure_20260716_124811/`.
+
+---
+
+## 19. Experiment 16 -- Alternate-saves one-sided-ladder feasibility pilot
+
+Registered 2026-07-16 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, before any credit is spent, any alternate-ladder quote is
+loaded, or any coverage/calibration statistic is computed on any season.
+This operationalizes the remainder decision flagged repeatedly since the
+2026-07-13 probe: `BREAKTHROUGH_MODEL_PLAN.md` section 5.7's "Flexible
+remainder: targeted over-only alternate-saves pass ... up to 12,125
+[credits]," `HISTORICAL_DATA_ANALYSIS.md` sections 9.3/9.5's "alternate-
+saves remainder is capped at a 1-2k pilot until a one-sided ladder model
+is shown to work," and section 5.7's own core-purchase note rejecting an
+"~11,000-credit alternate-ladder purchase" outright because "over-only
+quotes need a one-sided vig model that does not exist yet; pilot 1-2k
+first." This is that pilot's registration. Unlike sections 17 and 18, it
+authorizes a real, bounded purchase (max 2,000 credits of the 12,895
+remaining, expiring 2026-07-31) AND fixes the feasibility analysis's
+every formula and pass bar before that purchase's data is seen -- both
+halves fixed together, before either is executed.
+
+### 19.1 Hypothesis and honesty notes
+
+Hypothesis: BetOnline's over-only alternate-saves ladder, de-vigged
+against its own same-snapshot standard two-sided line at the anchor rung
+and extended across the ladder under a simple, fixed, one-sided
+vig-extension assumption, produces exceedance probabilities at
+NON-anchor rungs that are (a) available on a large-enough fraction of
+goalie-nights to justify a full-season purchase, and (b) more
+informative about the actual saves outcome than a baseline built from
+the standard line alone. This is a FEASIBILITY question, not an edge
+claim. Per plan section 6.1's interpretation hierarchy, the strongest
+possible outcome of this experiment is authorization to DRAFT a
+full-season purchase registration -- never a betting-policy result,
+never "edge" language, and never an automatic further spend.
+
+Honesty constraints, stated plainly rather than rounded up:
+
+1. Alternate saves lines do not exist historically before 2024-25
+   (probe-verified: `BREAKTHROUGH_MODEL_PLAN.md` section 5.7,
+   `HISTORICAL_DATA_ANALYSIS.md` section 9.3, reconfirmed in 19.8). There
+   is no untouched season available for this market anywhere in this
+   project's current data, and there never will be one -- both 2024-25
+   and 2025-26 outcomes have already been opened repeatedly by this
+   document family for other purposes (Experiments 5, 8, 11, 12, 14, 15).
+   Any PASS this pilot produces is development evidence on already-viewed
+   seasons, exactly the caveat sections 17.1/18.1 attach to their own
+   touches of the same two seasons.
+2. 2025-26 carries the same doubled honesty burden 18.1 item 2 flagged
+   for the juice-skew lead: it is simultaneously the alternate-saves
+   DISCOVERY season (the W1 probe that first found alternate-saves
+   coverage sampled 2025-26 alongside 2024-25) and the live-bet season.
+   Nothing below treats a 2025-26 result as confirmatory in any stronger
+   sense than a 2024-25 result for that reason.
+3. Twenty-six BetOnline goalie-nights of alternate-ladder quotes are
+   ALREADY OWNED (the W1 probe: 15 events -- 7 in 2024-25, 8 in 2025-26 --
+   12 and 14 goalie-nights respectively, 19.8) and were already seen at
+   the raw-quote level during probe design (section 9.3's "all 455
+   alternate-saves outcomes were over-only" finding). Critically, no
+   prior document in this family has ever joined those 26 nights' ladder
+   quotes to actual saves OUTCOMES -- the W1 probe was "a data-
+   availability and billing probe, not a model experiment"
+   (`HISTORICAL_DATA_ANALYSIS.md` section 9's own framing) and never
+   touched `clean_training_data.parquet`. 19.3 registers exactly how this
+   pilot reuses those 26 nights (folded into the primary universe at zero
+   additional cost, flagged as prior-exposure quotes) rather than
+   silently treating them as fresh.
+4. This registration itself was drafted from read-only inspection of
+   already-owned data only: no network call, no credit spend, and no
+   outcome-linked statistic (no Brier, no calibration check, no
+   coverage-vs-outcome join) was computed anywhere in producing this
+   section. Every count in 19.8 is a coverage, schema, or timing join
+   count, not a statistic, exactly matching 17.8/18.8's own distinction.
+5. The one-sided vig-extension assumption (19.4) is genuinely new
+   machinery in this document family -- there is no prior artifact to
+   reproduce a wiring gate against (unlike Experiments 11/14/15, which
+   each reused a frozen or previously-registered component). Its own
+   coverage and calibration gates (19.5) are this pilot's entire reason
+   to exist; a FAIL here is a legitimate, expected, and useful outcome,
+   not a bug.
+
+### 19.2 Registered definitions
+
+**Reused verbatim, by reference, not restated in full:**
+
+- *De-vig method.* Proportional (multiplicative) normalization of a
+  two-sided quote at the SAME book, SAME line, SAME snapshot, SAME
+  goalie-night (17.2, restated as binding in 18.2) -- the
+  odds-averaging-bug rule (`HISTORICAL_DATA_ANALYSIS.md` section 1).
+  `raw_p_over = 1/price_decimal_over`, `raw_p_under =
+  1/price_decimal_under`, `overround = raw_p_over + raw_p_under`,
+  `p_over_devigged = raw_p_over/overround`.
+- *DFS exclusion.* `prizepicks` and `underdog` never contribute to any
+  anchor, ladder, or baseline computation here (17.2's Other-books rule;
+  18.2's restatement). PrizePicks' own alternate-saves quotes were
+  independently found in 17.8/18.8 to carry simultaneous same-side
+  alternate lines for the same player -- not a genuine fixed-line
+  two-sided market, and structurally the same "ladder-shaped but not
+  vig-priced" product this experiment is trying to price properly for a
+  real sportsbook, making PrizePicks doubly inappropriate as either an
+  anchor or a ladder source here.
+- *Dedup.* Within a single `snapshot_pass`/pass label, rows sharing a
+  natural key are deduped to the MAXIMUM `resolved_ts` (ties by max
+  `requested_ts`, then row order), applying uniformly to any archive row
+  this experiment reads (17.2, extended to 2023-24 in 18.8's Surprise
+  #1).
+- *Never average raw odds.* Restated because this experiment's ladder-
+  extension mechanism (19.4) could easily be misread as odds-averaging if
+  implemented carelessly -- it is not: every division in 19.4 divides by
+  a SINGLE book's SINGLE anchor-rung overround, never a cross-book or
+  cross-rung average.
+
+**New for this experiment:**
+
+- *Primary book scope: `betonlineag` ONLY*, for both the anchor
+  (standard two-sided line) and the ladder (alternate over-only rungs)
+  at every step of the PRIMARY universe. Deliberate, not an oversight:
+  (a) 17.2/18.2's same-book-same-line-same-snapshot de-vig rule already
+  forbids mixing books between an anchor and a ladder within one
+  computation; (b) the W1 probe found BetOnline is the only
+  alternate-saves provider with near-universal, consistently-shaped
+  coverage (7/8 2024-25, 8/8 2025-26 events; 7-8 rungs per goalie-night
+  at a uniform 2-point spacing every time it is present, 19.8) --
+  FanDuel and Fanatics appear on far fewer nights with far less
+  consistent rung counts (19.8), and PrizePicks is DFS-excluded above;
+  (c) BetOnline is the only one of these venues that is an actual
+  bettable sportsbook for this project, consistent with the BetOnline
+  focus of Experiments 11 and 14 (sections 14 and 17). Unlike 18.2's microstructure block,
+  this is NOT a 2023-24-trainability workaround -- alternate saves do not
+  exist in 2023-24 at ANY book, so there is no book-agnostic-for-
+  trainability motive here; the choice is purely "which book's ladder is
+  usable," and BetOnline is the only real answer the data gives.
+- *Goalie-night unit.* `(event_id, goalie identity)`, resolved via
+  `goalie_id` where both sides resolve it, else
+  `goalie_name_matched`/`goalie_name_raw` fallback (14.5 rule 1, by
+  reference), joined to `clean_training_data.parquet` via
+  `attach_game_id`'s `(goalie_id, game_date)` +/-1-day lookup (18.4's
+  convention, by reference; `clean_training_data.parquet` uses a plain
+  `game_date` column, not `game_date_eastern` -- verified in 19.8, not
+  assumed).
+- *Anchor rung.* The point value `L_std` of BetOnline's own two-sided
+  `player_total_saves` (standard) quote for that goalie-night at the
+  SAME snapshot as the ladder (19.3 registers exactly how "same
+  snapshot" is verified/enforced per season). Requires BOTH sides
+  present at `L_std` for BetOnline (17.2's pairing rule) -- a
+  single-sided BetOnline standard quote yields no anchor and the
+  goalie-night is excluded.
+- *Ladder rungs.* The set of distinct `point` values `{L_1 < L_2 < ... <
+  L_k}` for which BetOnline posts an `Over` alternate-saves outcome for
+  that goalie-night at the SAME snapshot as the anchor. Per-rung raw
+  probability `raw_p_over(L_i) = 1/price_decimal_over(L_i)`. Verified in
+  19.8: `L_std` is one of `{L_i}` in 26 of 26 already-owned goalie-nights
+  where both a BetOnline standard line and a BetOnline alternate ladder
+  exist at the same snapshot -- the anchor rung is expected, not merely
+  hoped, to sit exactly on the ladder itself; 19.4's consistency
+  diagnostic treats a night where `L_std` is NOT found among the ladder
+  rungs as an anomaly to flag, not silently drop.
+- *Outcome.* `data/processed/clean_training_data.parquet`, `saves`
+  column, ONLY -- `data/betting.db` is forbidden, reads included (17.6
+  item 2 / 18.4's stricter carve-out, restated as binding). Settlement:
+  `label_over(L_i) = 1{saves_actual > L_i}` -- unambiguous because every
+  observed rung in the owned data is an `X.5` value (19.8), so no push
+  case exists.
+
+### 19.3 Purchase design
+
+**Script and cache discipline** (mirrors `scripts/purchase_core_bettime_
+passes.py` exactly, by reference, restated as binding requirements for
+the new script):
+
+- New dedicated script: `scripts/purchase_alt_ladder_pilot.py`. New
+  dedicated append-only cache directory:
+  `data/raw/betting_lines/passes/alt_ladder_pilot_202607/`, record
+  naming `altladder_event={event_id}_signature={signature}.json` -- a
+  shape that cannot collide with `probe_opening_markets.py`'s
+  `w1_event=...` or `purchase_core_bettime_passes.py`'s `core_event=...`
+  records, per the established never-shared-cache-naming convention.
+- DRY-RUN IS THE DEFAULT. No network call without `--execute`, and
+  `--execute` additionally requires `--max-credits`.
+- `--max-credits 2000` (the registered hard cap for this pilot -- not a
+  default the runner may raise). `--credit-floor 10895` (= 12,895 -
+  2,000, the registered floor; the script aborts, exactly as
+  `purchase_core_bettime_passes.py.execute()` already does, the instant
+  a call's `x-requests-remaining` header falls below this floor or below
+  zero -- a live-header check, never a locally-estimated one).
+- Plans are built entirely from the cached events-list envelopes under
+  `data/raw/betting_lines/cache/` (`events_date=*.json`), never from
+  `data/betting.db`, reusing `purchase_core_bettime_passes.py`'s own
+  `load_cached_events`/`_season_events` verbatim rather than
+  reimplementing a second, potentially divergent, season-window/Eastern-
+  date calculation.
+- API key loaded from `API_KEY`/`THE_ODDS_API_KEY` env var or `.env`,
+  exactly as the existing scripts do; never printed, logged, or written
+  into any cache record.
+- Worst-case per-event credit reservation happens BEFORE dispatch, not
+  after -- reused verbatim from `execute()`'s existing "may have billed
+  even if the connection dies" reasoning.
+- A previously-recorded signature (any complete response, 200 or
+  non-200) is NEVER re-requested -- reused verbatim.
+
+**Season mix and call-type decision, reasoned explicitly.** The choice
+between an alt-only call (`markets=player_total_saves_alternate` only,
+up to 10 credits/event, relies on aligning with an ALREADY-OWNED
+standard quote from a separate call) and a combined call
+(`markets=player_total_saves,player_total_saves_alternate`, up to 20
+credits/event, guaranteed same-envelope anchor, half the sample for the
+same budget) depends on whether each season's EXISTING standard-saves
+archive is a trustworthy anchor for a freshly-purchased ladder at the
+same requested bet-time anchor. Checked directly, not assumed (full
+detail in 19.8):
+
+- *2024-25.* `core_bettime_202607_snapshots.parquet`'s `combined-2024-25`
+  pass was built by `purchase_core_bettime_passes.py` using the exact
+  same `compute_bettime_ts` anchor formula this pilot will reuse. Of the
+  16 events where the already-owned W1 probe (issued 2026-07-13) and the
+  already-owned core pass (issued 2026-07-14, a separate day, a separate
+  call) both happened to sample the same event id, the two calls'
+  requested `date` params were identical in all 16 cases (by
+  construction) AND the returned envelope `timestamp` fields were
+  BYTE-IDENTICAL in all 16 cases; of the 7 of those 16 with a BetOnline
+  standard-saves quote present in both calls, all 24 shared `(player,
+  side, point)` price outcomes matched exactly (zero diffs) across the
+  two independently-issued calls (19.8; lead-reviewer recount 2026-07-16:
+  7 events, 2+2+4+4+4+4+4 = 24 shared outcomes, correcting the draft's
+  event count of 6 -- the 24-outcome total was and remains exact). This is direct, verified
+  evidence that the historical-odds endpoint resolves an identical
+  requested `date` to the identical archived snapshot regardless of
+  which call requests it or when. **Decision: 2024-25 uses the alt-only
+  call type**, doubling the achievable sample for the same credit spend,
+  with alignment risk empirically bounded at near-zero and still checked
+  per-night by the alignment rule below (never trusted blind).
+- *2025-26.* `saves_lines_snapshots.parquet`'s 2025-26 `bettime` rows do
+  NOT uniformly follow `compute_bettime_ts` -- checked directly against
+  all 781 events with a 2025-26 bettime row (19.8): only 725/781
+  (92.83%) have `requested_ts` exactly equal to the computed anchor; the
+  remaining 56 (7.17%) diverge, in some cases by up to 4.5 hours (16,200
+  seconds) -- meaning at least part of this archive's 2025-26 bettime
+  rows were captured by a mechanism other than a purchase-script-style
+  historical-anchor call. Separately, this archive covers only 781 of
+  the season's 1,232 in-window events (63.7%) -- most 2025-26 events
+  have no existing standard-saves quote to anchor against at all,
+  regardless of alignment. An alt-only design for 2025-26 would
+  therefore (a) need to restrict its sampling frame to the well-aligned
+  subset, discarding most of the season's coverage before drawing a
+  single sample, and (b) still carry residual per-night alignment risk
+  the 2024-25 leg does not have. **Decision: 2025-26 uses the combined
+  call type** -- a single call fetches both the standard line and the
+  alternate ladder together, guaranteeing same-envelope alignment by
+  construction and reaching events the existing archive never touched,
+  at the cost of half the per-credit sample size. The more expensive
+  option, bought deliberately for the season whose existing archive
+  cannot supply a reliable free anchor.
+
+This produces a genuine per-season mix with a stated, data-grounded
+reason for each leg, not a single uniform policy applied without
+justification.
+
+**Registered sample sizes (fixed now, before any purchase):**
+
+| Season | Call type | Markets requested | Credits/event (worst case) | Sampling pool (candidates) | Target N (new purchases) | Worst-case credits |
+|---|---|---|---:|---:|---:|---:|
+| 2024-25 | alt-only | `player_total_saves_alternate` | 10 | 1,043 (BetOnline-standard-covered events, minus the 7 already-probed with BetOnline coverage; 19.8) | 120 | 1,200 |
+| 2025-26 | combined | `player_total_saves,player_total_saves_alternate` | 20 | 1,224 (all in-window events, minus the 8 already-probed; 19.8) | 35 | 700 |
+| **Total** | | | | | **155** | **1,900** |
+
+Worst-case total (1,900) is deliberately 100 credits below the
+registered `--max-credits 2000` safety cap, so the cap is a genuine
+backstop, not a value the plan expects to hit exactly; it is NOT itself
+a target, and the runner may not raise the target N opportunistically
+because headroom remains (19.6). Bookmakers requested: the same nine
+named books used by every prior pass in this family (`draftkings,
+fanduel, betmgm, williamhill_us, fanatics, bovada, betonlineag,
+underdog, prizepicks`) plus `includeMultipliers=true`, purely for
+schema/signature consistency -- billing depends only on distinct MARKETS
+returned, never on book count (verified repeatedly, 9.1/17.8), so
+requesting all nine costs nothing extra and preserves optionality for a
+future non-primary characterization of FanDuel/Fanatics ladder coverage
+(19.5's coverage diagnostics, non-gating).
+
+**Seeded random sampling rule (fixed now).** For each season's candidate
+pool (table above, sorted deterministically by `(commence_time,
+event_id)`, exactly as `_season_events` already sorts): assign each
+candidate a 0-based index in that sorted order; draw
+`numpy.random.default_rng(42).permutation(pool_size)` (seed 42, this
+document family's uniform bootstrap/sampling seed); the target sample is
+the first `N` candidates in permutation order. The FULL permutation (not
+just the first N) is persisted in the run's plan artifact, so that if a
+run needs to extend the sample later within the same registered N and
+credit cap (e.g. a `--limit` run stopped early, or a handful of 404s
+need replacing), the NEXT events are drawn from the same frozen
+permutation in order -- never redrawn, never cherry-picked. The sample
+may not be redrawn, reordered, or resized after this registration is
+filed (19.6).
+
+**Already-owned probe events: reuse for free, exclude from new
+sampling (fixed now).** The 15 events (7 in 2024-25, 8 in 2025-26) the
+W1 probe already purchased are (a) EXCLUDED from both seasons' new
+candidate pools (already reflected in the pool sizes above) --
+re-requesting them would be a redundant paid call for data already on
+disk; and (b) FOLDED INTO the primary analysis universe at zero
+additional cost, read directly from the existing
+`data/raw/betting_lines/probes/w1_market_coverage/` records, flagged in
+every report as `source = "probe_reuse"` versus `source =
+"new_purchase"` for the 155 newly purchased events -- a provenance flag,
+not a different formula; the SAME 19.2/19.4 definitions apply
+identically to both sources. These 26 already-owned BetOnline
+goalie-nights (12 in 2024-25, 14 in 2025-26; 19.8) are same-snapshot-
+aligned by construction (one combined call already fetched both markets
+together), so they pass the alignment check below trivially, and this is
+reported as such rather than silently omitted from the check.
+
+**Alignment verification rule (fixed now, applies uniformly to every
+goalie-night in the primary universe, including trivially-passing
+probe-reuse and 2025-26-combined nights).** `alignment_gap_seconds =
+|ladder_envelope_timestamp - standard_quote_observed_timestamp|`, using
+OBSERVED (actually-returned) timestamps on both sides -- the ladder
+call's own returned envelope `timestamp` field, and the standard
+quote's own observed capture time (`resolved_ts` for
+`saves_lines_snapshots.parquet`-sourced anchors, `fetched_at`/envelope
+`timestamp` for `core_bettime_202607_snapshots.parquet`-sourced anchors)
+-- never the nominal REQUESTED `date` param on either side, consistent
+with 17.2's observed-over-nominal precedent. Tolerance:
+`alignment_gap_seconds <= 300` (5 minutes), chosen to match the
+existing project's own pre-established "material drift" threshold
+(`audit_core_bettime_passes.py`'s `check_anchor_integrity`'s
+`n_drift_gt_5min` bucket, reused as a natural precedent rather than
+inventing a new number). A goalie-night with `alignment_gap_seconds >
+300`, or where either side's observed timestamp cannot be resolved at
+all, is EXCLUDED from the primary universe -- fail-closed, counted and
+reported, never imputed or tolerated with a wider window after the fact.
+For 2025-26 combined-call and probe-reuse nights this gap is 0 by
+construction and the check is expected to pass unconditionally, but it
+is still COMPUTED and reported for every night, not skipped for the
+cases expected to trivially pass.
+
+**Independent audit requirement** (mirrors
+`scripts/audit_core_bettime_passes.py`, mandatory before any analysis
+script trusts the new cache). New dedicated script
+`scripts/audit_alt_ladder_pilot.py`, read-only, recomputing from the raw
+`data/raw/betting_lines/passes/alt_ladder_pilot_202607/` records (never
+trusting the purchase script's own run-log summary): (1) record
+integrity -- parses, signature recomputation, filename-embeds-signature,
+no `apiKey` substring anywhere in raw text, season-window membership;
+(2) billing arithmetic -- `x-requests-last == 10 * distinct markets
+actually returned` on every 200, running total reconciled against
+claimed spend, monotonically non-increasing `x-requests-remaining`,
+implied starting balance reconciled against the pre-purchase 12,895; (3)
+non-200s -- enumerate, confirm zero-cost, confirm `EVENT_NOT_FOUND`
+where applicable; (4) anchor integrity -- the SAME `alignment_gap_
+seconds` check as above, independently recomputed from raw records
+rather than trusted from the purchase script's own log; (5) coverage --
+rungs-per-goalie-night distribution, per-book breakdown, exact-duplicate
+and one-sided-outcome schema traps (mirroring `check_coverage`'s
+existing structure); (6) pairing potential -- read-only join against
+`core_bettime_202607_snapshots.parquet` (2024-25) and
+`saves_lines_snapshots.parquet` (2025-26) to independently size the
+qualifying primary universe before the feasibility analysis script runs.
+This audit MUST run and its `all_clean`-equivalent integrity flag MUST
+be true (or every violation individually reconciled and disclosed)
+before `scripts/experiment_16_alt_ladder_pilot.py` (19.4/19.5) is
+permitted to load a single cached record -- an audit FAILURE is a STOP,
+not a warning, mirroring the STOP-AND-INVESTIGATE discipline 18.3a
+already established for a different kind of anomaly.
+
+### 19.4 One-sided ladder model and baseline
+
+Fully specified before any purchase. Kept deliberately simple and fully
+deterministic per the task's own instruction -- this is a feasibility
+pilot, not an optimization.
+
+**Anchor vig.** For a qualifying goalie-night (19.2/19.3), from
+BetOnline's own two-sided standard quote at `L_std`: `overround_std =
+raw_p_over(L_std) + raw_p_under(L_std)` (both from the STANDARD market's
+own paired prices, not the ladder), `p_over_devigged(L_std) =
+raw_p_over(L_std) / overround_std` (17.2's proportional method,
+restated).
+
+**Vig-extension assumption (the one new modeling choice this pilot
+registers).** The ladder gives only `raw_p_over(L_i)` at every rung -- no
+paired under price to de-vig each rung independently. Registered
+assumption: BetOnline's OVERROUND is CONSTANT across all rungs of the
+same goalie-night's ladder, equal to `overround_std` (the anchor's own
+measured overround). This is the constant-multiplicative-factor
+extension the task named as admissible, and the simplest one that (a)
+requires no new free parameter beyond what the anchor already measures,
+and (b) is automatically monotonicity-preserving before any enforcement
+step (dividing an already-decreasing sequence by one positive constant
+cannot reorder it): `p_over_devigged_raw(L_i) = raw_p_over(L_i) /
+overround_std` for every rung `L_i`, INCLUDING `L_std` itself (which
+recovers 19.4's anchor value exactly when the ladder's own quote at
+`L_std` matches the standard market's quote at `L_std` -- checked, not
+assumed: the raw discrepancy between the ladder's own `L_std`-implied
+value and the standard market's `p_over_devigged(L_std)` is reported as
+a wiring/consistency diagnostic, non-gating, because these are two
+DIFFERENT outcomes objects -- alternate-market vs. standard-market --
+even when priced at the identical point and snapshot, and a small
+discrepancy is expected book behavior, not necessarily an error).
+
+**Monotonicity enforcement.** Sort rungs ascending by `L_i`. Walk
+forward: `p_over_devigged(L_1) = p_over_devigged_raw(L_1)`; for `i =
+2..k`, `p_over_devigged(L_i) = min(p_over_devigged_raw(L_i),
+p_over_devigged(L_{i-1}))`. A plain forward-min clip -- deterministic,
+auditable in one line, no fitting or optimization (isotonic regression
+was deliberately NOT used, to keep this a fixed formula rather than a
+fitted procedure). The number of rungs actually clipped (where
+`p_over_devigged_raw(L_i) > p_over_devigged(L_{i-1})`) is counted and
+reported per goalie-night and in aggregate -- a diagnostic of raw ladder
+noise, not itself a pass/fail criterion.
+
+**Nights lacking a usable anchor.** A goalie-night with a BetOnline
+alternate ladder but no qualifying BetOnline standard two-sided quote at
+the same aligned snapshot (missing entirely, one-sided only, or failing
+the 19.3 alignment tolerance) has no `overround_std` to divide by and is
+EXCLUDED from the primary universe outright -- fail-closed, counted,
+never imputed from a different book, a different snapshot, or a
+league-average overround.
+
+**Baseline (uses ONLY the standard line, fit on 2023-24, which has no
+alternates).** `betonlineag` is CONFIRMED ABSENT (zero rows) from
+2023-24 in BOTH `bettime` and `closing` (18.8, reconfirmed 19.8) -- so
+the baseline's shape parameter cannot be fit from BetOnline-only
+2023-24 data, and this experiment does not pretend otherwise. Registered
+fix, disclosed as a structural asymmetry rather than hidden: the
+baseline's fit input on 2023-24 reuses Experiment 15's own book-agnostic
+construction (18.2) BY REFERENCE -- `p_over_std_2023-24(goalie-night) =
+1 - juice_p_under_consensus`, i.e. the MEDIAN de-vigged probability
+across whichever qualifying (two-sided, non-DFS) books quote the modal
+line `L*` for that goalie-night (18.2's `juice_p_under_consensus`/
+modal-line machinery exactly; median commutes through the strictly
+monotonic `1-x` transform, so this equals the median of `p_over_devigged`
+across the same books). This machinery was chosen specifically because
+it was already built, already registered, and already independently
+executed and verified (18.9) for exactly the same "betonlineag doesn't
+exist in 2023-24" problem. Implementation may source it either by
+reading it directly (read-only) from Experiment 15's persisted
+per-goalie-night frame in
+`models/trained/experiment_15_w3_microstructure_20260716_124811/` if a
+suitable full-season 2023-24 frame exists there, or by recomputing it
+fresh from `saves_lines_snapshots.parquet`'s 2023-24 `bettime` rows
+using the identical 18.2 formula; either path must reproduce identical
+values on a spot-check sample before being trusted (a lightweight wiring
+gate, mirroring this family's standing discipline) -- the FORMULA, not
+the file path, is the registered source of truth. This is a deliberate
+asymmetry versus the ladder model's betonlineag-only scope, disclosed
+rather than hidden: there is no other way to fit anything on 2023-24
+using betonlineag specifically, since it has zero rows there.
+
+Fit procedure (closed-form, no iteration): for every 2023-24
+goalie-night with `juice_matched == 1` (18.2) and `0 < p_over_std_2023-24
+< 1` (exact 0/1 excluded, where the implied Normal quantile is
+undefined; counted, not imputed), let `z_i = Phi^-1(1 - p_over_std_2023-
+24,i)`, `y_i = saves_actual,i - (L*_i + 0.5)`, `x_i = -z_i`. `sigma_0 =
+sum(x_i * y_i) / sum(x_i^2)` -- the OLS slope through the origin of `y`
+on `x`, a single global scalar (deliberately not bucketed by workload or
+goalie, per the "keep it simple" instruction; a bucketed version is
+explicitly out of scope for this pilot and may not be added post-hoc,
+19.6). If `sigma_0 <= 0` (a pathological/degenerate fit), the baseline is
+UNDEFINED and 19.5's calibration test is reported as INSUFFICIENT SAMPLE
+rather than computed with a nonsensical shape parameter.
+
+Baseline translation, applied to every non-anchor rung `L_i` of every
+primary-universe 2024-25/2025-26 goalie-night (using that night's OWN
+`L_std` and `p_over_devigged(L_std)` -- the standard line only, never any
+ladder rung, satisfying "uses only the standard line"): `mu_hat = L_std
++ 0.5 - sigma_0 * Phi^-1(1 - p_over_devigged(L_std))`; `BASELINE_p_over
+(L_i) = 1 - Phi((L_i + 0.5 - mu_hat) / sigma_0)`. This is a deliberately
+simple Normal-shape translation, disclosed explicitly as simpler than
+the project's own production NB2 distributional model
+(`src/experiments/distributional_saves.py`) -- intentional, since this
+baseline exists only to give the ladder model a genuine, pre-registered
+comparison point for this pilot, not to be a candidate feature or model
+itself.
+
+### 19.5 Registered metrics and pass bars
+
+**Coverage gates.** Denominator: every goalie-night (`game_id`,
+`goalie_id`) in `clean_training_data.parquet` whose game falls among the
+SAMPLED events -- the 155 newly purchased events (19.3's table) plus the
+15 already-owned probe events, 170 events total across both seasons --
+regardless of whether that particular call actually returned alternate
+data (a join count against the SAMPLING DESIGN, not a post-filtered
+count, mirroring 18.8's "Coverage JOIN COUNT" framing exactly). A
+goalie-night QUALIFIES for the primary universe iff ALL of: (a) a
+resolved goalie identity; (b) a computable BetOnline anchor (19.4,
+including the 19.3 alignment check); (c) at least 5 distinct BetOnline
+ladder rungs (including the anchor rung) at the same aligned snapshot.
+
+- Rung-depth floor: `>= 5` distinct rungs. Chosen below the probe's own
+  observed BetOnline range (7-8 rungs on all 26 already-owned nights,
+  19.8) specifically to allow real-purchase attrition without instantly
+  failing a night with slightly thinner coverage than the probe's small
+  sample happened to show, while still requiring genuine ladder breadth.
+- Coverage-gate PASS bar: `>= 70%` of the 170-event-derived goalie-night
+  population qualifies. This directly reuses `BREAKTHROUGH_MODEL_PLAN.md`
+  section 5.1's own original go/no-go convention for "is this market's
+  coverage good enough to justify buying more" decisions ("at least two
+  usable books on 70% or more of sampled events") -- the same style of
+  decision this pilot is making, at the same threshold, not a fresh
+  number invented for this document.
+- Reported unconditionally, non-gating: rungs-per-goalie-night
+  distribution (min/median/mean/max) split by season and by `source`
+  (`new_purchase` vs `probe_reuse`); per-book breakdown (BetOnline vs.
+  FanDuel vs. Fanatics vs. excluded PrizePicks) for future full-purchase
+  planning value; the exclusion funnel (no resolved identity / no anchor
+  / alignment failure / rung-depth failure), summing exactly to the
+  170-event-derived population, mirroring this family's standing
+  exclusion-funnel-must-reconcile discipline (17.9's Phase A funnel is
+  the direct precedent).
+
+**Calibration/informativeness primary.** Cluster floor: `>= 50`
+qualifying goalie-nights (a scaled-down analogue of 17.5's 100-bet
+floor, proportional to this pilot's roughly 5x-smaller credit budget
+relative to the core passes; the unit here is `(goalie-night,
+non-anchor-rung)` rows, and each qualifying night contributes several
+such rows given the established 5-8 rung depth, so 50 clusters yields
+materially more graded rows than 17.5's 100 single-bet clusters did). If
+`n_qualifying < 50`, the calibration test is INSUFFICIENT SAMPLE
+regardless of the coverage-gate percentage (a small absolute purchase
+outcome, e.g. from an early credit-floor stop, can technically clear 70%
+of a tiny denominator without supporting a trustworthy bootstrap).
+
+Population: every `(goalie-night, L_i)` pair in the qualifying primary
+universe where `L_i != L_std` (the anchor rung is excluded from the
+calibration population -- it is de-vigged directly from a genuine
+two-sided market and would trivially "calibrate," which is not the
+question; the test is specifically about NON-anchor rungs, per the
+task's own framing).
+
+Per row: `label_over(L_i) = 1{saves_actual > L_i}` (19.2). LADDER
+prediction = `p_over_devigged(L_i)` (19.4, monotonicity-enforced).
+BASELINE prediction = `BASELINE_p_over(L_i)` (19.4), evaluated on the
+exact same rows (a genuinely paired comparison).
+
+PRIMARY metric: rung-level Brier score delta, `delta = Brier_ladder -
+Brier_baseline` where `Brier_x = mean((p_x - label_over)^2)` over the
+population, computed within each bootstrap resample. Negative = ladder
+more accurate than baseline (matches this family's established sign
+convention, e.g. 18.5's "negative = microstructure variant more
+accurate"). Goalie-night CLUSTER bootstrap: 10,000 resamples, seed 42,
+resampling goalie-night clusters WITH replacement (every resampled
+night's full multi-rung row set travels together, this family's
+standing multi-row-per-cluster convention). No degenerate-resample rule
+is needed -- a Brier-delta mean is always defined for any nonempty
+resample, exactly the reasoning 18.5 already gave for its own Brier/MAE
+bootstrap (not a Pearson-`r`-style statistic that can be undefined).
+
+**PASS bar, stated with the exact arithmetic and the exact one-sided
+direction** (registered precisely because 18.9 disclosed a near-miss: an
+early implementation of this exact bar shape was caught pre-execution
+having been coded two-sided by mistake). Compute the standard percentile
+CI95 (2.5th/97.5th percentile of the 10,000 resampled deltas). PASS
+requires `ci_upper < 0` -- the UPPER bound of the two-sided-computed
+interval below zero, a one-sided-in-effect bar from a two-sided-computed
+CI, identical in construction to 17.3's and 18.5's own bars. The runner
+MUST implement this as `ci_upper < 0`, never as `not (ci_lower <= 0 <=
+ci_upper)` (equivalent in principle but registered explicitly given the
+disclosed 18.9 near-miss).
+
+SECONDARY, reported unconditionally, non-gating: the identical
+construction using rung-level log-loss instead of Brier (`-[label*ln(p)
++ (1-label)*ln(1-p)]`, both `p` clipped to `[1e-6, 1-1e-6]` to avoid an
+unbounded value from a single degenerate prediction -- a numerical
+safeguard, not a modeling choice); the raw (non-clustered) count of
+monotonicity clips applied (19.4); the anchor-rung wiring/consistency
+diagnostic (19.4).
+
+**Exact PASS/FAIL/INSUFFICIENT-SAMPLE arithmetic.**
+
+1. If the sampled population yields zero qualifying goalie-nights: HARD
+   STOP, overall verdict INSUFFICIENT SAMPLE, no bootstrap attempted.
+2. Compute `coverage_rate = n_qualifying / n_total_sampled_goalie_
+   nights`.
+   - `coverage_rate < 0.70` -> coverage = INSUFFICIENT. The calibration
+     statistic is STILL computed and reported (this family's standing
+     "report and stop" discipline, e.g. 17.7's EXPLORATORY-ONLY handling
+     of a failed-gate Phase B/17.5), but labeled EXPLORATORY-ONLY and
+     does NOT gate anything. Overall verdict: **INSUFFICIENT SAMPLE**.
+   - `coverage_rate >= 0.70` -> coverage = SUFFICIENT, proceed to step 3.
+3. If `n_qualifying < 50` (the cluster floor): overall verdict
+   **INSUFFICIENT SAMPLE** regardless of `coverage_rate`; point
+   estimates reported, no CI trusted.
+4. Else (`coverage_rate >= 0.70` AND `n_qualifying >= 50`): compute the
+   PRIMARY Brier-delta cluster-bootstrap CI95.
+   - `ci_upper < 0` -> **PILOT PASS**.
+   - Otherwise (`ci_upper >= 0`) -> **PILOT FAIL**.
+
+No other combination is possible; every branch above is exhaustive and
+terminal.
+
+### 19.6 Forbidden
+
+1. No purchase beyond `--max-credits 2000` or below `--credit-floor
+   10895` under this registration; raising either requires a NEW
+   registration, not a flag change under this one.
+2. No touching `data/betting.db`, reads included (17.6 item 2 / 18.4's
+   stricter carve-out, restated as binding).
+3. No modification of `src/betting/predictor.py`, any pre-existing file
+   under `models/trained/` (including
+   `experiment_15_w3_microstructure_20260716_124811/`, reused strictly
+   read-only for its `juice_*` formula/values), or `.github/workflows/`.
+4. No changing the 19.2 book scope (BetOnline-only), the vig-extension
+   assumption, the monotonicity-clip rule, or the baseline formula/
+   `sigma_0`-fit procedure (19.4) after seeing any purchased ladder quote
+   or any outcome. All are fixed by this registration.
+5. No changing the 19.3 sample sizes (120 / 35), the seeded sampling
+   permutation, the 19.3 alignment tolerance (300 seconds), the 19.5
+   rung-depth floor (5) or coverage-gate bar (70%), or the 19.5 cluster
+   floor (50) or PASS bar (`ci_upper < 0`) after seeing any result. No
+   opportunistic use of the 100-credit headroom (19.3) to enlarge the
+   target sample mid-run or on a rerun.
+6. No re-sampling, reordering, or resizing the seeded sample to chase a
+   better-looking coverage or calibration number; a run that
+   under-delivers (e.g., stops early at the credit floor) is reported
+   exactly as it landed, including as INSUFFICIENT SAMPLE if that is
+   what results.
+7. No post-hoc slicing (by book, date range, or rung position) reported
+   as a result once 19.5's statistics are computed.
+8. No treating the 26 already-owned probe goalie-nights, or either
+   season generally, as an untouched or confirmatory sample in any
+   report -- the 19.1 honesty notes travel with every number this pilot
+   produces.
+9. The independent audit (19.3) must run and its integrity checks must
+   be clean (or every violation individually reconciled and disclosed)
+   before the analysis script (19.4/19.5) loads a single cached record;
+   an audit failure is a STOP pending investigation, not a warning to
+   note and proceed past.
+10. Crash-rerun rule, in two parts, since this is the first experiment in
+    this family to spend real credits as part of its own registration:
+    - PURCHASE script: resumable by construction via its append-only
+      cache (identical mechanism to `purchase_core_bettime_passes.py`)
+      -- a crash simply means the next invocation skips already-cached
+      signatures and continues under the SAME frozen sample plan,
+      `--max-credits`, and `--credit-floor`. This is a structural
+      property, not a special exception, and does NOT permit redrawing
+      the sample (item 6) or raising the cap (item 1).
+    - ANALYSIS/statistic script: mirrors 17.6 item 8 / 18.6's rule
+      exactly -- one registered execution; if it crashes mid-run, it may
+      be fixed and rerun ONLY if NO registered 19.5 statistic (the
+      coverage rate, the calibration PRIMARY CI, or the SECONDARY
+      log-loss delta) was yet computed and printed/logged; otherwise the
+      computed numbers stand as-is and must be reported. As with 17.6
+      item 8 and 18.6, there is no virgin season to protect here (19.1),
+      so this rule exists for procedural discipline and artifact
+      hygiene, not touch-consumption protection, and no 12R-style
+      recovery machinery applies.
+11. New artifacts only, under a new directory
+    (`models/trained/experiment_16_alt_ladder_pilot_<timestamp>/`); no
+    writes to any existing parquet or any existing `models/trained/`
+    directory.
+
+### 19.7 Consequence mapping (fixed in advance)
+
+- **PILOT PASS** -> unlocks DRAFTING a full-season alternate-ladder
+  purchase registration as a candidate next document, using this
+  pilot's own verified season-mix reasoning (19.3), ladder model (19.4),
+  and any calibration lessons learned, as its starting point. This does
+  NOT itself authorize the further purchase -- exactly as section 5.7's
+  own core-purchase authorization required a separate, explicit user
+  allocation decision after its probe cleared its gates, the full-season
+  purchase remains a future decision requiring the user's explicit
+  sign-off, never automatic. Given the balance's 2026-07-31 expiration, a
+  PASS creates real time pressure to draft that follow-up promptly, but
+  this registration does not pre-authorize anything beyond the
+  2,000-credit pilot itself.
+- **PILOT FAIL** -> the alternate-saves ladder remainder use is **CLOSED
+  this cycle**, joining this document family's existing closure
+  precedents (steam-recon section 8, DFS-census 16.9, BetOnline-
+  convergence 17.9, juice-skew 18.9's PRIMARY FAIL). It does not reopen
+  without a new architecture or a genuinely new season of alternate-
+  saves coverage.
+- **Coverage SUFFICIENT but calibration PRIMARY FAILS** (the explicit
+  "coverage passes but model fails" case) -> **PILOT FAIL** exactly as
+  above; the ladder EXTENSION ASSUMPTION (19.4), not the market's
+  existence, is what failed, and this is reported precisely that way
+  rather than blurred into a data-availability finding.
+- **INSUFFICIENT SAMPLE** (either the coverage gate or the cluster
+  floor) -> neither closes nor opens the remainder decision; it is
+  reported as a scale/design finding (mirroring 17.7's identical
+  handling of 17.5's own INSUFFICIENT SAMPLE outcome). Given this pilot
+  already spends the entire registered 2,000-credit budget attempting to
+  avoid exactly this outcome, an INSUFFICIENT SAMPLE result is a
+  genuine, disclosed possibility that must be reported as such, not
+  re-run with a larger sample under this same registration (19.6) -- any
+  follow-up would require a fresh registration.
+- **Coverage INSUFFICIENT but the (non-gating, EXPLORATORY-ONLY)
+  calibration number would have cleared PASS anyway** -> still
+  **INSUFFICIENT SAMPLE** overall (per 19.5 step 2's explicit "does NOT
+  gate anything" rule) -- a favorable point estimate on a too-thin or
+  too-narrow sample cannot promote the pilot, mirroring 18.7's identical
+  treatment of a single-surviving-gating-origin case.
+
+### 19.8 Data inventory (verified 2026-07-16, read-only Python; no
+coverage-vs-outcome, calibration, or ladder-vs-baseline statistic was
+computed against any season -- every count below is a coverage, schema,
+or timing join count, exactly matching 17.8/18.8's own distinction).
+
+**Events cache.** `data/raw/betting_lines/cache/` holds 560 distinct
+`events_date=*.json` envelope stamps spanning 2023-10-10 to 2026-04-16,
+3,870 distinct events overall. 2024-25 window (2024-10-04..2025-04-17):
+1,313 events -- matches `audit_core_bettime_passes.py`'s own
+`expected_events=1313` exactly. 2025-26 window (2025-10-07..2026-04-19,
+matching 18.4's registered window rather than
+`probe_opening_markets.py`'s narrower 2026-04-16 end; checked both:
+ending 2026-04-16 yields 1,226 events / 156 distinct game dates, ending
+2026-04-19 yields 1,232 events / 158 distinct game dates -- this
+registration uses the wider, more authoritative 18.4 window): **1,232
+events**. Missing calendar-date stamps inside each window: 18 inside
+2024-25 (holiday/All-Star-break dates, e.g. 2024-12-24/25/26,
+2025-02-10..21) and 2 inside 2025-26 (2025-10-10, 2025-11-27) -- both
+sets consistent with scheduled off-days rather than acquisition gaps,
+and neither reduced the actual per-season event count below the true
+schedule size. The events cache is a complete-enough basis to plan a
+full-season-scale random sample from, for both seasons.
+
+**Probe alternate-saves structure**
+(`data/raw/betting_lines/probes/w1_market_coverage/`, 24 records, 455
+alternate-saves outcome rows, all `side == "Over"`, matching 9.3 exactly).
+Books present: `{betonlineag, prizepicks, fanduel, fanatics}` (no
+Underdog alternate saves, matching 9.3). Rows by season: 2024-25 = 100,
+2025-26 = 355. Distinct `(event, player, book)` goalie-night-book
+groups: 52; rungs-per-group min 2 / max 24 / mean 8.75. Per book:
+`betonlineag` n=26 goalie-nights, rungs 7-8 (mean 7.81, uniform 2.0-point
+spacing on every sampled night); `fanduel` n=7, rungs 23-24 (mean
+23.57); `prizepicks` n=14, rungs 2-5 (mean 4.43); `fanatics` n=5, rungs
+exactly 5. BetOnline goalie-nights split by season: 2024-25 = 12 (from
+7 of 8 sampled events), 2025-26 = 14 (from 8 of 8 sampled events) -- 26
+total, matching 9.3's "7/8 ... 8/8" event-level finding exactly at the
+goalie-night level too.
+
+**Anchor-rung-on-ladder check.** Of the 26 already-owned BetOnline
+goalie-nights with both a standard line and an alternate ladder at the
+same snapshot, `L_std` is found EXACTLY among the ladder's own rungs in
+26 of 26 cases (0 mismatches) -- direct evidence for the 19.2
+anchor-rung definition and the 19.4 extension assumption's starting
+premise.
+
+**Cross-call snapshot-alignment check** (the load-bearing evidence for
+the 19.3 alt-only-vs-combined decision). Of the probe's 24 events, 16
+also appear in the separately-issued `core_bettime_202607` pass (2,624
+unique event ids). For all 16 overlapping events, the two
+independently-issued calls' requested `date` params were identical (by
+construction) AND their returned envelope `timestamp` fields were
+byte-identical in all 16 cases; of the 7 with a BetOnline standard-saves
+quote present in both calls (lead-reviewer recount 2026-07-16: seven
+events contributing 2+2+4+4+4+4+4 = 24 shared outcomes; the draft's
+count of 6 events was an error, the 24-outcome total was exact), all 24
+shared `(player, side, point)` price outcomes matched exactly (zero
+diffs).
+
+**2025-26 bettime anchor-alignment audit** (`saves_lines_snapshots.
+parquet`, 781 unique 2025-26 bettime events). `requested_ts` equals
+`compute_bettime_ts(commence_time)` exactly in 725/781 (92.83%); the
+remaining 56 (7.17%) diverge, diff-seconds ranging -720 to +16,200
+(up to 4.5 hours), median 0, mean +328.8s, std 2,016s. `resolved_ts`
+trails `requested_ts` by a stable 259.6s mean (min 19s, max 263s, std
+19.9s) -- the archive's usual "actual capture slightly before nominal
+anchor" pattern, but this does not explain the 56-event divergence from
+the anchor FORMULA itself, a different quantity. For contrast, the OLD
+pre-purchase 21-event 2024-25 `bettime` fragment (already excluded from
+every other experiment in this family per 14.3a/17.4/18.4) shows ZERO
+exact matches to the modern anchor formula (mean diff +8,600s) across
+its 21 events -- confirming that fragment's exclusion is warranted on
+this same anchor-timing basis, independently of the reasons already on
+record.
+
+**`saves_lines_snapshots.parquet` structure** (79,884 rows / 15 columns,
+independently reconfirmed, no new facts beyond 17.8/18.8's own
+inventory): `snapshot_pass` values `{bettime: 28,751; closing: 51,133}`;
+rows by pass x season: `bettime` 2023-24 15,682 / 2024-25 258 / 2025-26
+12,811; `closing` 2023-24 17,959 / 2024-25 14,954 / 2025-26 18,220 --
+matches 17.8/18.8 exactly.
+
+**2024-25 anchor-availability restriction sizing**
+(`core_bettime_202607_snapshots.parquet`): 1,050 events carry a
+`betonlineag`/`player_total_saves` row (matches 9.4/9.5/18.8 exactly).
+Of the 8 already-probed 2024-25 events, 7 fall inside this 1,050-event
+set and 1 (`e1dd2bc0fa38ee53116f047cf3d0327e`) does not -- the same
+event that also returned no BetOnline alternate-saves data in the probe
+(9.3's "7/8" finding and this finding describe the SAME missing event,
+not two independent gaps). Restricted 2024-25 sampling pool
+(BetOnline-covered, minus already-probed): **1,043 events**.
+
+**2025-26 sampling pool sizing:** 1,232 in-window events minus the 8
+already-probed = **1,224 events**, unrestricted by prior standard-saves
+coverage (by design, 19.3).
+
+**`clean_training_data.parquet` schema-only check** (10,496 rows; no
+`saves` values inspected or aggregated): contains `game_id`, `game_date`
+(not `game_date_eastern` -- a naming difference from the other parquets,
+noted for the join implementation), `season`, `goalie_id`, `saves`,
+`saves_rolling_5`, and no other saves-market-derived column -- confirms
+the join key and the outcome column this pilot needs both exist as
+expected, and that `game_date` (not `game_date_eastern`) is the correct
+column name for the `attach_game_id`-style join here.
+
+**`betonlineag` absence reconfirmed.** Zero rows in BOTH 2023-24
+`bettime` (0 of 15,682) and 2023-24 `closing` (0 of 17,959) in
+`saves_lines_snapshots.parquet` -- reconfirms 18.8's own finding, the
+direct basis for 19.4's book-agnostic baseline-fit workaround.
+
+No contradiction of any established fact in this document family was
+found. The one genuinely new finding not previously documented anywhere
+-- the 2025-26 bettime archive's 7.17% divergence from the modern
+`compute_bettime_ts` anchor formula, with some events off by hours --
+directly shaped the 19.3 season-mix decision (alt-only for 2024-25,
+combined for 2025-26) and is the first record of that fact in this
+document family.
+
+### 19.9 Implemented result (2026-07-17)
+
+**PILOT FAIL (Sonnet sub-agent execution under lead-reviewer direction,
+independently verified, 2026-07-17).** `scripts/purchase_alt_ladder_pilot.py`
+executed under explicit user authorization against the frozen 19.3 seeded
+plans -- no redraw. Leg `alt_only_2024_25` completed 120/120 planned calls
+for 1,200 credits; leg `combined_2025_26` completed 35/35 planned calls for
+640 credits (3 events returned zero markets, free; 32 returned both
+markets). Total spend 1,840 of the registered 2,000-credit cap; balance
+12,895 -> 11,055, reconciled exactly against response headers; the 10,895
+floor was never approached; zero non-200 responses.
+
+`scripts/audit_alt_ladder_pilot.py` (independent, read-only) returned
+integrity CLEAN on all 155 records: every signature recomputes, the billing
+formula (`x-requests-last == 10 * distinct markets actually returned`)
+holds exactly on every call, the balance chain has zero breaks, zero
+`apiKey` leakage anywhere in raw text, the on-disk event set equals exactly
+the frozen plans' first-N permutation samples, and `alignment_gap_seconds`
+is 0.0 on all 155 events -- the 2024-25 alt-only envelopes are byte-
+identical in snapshot timestamp to the existing core pass, exactly as
+19.8's cross-call evidence predicted. One disclosed audit correction: the
+audit's first draft ordered by `fetched_at` (1-second granularity, 36
+same-second collisions) and reported 22/66 false-positive chain
+inversions; the constructive chain check reconciled all 155 records with
+zero breaks, and the audit was rerun with `--force`.
+
+`scripts/experiment_16_alt_ladder_pilot.py` ran as a single registered
+execution, no crash; the runner's own pre-execution self-review caught and
+fixed a NaN-dedup bug and a JSON-serialization issue before any statistic
+was computed. Denominator: 338 goalie-nights from 169 of the 170 sampled
+events -- 1 event (`bedd26005f98ad01c4994501ba28ddf3`, MTL @ TBL,
+2026-04-19, the final day of the registered window) does not map into
+`clean_training_data.parquet`, a disclosed deviation. Exclusion funnel
+(sums exactly to 338): qualifying 264; `no_resolved_identity_or_ladder` 74;
+`no_anchor` 0; `alignment_failure` 0; `rung_depth_failure` 0.
+
+`coverage_rate = 0.7810650887573964` (264/338) -> coverage **SUFFICIENT**
+(bar 0.70; the 50-night cluster floor also cleared at 264). `sigma_0 =
+6.345402303064149` (fit n = 1,974 2023-24 goalie-nights, zero exact-0/1
+exclusions; the registered two-path wiring gate passed with 0.0 max abs
+diff between Experiment 15's persisted frame and a fresh recompute).
+
+PRIMARY (rung-level Brier delta, ladder minus baseline; 1,823 non-anchor
+rows, 264 goalie-night clusters, 10,000 resamples, seed 42): `delta =
++0.0011871742823691134`, CI95 `[-0.001705079310562343,
++0.003972697810631795]`. `ci_upper >= 0` -> **FAIL** under the registered
+`ci_upper < 0` bar. SECONDARY (log-loss, identical construction): `delta =
++0.005570703535905996`, CI95 `[-0.005115547032554023,
++0.015731626782081978]`.
+
+Monotonicity clips: 0 across all nights. Anchor-rung consistency: `L_std`
+found on the ladder in 264/264 qualifying nights, with the ladder's own
+price at `L_std` IDENTICAL to the standard market's price at `L_std` (0.0
+discrepancy everywhere) -- BetOnline prices the alternate market's anchor
+rung exactly like its standard line. Probe-reuse: 25 of the 26
+already-owned probe goalie-nights qualified.
+
+**Verdict (19.5/19.7): coverage SUFFICIENT, calibration PRIMARY FAILS ->
+PILOT FAIL**, exactly the branch 19.7 names in advance -- the ladder
+EXTENSION ASSUMPTION, not the market's existence, is what failed. The
+market itself is excellent: 7-8 rungs on essentially every BetOnline night
+in both seasons, perfect (0.0-second) snapshot alignment, and an anchor
+rung priced identically to the standard line -- but the registered
+constant-overround one-sided vig-extension produced non-anchor-rung
+probabilities slightly WORSE than the simple `sigma_0` Normal baseline
+built from the standard line alone, on both the primary and secondary
+metric. Per 19.7, the alternate-saves ladder remainder use is **CLOSED
+this cycle**, joining the section 8 / 16.9 / 17.9 / 18.9 closure
+precedents; it does not reopen without a new architecture or a genuinely
+new season of alternate-saves coverage. Per 19.1, this is development
+evidence on already-viewed seasons in any case -- not stronger than that.
+The lead reviewer independently reproduced every statistic above from the
+persisted row-level artifacts (point estimates exact, bootstrap CIs
+matching to 1e-15) and hand-verified one goalie-night's full chain from
+raw record to labels at 1e-12.
+
+Disclosed judgment calls (from the run's own `metadata.json`, summarized
+faithfully): (1) the one unmapped event
+(`bedd26005f98ad01c4994501ba28ddf3`) noted above; (2) the 19.3 alignment
+check's standard-quote-side observed timestamp was read from `resolved_ts`
+rather than `fetched_at`, per 19.3's own observed-over-nominal definition
+-- an implementation reading, not a deviation from the registered rule,
+recorded here because it is the same field the audit's own draft got
+wrong in the opposite direction (above); (3) the anchor rung was read as
+counting toward 19.5's `>= 5`-distinct-rungs floor, which proved moot (0
+goalie-nights turned on the distinction either way); (4) the 2024-25
+sampling-pool exclusion used all 8 already-probed 2024-25 events rather
+than only the 7 falling inside the 1,050-event BetOnline-covered set,
+numerically identical to the registered 1,043-event pool (19.8) either
+way; (5) the audit's `fetched_at`-ordering artifact described above,
+caught and corrected before being trusted; (6) zero goalie-nights carried
+multiple BetOnline standard lines at the same snapshot, so the
+multi-line-anchor tie-break rule was never invoked; (7) probe-reuse
+qualified at 25 of the 26 already-owned goalie-nights, not 26 of 26 (the
+remaining one fell into the `no_resolved_identity_or_ladder` funnel
+bucket).
+
+Consequence for the credit remainder: 11,055 credits remain, expiring
+2026-07-31. With the alternate-ladder use closed, there is no
+currently-registered candidate use for the remainder. Artifacts:
+`models/trained/experiment_16_alt_ladder_pilot_20260717_130952/`
+(`metadata.json`, `rung_level_paired_frame.parquet` 2,087 rows,
+`exclusion_funnel_frame.parquet` 338 rows, `sigma0_fit_inputs.parquet`
+1,974 rows, plan copies, `run_log.txt`) and
+`data/raw/betting_lines/passes/alt_ladder_pilot_202607/` (155 raw records,
+2 plan files, `run_log.jsonl`, `audit_summary.json`).

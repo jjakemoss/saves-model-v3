@@ -2449,6 +2449,82 @@ explicitly says the result survived the honest harness and uncertainty checks.
   section 9.9. Artifact:
   `models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.
 
+- **2026-07-16 (Experiment 15 W3 juice-skew feature block CLOSED).** The
+  registered design (preregistration section 18) tested a `juice_*`
+  saves-market microstructure feature block as a shots-model input
+  against the no-pace control across three rolling origins -- Origin B
+  and Origin C gating, Origin A a registered placebo with zero
+  `juice_*` training exposure -- with wiring gates that reproduced
+  bit-identical to Experiment 5/8's recorded values and coverage
+  clearing the registered 50% floor on both gating origins (Origin B
+  81.67%, Origin C 53.125%). The placebo showed no anomaly on its
+  registered surface (one non-registered secondary CI marginally
+  excluded zero by 1.7e-5, disclosed but out of scope). Origin B
+  closing Brier ran in the helpful direction but did not clear: mean
+  -0.00106, CI95 [-0.00295, +0.00085] (shots |error| likewise, mean
+  -0.02832, CI95 [-0.05824, +0.00158]). Origin C ran the wrong
+  direction on both metrics: closing Brier mean +0.00048, CI95
+  [-0.00051, +0.00145]; shots |error| mean +0.01169, CI95 [-0.00364,
+  +0.02692]. Neither gating origin cleared either metric -- a fail on
+  both, not a one-of-two result. The SECONDARY redundancy comparison
+  (block stacked on the already-promoted market-state block) found no
+  gain on either origin, reading as redundant rather than additive.
+  Per the fixed consequence mapping, the lead is CLOSED this cycle
+  with no shadow-candidate registration, joining the steam-recon,
+  DFS-census, and BetOnline-convergence precedents. Full result:
+  preregistration section 18.9; historical analysis section 9.10.
+  Artifact:
+  `models/trained/experiment_15_w3_microstructure_20260716_124811/`.
+
+- **2026-07-17 (Experiment 16 alternate-ladder pilot CLOSED, FAILED
+  calibration gate).** The 1-2k pilot registered in
+  `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 19 (registered
+  2026-07-16) was executed 2026-07-17 after explicit user authorization,
+  against the frozen seeded plans (no redraw). New scripts:
+  `scripts/purchase_alt_ladder_pilot.py`,
+  `scripts/audit_alt_ladder_pilot.py`,
+  `scripts/experiment_16_alt_ladder_pilot.py`. Purchase: leg
+  `alt_only_2024_25` completed 120/120 calls for 1,200 credits; leg
+  `combined_2025_26` completed 35/35 calls for 640 credits (3 zero-market
+  events free, 32 returned both markets). Total spend 1,840 of the
+  2,000-credit cap; balance 12,895 -> 11,055, reconciled exactly against
+  response headers; the 10,895 floor was never approached; zero non-200s.
+  The independent audit (`scripts/audit_alt_ladder_pilot.py`) returned
+  integrity CLEAN on all 155 records -- signatures, billing arithmetic,
+  and the balance chain all reconciled exactly, zero `apiKey` leakage,
+  and `alignment_gap_seconds` was 0.0 on all 155 events (the 2024-25
+  alt-only envelopes byte-identical in snapshot timestamp to the existing
+  core pass, as the registration's cross-call evidence predicted). One
+  disclosed audit correction: the audit's first draft ordered by
+  `fetched_at` (1-second granularity, 36 same-second collisions) and
+  reported 22/66 false-positive chain inversions; the constructive chain
+  check reconciled all 155 records with zero breaks, and the audit was
+  rerun with `--force`. The analysis script ran as a single registered
+  execution, no crash (a pre-run self-review caught a NaN-dedup bug and a
+  JSON-serialization issue first). Denominator: 338 goalie-nights from 169
+  of 170 sampled events (1 unmapped: MTL @ TBL 2026-04-19, absent from
+  `clean_training_data.parquet`). Coverage: 264/338 qualified
+  (`coverage_rate = 0.78107`) -- SUFFICIENT against the 70% bar, with the
+  50-night cluster floor also cleared. Calibration PRIMARY: rung-level
+  Brier delta (ladder minus baseline) `+0.0011871742823691134`, CI95
+  `[-0.001705079310562343, +0.003972697810631795]` -- `ci_upper >= 0`, a
+  FAIL under the registered `ci_upper < 0` bar. SECONDARY (log-loss):
+  delta `+0.005570703535905996`, CI95 `[-0.005115547032554023,
+  +0.015731626782081978]`. Monotonicity clips: 0. Anchor-rung consistency:
+  `L_std` found on the ladder, priced identically to the standard line, on
+  264/264 qualifying nights. Per the fixed consequence mapping (19.7),
+  this is the "coverage SUFFICIENT but calibration PRIMARY FAILS" branch:
+  the market itself is excellent (7-8 rungs on essentially every BetOnline
+  night, both seasons), but the registered constant-overround one-sided
+  vig-extension is slightly less accurate than the simple standard-line-
+  only baseline. The alternate-saves ladder remainder use is CLOSED this
+  cycle. With no registered candidate use remaining, the final 11,055
+  credits carry no current spend plan before their 2026-07-31 expiry. Full
+  result: preregistration section 19.9; historical analysis section 9.11.
+  Artifacts:
+  `models/trained/experiment_16_alt_ladder_pilot_20260717_130952/` and
+  `data/raw/betting_lines/passes/alt_ladder_pilot_202607/`.
+
 ## 7. Appendix: what was checked and found sound
 
 For balance, the things audited during this deep dive that do **not** need

@@ -490,6 +490,9 @@ cluster-bootstrap confidence intervals, and exact deduplication rules.
   skew-favored side loses -6.98% ROI against a ~7.1% average vig,
   negative in every bucket tested. Candidate model feature (wave W3),
   explicitly not a standalone bet and not yet a verified finding.
+  Registered as a model-input feature block (Experiment 15) and
+  closed on a failed feature gate on both gating origins; see section
+  9.10 and preregistration section 18.9.
 - **BetOnline price convergence: the strongest exploratory lead, still
   sub-vig and not yet verified to this project's standard.** When
   BetOnline's bettime implied probability deviates from the other books'
@@ -604,7 +607,9 @@ the bettime side is missing (258 rows, 21 events). A proposed closing
 purchase was therefore redundant and was dropped; CLV grading and a W6
 second-season replication become possible the moment the 2024-25 bettime
 pass lands. The alternate-saves remainder is capped at a 1-2k pilot until a
-one-sided ladder model is shown to work.
+one-sided ladder model is shown to work. The pilot ran 2026-07-17 and
+failed its calibration gate; see section 9.11 and preregistration section
+19.9.
 
 ### 9.4 Core purchase executed and audited (2026-07-14)
 
@@ -773,3 +778,84 @@ Verdict: the W6 BetOnline convergence lead is CLOSED this cycle, with
 no shadow-candidate registration. Full result and disclosed judgment
 calls: preregistration section 17.9; artifacts:
 `models/trained/experiment_14_w6_betonline_convergence_20260714_142506/`.
+
+### 9.10 Experiment 15: juice-skew microstructure feature block failed its gate (2026-07-16)
+
+The registered W3 feature block (`juice_p_under_consensus` and six
+sibling saves-market microstructure features, section 8's "Juice skew"
+lead operationalized as a model input) was tested as a shots-model
+addition against the no-pace control on three rolling origins, gated
+on Origin B and Origin C agreeing (Origin A ran as a registered
+placebo, since its train+val pool predates the bettime archive
+entirely). All wiring gates reproduced bit-identical to prior
+Experiment 5/8 artifacts, coverage cleared the registered 50% floor on
+both gating origins (Origin B 81.67%, Origin C 53.125%), and the
+placebo showed no anomaly on its registered surface.
+
+The block did not pass. Origin B's closing Brier delta was in the
+helpful direction but did not clear (mean `-0.00106`, CI95 `[-0.00295,
++0.00085]`), as was its shots `|error|` delta (mean `-0.02832`, CI95
+`[-0.05824, +0.00158]`, narrowly). Origin C ran the wrong direction on
+both metrics (closing Brier mean `+0.00048`, CI95 `[-0.00051,
++0.00145]`; shots `|error|` mean `+0.01169`, CI95 `[-0.00364,
++0.02692]`). Neither origin cleared either metric, so this is a
+PRIMARY FAIL on both gating origins, not a one-of-two result. The
+SECONDARY comparison (adding microstructure on top of the already-
+promoted market-state block) found no gain anywhere -- Origin B and
+Origin C closing means were both weakly positive (weakly worse) -- so
+microstructure reads as redundant to the existing `mkt_*` block rather
+than additive.
+
+Read plainly: Origin B's right-direction means sit close to the
+placebo arm's own noise floor (all-NaN columns moved Brier by up to
+~0.0007 in either direction with zero real signal by construction),
+and the original unclustered discovery correlation (`r=0.032`) is
+consistent with pseudo-replication inflation -- the same lesson as W6.
+The juice-skew lead is CLOSED this cycle, joining the steam-recon, DFS
+census (9.7), and BetOnline convergence (9.9) closures; it does not
+reopen without a new architecture or a genuinely new season of
+bettime coverage. Full result and disclosed judgment calls:
+preregistration section 18.9; artifacts:
+`models/trained/experiment_15_w3_microstructure_20260716_124811/`.
+
+### 9.11 Experiment 16: alternate-ladder pilot failed its calibration gate (2026-07-17)
+
+The registered 1-2k alternate-saves ladder pilot (preregistration section
+19) purchased 155 new BetOnline events (120 alt-only 2024-25, 35 combined
+2025-26) for 1,840 of the registered 2,000-credit cap, independently
+audited clean: all 155 signatures recompute, the billing formula holds
+exactly on every call, the balance chain has zero breaks, and every
+event's alternate-ladder envelope aligned with its standard-line anchor
+at 0.0 seconds (the 2024-25 alt-only quotes are snapshot-identical to the
+existing core pass, as the registration's own cross-call evidence
+predicted). One disclosed audit correction, since reconciled with zero
+breaks: the audit's first draft ordered records by `fetched_at` and
+produced 22/66 false-positive chain inversions from same-second
+collisions.
+
+Coverage passed: 264 of 338 sampled goalie-nights qualified (78.11%,
+against a 70% bar), with BetOnline's usual 7-8 rung depth on essentially
+every night in both seasons and the anchor rung priced identically to the
+standard line on all 264/264 qualifying nights (0.0 discrepancy).
+Calibration failed: the registered constant-overround one-sided
+vig-extension, tested against a simple `sigma_0` Normal baseline built
+from the standard line alone (1,823 non-anchor rows, 264 goalie-night
+clusters, 10,000-resample cluster bootstrap), was slightly LESS accurate
+than the baseline on both metrics -- Brier delta `+0.00119`, CI95
+`[-0.00171, +0.00397]`, and log-loss delta `+0.00557`, CI95 `[-0.00512,
++0.01573]` -- `ci_upper >= 0` on the primary, a clean FAIL under the
+registered `ci_upper < 0` bar.
+
+Per the registration's fixed consequence mapping, this is the "coverage
+SUFFICIENT but calibration PRIMARY FAILS" branch: the market itself is
+excellent, but the ladder extension assumption -- not the market's
+existence -- is what failed. The alternate-saves ladder remainder use is
+CLOSED this cycle, joining the steam-recon, DFS census (9.7), BetOnline
+convergence (9.9), and juice-skew (9.10) closures; it does not reopen
+without a new architecture or a genuinely new season of alternate-saves
+coverage. The pilot's 1,840-credit spend moved the balance from 12,895 to
+11,055; with this use closed, there is no currently-registered candidate
+use for the remaining 11,055 credits before their 2026-07-31 expiry. Full
+result and disclosed judgment calls: preregistration section 19.9;
+artifacts: `models/trained/experiment_16_alt_ladder_pilot_20260717_130952/`
+and `data/raw/betting_lines/passes/alt_ladder_pilot_202607/`.

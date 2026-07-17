@@ -1,0 +1,197 @@
+{
+  "experiment": "experiment_16_alt_ladder_pilot",
+  "registration": "docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 19",
+  "run_timestamp_utc": "20260717_130952",
+  "audit_gate": {
+    "audit_summary_generated_at": "2026-07-17T12:56:41Z",
+    "overall_integrity_clean": true
+  },
+  "universe": {
+    "n_sampled_events": 170,
+    "n_new_purchase_events": 155,
+    "n_probe_reuse_events": 15,
+    "n_events_mapped_to_games": 169,
+    "n_events_unmapped": 1,
+    "n_total_sampled_goalie_nights": 338,
+    "n_qualifying": 264,
+    "coverage_rate": 0.7810650887573964,
+    "coverage_gate_bar": 0.7,
+    "coverage_status": "SUFFICIENT",
+    "cluster_floor": 50,
+    "exclusion_funnel": {
+      "qualifying": 264,
+      "no_resolved_identity_or_ladder": 74
+    },
+    "funnel_reconciles_to_denominator": true,
+    "n_anchor_not_on_ladder_anomalies": 0,
+    "n_market_ladder_nights_without_denominator_row": 0,
+    "alignment_gap_seconds_max_among_qualifying": 0.0
+  },
+  "sigma_0": {
+    "value": 6.345402303064149,
+    "wiring_gate": {
+      "n_path_a": 1974,
+      "n_path_b": 1974,
+      "key_sets_identical": true,
+      "max_abs_diff_juice_p_under_consensus": 0.0,
+      "max_abs_diff_juice_modal_line": 0.0,
+      "max_abs_diff_juice_n_books": 0.0,
+      "max_abs_diff_juice_matched": 0.0,
+      "gate_pass": true,
+      "n_fit": 1974,
+      "n_excluded_exact_0_or_1": 0,
+      "sum_x_squared": 2.7105389509686075,
+      "sum_x_y": 17.199460102021284
+    },
+    "baseline_defined": true
+  },
+  "primary": {
+    "metric": "rung_level_brier_delta_ladder_minus_baseline",
+    "n_rows": 1823,
+    "n_clusters": 264,
+    "brier_ladder": 0.1505174375428272,
+    "brier_baseline": 0.1493302632604581,
+    "delta": 0.0011871742823691134,
+    "ci95_lower": -0.001705079310562343,
+    "ci95_upper": 0.003972697810631795,
+    "n_resamples": 10000,
+    "seed": 42
+  },
+  "secondary": {
+    "metric": "rung_level_logloss_delta_ladder_minus_baseline",
+    "logloss_ladder": 0.46290238628892144,
+    "logloss_baseline": 0.45733168275301544,
+    "delta": 0.005570703535905996,
+    "ci95_lower": -0.005115547032554023,
+    "ci95_upper": 0.015731626782081978,
+    "clip_bound": 1e-06
+  },
+  "monotonicity_clips": {
+    "total_rungs_clipped": 0,
+    "nights_with_at_least_one_clip": 0
+  },
+  "anchor_rung_consistency": {
+    "n_nights_with_anchor_on_ladder": 264,
+    "mean_diff": 0.0,
+    "median_diff": 0.0,
+    "max_abs_diff": 0.0
+  },
+  "coverage_diagnostics": {
+    "qualifying_rung_distribution_by_season_source": [
+      {
+        "season": "2024-25",
+        "source": "new_purchase",
+        "n_nights": 192,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.901041666666667,
+        "rungs_max": 8
+      },
+      {
+        "season": "2024-25",
+        "source": "probe_reuse",
+        "n_nights": 11,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.909090909090909,
+        "rungs_max": 8
+      },
+      {
+        "season": "2025-26",
+        "source": "new_purchase",
+        "n_nights": 47,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.9787234042553195,
+        "rungs_max": 8
+      },
+      {
+        "season": "2025-26",
+        "source": "probe_reuse",
+        "n_nights": 14,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.714285714285714,
+        "rungs_max": 8
+      }
+    ],
+    "per_book_alt_coverage_all_books": [
+      {
+        "book": "betonlineag",
+        "season": "2024-25",
+        "n_goalie_nights": 206,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.902912621359223,
+        "rungs_max": 8
+      },
+      {
+        "book": "betonlineag",
+        "season": "2025-26",
+        "n_goalie_nights": 65,
+        "rungs_min": 7,
+        "rungs_median": 8.0,
+        "rungs_mean": 7.907692307692308,
+        "rungs_max": 8
+      },
+      {
+        "book": "fanatics",
+        "season": "2025-26",
+        "n_goalie_nights": 39,
+        "rungs_min": 5,
+        "rungs_median": 5.0,
+        "rungs_mean": 5.0,
+        "rungs_max": 5
+      },
+      {
+        "book": "fanduel",
+        "season": "2025-26",
+        "n_goalie_nights": 22,
+        "rungs_min": 23,
+        "rungs_median": 24.0,
+        "rungs_mean": 23.863636363636363,
+        "rungs_max": 24
+      },
+      {
+        "book": "prizepicks",
+        "season": "2024-25",
+        "n_goalie_nights": 27,
+        "rungs_min": 1,
+        "rungs_median": 2.0,
+        "rungs_mean": 2.0,
+        "rungs_max": 6
+      },
+      {
+        "book": "prizepicks",
+        "season": "2025-26",
+        "n_goalie_nights": 62,
+        "rungs_min": 2,
+        "rungs_median": 5.0,
+        "rungs_mean": 4.838709677419355,
+        "rungs_max": 5
+      }
+    ]
+  },
+  "verdict": "PILOT FAIL",
+  "calibration_label": "GATING",
+  "pass_bar": "ci_upper < 0 (19.5, implemented literally)",
+  "deviations_from_registration": [
+    "1 sampled events could not be mapped to a clean_training_data game ({'no_game_found': 1}); their goalie-nights are absent from the coverage denominator."
+  ],
+  "judgment_calls": [
+    "Alignment standard-side observed timestamp for the 2024-25 alt-only leg is core_bettime_202607_snapshots.parquet's resolved_ts (the core pass's actually-returned envelope snapshot timestamp); the parquet's fetched_at column is the 2026 wall-clock purchase time and is not an observed snapshot timestamp, so resolved_ts is the only reading consistent with 19.3's observed-over-nominal rule.",
+    "The 19.5(c) rung-depth criterion is implemented as: n_distinct_rungs >= 5, where the anchor rung counts toward the 5 when present on the ladder. A night whose ladder does not contain the anchor rung is flagged as a 19.2 anomaly (counted below) but still processed if it has >= 5 rungs, per 19.2's 'anomaly to flag, not silently drop'."
+  ],
+  "input_checksums": {
+    "clean_training_data.parquet": "43024859f92725350c866fc7b8e413728f6948ad99c798666d491130d254ac77",
+    "core_bettime_202607_snapshots.parquet": "103b81c6f3e9647c72ad82538791bdbea1d6d8547eaae8c5f39d4ad815d79c6e",
+    "saves_lines_snapshots.parquet": "e81ca4ea01b1dfb3f69068782b75e18b4d174bef82dd34d8e341b59cbc94ed56",
+    "exp15_juice_goalie_night_features.parquet": "6fccd15743ab5a57546847fb31c6606aefbf70c5913ecc95a38c9647ba914df9",
+    "audit_summary.json": "c381799bb1ee5b8f05eabb6054ae89c51b8b89f68a1a2b747d4e5843e866c75a",
+    "plan_alt_only_2024_25.json": "3c44fc488dafd67150613f9438013d15f3f492301fd53ee66aa163342f3fa60d",
+    "plan_combined_2025_26.json": "2ebc458fe3ada6b21628413fdb7acad6e9f0d9487dc6f39cd6a0690f9d3af554",
+    "pilot_records_aggregate": "cf595f954ffea75ff0e8732a23e3f967c0d29119e7efe5e55cf0c781e33b9038",
+    "probe_records_aggregate": "286abd61c1ad337b141ee6965f5f6b3f8e6d96ad4195f60dc3ac22440816496c"
+  },
+  "honesty_notes": "Per 19.1: both seasons are development evidence on already-viewed data; 2025-26 is simultaneously the discovery and live-bet season; any PASS authorizes only DRAFTING a full-season purchase registration, never a purchase or a betting-policy change."
+}

@@ -766,6 +766,25 @@ everywhere, covering 100% of the existing bettime-saves events there. Two
 HTTP 404s (both free) correspond to postponed/dead games whose replacement
 ids were purchased, so no game is missing.
 
+**Alternate-ladder pilot registered and executed -- CLOSED, FAILED
+CALIBRATION GATE (2026-07-17).** The "Flexible remainder" row above and
+the rejected ~11,000-credit alternate-ladder purchase note below were
+resolved by a formal 1-2k pilot registration,
+`PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 19 (registered
+2026-07-16), executed 2026-07-17 after explicit user authorization: 1,840
+credits spent (balance 12,895 -> 11,055), independently audited clean.
+Coverage passed (78.11% of 338 sampled goalie-nights qualified, against a
+70% bar), but the registered constant-overround one-sided vig-extension
+was slightly LESS accurate than a simple standard-line-only baseline on
+both the primary (Brier delta +0.00119, CI95 [-0.00171, +0.00397]) and
+secondary (log-loss) metric -- FAIL under the registered `ci_upper < 0`
+bar. Per the registration's fixed consequence mapping, this is the
+"coverage SUFFICIENT but calibration PRIMARY FAILS" branch: the
+alternate-ladder remainder use is CLOSED this cycle. No registered
+candidate use remains for the final 11,055 credits before their
+2026-07-31 expiry. Full result: preregistration section 19.9; historical
+analysis section 9.11.
+
 **Core-pass ingestion complete and independently reconciled (2026-07-14).**
 The binding ingestion contract is now registered in
 `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 14.5 and implemented by
@@ -1245,12 +1264,23 @@ does not guarantee a beatable market.
    2024-25 PrizePicks deviation sample that graded at coin-flip with a wide
    clustered CI, and had only six 2025-26 confirmation deviations. Close
    historical DFS staleness for this cycle; do not promote it as an edge.
-   W3 (zero credit). **Market-microstructure feature block.** Juice skew
-   (same sign in both seasons at r of about 0.03, but exploratory:
-   unclustered inference from unpersisted scripts, see
-   HISTORICAL_DATA_ANALYSIS.md section 8's statistical-standard caveat)
-   plus related bettime-observable price-shape features, tested as model
-   inputs against the no-pace control under Gate-A-style bars.
+   W3. **Market-microstructure feature block -- CLOSED, FAILED FEATURE
+   GATE (2026-07-16).** Juice skew (same sign in both seasons at r of
+   about 0.03, but exploratory: unclustered inference from unpersisted
+   scripts, HISTORICAL_DATA_ANALYSIS.md section 8's statistical-standard
+   caveat) plus related bettime-observable price-shape features were
+   registered as a `juice_*` shots-model input block and tested against
+   the no-pace control on Origin B and Origin C (Origin A ran as a
+   registered placebo; no anomaly). Origin B closing Brier: mean
+   -0.00106, CI95 [-0.00295, +0.00085] -- right direction, does not
+   clear. Origin C closing Brier: mean +0.00048, CI95 [-0.00051,
+   +0.00145] -- wrong direction. Neither gating origin cleared either
+   metric (shots |error| told the same story on both), so this is a
+   fail on both origins, not a one-of-two result; the redundancy
+   secondary (stacked on the already-promoted market-state block) found
+   no further gain either. No shadow-candidate registration follows.
+   Full result: preregistration section 18.9; historical analysis
+   section 9.10.
    W4 (zero credit). **Rink scorer-effect adjustment.** Official saves
    settle on officially recorded SOG, and published rink-to-rink
    recording bias is persistent; build a prior-season, heavily shrunk

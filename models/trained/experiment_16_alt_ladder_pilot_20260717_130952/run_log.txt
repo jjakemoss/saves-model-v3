@@ -1,0 +1,44 @@
+Experiment 16 alt-ladder pilot analysis -- run 20260717_130952 UTC
+Output: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_16_alt_ladder_pilot_20260717_130952
+Audit gate: overall_integrity_clean=True (generated_at=2026-07-17T12:56:41Z).
+Pilot records by leg: {'alt_only_2024_25': 120, 'combined_2025_26': 35}; probe-reuse by season: {'2025-26': 8, '2024-25': 7}.
+Sampled universe: 170 distinct events (155 new_purchase + 15 probe_reuse).
+WARNING: 1 events unmapped to games: [{'event_id': 'bedd26005f98ad01c4994501ba28ddf3', 'map_status': 'no_game_found'}]
+Event->game mapping: 169/170 events mapped.
+Coverage denominator: 338 goalie-nights across 169 mapped events (the registered 170-event-derived population).
+BetOnline ladder rows (Over): 2142; same-envelope standard rows: 154; alt Under outcomes skipped: 0; unresolved ladder player names (rows): 55.
+Same-envelope two-sided anchors: 77 goalie-nights (multi-line anomalies: 0).
+Core-parquet two-sided anchors (alt-only events): 194 goalie-nights (multi-line anomalies: 0).
+BetOnline ladder goalie-nights with resolved identity: 264.
+Exclusion funnel (sums to 338): {'qualifying': 264, 'no_resolved_identity_or_ladder': 74}
+Anchor-not-on-ladder anomalies (19.2 flag): 0
+Ladder goalie-nights with no clean_training_data denominator row (diagnostic, excluded): 0
+[sigma0 path A] Experiment 15 persisted frame: 5511 rows total, 1974 in 2023-24.
+[sigma0 path B] 2023-24 bettime raw rows: 15682, events: 1125.
+[sigma0 path B] 17.2 dedup on ['event_id', 'goalie_name_raw', 'book', 'side']: 15682 -> 15556 rows.
+[sigma0 path B] attach_game_id: 0 unmatched dropped -> 15336 rows.
+[sigma0 path B] fresh 2023-24 juice frame: 1974 goalie-nights.
+[sigma0 wiring gate] {'n_path_a': 1974, 'n_path_b': 1974, 'key_sets_identical': True, 'max_abs_diff_juice_p_under_consensus': 0.0, 'max_abs_diff_juice_modal_line': 0.0, 'max_abs_diff_juice_n_books': 0.0, 'max_abs_diff_juice_matched': 0.0, 'gate_pass': True}
+[sigma0 fit] juice_matched 2023-24 nights with outcomes: 1974; excluded exact-0/1 p_over: 0; fit n = 1974.
+[sigma0 fit] sigma_0 = 6.345402303064149 (sum_xy=17.199460102021284, sum_xx=2.7105389509686075).
+Rung-level frame: 2087 rows over 264 qualifying nights; monotonicity clips: 0 rungs across 0 nights.
+Anchor-rung consistency diagnostic (ladder devig_raw at L_std minus standard devig): {'n_nights_with_anchor_on_ladder': 264, 'mean_diff': 0.0, 'median_diff': 0.0, 'max_abs_diff': 0.0}
+Rungs per qualifying night by season x source: [{'season': '2024-25', 'source': 'new_purchase', 'n_nights': 192, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.901041666666667, 'rungs_max': 8}, {'season': '2024-25', 'source': 'probe_reuse', 'n_nights': 11, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.909090909090909, 'rungs_max': 8}, {'season': '2025-26', 'source': 'new_purchase', 'n_nights': 47, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.9787234042553195, 'rungs_max': 8}, {'season': '2025-26', 'source': 'probe_reuse', 'n_nights': 14, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.714285714285714, 'rungs_max': 8}]
+Per-book alternate-saves coverage (all books, non-gating): [{'book': 'betonlineag', 'season': '2024-25', 'n_goalie_nights': 206, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.902912621359223, 'rungs_max': 8}, {'book': 'betonlineag', 'season': '2025-26', 'n_goalie_nights': 65, 'rungs_min': 7, 'rungs_median': 8.0, 'rungs_mean': 7.907692307692308, 'rungs_max': 8}, {'book': 'fanatics', 'season': '2025-26', 'n_goalie_nights': 39, 'rungs_min': 5, 'rungs_median': 5.0, 'rungs_mean': 5.0, 'rungs_max': 5}, {'book': 'fanduel', 'season': '2025-26', 'n_goalie_nights': 22, 'rungs_min': 23, 'rungs_median': 24.0, 'rungs_mean': 23.863636363636363, 'rungs_max': 24}, {'book': 'prizepicks', 'season': '2024-25', 'n_goalie_nights': 27, 'rungs_min': 1, 'rungs_median': 2.0, 'rungs_mean': 2.0, 'rungs_max': 6}, {'book': 'prizepicks', 'season': '2025-26', 'n_goalie_nights': 62, 'rungs_min': 2, 'rungs_median': 5.0, 'rungs_mean': 4.838709677419355, 'rungs_max': 5}]
+
+==============================================================================
+REGISTERED 19.5 STATISTICS
+==============================================================================
+n_total_sampled_goalie_nights (denominator) = 338
+n_qualifying = 264
+coverage_rate = 0.7810650887573964
+Coverage gate (>= 0.7): SUFFICIENT
+Calibration population: 1823 (goalie-night, non-anchor rung) rows, 264 goalie-night clusters.
+PRIMARY Brier: ladder=0.1505174375428272 baseline=0.1493302632604581 delta=0.0011871742823691134
+PRIMARY CI95 (percentile, 10000 resamples, seed 42): [-0.001705079310562343, 0.003972697810631795]
+SECONDARY log-loss: ladder=0.46290238628892144 baseline=0.45733168275301544 delta=0.005570703535905996 CI95=[np.float64(-0.005115547032554023), np.float64(0.015731626782081978)]
+19.5 step 4: ci_upper = 0.003972697810631795; PASS requires ci_upper < 0 -> PILOT FAIL.
+
+OVERALL VERDICT: PILOT FAIL
+
+Wrote metadata.json and artifacts to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_16_alt_ladder_pilot_20260717_130952
