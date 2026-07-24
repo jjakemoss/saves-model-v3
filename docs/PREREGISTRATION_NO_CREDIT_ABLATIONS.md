@@ -5579,3 +5579,68 @@ resamples from 1,291 (Origin 1) / 1,107 (Origin 2) distinct games -- enough for 
 stable 95% CI at 2,000 iterations. Actual bet counts per fold are not computable
 pre-run (they depend on the trained model's EV at 0.12) and are reported as
 found.
+
+### 21.9 RESULT (run 2026-07-24, single registered run, FAIL)
+
+Run once via `scripts/experiment_walk_forward_classifier.py --confirm-single-run`
+at repo commit `61319d2`, 21.8 seconds wall clock. Artifacts:
+`models/trained/experiment_walk_forward_classifier_20260724_161612/`
+(`metadata.json`, `run_log.txt`, `origin_1_results.json`,
+`origin_2_results.json`, `pooled_results.json`, `input_checksums.json`, and the
+two per-fold boosters). Input parquet sha256
+`02a1c6f37796b912e0e2c4191d8b66e71367def58b2aa69dcc28e2ed118fd4d0`.
+
+**VERDICT: MARKET-PARITY / FAIL.** Both registered conditions failed.
+
+| | Origin 1 (train 2023-24, test 2024-25) | Origin 2 (train 2023-24+2024-25, test 2025-26) | Pooled |
+|---|---|---|---|
+| Bets (rate) | 2,073 (27.78% of 7,463 lines) | 1,185 (20.68% of 5,729 lines) | 3,258 over 2,398 games |
+| ROI | **-7.94%** | **-7.33%** | **-7.72%** (-251.40 units) |
+| Game-level bootstrap 95% CI | [-15.06%, -0.94%] | [-17.16%, +2.49%] | **[-13.48%, -2.16%]** |
+| AUC | 0.4867 | 0.4929 | -- |
+| Log-loss (model vs market devig) | 0.7288 vs 0.6908 | 0.7288 vs 0.6936 | -- |
+| Brier (model vs market devig) | 0.2656 vs 0.2488 | 0.2666 vs 0.2502 | -- |
+
+Bar check: (a) pooled CI lower bound -13.48%, NOT > 0 -- fails; (b) ROI point
+estimate negative in BOTH origins, not positive in each -- fails.
+
+**The result is stronger than the registered "market-parity" label.** The pooled
+95% CI is [-13.48%, -2.16%] -- it excludes zero on the NEGATIVE side. This is not
+"an edge we lack power to detect"; it is a statistically significant losing
+strategy over 3,258 bets. Section 21.4's FAIL branch is the correct verdict, but
+recording it as mere parity would understate what was found.
+
+**Mechanism.** AUC is BELOW 0.5 on both unseen seasons (0.4867, 0.4929) -- the
+retrained recipe has no out-of-sample discrimination at all. Its log-loss and
+Brier are worse than the market's own devigged implied probabilities on both
+folds, so it is also worse calibrated than the line it bets into. Yet average
+claimed EV when betting was +18.1% (Origin 1) and +17.0% (Origin 2). Large
+confident claimed edges plus zero real discrimination is the signature of an
+overfit probability model; the 12% EV filter then preferentially selects the rows
+where the model most disagrees with the market -- i.e. its own largest errors --
+and pays vig on them. A pooled -7.72% is about what that costs.
+
+**Why this is not a data or wiring artifact.** All three guards passed: the
+derived 114 features matched `classifier_feature_names.json` exactly in name and
+order; the hyperparameters read from `classifier_metadata.json` matched 21.2's
+frozen values; the `add_all_engineered_features` copy was AST-identical to
+`tune_hyperparameters.py`'s. Per-game bet/profit vectors reconciled to the
+whole-fold aggregate at 8.53e-14 (Origin 1) and 7.11e-13 (Origin 2). Fold row
+counts matched 21.2 exactly (7,607 / 7,463 / 5,729; the odds-non-null filter
+dropped 0 rows). Bet rates sat mid-band, so no 21.3 degeneracy flag. The
+fold-discipline check (derived from actual test-fold season labels) confirmed
+each test season was touched exactly once and 2023-24 was never a test fold. Both
+origins agree in sign and magnitude independently. The 2023-24 DFS-free training
+caveat (21.1 note 3) does not explain it: Origin 2 has DFS books in training and
+fails just as hard.
+
+**Consequences applied** (per 21.7's fixed mapping, MARKET-PARITY / FAIL branch):
+recorded as the authoritative out-of-sample read in
+`docs/HISTORICAL_DATA_ANALYSIS.md` section 10; the production model's headline
++23.31% backtest annotated in `MODEL_TRAINING_GUIDE.md` sections 1 and 13 and
+`README.md`. No re-run, no threshold search, no fold re-carving (21.6). Nothing
+about the deployed model, `predictor.py`, `betting.db`, or the workflows was
+changed by this evaluation.
+
+**This registration is now CLOSED.** Any further walk-forward work on this recipe
+requires a new registration.

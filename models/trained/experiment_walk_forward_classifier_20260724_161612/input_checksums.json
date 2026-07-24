@@ -1,0 +1,5 @@
+{
+  "multibook_classification_training_data.parquet": "02a1c6f37796b912e0e2c4191d8b66e71367def58b2aa69dcc28e2ed118fd4d0",
+  "classifier_feature_names.json": "e16f6d0333152af4ddc6286f03fd7201a8da6c539d3a545034f9e9ba0331999a",
+  "classifier_metadata.json": "bb047d2dabf7681325c1161f80bda0509c3526e6cbbf1a9c2aad69b651884b64"
+}

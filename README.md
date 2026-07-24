@@ -188,6 +188,13 @@ saves-model-v3/
 | ROI | +27.05% | +20.45% | +23.31% |
 | Bets | 191 (18%) | 250 (23%) | 441 |
 
+> **These are backtest numbers and they do NOT hold out-of-sample (2026-07-24).**
+> A preregistered walk-forward test of this recipe — retrained per fold, evaluated
+> forward-in-time on two unseen seasons — returned **pooled ROI -7.72%** over
+> 3,258 bets (95% CI [-13.48%, -2.16%]), with AUC below 0.5 on both folds. Do not
+> cite the table above as evidence of edge. See
+> [docs/HISTORICAL_DATA_ANALYSIS.md](docs/HISTORICAL_DATA_ANALYSIS.md) section 10.
+
 ### Feature Categories (114 total)
 
 | Category | Features | Count |

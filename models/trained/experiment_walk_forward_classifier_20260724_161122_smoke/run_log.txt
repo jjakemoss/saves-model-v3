@@ -1,0 +1,81 @@
+================================================================================
+WALK-FORWARD VALIDATION OF THE PRODUCTION CLASSIFIER RECIPE
+Pre-registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 21
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161122_smoke
+
+################################################################################
+# SMOKE TEST MODE -- WIRING SELF-TEST ONLY.
+# Uses ONLY 2023-24 data (a training window in BOTH registered origins, and
+# NEVER a registered test fold), with the frozen recipe's own n_estimators
+# (no override -- hard-fails below if it places zero bets).
+# EVERY NUMBER BELOW IS MEANINGLESS. NO REGISTERED TEST FOLD IS TOUCHED.
+################################################################################
+Script git commit: 61319d2ee3601d8e6b90f54b5a8c2b77949224aa
+
+================================================================================
+GUARDS: verbatim engineered-features copy, frozen feature list, frozen hyperparameters
+================================================================================
+Verbatim-copy guard PASSED: local add_all_engineered_features is AST-identical to scripts/tune_hyperparameters.py's version (docstring and whitespace/indentation ignored by construction).
+Input checksums: {'multibook_classification_training_data.parquet': '02a1c6f37796b912e0e2c4191d8b66e71367def58b2aa69dcc28e2ed118fd4d0', 'classifier_feature_names.json': 'e16f6d0333152af4ddc6286f03fd7201a8da6c539d3a545034f9e9ba0331999a', 'classifier_metadata.json': 'bb047d2dabf7681325c1161f80bda0509c3526e6cbbf1a9c2aad69b651884b64'}
+Hyperparameter guard PASSED: {'max_depth': 6, 'learning_rate': 0.05, 'min_child_weight': 30, 'gamma': 2.0, 'reg_alpha': 20, 'reg_lambda': 60, 'n_estimators': 600, 'subsample': 0.7, 'colsample_bytree': 0.8} read from models\trained\tuned_v1_20260201_155204\classifier_metadata.json exactly matches section 21.2.
+
+================================================================================
+DATA + FEATURES (mirrors tune_hyperparameters.py lines 112-158)
+================================================================================
+Loading S:\Documents\GitHub\saves-model-v3\data\processed\multibook_classification_training_data.parquet
+Loaded 20799 raw rows, 138 columns.
+Dropped market-derived columns (8): ['fair_prob_over', 'fair_prob_under', 'impl_prob_over', 'impl_prob_under', 'line_is_extreme_high', 'line_is_extreme_low', 'line_is_half', 'market_vig']
+[pre-filter] season assignment: all 20799 rows assigned to a registered season window.
+[2023-24] PRE-FILTER: 7607 rows, 1123 games, 1959 goalie-games (section 21.2 registered figure: 7607 rows / 1123 games)
+[2024-25] PRE-FILTER: 7463 rows, 1291 games, 2510 goalie-games (section 21.2 registered figure: 7463 rows / 1291 games)
+[2025-26] PRE-FILTER: 5729 rows, 1107 games, 2070 goalie-games (section 21.2 registered figure: 5729 rows / 1107 games)
+Odds-non-null filter (both odds_over_american and odds_under_american required): 20799 -> 20799 rows (0 dropped).
+NOTE: the odds-non-null filter dropped 0 rows on this snapshot of the parquet -- every row already has non-null odds on both sides. The pre-filter and post-filter counts below are therefore expected to be identical for this run; the filter is still applied and both counts are still reported unconditionally (module docstring).
+Added engineered features: 20799 rows, 148 columns.
+[post-filter] season assignment: all 20799 rows assigned to a registered season window.
+[2023-24] POST-FILTER: {'rows': 7607, 'games': 1123, 'goalie_games': 1959}
+[2024-25] POST-FILTER: {'rows': 7463, 'games': 1291, 'goalie_games': 2510}
+[2025-26] POST-FILTER: {'rows': 5729, 'games': 1107, 'goalie_games': 2070}
+Derived feature_cols: 114
+Frozen feature-list guard PASSED: derived feature_cols exactly matches models\trained\tuned_v1_20260201_155204\classifier_feature_names.json (114 names, same order).
+
+================================================================================
+SMOKE FOLD: internal date split within 2023-24 ONLY
+================================================================================
+2023-24 has 7607 rows; internal cutoff date=2024-03-07 -> smoke-train n=5287, smoke-test n=2320 (NOT a registered test fold).
+
+================================================================================
+FOLD smoke_fold: train n=5287, test n=2320
+================================================================================
+[smoke_fold] Model fit on entire training window in 1.8s (no validation holdout, no early stopping).
+[smoke_fold] Saved fitted booster to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161122_smoke\smoke_fold_model.json
+[smoke_fold] WHOLE-FOLD: 427 bets (18.41% of 2320 candidate lines), ROI=+6.01%, profit=+25.66 units
+[smoke_fold] Per-game reconstruction: 310 distinct games, 427 total bets, +25.6555 total profit units.
+[smoke_fold] Reconciliation PASSED: sum(per-game bets)=427 == whole-fold bets=427; sum(per-game profit)=+25.655452 == whole-fold profit=+25.655452 (|diff|=7.11e-15 <= 1e-9).
+[smoke_fold] Game-level bootstrap 95% CI on ROI: [-11.24%, +22.69%] (n_games=310)
+[smoke_fold] Diagnostics (all 2320 test rows): AUC=0.5490, log-loss=0.6965, Brier=0.2511
+[smoke_fold] Market devig comparison (2320/2320 rows devigged, 0 failures): market log-loss=0.6916, market Brier=0.2492 vs model log-loss=0.6965, model Brier=0.2511
+Smoke-vacuity check PASSED: 427 bets placed, reconciliation and bootstrap were genuinely exercised.
+
+================================================================================
+POOLED (across all test folds)
+================================================================================
+Pooled games: 310, pooled bets: 427, pooled profit: +25.66 units
+Pooled point-estimate ROI: +6.01%
+Pooled game-level bootstrap 95% CI: [-11.24%, +22.69%]
+
+================================================================================
+[MEANINGLESS -- SMOKE TEST] VERDICT (section 21.4, applied literally): MARKET-PARITY / FAIL
+================================================================================
+[MEANINGLESS -- SMOKE TEST] Condition (a) pooled 95% CI lower bound > 0: False (lower=-11.242572546344853)
+[MEANINGLESS -- SMOKE TEST] Condition (b) positive ROI point estimate in EACH fold: True ({'smoke_fold': np.float64(6.008302670613722)})
+[MEANINGLESS -- SMOKE TEST] This verdict is computed on 2023-24-only internal wiring-test data, NOT the registered folds. It proves the verdict logic runs end to end and means nothing about the recipe's real out-of-sample edge.
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161122_smoke\metadata.json
+Wall-clock time: 4.4s (0.1 min)
+
+################################################################################
+# SMOKE TEST COMPLETE. Every number above is meaningless (2023-24-only
+# internal split). No registered test fold (2024-25 / 2025-26) was touched.
+################################################################################

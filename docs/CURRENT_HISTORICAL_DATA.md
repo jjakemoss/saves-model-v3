@@ -310,9 +310,11 @@ unchanged (130 and 138 cols), `clean_training_data.parquet` untouched. The
 independent match paths. Caveat: 2023-24 is sportsbook-only (no DFS books
 existed then), a disclosed structural difference from the other two seasons. As
 in section 3, this only extends the parquets -- the production model has NOT
-been retrained or re-evaluated on the three-season data; a walk-forward
-evaluation is now possible (substrate-wise) but remains a separate future
-decision.
+been retrained. The walk-forward evaluation this substrate enabled has since
+been run (2026-07-24, registration section 21) and **FAILED**: pooled
+out-of-sample ROI -7.72%, 95% CI [-13.48%, -2.16%], AUC below 0.5 on both unseen
+seasons. See `HISTORICAL_DATA_ANALYSIS.md` section 10. The data work here was
+sound; what it enabled was an honest negative answer about the model.
 
 ## 5. Is this enough data?
 
@@ -375,12 +377,17 @@ on season 1, test on season 2; train on seasons 1-2, test on season 3; etc.)
 and average the results. **As of 2026-07-24 the training parquets carry three
 seasons** (2023-24 was folded in, section 4.4), so a walk-forward evaluation is
 now runnable for the first time — train 2023-24 -> test 2024-25 -> test 2025-26.
-It is now **preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21**
+It was **preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21**
 (frozen production recipe, retrained per fold; game-level bootstrap CIs; PASS/FAIL
-bar fixed in advance) but **not yet run**. The per-window test folds remain thin
-(section 5's sampling-uncertainty caveat applies to each individual cut), which
-is why the registered bar leans on a pooled bootstrap CI plus per-fold
-positivity; but the two-season blocker is resolved.
+bar fixed in advance) and **run once on 2026-07-24. It FAILED** -- pooled
+out-of-sample ROI -7.72% over 3,258 bets, game-level 95% CI [-13.48%, -2.16%],
+AUC below 0.5 on both unseen seasons (result: section 21.9; synthesis:
+`HISTORICAL_DATA_ANALYSIS.md` section 10). The per-window test folds are thin
+individually (section 5's sampling-uncertainty caveat applies to each cut), which
+is why the bar leaned on a pooled bootstrap CI plus per-fold positivity -- but
+thinness is not what sank it: both folds lost independently and the pooled CI
+excluded zero on the negative side. The two-season blocker is resolved, and the
+answer it unblocked was negative.
 
 ## 7. Open follow-ups
 
@@ -393,8 +400,11 @@ positivity; but the two-season blocker is resolved.
   `merge_betting_lines.py` → `add_market_features.py` →
   `build_multibook_training_data.py`) to keep growing the labeled dataset.
 - Three seasons of betting-line data now exist (2023-24 folded in 2026-07-24,
-  section 4.4), so the deferred step is now actionable and **has been registered
-  as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21** (walk-forward
-  validation of the frozen production classifier recipe; not yet run). Mind that
-  the 2023-24 season is sportsbook-only (no DFS books) when interpreting per-book
-  or DFS-specific results across the walk-forward windows.
+  section 4.4). The deferred walk-forward step was registered as
+  `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21 and **has now been run and
+  FAILED** (2026-07-24; section 21.9, `HISTORICAL_DATA_ANALYSIS.md` section 10).
+  That question is closed for this recipe; reopening it requires a new
+  registration. Mind that the 2023-24 season is sportsbook-only (no DFS books)
+  when interpreting per-book or DFS-specific results -- though note Origin 2 had
+  DFS books in training and failed just as hard, so that caveat does not explain
+  the result.

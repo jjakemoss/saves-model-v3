@@ -1,0 +1,4544 @@
+{
+  "label": "smoke_fold",
+  "train_rows": 5287,
+  "test_rows": 2320,
+  "hyperparameters_used": {
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "min_child_weight": 30,
+    "gamma": 2.0,
+    "reg_alpha": 20,
+    "reg_lambda": 60,
+    "n_estimators": 600,
+    "subsample": 0.7,
+    "colsample_bytree": 0.8
+  },
+  "model_path": "S:\\Documents\\GitHub\\saves-model-v3\\models\\trained\\experiment_walk_forward_classifier_20260724_161122_smoke\\smoke_fold_model.json",
+  "whole_fold": {
+    "total_bets": 427,
+    "wins": 241,
+    "losses": 186,
+    "win_rate": 0.5644028103044496,
+    "total_profit": 25.655452403520595,
+    "roi": 6.008302670613722,
+    "avg_ev": 0.16979441270557769,
+    "skipped_no_odds": 0,
+    "bet_results": [
+      {
+        "bet": "UNDER",
+        "profit": 0.900900900900901,
+        "won": true,
+        "ev": 0.16352255366989787
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17003467531487493
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.17739378242957882
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.17739378242957882
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.16098692865654973
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1394371674174354
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1510515692757397
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.236368286900404
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.2247538850420997
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.2072790051818988
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14327391650941634
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.2247538850420997
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14327391650941634
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.22933263962085426
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19387897701546697
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1510515692757397
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.15374230175483516
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.17739378242957882
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.18463840933129338
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1280140214211951
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1510515692757397
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13595607734861825
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13369925044724162
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14757047920692257
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14053483192737282
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.15151736167100094
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.15561236576600512
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.14551135566499496
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.1977711584832933
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7299270072992701,
+        "won": true,
+        "ev": 0.17526764230889103
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.19192320526691908
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.1977711584832933
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.14551135566499496
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.1977711584832933
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7407407407407407,
+        "won": true,
+        "ev": 0.1265988261141675
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1264575603531628
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1264575603531628
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.13998051123185595
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.2381403133420661
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.23089568644035152
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7575757575757576,
+        "won": true,
+        "ev": 0.1741252911501917
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.18753525283601546
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.13998051123185595
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8403361344537816,
+        "won": true,
+        "ev": 0.1359626784172232
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.13023947506416134
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.13370218725487737
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.14445795292078067
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14744077949989132
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14744077949989132
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14744077949989132
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15468540640160588
+      },
+      {
+        "bet": "UNDER",
+        "profit": 1.0,
+        "won": true,
+        "ev": 0.17934167385101318
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.15553215004148935
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.13023947506416134
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.152792351190434
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8403361344537816,
+        "won": true,
+        "ev": 0.1420560612526114
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.17548095016944698
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.17548095016944698
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.16386654831114267
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.18272557707116155
+      },
+      {
+        "bet": "UNDER",
+        "profit": 1.02,
+        "won": true,
+        "ev": 0.18193957357123347
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.142105357591496
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.15317955471220468
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.15317955471220468
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14986291889832404
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13711865381761035
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14768947834192325
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.15317955471220468
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12310183363338922
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23197470932472042
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.20928611034570743
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2203603074664161
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.239219336226435
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15498347253334233
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.12898370476052312
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.14512291408720468
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.156737315945509
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.16398194284722356
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.156737315945509
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.156737315945509
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12355758135135353
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2203603074664161
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14213060169685177
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14213060169685177
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14213060169685177
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13509495441730202
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1333648099746878
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14844191861602496
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13128925995393237
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13128925995393237
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13128925995393237
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1629800279185457
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.21904777317512325
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.21904777317512325
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.900900900900901,
+        "won": true,
+        "ev": 0.2051765444154423
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.24404521011063274
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2579164388703137
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.21667978833022628
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.25088079159076393
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.21904777317512325
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2579164388703137
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2579164388703137
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1251523378418713
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1251523378418713
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13705757118406747
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13705757118406747
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.1973876739860675
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.17726856888386244
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.18311652210023666
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.18311652210023666
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13705757118406747
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.18311652210023666
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13500043607893442
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12739165012653053
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.12609967951462653
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13500043607893442
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.14163632576282204
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.12609967951462653
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.1259833740633588
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15881754130851933
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12281289554777597
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1466224193572998
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2207680510920148
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23184224821272348
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2207680510920148
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23184224821272348
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2229414916484156
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12064890890586666
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12064890890586666
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12219129829871944
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12219129829871944
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12219129829871944
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16110583992287664
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23637077070417856
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.21889589084397765
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8130081300813008,
+        "won": true,
+        "ev": 0.13594217578391854
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.24094952528293312
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.13796213296082638
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23637077070417856
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.14205713705583056
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.15262796158014347
+      },
+      {
+        "bet": "UNDER",
+        "profit": 1.0,
+        "won": true,
+        "ev": 0.15268468856811523
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1934183998541399
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1537244482473894
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1537244482473894
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.14773419351861028
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7874015748031495,
+        "won": true,
+        "ev": 0.13970762806316828
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1288751647585914
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1930170343035743
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1934183998541399
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.20616266493485358
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.14962944415238522
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.16787281994507697
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.2039892243784528
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.16569937938867618
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.2322038695363715
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7407407407407407,
+        "won": true,
+        "ev": 0.15952544516705447
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.16877613896908972
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14758637405577157
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16644540281579046
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1592007759140759
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.16877613896908972
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1592007759140759
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.16569937938867618
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.15512855486436328
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18194283718286564
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1930170343035743
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1930170343035743
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1404895666168957
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19392964185452932
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.2128464267367408
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.1953715468765399
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.2128464267367408
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.12471613146009897
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.12471613146009897
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12672876148689083
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12672876148689083
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2574063423203259
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2368911838977137
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2550383574754289
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2574063423203259
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.22896035151048144
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.24170461659119513
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.23953117603479435
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.23953117603479435
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12724688318040633
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12724688318040633
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12724688318040633
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1942805416375688
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19664852648246578
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18277729772278484
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19664852648246578
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.2039367002353334
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.2097846534517076
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7092198581560285,
+        "won": true,
+        "ev": 0.18027796834336274
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.2097846534517076
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12175043062730273
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12175043062730273
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16408295226546954
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.12119198263737196
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15750111812768985
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16857531524839853
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.12003628844800207
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.14175592298093054
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12969812419679427
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.15141775872972274
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.12385017098042006
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.14556980551334853
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12703993585374618
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1259205724121234
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7874015748031495,
+        "won": true,
+        "ev": 0.14750194864651178
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14693029360337695
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1406045001849794
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15245845940735958
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1464524534013536
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1464524534013536
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.120471729682042
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.13304594185975216
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12703993585374618
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.20040425327089095
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.20040425327089095
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.78125,
+        "won": true,
+        "ev": 0.19455630005451674
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1487801409213343
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7575757575757576,
+        "won": true,
+        "ev": 0.1869942915850672
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1692952993439465
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1692952993439465
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1716864997265386
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.3480453970955639
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2833271756019766
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.34567741225066695
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2812516255812212
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.900900900900901,
+        "won": true,
+        "ev": 0.17130394004532512
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.1781395215254563
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.18517516880500606
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.18517516880500606
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.14468321062269662
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.3480453970955639
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2918224501055341
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.1272083307624957
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1276405485191009
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13756236460831783
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14165736870332202
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14165736870332202
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2614887797314188
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.14468321062269662
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.14926196520145119
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8403361344537816,
+        "won": true,
+        "ev": 0.31686152361299347
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.12179997925446417
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12094329624641231
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.14231513767707638
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.14231513767707638
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.1399471528321794
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1228547829848069
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14123644107996036
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.14850530693831954
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1392588899249122
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1508732917832165
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.1508732917832165
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13483575834046813
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1568893927794236
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14123644107996036
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8130081300813008,
+        "won": true,
+        "ev": 0.25516517440299813
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.2875039118986863
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.28292515731993173
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.28292515731993173
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.14284668798032019
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12249087124336056
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7407407407407407,
+        "won": true,
+        "ev": 0.13359599417828494
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.30327012993040536
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12249087124336056
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.14284668798032019
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.3270796537399292
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.3078488845091599
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.12012288639846358
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2921959328096967
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.1525085237291124
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14525039629502734
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13130976432977726
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16240305495711993
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13348320488617804
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12281448982621979
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19505660562980465
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16689541794004892
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.20725172758102417
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14238396145048593
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1880209583502549
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.24470391722008733
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.23745929031837276
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.23745929031837276
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1203646226362749
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.22584488846006845
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16689541794004892
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12271665363776973
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.12271665363776973
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.2111717494048736
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.12034866879287276
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.22109356549409054
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23575939411340763
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.22518856958909472
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1580199287051246
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14489207337203536
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.1491191721408167
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.1369308966856736
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13235214210691904
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.8928571428571428,
+        "won": true,
+        "ev": 0.1535275657221956
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1580199287051246
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.13235214210691904
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.12672324614091357
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.22553648227869083
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7518796992481203,
+        "won": true,
+        "ev": 0.12410353949141606
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.16786925821769527
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15554403095710567
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.13089338792573424
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8130081300813008,
+        "won": true,
+        "ev": 0.12060828486900155
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.22553648227869083
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.14518065923868229
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.1655012733727983
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.1297015988308451
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.160212592645125
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.160212592645125
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1561175885501208
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.12170047943408668
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15011158254411483
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7407407407407407,
+        "won": true,
+        "ev": 0.12045090502880984
+      },
+      {
+        "bet": "OVER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.1297015988308451
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15554403095710567
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1531760461122087
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13253150055709395
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13489948540199093
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13489948540199093
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.22553648227869083
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.23211831641647052
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.14850838367755592
+      },
+      {
+        "bet": "UNDER",
+        "profit": 1.0,
+        "won": true,
+        "ev": 0.12310564517974854
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.12672324614091357
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.30267551903412726
+      },
+      {
+        "bet": "UNDER",
+        "profit": 1.0499999999999998,
+        "won": true,
+        "ev": 0.3475809213591785
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.32319067745673946
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.31157627559843515
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12202641225996469
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1912833736056373
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9433962264150944,
+        "won": true,
+        "ev": 0.20523885557952437
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.132523324754503
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12202641225996469
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.2028977754639416
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.2028977754639416
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.1443785133662524
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.132523324754503
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18683030870225692
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.19693131880326709
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12508108880784774
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1907928869837806
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1907928869837806
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.19537164156253517
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.1733180071235797
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.20750214332758
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1928363147082629
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13423929283919844
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12273604892441448
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17102805445495162
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13660727768409542
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13366146521134814
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1733960392998486
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18057389692826709
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1528808808772364
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16178163744154428
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18057389692826709
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.18579153074037047
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.15941364906694244
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1700823641269007
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1679089235704999
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1679089235704999
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17047288682725692
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13366146521134814
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12356045511033797
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13660727768409542
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.20784516517932594
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1764788928332629
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12956646111634396
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.20326641060057138
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.20326641060057138
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12087062028077267
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12496562437577685
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.12701664800229284
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.14225725187074156
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.1486579346102338
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1380871100859209
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12320369482040405
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9803921568627452,
+        "won": true,
+        "ev": 0.20765390844628362
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12320369482040405
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7692307692307692,
+        "won": true,
+        "ev": 0.12701664800229284
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.17572011226831485
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7575757575757576,
+        "won": true,
+        "ev": 0.14163831595716803
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8771929824561404,
+        "won": true,
+        "ev": 0.17789355282471564
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.16514928774400195
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.1486579346102338
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.12535633032138527
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13239197760093502
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1442247912997291
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13239197760093502
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1201845573824506
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.13583750908191383
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8695652173913042,
+        "won": true,
+        "ev": 0.13315059417902042
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9090909090909092,
+        "won": true,
+        "ev": 0.1442247912997291
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.14880354587848366
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.1201845573824506
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17580555706489376
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17343757221999678
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12266584899690414
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17580555706489376
+      },
+      {
+        "bet": "UNDER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.16419115520658945
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.12266584899690414
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17164453722181772
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1444868011908098
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.18346189289558223
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1444868011908098
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.14039179709580563
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.17164453722181772
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8333333333333335,
+        "won": true,
+        "ev": 0.1718651814894243
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.819672131147541,
+        "won": true,
+        "ev": 0.16777017739442013
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.7874015748031495,
+        "won": true,
+        "ev": 0.1578483613052032
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.9523809523809523,
+        "won": true,
+        "ev": 0.18346189289558223
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.925925925925926,
+        "won": true,
+        "ev": 0.17642624561603248
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.8,
+        "won": true,
+        "ev": 0.13438579108979964
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18089095423522505
+      },
+      {
+        "bet": "OVER",
+        "profit": -1.0,
+        "won": false,
+        "ev": 0.18325893908012203
+      },
+      {
+        "bet": "UNDER",
+        "profit": 0.847457627118644,
+        "won": true,
+        "ev": 0.154372611177077
+      }
+    ]
+  },
+  "bet_rate_pct": 18.405172413793103,
+  "degenerate_bet_volume": false,
+  "bootstrap_ci_95": {
+    "lower": -11.242572546344853,
+    "upper": 22.685424235401253,
+    "n_games": 310,
+    "n_resamples_used": 10000,
+    "n_resamples_requested": 10000,
+    "n_resamples_skipped_zero_bets": 0
+  },
+  "diagnostics": {
+    "auc": 0.5489873346467773,
+    "log_loss": 0.6964754896319687,
+    "brier": 0.25107383728027344,
+    "market_log_loss": 0.6916146621588696,
+    "market_brier": 0.2492338272663867,
+    "market_devig_failures": 0,
+    "market_devig_coverage": 2320,
+    "calibration_table": [
+      {
+        "bin_low": 0.0,
+        "bin_high": 0.1,
+        "count": 0,
+        "mean_predicted_p_over": null,
+        "realized_over_rate": null
+      },
+      {
+        "bin_low": 0.1,
+        "bin_high": 0.2,
+        "count": 20,
+        "mean_predicted_p_over": 0.16877064108848572,
+        "realized_over_rate": 0.4
+      },
+      {
+        "bin_low": 0.2,
+        "bin_high": 0.30000000000000004,
+        "count": 112,
+        "mean_predicted_p_over": 0.2652413845062256,
+        "realized_over_rate": 0.36607142857142855
+      },
+      {
+        "bin_low": 0.30000000000000004,
+        "bin_high": 0.4,
+        "count": 489,
+        "mean_predicted_p_over": 0.3538668155670166,
+        "realized_over_rate": 0.4069529652351738
+      },
+      {
+        "bin_low": 0.4,
+        "bin_high": 0.5,
+        "count": 848,
+        "mean_predicted_p_over": 0.450141966342926,
+        "realized_over_rate": 0.4492924528301887
+      },
+      {
+        "bin_low": 0.5,
+        "bin_high": 0.6000000000000001,
+        "count": 565,
+        "mean_predicted_p_over": 0.5479133725166321,
+        "realized_over_rate": 0.46194690265486726
+      },
+      {
+        "bin_low": 0.6000000000000001,
+        "bin_high": 0.7000000000000001,
+        "count": 247,
+        "mean_predicted_p_over": 0.6367674469947815,
+        "realized_over_rate": 0.5587044534412956
+      },
+      {
+        "bin_low": 0.7000000000000001,
+        "bin_high": 0.8,
+        "count": 39,
+        "mean_predicted_p_over": 0.7325084805488586,
+        "realized_over_rate": 0.4358974358974359
+      },
+      {
+        "bin_low": 0.8,
+        "bin_high": 0.9,
+        "count": 0,
+        "mean_predicted_p_over": null,
+        "realized_over_rate": null
+      },
+      {
+        "bin_low": 0.9,
+        "bin_high": 1.0,
+        "count": 0,
+        "mean_predicted_p_over": null,
+        "realized_over_rate": null
+      }
+    ]
+  },
+  "per_game": [
+    {
+      "game_id": 2023020993,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023020994,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023020995,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023020997,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023020998,
+      "bets": 2,
+      "wins": 2,
+      "profit": 1.9327731092436975
+    },
+    {
+      "game_id": 2023020999,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021001,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.738435914906503
+    },
+    {
+      "game_id": 2023021002,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021003,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.766233766233766
+    },
+    {
+      "game_id": 2023021004,
+      "bets": 9,
+      "wins": 5,
+      "profit": 0.5439463236073405
+    },
+    {
+      "game_id": 2023021005,
+      "bets": 5,
+      "wins": 5,
+      "profit": 3.91117700729927
+    },
+    {
+      "game_id": 2023021006,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021007,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021008,
+      "bets": 5,
+      "wins": 5,
+      "profit": 3.9937462052216146
+    },
+    {
+      "game_id": 2023021009,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.5070028011204486
+    },
+    {
+      "game_id": 2023021010,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.4903488668194553
+    },
+    {
+      "game_id": 2023021011,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021012,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.618992260935995
+    },
+    {
+      "game_id": 2023021013,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021014,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021015,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021016,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.88515406162465
+    },
+    {
+      "game_id": 2023021017,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021018,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021019,
+      "bets": 2,
+      "wins": 2,
+      "profit": 1.9047619047619047
+    },
+    {
+      "game_id": 2023021020,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.663810188106863
+    },
+    {
+      "game_id": 2023021022,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021023,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021024,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021025,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021026,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.616837944664032
+    },
+    {
+      "game_id": 2023021027,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021028,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021029,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021030,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021031,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021032,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021033,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.746625923096512
+    },
+    {
+      "game_id": 2023021034,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021035,
+      "bets": 5,
+      "wins": 0,
+      "profit": -5.0
+    },
+    {
+      "game_id": 2023021036,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021037,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021038,
+      "bets": 1,
+      "wins": 1,
+      "profit": 0.9803921568627452
+    },
+    {
+      "game_id": 2023021039,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021040,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021041,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021042,
+      "bets": 5,
+      "wins": 0,
+      "profit": -5.0
+    },
+    {
+      "game_id": 2023021043,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021044,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021045,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021046,
+      "bets": 5,
+      "wins": 0,
+      "profit": -5.0
+    },
+    {
+      "game_id": 2023021047,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021048,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021049,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.701439984458853
+    },
+    {
+      "game_id": 2023021050,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021051,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021052,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021053,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021054,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021055,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021056,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021057,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021058,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021059,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021060,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021061,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.572567783094099
+    },
+    {
+      "game_id": 2023021063,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021064,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021065,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021066,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021067,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.522763870589958
+    },
+    {
+      "game_id": 2023021068,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021069,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021070,
+      "bets": 5,
+      "wins": 5,
+      "profit": 4.028707627118644
+    },
+    {
+      "game_id": 2023021071,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021072,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021073,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021074,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021075,
+      "bets": 5,
+      "wins": 0,
+      "profit": -5.0
+    },
+    {
+      "game_id": 2023021076,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021077,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021078,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021079,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021080,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021081,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021082,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021083,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021084,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021085,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021086,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021087,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021088,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021089,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021090,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021091,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021092,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021093,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021094,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021095,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021096,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021097,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021098,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021099,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.4134248665141116
+    },
+    {
+      "game_id": 2023021100,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.259594436065024
+    },
+    {
+      "game_id": 2023021101,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.2737403726173575
+    },
+    {
+      "game_id": 2023021102,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021103,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021104,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.4496567505720823
+    },
+    {
+      "game_id": 2023021105,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021106,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.841864018334607
+    },
+    {
+      "game_id": 2023021107,
+      "bets": 8,
+      "wins": 4,
+      "profit": -0.6644211880465205
+    },
+    {
+      "game_id": 2023021108,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021109,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.6656394453004624
+    },
+    {
+      "game_id": 2023021110,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021111,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021112,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021113,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021114,
+      "bets": 2,
+      "wins": 2,
+      "profit": 1.8181818181818183
+    },
+    {
+      "game_id": 2023021116,
+      "bets": 2,
+      "wins": 2,
+      "profit": 1.9047619047619047
+    },
+    {
+      "game_id": 2023021117,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021118,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021119,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021120,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021121,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021122,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021123,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021124,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021125,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021126,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021127,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021128,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021129,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021130,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021132,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021133,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.4496567505720823
+    },
+    {
+      "game_id": 2023021134,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021136,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021137,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021138,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021139,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021140,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021141,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021142,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021143,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021144,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021145,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021146,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021147,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.4000000000000004
+    },
+    {
+      "game_id": 2023021148,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021149,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021150,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021151,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.0904698581560286
+    },
+    {
+      "game_id": 2023021152,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021153,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021154,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021155,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021156,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021157,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021158,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021159,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021160,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021161,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021162,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021163,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021164,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021165,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021168,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021170,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021171,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021172,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021173,
+      "bets": 7,
+      "wins": 7,
+      "profit": 5.488363113264688
+    },
+    {
+      "game_id": 2023021174,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021175,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021176,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021177,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021178,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021179,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.200922131147541
+    },
+    {
+      "game_id": 2023021180,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021181,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021182,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021183,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.1388257575757574
+    },
+    {
+      "game_id": 2023021184,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021185,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021186,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021187,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021188,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021189,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021190,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021191,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021192,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.5915653712263884
+    },
+    {
+      "game_id": 2023021193,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.6884942656307804
+    },
+    {
+      "game_id": 2023021194,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021195,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.731588731588732
+    },
+    {
+      "game_id": 2023021196,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021197,
+      "bets": 1,
+      "wins": 1,
+      "profit": 0.9523809523809523
+    },
+    {
+      "game_id": 2023021198,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.725351113633139
+    },
+    {
+      "game_id": 2023021199,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021200,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021201,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021202,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021203,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021204,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021205,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.557115874189045
+    },
+    {
+      "game_id": 2023021206,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021207,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021208,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021209,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021210,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.757249040267908
+    },
+    {
+      "game_id": 2023021211,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.848158131176999
+    },
+    {
+      "game_id": 2023021212,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021213,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021214,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021215,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021216,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.0792022792022786
+    },
+    {
+      "game_id": 2023021217,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021218,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021219,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.794244970715559
+    },
+    {
+      "game_id": 2023021220,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021221,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021222,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021223,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021224,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021225,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021226,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021227,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021228,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021229,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021230,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021231,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.7441077441077444
+    },
+    {
+      "game_id": 2023021232,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.848158131176999
+    },
+    {
+      "game_id": 2023021233,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021234,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021235,
+      "bets": 1,
+      "wins": 0,
+      "profit": -1.0
+    },
+    {
+      "game_id": 2023021236,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.5882319434951016
+    },
+    {
+      "game_id": 2023021237,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021238,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021239,
+      "bets": 5,
+      "wins": 1,
+      "profit": -3.074074074074074
+    },
+    {
+      "game_id": 2023021240,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021241,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021242,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.0310819784503993
+    },
+    {
+      "game_id": 2023021243,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021244,
+      "bets": 1,
+      "wins": 1,
+      "profit": 1.0
+    },
+    {
+      "game_id": 2023021245,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.765342396187351
+    },
+    {
+      "game_id": 2023021246,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021247,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021248,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021249,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.327132423866612
+    },
+    {
+      "game_id": 2023021250,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021251,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021252,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021253,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021254,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021255,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021256,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021257,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.788664843928002
+    },
+    {
+      "game_id": 2023021258,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.543396226415094
+    },
+    {
+      "game_id": 2023021259,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021260,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021261,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021262,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021263,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021264,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.633524945000355
+    },
+    {
+      "game_id": 2023021265,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021266,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021267,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021268,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.5915653712263884
+    },
+    {
+      "game_id": 2023021269,
+      "bets": 1,
+      "wins": 1,
+      "profit": 0.8
+    },
+    {
+      "game_id": 2023021270,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021271,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021272,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021273,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021274,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021275,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021276,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021277,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021278,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021279,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.5915653712263884
+    },
+    {
+      "game_id": 2023021280,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021281,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021282,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021283,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021284,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021285,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021286,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021287,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021288,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.419921395234586
+    },
+    {
+      "game_id": 2023021289,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021290,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021291,
+      "bets": 2,
+      "wins": 0,
+      "profit": -2.0
+    },
+    {
+      "game_id": 2023021292,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021293,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.5188536953242835
+    },
+    {
+      "game_id": 2023021294,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.3376672907565355
+    },
+    {
+      "game_id": 2023021295,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021296,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021297,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021298,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021299,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021300,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021301,
+      "bets": 4,
+      "wins": 4,
+      "profit": 3.6136729614990486
+    },
+    {
+      "game_id": 2023021302,
+      "bets": 3,
+      "wins": 0,
+      "profit": -3.0
+    },
+    {
+      "game_id": 2023021303,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021304,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021305,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021306,
+      "bets": 2,
+      "wins": 2,
+      "profit": 1.6
+    },
+    {
+      "game_id": 2023021307,
+      "bets": 3,
+      "wins": 3,
+      "profit": 2.440407039284024
+    },
+    {
+      "game_id": 2023021308,
+      "bets": 8,
+      "wins": 8,
+      "profit": 6.9644842556206825
+    },
+    {
+      "game_id": 2023021309,
+      "bets": 4,
+      "wins": 0,
+      "profit": -4.0
+    },
+    {
+      "game_id": 2023021310,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021311,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    },
+    {
+      "game_id": 2023021312,
+      "bets": 0,
+      "wins": 0,
+      "profit": 0.0
+    }
+  ]
+}

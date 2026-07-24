@@ -1,0 +1,95 @@
+================================================================================
+WALK-FORWARD VALIDATION OF THE PRODUCTION CLASSIFIER RECIPE
+Pre-registration: docs/PREREGISTRATION_NO_CREDIT_ABLATIONS.md section 21
+================================================================================
+Output directory: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161612
+
+################################################################################
+# REAL WALK-FORWARD EVALUATION -- touches 2024-25 and 2025-26 test data.
+# Section 21.6 single-run discipline applies: no re-carving folds, no
+# re-running a fold after seeing its result, no threshold re-sweep.
+################################################################################
+Script git commit: 61319d2ee3601d8e6b90f54b5a8c2b77949224aa
+
+================================================================================
+GUARDS: verbatim engineered-features copy, frozen feature list, frozen hyperparameters
+================================================================================
+Verbatim-copy guard PASSED: local add_all_engineered_features is AST-identical to scripts/tune_hyperparameters.py's version (docstring and whitespace/indentation ignored by construction).
+Input checksums: {'multibook_classification_training_data.parquet': '02a1c6f37796b912e0e2c4191d8b66e71367def58b2aa69dcc28e2ed118fd4d0', 'classifier_feature_names.json': 'e16f6d0333152af4ddc6286f03fd7201a8da6c539d3a545034f9e9ba0331999a', 'classifier_metadata.json': 'bb047d2dabf7681325c1161f80bda0509c3526e6cbbf1a9c2aad69b651884b64'}
+Hyperparameter guard PASSED: {'max_depth': 6, 'learning_rate': 0.05, 'min_child_weight': 30, 'gamma': 2.0, 'reg_alpha': 20, 'reg_lambda': 60, 'n_estimators': 600, 'subsample': 0.7, 'colsample_bytree': 0.8} read from models\trained\tuned_v1_20260201_155204\classifier_metadata.json exactly matches section 21.2.
+
+================================================================================
+DATA + FEATURES (mirrors tune_hyperparameters.py lines 112-158)
+================================================================================
+Loading S:\Documents\GitHub\saves-model-v3\data\processed\multibook_classification_training_data.parquet
+Loaded 20799 raw rows, 138 columns.
+Dropped market-derived columns (8): ['fair_prob_over', 'fair_prob_under', 'impl_prob_over', 'impl_prob_under', 'line_is_extreme_high', 'line_is_extreme_low', 'line_is_half', 'market_vig']
+[pre-filter] season assignment: all 20799 rows assigned to a registered season window.
+[2023-24] PRE-FILTER: 7607 rows, 1123 games, 1959 goalie-games (section 21.2 registered figure: 7607 rows / 1123 games)
+[2024-25] PRE-FILTER: 7463 rows, 1291 games, 2510 goalie-games (section 21.2 registered figure: 7463 rows / 1291 games)
+[2025-26] PRE-FILTER: 5729 rows, 1107 games, 2070 goalie-games (section 21.2 registered figure: 5729 rows / 1107 games)
+Odds-non-null filter (both odds_over_american and odds_under_american required): 20799 -> 20799 rows (0 dropped).
+NOTE: the odds-non-null filter dropped 0 rows on this snapshot of the parquet -- every row already has non-null odds on both sides. The pre-filter and post-filter counts below are therefore expected to be identical for this run; the filter is still applied and both counts are still reported unconditionally (module docstring).
+Added engineered features: 20799 rows, 148 columns.
+[post-filter] season assignment: all 20799 rows assigned to a registered season window.
+[2023-24] POST-FILTER: {'rows': 7607, 'games': 1123, 'goalie_games': 1959}
+[2024-25] POST-FILTER: {'rows': 7463, 'games': 1291, 'goalie_games': 2510}
+[2025-26] POST-FILTER: {'rows': 5729, 'games': 1107, 'goalie_games': 2070}
+Derived feature_cols: 114
+Frozen feature-list guard PASSED: derived feature_cols exactly matches models\trained\tuned_v1_20260201_155204\classifier_feature_names.json (114 names, same order).
+
+================================================================================
+ORIGIN 1: train = 2023-24, test = 2024-25
+================================================================================
+[Origin 1] train seasons=['2023-24']: 7607 rows, 2023-11-02..2024-04-18; test season=2024-25: 7463 rows, 2024-10-04..2025-04-17
+
+================================================================================
+FOLD origin_1: train n=7607, test n=7463
+================================================================================
+[origin_1] Model fit on entire training window in 2.4s (no validation holdout, no early stopping).
+[origin_1] Saved fitted booster to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161612\origin_1_model.json
+[origin_1] WHOLE-FOLD: 2073 bets (27.78% of 7463 candidate lines), ROI=-7.94%, profit=-164.54 units
+[origin_1] Per-game reconstruction: 1291 distinct games, 2073 total bets, -164.5402 total profit units.
+[origin_1] Reconciliation PASSED: sum(per-game bets)=2073 == whole-fold bets=2073; sum(per-game profit)=-164.540227 == whole-fold profit=-164.540227 (|diff|=8.53e-14 <= 1e-9).
+[origin_1] Game-level bootstrap 95% CI on ROI: [-15.06%, -0.94%] (n_games=1291)
+[origin_1] Diagnostics (all 7463 test rows): AUC=0.4867, log-loss=0.7288, Brier=0.2656
+[origin_1] Market devig comparison (7463/7463 rows devigged, 0 failures): market log-loss=0.6908, market Brier=0.2488 vs model log-loss=0.7288, model Brier=0.2656
+
+================================================================================
+ORIGIN 2: train = 2023-24 + 2024-25, test = 2025-26
+================================================================================
+[Origin 2] train seasons=['2023-24', '2024-25']: 15070 rows, 2023-11-02..2025-04-17; test season=2025-26: 5729 rows, 2025-10-07..2026-04-13
+
+================================================================================
+FOLD origin_2: train n=15070, test n=5729
+================================================================================
+[origin_2] Model fit on entire training window in 2.1s (no validation holdout, no early stopping).
+[origin_2] Saved fitted booster to S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161612\origin_2_model.json
+[origin_2] WHOLE-FOLD: 1185 bets (20.68% of 5729 candidate lines), ROI=-7.33%, profit=-86.86 units
+[origin_2] Per-game reconstruction: 1107 distinct games, 1185 total bets, -86.8636 total profit units.
+[origin_2] Reconciliation PASSED: sum(per-game bets)=1185 == whole-fold bets=1185; sum(per-game profit)=-86.863612 == whole-fold profit=-86.863612 (|diff|=7.11e-13 <= 1e-9).
+[origin_2] Game-level bootstrap 95% CI on ROI: [-17.16%, +2.49%] (n_games=1107)
+[origin_2] Diagnostics (all 5729 test rows): AUC=0.4929, log-loss=0.7288, Brier=0.2666
+[origin_2] Market devig comparison (5729/5729 rows devigged, 0 failures): market log-loss=0.6936, market Brier=0.2502 vs model log-loss=0.7288, model Brier=0.2666
+
+Fold discipline check PASSED (derived from actual test-fold season labels, not a hardcoded literal): Origin 1 tested 2024-25 only, Origin 2 tested 2025-26 only, the two differ, and neither is 2023-24.
+
+================================================================================
+POOLED (across all test folds)
+================================================================================
+Pooled games: 2398, pooled bets: 3258, pooled profit: -251.40 units
+Pooled point-estimate ROI: -7.72%
+Pooled game-level bootstrap 95% CI: [-13.48%, -2.16%]
+
+================================================================================
+VERDICT (section 21.4, applied literally): MARKET-PARITY / FAIL
+================================================================================
+Condition (a) pooled 95% CI lower bound > 0: False (lower=-13.48218841397295)
+Condition (b) positive ROI point estimate in EACH fold: False ({'origin_1': np.float64(-7.937299906009877), 'origin_2': np.float64(-7.330262633817784)})
+
+Saved metadata to: S:\Documents\GitHub\saves-model-v3\models\trained\experiment_walk_forward_classifier_20260724_161612\metadata.json
+Wall-clock time: 21.8s (0.4 min)
+
+================================================================================
+WALK-FORWARD EVALUATION COMPLETE
+================================================================================

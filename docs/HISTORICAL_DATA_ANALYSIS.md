@@ -44,6 +44,15 @@ never used that parquet.
 
 ## Executive summary
 
+> **Read [section 10](#10-walk-forward-validation-of-the-production-classifier-recipe-2026-07-24) first (added 2026-07-24).** The preregistered walk-forward
+> validation of the production classifier recipe FAILED: pooled out-of-sample ROI
+> **-7.72%** over 3,258 bets, game-level 95% CI **[-13.48%, -2.16%]** (excludes
+> zero on the negative side), with AUC **below 0.5** on both unseen seasons. The
+> model has no out-of-sample discrimination. That is the authoritative read on
+> this model's edge and it supersedes any edge claim elsewhere in this document,
+> including the model-based findings below, which were computed on the live
+> `betting.db` record before this test existed.
+
 Ranked by how actionable and how well-supported each finding is:
 
 1. **The model's entire real edge is on the UNDER side.** UNDER recommendations
@@ -859,3 +868,102 @@ use for the remaining 11,055 credits before their 2026-07-31 expiry. Full
 result and disclosed judgment calls: preregistration section 19.9;
 artifacts: `models/trained/experiment_16_alt_ladder_pilot_20260717_130952/`
 and `data/raw/betting_lines/passes/alt_ladder_pilot_202607/`.
+
+---
+
+## 10. Walk-forward validation of the production classifier recipe (2026-07-24)
+
+**This is the authoritative out-of-sample read on the production model's recipe,
+and it is negative.** Preregistered as section 21 of
+[PREREGISTRATION_NO_CREDIT_ABLATIONS.md](PREREGISTRATION_NO_CREDIT_ABLATIONS.md)
+with the PASS bar fixed and user-locked *before* the run; executed exactly once
+on 2026-07-24; full result and forensics in section 21.9. Zero credits, no model
+retrained for production, nothing deployed.
+
+### 10.1 What was tested
+
+Whether the production classifier RECIPE -- 114 features, the "Random #30"
+hyperparameters, and the 12% EV threshold, all frozen from
+`tuned_v1_20260201_155204` and retrained per fold, never re-tuned -- keeps a
+positive edge when trained on a past window and evaluated on the immediately
+following season it has never seen. Two expanding-window origins over the
+now-three-season labeled data (the 2023-24 fold landed the same day; see
+[CURRENT_HISTORICAL_DATA.md](CURRENT_HISTORICAL_DATA.md) section 4.4):
+
+- **Origin 1:** train 2023-24 (7,607 rows) -> test 2024-25 (7,463 rows / 1,291 games)
+- **Origin 2:** train 2023-24+2024-25 (15,070 rows) -> test 2025-26 (5,729 rows / 1,107 games)
+
+### 10.2 Result: FAIL, and worse than parity
+
+| | Origin 1 | Origin 2 | Pooled |
+|---|---|---|---|
+| Bets (rate) | 2,073 (27.78%) | 1,185 (20.68%) | 3,258 over 2,398 games |
+| ROI | **-7.94%** | **-7.33%** | **-7.72%** (-251.40 units) |
+| Game-level bootstrap 95% CI | [-15.06%, -0.94%] | [-17.16%, +2.49%] | **[-13.48%, -2.16%]** |
+| AUC | 0.4867 | 0.4929 | -- |
+| Log-loss vs market devig | 0.7288 vs 0.6908 | 0.7288 vs 0.6936 | -- |
+
+Both PASS conditions failed: the pooled CI lower bound is -13.48% (not > 0), and
+ROI is negative in each origin (not positive in each).
+
+The pooled CI **excludes zero on the negative side**. Per this document's own
+guardrail about not rounding weak findings up into edges, the same discipline
+applies in reverse here: this is not "no detectable edge," it is a
+statistically significant losing strategy over 3,258 bets across two seasons.
+
+### 10.3 Why it loses
+
+AUC is **below 0.5 on both unseen seasons**. The retrained recipe has no
+out-of-sample discrimination -- it is a coin flip that has learned nothing
+transferable about which side of a saves line will hit. It is simultaneously
+*worse calibrated than the market it bets into* (higher log-loss and Brier than
+the devigged line on both folds).
+
+Yet its average claimed EV when betting was +18.1% and +17.0%. That combination --
+confident large claimed edges, zero real discrimination -- is the classic
+signature of an overfit probability model. The 12% EV filter makes it worse, not
+better: it selects precisely the rows where the model most disagrees with the
+market, which for a noise model means selecting its own largest errors, and then
+pays vig on them. Pooled -7.72% is roughly the cost of that.
+
+**This is a mechanism finding, not just a scoreboard finding.** A higher EV
+threshold, a different bet-sizing rule, or an UNDER-only filter cannot rescue a
+model with AUC < 0.5 out-of-sample; those are all ways of selecting harder from a
+signal that isn't there. (Testing any of them would need its own registration --
+section 21.6 forbids threshold searching within this one.)
+
+### 10.4 How this relates to what was already known
+
+It is not a surprise reversal so much as a third, and by far the most direct,
+confirmation of something this project already suspected:
+
+1. [OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 1.4
+   retired the +23.31% headline in 2026-07-07 as an optimistically biased maximum
+   over 168 draws, because the original selection ranked on combined val+test ROI
+   and thus let the test fold participate in model selection.
+2. The subsequent clean-selection retrain failed its single test touch.
+3. **This walk-forward now shows the recipe, retrained honestly and evaluated
+   forward-in-time, loses money on both unseen seasons with no discrimination
+   whatsoever.**
+
+The sibling pace_shots rolling-origin had already found market-parity on unseen
+seasons. The classifier does not merely match that -- it comes in below it.
+
+### 10.5 Standing conclusion
+
+**The 114-feature XGBoost saves classifier has no demonstrated out-of-sample
+edge, and the evidence now points to a negative one at the 12% EV policy.** The
++23.31% backtest should not be cited as evidence of edge anywhere, in any doc, in
+any future session. Where it still appears (MODEL_TRAINING_GUIDE sections 1 and
+13, README) it is annotated with a pointer here.
+
+What this does NOT say: the live Feb-Apr 2026 UNDER record (section 2, and
+OFFSEASON 1.4's "+32.6% ROI on 168 live UNDER recommendations") is a separate,
+genuinely out-of-sample observation on a different and much smaller sample. This
+result does not explain it away, and it does not confirm it either. Reconciling
+the two -- a model with no measurable discrimination that nonetheless produced a
+live UNDER run -- is an open question, and the most likely honest answer is that
+168 bets is a small sample.
+
+Nothing in the deployed system was changed by this evaluation. Whether to keep
+betting the production model is a decision for the user, now informed by this.

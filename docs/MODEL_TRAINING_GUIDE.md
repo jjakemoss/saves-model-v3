@@ -57,6 +57,20 @@ This document is a complete account of how the current production model came to 
 | ROI | +27.05% | +20.45% | **+23.31%** |
 | Bets placed | 191 (17.65% of lines) | 250 (23.11% of lines) | 441 |
 
+> **DO NOT CITE +23.31% AS EVIDENCE OF EDGE (annotation added 2026-07-24).** A
+> preregistered walk-forward validation of this exact recipe — same 114 features,
+> same hyperparameters, same 12% EV threshold, retrained per fold and evaluated
+> forward-in-time on two seasons it had never seen — returned **pooled OOS ROI
+> -7.72%** over 3,258 bets, game-level 95% CI **[-13.48%, -2.16%]**, with **AUC
+> below 0.5 on both folds** (no out-of-sample discrimination) and calibration
+> worse than the market's own devigged line. The number in this table does not
+> reproduce out-of-sample; it reverses sign. See
+> [HISTORICAL_DATA_ANALYSIS.md section 10](HISTORICAL_DATA_ANALYSIS.md) for the
+> authoritative read and PREREGISTRATION section 21.9 for the full result. Note
+> also that this table's figure was already retired once, in
+> [OFFSEASON_OPTIMIZATION_PLAN.md](OFFSEASON_OPTIMIZATION_PLAN.md) section 1.4, as
+> an optimistically biased maximum over 168 draws.
+
 This is a backtested number — see [§11](#11-model-evaluation-methodology) for exactly what "ROI" means here and what it doesn't guarantee about live performance.
 
 ---
@@ -357,7 +371,7 @@ Reads `data/processed/classification_training_data.parquet` (see the reproducibi
 
 Output: `data/processed/multibook_classification_training_data.parquet` (137 columns).
 
-> **Update (2026-07-24)**: this parquet has since been extended to **three seasons**. The owned 2023-24 bet-time saves lines were folded in as a new season (13,192 -> 20,799 rows; `classification_training_data.parquet` 4,755 -> 6,714), strictly additively (existing 2024-25/2025-26 rows byte-identical, backup in `data/processed/backup_20260724/`). Details and method (append-only, because the multibook build is no longer reproducible from current code): `CURRENT_HISTORICAL_DATA.md` section 4.4. **The production model in this guide was NOT retrained** — it remains the 2-season `tuned_v1_20260201_155204`. A walk-forward evaluation of the recipe on the new three-season data is preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21 (not yet run); note 2023-24 is sportsbook-only (no DFS books). If you retrain on the three-season data, re-read §14 (reproducibility gaps) and §8 (the frozen split logic) first.
+> **Update (2026-07-24)**: this parquet has since been extended to **three seasons**. The owned 2023-24 bet-time saves lines were folded in as a new season (13,192 -> 20,799 rows; `classification_training_data.parquet` 4,755 -> 6,714), strictly additively (existing 2024-25/2025-26 rows byte-identical, backup in `data/processed/backup_20260724/`). Details and method (append-only, because the multibook build is no longer reproducible from current code): `CURRENT_HISTORICAL_DATA.md` section 4.4. **The production model in this guide was NOT retrained** — it remains the 2-season `tuned_v1_20260201_155204`. A walk-forward evaluation of the recipe on the new three-season data was preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21 and **has now been run (2026-07-24): it FAILED** — pooled out-of-sample ROI -7.72% over 3,258 bets, 95% CI [-13.48%, -2.16%], AUC below 0.5 on both unseen seasons (result: section 21.9; synthesis: `HISTORICAL_DATA_ANALYSIS.md` section 10). Note 2023-24 is sportsbook-only (no DFS books). If you retrain on the three-season data, re-read §14 (reproducibility gaps) and §8 (the frozen split logic) first.
 
 | Bookmaker key | Name |
 |---|---|
@@ -534,7 +548,9 @@ Every `classifier_metadata.json` in the repo, verified directly (not from a summ
 | Multibook V1 (12% run) | `models/archive/multibook_v1_20260201_112500/` | 96 | 12% | 4 / 0.02 / 15 / 1.0 / 10 / 40 / 800 / 0.8 / 0.8 | +8.00% (313) | +10.07% (402) | +9.16% (715) |
 | Multibook V1 (dup rerun) | `models/archive/multibook_v1_20260201_152947/` | 96 | 12% | identical to above | +8.00% (313) | +10.07% (402) | +9.16% (715) |
 | Optimized V1 | `models/archive/optimized_v1_20260201_153838/` | 114 | 12% | 4 / 0.02 / 15 / 2.0 / 20 / 60 / 1000 / 0.8 / 0.8 | +21.01% (199) | +10.68% (252) | +15.24% (451) |
-| **Tuned V1 (PRODUCTION)** | `models/trained/tuned_v1_20260201_155204/` | **114** | **12%** | **6 / 0.05 / 30 / 2.0 / 20 / 60 / 600 / 0.7 / 0.8** | **+27.05% (191)** | **+20.45% (250)** | **+23.31% (441)** |
+| **Tuned V1 (PRODUCTION)** | `models/trained/tuned_v1_20260201_155204/` | **114** | **12%** | **6 / 0.05 / 30 / 2.0 / 20 / 60 / 600 / 0.7 / 0.8** | **+27.05% (191)** | **+20.45% (250)** | **+23.31% (441)** [^wf] |
+
+[^wf]: **2026-07-24:** this recipe's walk-forward out-of-sample ROI is **-7.72%** (3,258 bets, game-level 95% CI [-13.48%, -2.16%], AUC < 0.5 on both unseen seasons). Every backtest ROI in this table is a same-methodology in-sample-selection number and none of them should be read as evidence of a tradable edge. See [HISTORICAL_DATA_ANALYSIS.md section 10](HISTORICAL_DATA_ANALYSIS.md).
 
 Note the README previously stated Multibook V1 as "+7.32% ROI" at "12% EV" — that conflates the two rows above; +7.32% belongs to the 2% EV run, and +9.16% is the correct figure for the 12%-threshold config that fed into the rest of the pipeline. Config #4398's combined ROI is precisely 1.6176...%, which is where the commonly-quoted "+1.60%" figure (also this script's own rounding) comes from.
 

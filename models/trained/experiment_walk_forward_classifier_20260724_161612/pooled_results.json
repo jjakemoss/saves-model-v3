@@ -1,0 +1,14 @@
+{
+  "n_games": 2398,
+  "total_bets": 3258,
+  "total_profit": -251.4038392623255,
+  "point_estimate_roi": -7.716508264650875,
+  "bootstrap_ci_95": {
+    "lower": -13.48218841397295,
+    "upper": -2.1601047908459994,
+    "n_games": 2398,
+    "n_resamples_used": 10000,
+    "n_resamples_requested": 10000,
+    "n_resamples_skipped_zero_bets": 0
+  }
+}

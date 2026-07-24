@@ -8,6 +8,15 @@ Every number below was computed fresh from the repo's data during this analysis,
 not carried over from earlier docs. Where a finding is statistically thin, it says
 so.
 
+> **Update 2026-07-24 — this is now settled, not just undemonstrated.** The
+> preregistered walk-forward validation of the production classifier recipe
+> (section 21 / 21.9) FAILED: pooled out-of-sample ROI **-7.72%** over 3,258 bets,
+> game-level 95% CI **[-13.48%, -2.16%]**, AUC **below 0.5** on both unseen
+> seasons. The recipe does not merely lack a demonstrated edge — retrained
+> honestly and run forward in time, it loses money with no discrimination. See
+> `HISTORICAL_DATA_ANALYSIS.md` section 10 and the dated log entry at the end of
+> this document.
+
 The one-paragraph version after the full offseason audit: **the current model
 stack has no demonstrated tradable edge.** The old +23.31% backtest was
 contaminated by test-set selection and corrupted multibook labels; the clean
@@ -2635,3 +2644,32 @@ that forgets them:
      prior: the pace_shots rolling-origin (this section's own "Rolling-origin
      confirmation") found market-parity, not edge, so a market-parity result for
      the classifier is a live possibility and a legitimate outcome.
+- **2026-07-24 (walk-forward validation of the production classifier recipe RUN
+  -- FAILED; zero credits, nothing deployed).** The section-21 registration
+  logged in the entry above was built out
+  (`scripts/experiment_walk_forward_classifier.py`, reusing
+  `ClassifierTrainer.evaluate_profitability` by import) and run EXACTLY ONCE, as
+  registered. **Verdict: MARKET-PARITY / FAIL, and in fact worse than parity.**
+  Pooled out-of-sample ROI **-7.72%** over 3,258 bets across 2,398 games
+  (-251.40 units), game-level bootstrap 95% CI **[-13.48%, -2.16%]** -- excluding
+  zero on the NEGATIVE side. Both origins lost independently: Origin 1
+  (train 2023-24 -> test 2024-25) -7.94% on 2,073 bets, CI [-15.06%, -0.94%];
+  Origin 2 (train 2023-24+2024-25 -> test 2025-26) -7.33% on 1,185 bets, CI
+  [-17.16%, +2.49%]. **AUC was BELOW 0.5 on both unseen seasons** (0.4867,
+  0.4929) and log-loss/Brier were worse than the market's own devigged
+  probabilities, i.e. the retrained recipe has no out-of-sample discrimination
+  and is worse calibrated than the line it bets into -- while claiming +17-18%
+  average EV on the bets it placed. That combination is the signature of an
+  overfit probability model, and the 12% EV filter compounds it by selecting the
+  rows where the model most disagrees with the market (its own largest errors)
+  and paying vig on them. Not a wiring artifact: all three frozen-recipe guards
+  passed, per-game/whole-fold reconciliation held to ~1e-13, fold counts matched
+  the registration exactly, bet rates were mid-band (no degeneracy flag), and
+  both origins agree in sign and magnitude. This closes the question the
+  section 1.4 retirement and the failed clean retrain left open: **the classifier
+  stack has no demonstrated tradable edge, and the direct evidence now points to
+  a negative one at the deployed 12% EV policy.** Registration section 21 is
+  CLOSED; any further walk-forward work on this recipe needs a new one. Result
+  and forensics: preregistration section 21.9; authoritative synthesis:
+  `HISTORICAL_DATA_ANALYSIS.md` section 10; artifacts:
+  `models/trained/experiment_walk_forward_classifier_20260724_161612/`.
