@@ -2577,3 +2577,29 @@ that forgets them:
   tolerance (mirroring the UTC/local fix in 2.3), and even after matching,
   `betting.db`'s `confidence_pct` column is **not** `P(side)` -- for UNDER
   tiers use `1 - prob_over`.
+- **2026-07-24 (2025-26 bet-time saves archive completion buy EXECUTED,
+  audit CLEAN; NOT an edge test).** Resolved the credit-remainder decision by
+  spending on durable data rather than lapsing the credits or chasing another
+  hypothesis: completed and re-anchored the 2025-26 bet-time
+  `player_total_saves` archive, which was only ~60% complete (781/1,232
+  in-window events) versus ~95% for 2024-25. Registered as preregistration
+  section 20 (data acquisition, no pass/fail gate). The buy set landed at
+  **481** events after resolving a definitional subtlety two Sonnet sub-agents
+  flagged: the exclusion test must anchor from the CACHE `commence_time` (the
+  snapshot archive's own disagrees by up to 30 min on 85 events) and use a
+  min-gap-over-all-snapshots rule (68 events carry two snapshots, so no
+  single-row dedup is valid) -- an initial snapshot-anchored/drop-first
+  estimate had given 500. Executed after an explicit pre-dry-run pause and a
+  structured pre-execute authorization: `--execute --max-credits 4810
+  --credit-floor 6055`. Actuals: 481/481 calls, `aborted_reason` None,
+  **4,390 credits** billed (439 events returned a saves line; 41 empty/free; 1
+  free 404), balance **11,055 -> 6,665**, floor 6,055 never approached. Audit
+  (`scripts/audit_2526_bettime_saves_fill.py`) VERDICT CLEAN on all four
+  checks; the lead independently recomputed every figure from the raw records
+  (4,390 billed, all 481 signatures reproduce, 0 apiKey leaks, on-disk ==
+  frozen plan, balance chain closes 6,665 + 4,390 = 11,055). The 439 new lines
+  are not yet ingested (raw JSON in `data/raw/betting_lines/passes/
+  saves_fill_2526_202607/`, gitignored); a snapshot-build step will raise
+  2025-26 bet-time saves coverage toward ~95%. **6,665 credits remain,
+  expiring 2026-07-31, with no further planned use.** See section 20.9 and
+  `CURRENT_HISTORICAL_DATA.md` section 4.3.

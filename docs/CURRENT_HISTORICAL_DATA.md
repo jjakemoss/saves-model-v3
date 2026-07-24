@@ -135,8 +135,8 @@ that's the next step.
 | Dataset | Rows | Columns | Date range | Notes |
 |---|---|---|---|---|
 | `clean_training_data.parquet` | 10,496 | 114 | 2022-10-07 to 2026-04-16 | All 4 seasons of raw game features, no betting lines required (now carries `goalie_name`) |
-| `classification_training_data.parquet` | 4,755 | 130 | 2024-10-04 to 2026-04-13 | One row per goalie-game, single consensus line, `over_hit` target |
-| `multibook_classification_training_data.parquet` | 13,192 | 138 | 2024-10-04 to 2026-04-13 | One row per (goalie, game, bookmaker, line) — **this is what feeds the production model** |
+| `classification_training_data.parquet` | 6,714 | 130 | 2023-11-02 to 2026-04-13 | One row per goalie-game, single consensus line, `over_hit` target (2023-24 added 2026-07-24, see 4.4) |
+| `multibook_classification_training_data.parquet` | 20,799 | 138 | 2023-11-02 to 2026-04-13 | One row per (goalie, game, bookmaker, line) — **this is what feeds the production model** (2023-24 added 2026-07-24, see 4.4) |
 
 **Updated 2026-07-07**: the multibook dataset was regenerated after fixing the
 line-misattribution bug and a UTC/local date-shift bug in
@@ -150,8 +150,12 @@ backed up in `data/processed/backup_20260707/`. The production model has NOT
 been retrained on this yet.
 
 Season breakdown of the multibook dataset (the one that matters for
-training): `20242025` = 7,463 rows, `20252026` = 5,729 rows. So in practice,
-usable betting-line-labeled data is **just under 2 full NHL seasons**.
+training): `20232024` = 7,607 rows, `20242025` = 7,463 rows, `20252026` = 5,729
+rows (the 2023-24 slice added 2026-07-24, section 4.4). So in practice, usable
+betting-line-labeled data is now **three NHL seasons** (it was just under two
+before the 2023-24 fold). Note the 2023-24 slice is sportsbook-only (no DFS
+books existed for that season), a disclosed structural difference from the
+other two seasons.
 
 `data/raw/boxscores/` now shows all 5,248 games (all 4 seasons) as finalized
 (`OFF` state) — no stale placeholders remain anywhere.
@@ -227,6 +231,89 @@ was numerically encouraging, but a post-touch metadata failure leaves the
 official verdict `NO VERDICT -- INFRASTRUCTURE FAILURE`; see section 9.8 and
 preregistration section 15.11. No further historical W1 touch is allowed.
 
+### 4.3 2025-26 bet-time saves completion buy (2026-07-24)
+
+`data/raw/betting_lines/passes/saves_fill_2526_202607/` holds 481 append-only
+event-odds records from a durable-data purchase that completed and re-anchored
+the 2025-26 bet-time `player_total_saves` archive (script:
+`scripts/purchase_2526_bettime_saves_fill.py`; independent audit:
+`scripts/audit_2526_bettime_saves_fill.py` and `audit_summary.json`;
+preregistration section 20; not a hypothesis test -- pure acquisition).
+
+Before this buy, 2025-26 bet-time saves coverage in
+`saves_lines_snapshots.parquet` was only 781 of 1,232 in-window cached events
+(~60%), versus ~95% for 2024-25 and ~86% for 2023-24, and 49 of the owned
+events were mis-anchored. The buy set was every in-window 2025-26 cached event
+NOT already owned at the anchor the purchase would request -- defined as
+correctly-anchored iff at least one owned bet-time snapshot is within 300s of
+`compute_bettime_ts(commence_time)` computed from the CACHE `commence_time`
+(NOT the snapshot's own, which disagrees by up to 30 min on 85 events), a
+min-gap-over-all-snapshots test (68 events carry two snapshots, so no
+single-row dedup is valid). That yields exactly **481** events (451
+truly-missing + 30 mis-anchored; sha256 of the sorted buy-set `96163617c977a9c5`).
+
+Actuals: 481/481 calls, `player_total_saves` only at the bettime anchor, nine
+named books. **439 events returned a saves line** (billed 10 credits each), 41
+returned zero markets (free), 1 was a free 404. Total spend **4,390 credits**,
+balance **11,055 -> 6,665**, every credit reconciled against response headers;
+audit VERDICT CLEAN, independently re-verified by the lead (see section 20.9).
+
+Ingested (2026-07-24, zero credits): `scripts/build_saves_fill_2526_snapshots.py`
+(a pure parser mirroring `build_core_bettime_pass_snapshots.py`, reusing
+`build_odds_snapshots.py`'s 15-column schema and goalie-matching helpers)
+parsed the 439 saves-market records into a SIBLING parquet,
+`data/processed/saves_fill_2526_202607_snapshots.parquet` (7,357 rows x 15
+cols, schema/dtypes byte-identical to `saves_lines_snapshots.parquet`, a
+drop-in `pd.concat`; the existing archive was NOT mutated, same pattern as the
+core-pass sibling). On the union, the registered min-gap-over-all-snapshots
+test moves 2025-26 bet-time saves correctly-anchored coverage from **751 /
+1,232 (60.96%) to 1,190 / 1,232 (96.59%)** -- now the best-anchored of the
+three owned seasons. Of the 30 previously mis-anchored events, 24 were fixed;
+6 remain mis-anchored (they returned zero bookmakers on the re-buy). Full
+detail and independent verification: PREREGISTRATION section 20.10. These new
+2025-26 bet-time lines were deliberately NOT folded into the training parquets
+(they overlap tracker-sourced 2025-26 rows already in training; low marginal
+value, real duplication risk -- see 4.4). **6,665 credits remain, expiring
+2026-07-31, with no further planned use.**
+
+### 4.4 2023-24 saves folded into the training parquets (2026-07-24)
+
+The 2023-24 bet-time saves lines -- owned since the core passes but never in the
+training pipeline (PREREGISTRATION 20.1 item 3 named this a separate follow-on)
+-- were folded into the two betting-line-carrying training parquets as a NEW
+third season, giving the production training set three seasons for the first
+time (the substrate sections 5-6 name as the binding constraint on walk-forward
+validation). User-authorized; 2023-24 only, bet-time only, all sportsbooks,
+strictly additive, NO model retrain.
+
+Method (append-only, NOT a pipeline rerun): a Stage-1 reproducibility test
+found `build_multibook_training_data.py` no longer reproduces the 2026-07-07
+multibook parquet from current code -- the raw cache has grown since, shifting
+the cache-vs-tracker boundary and dropping the tracker-sourced `underdog` (927)
+and `betonline` (174) rows on any rerun. So a full rerun was rejected; instead
+the 2023-24 rows were built in isolation (sourcing bet-time lines from
+`saves_lines_snapshots.parquet`, collapsing the double-bettime-snapshot events
+via the repo's own `clv_audit_pace_policy.clean_bettime_pass` earliest-
+`requested_ts` rule, reusing `merge_betting_lines`/`add_market_features`/
+`compute_line_relative_features` unchanged so column semantics match exactly)
+and appended onto the existing parquets. Pre-change parquets backed up to
+`data/processed/backup_20260724/`.
+
+Result: `classification_training_data.parquet` 4,755 -> 6,714 (+1,959 goalie-
+games); `multibook_classification_training_data.parquet` 13,192 -> 20,799
+(+7,607 per-book rows across 1,123 events / 1,959 goalie-nights, books
+`williamhill_us`/`draftkings`/`fanduel`/`bovada`/`betmgm`). Verified from disk:
+every existing 2024-25/2025-26 row byte-identical to the backup, only 2023-24
+rows added, zero new nulls in saves/betting_line/over_hit/odds, schema/dtypes
+unchanged (130 and 138 cols), `clean_training_data.parquet` untouched. The
+2023-24 goalie-night count (1,959) cross-checked identically via two
+independent match paths. Caveat: 2023-24 is sportsbook-only (no DFS books
+existed then), a disclosed structural difference from the other two seasons. As
+in section 3, this only extends the parquets -- the production model has NOT
+been retrained or re-evaluated on the three-season data; a walk-forward
+evaluation is now possible (substrate-wise) but remains a separate future
+decision.
+
 ## 5. Is this enough data?
 
 Workable, but thin. Two full seasons of betting-line-labeled data (4,755-6,916
@@ -285,9 +372,12 @@ unusually easy or hard, independent of the model's actual quality). The
 standard mitigation is **walk-forward validation**: instead of one
 chronological train/test cut, do several rolling chronological splits (train
 on season 1, test on season 2; train on seasons 1-2, test on season 3; etc.)
-and average the results. This is another concrete reason more seasons of
-data would help — there isn't enough history yet to run a meaningful
-walk-forward evaluation with only 2 seasons total.
+and average the results. **As of 2026-07-24 the training parquets carry three
+seasons** (2023-24 was folded in, section 4.4), so a walk-forward evaluation is
+now runnable for the first time — train 2023-24 -> test 2024-25 -> test 2025-26.
+It has not been run yet (no retrain/re-eval was done as part of the fold), and
+the per-window test folds remain thin (section 5's sampling-uncertainty caveat
+still applies to each individual cut); but the two-season blocker is resolved.
 
 ## 7. Open follow-ups
 
@@ -299,6 +389,9 @@ walk-forward evaluation with only 2 seasons total.
   in §3 (refresh boxscores → `create_clean_features.py` →
   `merge_betting_lines.py` → `add_market_features.py` →
   `build_multibook_training_data.py`) to keep growing the labeled dataset.
-- Once 3+ seasons of betting-line data exist, revisit the train/val/test
-  split strategy in `config/config.yaml` to set up real walk-forward
-  validation instead of a single chronological cut.
+- Three seasons of betting-line data now exist (2023-24 folded in 2026-07-24,
+  section 4.4), so the deferred step is now actionable: revisit the
+  train/val/test split strategy in `config/config.yaml` to set up real
+  walk-forward validation instead of a single chronological cut. Mind that the
+  2023-24 season is sportsbook-only (no DFS books) when interpreting per-book or
+  DFS-specific results across the walk-forward windows.

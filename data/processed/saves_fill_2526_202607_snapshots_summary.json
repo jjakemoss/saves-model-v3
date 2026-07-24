@@ -1,0 +1,110 @@
+{
+  "alignment": {
+    "gap_seconds_max": 0.0,
+    "gap_seconds_mean": 0.0,
+    "n_resolved_events": 480
+  },
+  "all_rows_2025_26": true,
+  "both_sides": {
+    "frac_groups_both_sides": 0.9991836734693877,
+    "n_goalie_groups": 3675
+  },
+  "coverage_jump": {
+    "after_correctly_anchored": 1190,
+    "after_pct": 0.9659090909090909,
+    "all_with_new_rows_now_correct": true,
+    "before_correctly_anchored": 751,
+    "before_pct": 0.609577922077922,
+    "delta": 439,
+    "n_previously_mis_anchored_now_correct": 24,
+    "n_previously_mis_anchored_still_mis_anchored": 6,
+    "n_previously_mis_anchored_total": 30,
+    "n_previously_mis_anchored_with_new_rows_this_pass": 24,
+    "previously_mis_anchored_still_mis_anchored_event_ids": [
+      "4c4565dff6298c0a63737d6d06135f30",
+      "589e8e7f45909b6c4b71110f0aa61d3b",
+      "784eb5fb32a5372dd14e963999989b61",
+      "9dbcbdb73b68acce76356cae763f2e8c",
+      "c3a3f59b3617c326c0ae314afa582a30",
+      "f2bdb7d7350b912047bec931086476bd"
+    ],
+    "universe_size": 1232
+  },
+  "duplicates": {
+    "conflicting_price_groups": [
+      {
+        "book": "prizepicks",
+        "event_id": "38c2607714ad9064f6e13e3dfc18a520",
+        "goalie_name_raw": "Jake Oettinger",
+        "requested_ts": "2025-11-18T22:30:00Z",
+        "side": "Over"
+      },
+      {
+        "book": "prizepicks",
+        "event_id": "3dc6198643c8ddb31e01c14304fe8e25",
+        "goalie_name_raw": "Connor Hellebuyck",
+        "requested_ts": "2025-10-28T22:30:00Z",
+        "side": "Over"
+      },
+      {
+        "book": "prizepicks",
+        "event_id": "41956b44755f254f395d2cdf8c638d24",
+        "goalie_name_raw": "Jake Oettinger",
+        "requested_ts": "2025-10-14T22:30:00Z",
+        "side": "Over"
+      },
+      {
+        "book": "prizepicks",
+        "event_id": "6419668bcea9b9bddc1555d17c114452",
+        "goalie_name_raw": "Sergei Bobrovsky",
+        "requested_ts": "2025-12-02T22:30:00Z",
+        "side": "Over"
+      },
+      {
+        "book": "prizepicks",
+        "event_id": "8f8d3f139949b0a2423dbd0fd7885fbe",
+        "goalie_name_raw": "Igor Shesterkin",
+        "requested_ts": "2025-11-04T22:30:00Z",
+        "side": "Over"
+      },
+      {
+        "book": "prizepicks",
+        "event_id": "e145c1e566ef8cc065863832e7e598ae",
+        "goalie_name_raw": "Darcy Kuemper",
+        "requested_ts": "2025-10-07T22:30:00Z",
+        "side": "Over"
+      }
+    ],
+    "n_conflicting_price_groups": 6,
+    "n_duplicate_rows": 20,
+    "n_exact_duplicate_groups": 4
+  },
+  "generated_at": "2026-07-24T19:22:09Z",
+  "goalie_match_rate": 0.9739024058719586,
+  "n_anchor_mismatches": 0,
+  "n_bad_side": 0,
+  "n_distinct_events": 439,
+  "n_multiplier_non_null_dropped_from_schema": 0,
+  "n_null_line": 0,
+  "n_null_price_decimal": 0,
+  "record_counts": {
+    "n_non200": 1,
+    "n_records_total": 481,
+    "n_rows": 7357,
+    "n_with_saves_market": 439,
+    "n_zero_bookmakers": 41,
+    "non200_records": [
+      {
+        "event_id": "40c02a07bc44ff52fe319ce9b7bf1594",
+        "requested_ts": "2026-01-26T22:30:00Z",
+        "status_code": 404
+      }
+    ]
+  },
+  "schema_note": "15-column schema matches data/processed/saves_lines_snapshots.parquet exactly (OUTPUT_COLUMNS reused directly from build_odds_snapshots.py) so this parquet is a drop-in pd.concat with that archive. No 'multiplier' column is present -- outcome.multiplier is dropped for schema parity but its non-null count is reported above for honesty; market_key/season are implicit (player_total_saves only / always 2025-26) and are not stored as columns, matching the target schema.",
+  "snapshot_pass_counts": {
+    "bettime": 7357
+  },
+  "source_pass_dir": "data\\raw\\betting_lines\\passes\\saves_fill_2526_202607",
+  "unexpected_market_keys": []
+}

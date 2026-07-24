@@ -4786,3 +4786,628 @@ currently-registered candidate use for the remainder. Artifacts:
 1,974 rows, plan copies, `run_log.txt`) and
 `data/raw/betting_lines/passes/alt_ladder_pilot_202607/` (155 raw records,
 2 plan files, `run_log.jsonl`, `audit_summary.json`).
+
+## 20. 2025-26 bet-time saves archive completion purchase (data acquisition, not a hypothesis test)
+
+Registered 2026-07-24 by a Sonnet sub-agent under lead-reviewer (Claude)
+direction, before any network call, any purchase, or any dry-run of any script
+named in this section. This section registers a DATA-ACQUISITION purchase, not
+an experiment. There is no model under test here, no metric, no pass/fail gate,
+and no outcome-linked statistic computed anywhere in this section -- stated
+explicitly because every other numbered section in this document (1 through 19)
+registers a hypothesis, a metric, and a pass bar, and this one deliberately
+does not. Its only success criterion is completeness and correctness of an
+archive: does the 2025-26 `player_total_saves` bet-time line archive end up
+covering the full in-window schedule at the project's own bet-time anchor, or
+does it not. Nothing computed under this registration may be reported as
+evidence of an edge, a calibration result, or a model improvement of any kind;
+any future use of the completed archive for modeling is a separate, later
+decision requiring its own registration under this document's established
+discipline.
+
+### 20.1 Purpose and honesty notes
+
+**Purpose.** Complete and re-anchor the 2025-26 `player_total_saves` bet-time
+line archive in `data/processed/saves_lines_snapshots.parquet`. As of this
+registration, 2025-26 bet-time saves coverage is 781 of 1,232 in-window cached
+events (~63.4% of the season), and 30 of those 781 owned events are
+mis-anchored under the registered cache-anchored, min-gap-over-all-snapshots
+test (20.2): none of that event's owned bettime snapshots falls within the
+project's own `compute_bettime_ts` tolerance of the anchor computed from the
+CACHE's own `commence_time` -- large enough, on every owned snapshot for that
+event, that the archived quote was very plausibly not captured at the
+intended bet-time snapshot at all. By contrast the same
+archive's 2024-25 bet-time saves coverage is roughly 95% (1,244 of 1,313 events
+carry a saves quote in `core_bettime_202607_snapshots.parquet`,
+docs/CURRENT_HISTORICAL_DATA.md section 4.2) and 2023-24 is roughly 86% (1,125
+of 1,313 in-window events, `saves_lines_snapshots.parquet`'s own `bettime` rows
+-- both percentages independently reproduced while drafting this registration,
+20.8; section 19.8's own 2025-26 anchor-alignment audit is the direct
+predecessor finding this registration extends). This buy brings 2025-26 to
+parity with the other two owned seasons so all three form a uniform,
+correctly-anchored bet-time saves archive -- the substrate
+`docs/CURRENT_HISTORICAL_DATA.md` sections 5 and 6 name as THE binding
+constraint on this project's model training and evaluation: section 5 calls the
+current two-full-season archive "workable, but thin," with a held-out
+chronological test fold of only ~950-1,380 rows carrying real sampling
+uncertainty on any single reported ROI number; section 6 states plainly that
+walk-forward validation -- multiple rolling chronological train/test splits,
+the standard mitigation for a single-cut test window being at the mercy of
+whatever happened to occur in it -- cannot be run meaningfully with only two
+seasons of history. A complete, uniformly-anchored three-season bet-time
+archive is a direct, disclosed prerequisite for eventually attempting that
+walk-forward evaluation. This purchase does not itself run that evaluation,
+train any model, or compute any statistic against it; it only builds the raw
+substrate.
+
+This is explicitly value-preservation, not an edge test, and every honesty
+constraint below is stated plainly per CLAUDE.md's real-money standard rather
+than rounded up into something it is not:
+
+1. This purchase will not itself produce a betting edge, a model, or a
+   calibration result of any kind. Success is defined entirely as archive
+   completeness and correct anchoring -- nothing more. Any future modeling use
+   of the completed archive is a separate decision, requiring its own
+   registration, its own hypothesis, and its own pass bar under this document's
+   established discipline; this section pre-authorizes none of that.
+2. The worst-case credit figure for this buy set is 4,810 (481 x 10) -- a
+   true ceiling, not an estimate of expected spend, because a zero-market or
+   event-not-found response bills zero credits (verified repeatedly elsewhere
+   in this document family: 9.1, 17.8, 19.3) -- so the actual number of
+   newly-usable events this purchase produces is genuinely uncertain and will
+   very likely land below the full 481-event buy set actually returning usable
+   data, even though all 481 will be attempted. `REGISTERED_MAX_CREDITS = 5000`
+   (20.3) is a separate, round safety cap set deliberately above this 4,810
+   worst case, not a claim that 5,000 credits of spend is expected. The
+   expected YIELD, separately, is well-supported rather than a guess: of the
+   451 truly-missing events in the buy set (defined in 20.2/20.3), 431 (95.6%)
+   already carry a *closing*-pass saves line in the same
+   `saves_lines_snapshots.parquet` archive, which is direct, already-owned
+   evidence that the `player_total_saves` market existed and was quoted for
+   that game -- it just was not captured at the bet-time snapshot. This is not
+   proof every one of those 431 will also return a bet-time quote (closing and
+   bet-time are different snapshots of a possibly different-shaped market), but
+   it is a real, disclosed basis for expecting meaningful yield rather than a
+   hopeful one.
+3. The 2023-24 season's already-owned bet-time saves lines are NOT currently
+   ingested into `clean_training_data.parquet` or any training pipeline
+   (docs/CURRENT_HISTORICAL_DATA.md, `merge_betting_lines.py`'s current scope).
+   That ingestion is free -- no credits, no new purchase -- and is a separate,
+   later follow-on task, explicitly out of scope for this purchase
+   registration. This registration buys new 2025-26 raw archive coverage only;
+   it does not ingest anything, 2023-24 or otherwise, into any training-facing
+   parquet.
+4. This registration itself was drafted from read-only inspection of
+   already-owned data only: no network call, no credit spend, and no purchase
+   or dry-run of any script was executed anywhere in producing this section.
+   Every count in 20.8 is a coverage or schema join count, exactly matching the
+   distinction this document family has drawn since 17.8/18.8/19.8.
+5. The Odds API credit balance funding this purchase (11,055 as of section
+   19.9, 2026-07-17) expires 2026-07-31. As of this registration's filing date
+   (2026-07-24), seven days remain. This creates real, disclosed time pressure
+   to execute promptly once authorized, but time pressure is not a reason to
+   relax any locked number below -- the credit floor, the cap, and the buy set
+   are fixed regardless of how many days remain.
+
+### 20.2 Registered definitions
+
+**Universe.** Every in-window 2025-26 cached event from
+`data/raw/betting_lines/cache/`, computed via the existing
+`_season_events(load_cached_events(CANONICAL_EVENTS_CACHE), "2025-10-07",
+"2026-04-19")` helper, imported (not reimplemented) from
+`scripts/purchase_core_bettime_passes.py` -- the same window section 19.8
+already established as the wider, more authoritative 2025-26 window versus
+`probe_opening_markets.py`'s narrower cutoff, restated as binding here. Sorted
+by `(commence_time, event_id)`, exactly as `_season_events` already sorts.
+Verified size: **1,232** (reproduced exactly via read-only Python while
+drafting this registration, 20.8).
+
+**Correctly-anchored owned set.** From
+`data/processed/saves_lines_snapshots.parquet`, ALL rows (no dedup -- see
+below for why) with `snapshot_pass == "bettime"` and `event_id` in the
+universe above. The anchor is computed from the CACHE's own `commence_time`
+-- `compute_bettime_ts(commence_time)` using the `commence_time` field from
+the cached events-list envelope (`data/raw/betting_lines/cache/`), the same
+source the purchase itself anchors from -- NOT the `commence_time` column
+carried inside `saves_lines_snapshots.parquet` itself. This is a deliberate
+correction, not a stylistic choice: the snapshot archive's own `commence_time`
+disagrees with the cache's `commence_time` by up to 30 minutes on 85 in-window
+events, and that disagreement changes which side of the 300-second tolerance
+an event lands on for 36 of them (20.8) -- an "already own it?" test must test
+the anchor the purchase itself will buy at, not a possibly-stale value carried
+in the archive being audited. For each event, let its OWNED SNAPSHOTS be every
+`bettime` row for that `event_id` (an event may carry more than one, 20.8's
+68-event finding), and `gap_seconds(row) = |Timestamp(row.requested_ts) -
+Timestamp(compute_bettime_ts(cache_commence_time))|` for each. An event is
+correctly-anchored iff AT LEAST ONE of its owned snapshots has `gap_seconds <=
+300` (5 minutes, the same tolerance this document family already established
+as its "material drift" threshold in `audit_core_bettime_passes.py`'s
+`check_anchor_integrity` and reused verbatim in 19.3, not a new number
+invented here) -- a MIN-GAP-OVER-ALL-SNAPSHOTS test, not a
+single-representative-row test. No dedup rule is applied or needed: this test
+is order-independent by construction, since it asks whether ANY owned
+snapshot qualifies, not which ONE row a dedup convention happens to keep. The
+19.2 natural-key dedup rule (max `resolved_ts`, tie-break max `requested_ts`)
+remains correct and binding for its own original purpose elsewhere in this
+document family, but is explicitly NOT used for this "already own it?" test
+-- it is the wrong tool here, since it answers "what value should stand in
+for this event's row" (a downstream-consumer concern) rather than "do we
+already own a correctly-anchored snapshot for this event" (this test's only
+question). Verified size: **751**.
+
+**Buy set.** Universe event ids MINUS correctly-anchored event ids, preserving
+the universe's `(commence_time, event_id)` sort order -- a plain
+set-difference, not a random sample, and not itself re-sorted by any other
+criterion. Verified size: **481**, composed of two disjoint groups: 451 events
+with NO existing 2025-26 bettime row at all ("truly missing"), plus 30 events
+where EVERY existing owned bettime snapshot is mis-anchored (`gap_seconds >
+300` on all of that event's owned snapshots, per the min-gap-over-all-
+snapshots test above; correctly-anchored count 751 plus mis-anchored count 30
+equals the full owned 781, and universe 1,232 minus correctly-anchored 751
+equals the buy set 481 -- all three identities checked and hold exactly). The
+30 mis-anchored events are deliberately re-bought under a fresh,
+correctly-anchored call rather than left as-is or silently dropped: their
+existing rows remain on disk untouched (this is an append-only purchase, 20.5),
+so after this purchase completes, a downstream consumer must still apply the
+SAME min-gap test (not assume every 2025-26 bettime row is trustworthy, and
+not assume any single dedup convention picks the right row) to select a
+usable snapshot per event -- a follow-on selection-logic note, not something
+this purchase itself resolves.
+
+`EXPECTED_BUYSET_SIZE = 481` is registered as a fail-loud hard-stop constant:
+if a freshly built buy set (recomputed by the purchase script from the live
+cache and archive state at invocation time) does not equal 481 exactly, the
+script MUST raise and halt before any network call, rather than silently
+proceeding with a different-sized set -- the identical STOP-and-investigate
+discipline `purchase_alt_ladder_pilot.py`'s own `EXPECTED_POOL_SIZE` gate
+already established in this document family (section 19.3): either the buy-set
+logic here has a bug, or the underlying cache/archive has drifted since this
+registration was filed, and either way that is a stop, never a silent
+continue. A sha256 checksum of the frozen buy set's own sorted event-id list
+(20.8) provides a second, stronger reproducibility check beyond the count
+alone.
+
+### 20.3 Purchase parameters (locked)
+
+- **Market: `player_total_saves` ONLY.** No other market is requested by this
+  purchase -- not `player_total_saves_alternate`, not `player_shots_on_goal`,
+  not any combined-market call. Up to 10 credits per event (10 credits x 1
+  distinct market actually returned, the same per-market billing rate verified
+  repeatedly elsewhere in this family; an event returning zero markets bills
+  zero).
+- **Anchor: `compute_bettime_ts(commence_time)`** -- the min of 22:30Z on the
+  Eastern game date, or commence time minus 30 minutes. Imported, not
+  reimplemented, from `scripts/purchase_core_bettime_passes.py` (20.2).
+- **Books: the nine-book `BOOKMAKERS` set**, imported verbatim from
+  `scripts/purchase_core_bettime_passes.py`: `draftkings, fanduel, betmgm,
+  williamhill_us, fanatics, bovada, betonlineag, underdog, prizepicks`. Billing
+  depends only on distinct markets returned, never on book count (9.1/17.8,
+  reconfirmed repeatedly), so requesting all nine costs nothing extra and
+  preserves the full multi-book archive shape this project's other passes
+  already carry.
+- **Worst case: 481 x 10 = 4,810 credits.**
+- **`REGISTERED_MAX_CREDITS = 5000`** -- a hard cap, never raisable by any
+  command-line flag, and deliberately left at this round number even after
+  the buy set's own worst case was corrected downward to 4,810 (from an
+  earlier 500-event/5,000-credit design where the cap and the worst case
+  coincided exactly): 5,000 is a safety cap with genuine headroom above the
+  actual 4,810 worst case, not a value re-tuned to track the buy set size.
+  Raising it requires a new registration, not a flag change under this one.
+- **`REGISTERED_CREDIT_FLOOR = 6055`** (= the last recorded balance, 11,055 as
+  of section 19.9 / 2026-07-17, minus the 5,000 `REGISTERED_MAX_CREDITS` cap
+  -- not minus the 4,810 worst case, so the floor still reserves the full
+  cap's headroom regardless of the buy set's actual size). The purchase
+  script aborts the instant any call's LIVE `x-requests-remaining` response
+  header falls below this floor -- never a locally-estimated or assumed
+  figure, and never
+  lowerable by any flag. Disclosed explicitly: if the account balance has
+  already moved since 2026-07-17 for reasons outside this document's tracking,
+  `REGISTERED_CREDIT_FLOOR` remains fixed at 6055 regardless -- it is not
+  recomputed against whatever the live balance turns out to be at execution
+  time. If the live starting balance is already at or below 6055 plus the
+  worst-case reservation for even a single event, the very first dispatch
+  attempt aborts immediately, exactly as intended; this is a floor on remaining
+  credits, not a promise that 5,000 credits of headroom will still exist when
+  the script runs.
+- **New dedicated append-only cache directory:**
+  `data/raw/betting_lines/passes/saves_fill_2526_202607/`. This directory name
+  cannot collide with any prior pass's cache directory in this project
+  (`core_bettime_202607`, `alt_ladder_pilot_202607`, `w1_market_coverage`), per
+  this family's established never-shared-cache-naming convention.
+- **Record naming:** `savesfill_event={event_id}_signature={signature}.json`,
+  matching this family's existing
+  `core_event=...`/`altladder_event=...`/`w1_event=...` shape while remaining
+  structurally distinct from all three.
+- **Frozen plan artifact:** `plan_saves_fill_2526.json`, written inside the
+  pass cache directory on first invocation (dry-run or execute) and loaded,
+  never recomputed, by every later invocation -- the identical frozen-plan
+  mechanism `purchase_alt_ladder_pilot.py` already established
+  (build-or-load-plan, 19.3), applied here to a single buy set rather than two
+  per-season legs, since this purchase has exactly one market, one season, and
+  one buy set.
+- **Run log:** `run_log.jsonl`, appended once per dispatched call, inside the
+  same pass cache directory.
+
+### 20.4 Script and cache discipline
+
+The purchase script (`scripts/purchase_2526_bettime_saves_fill.py`, a new
+dedicated script, not a mode of any existing script) mirrors
+`scripts/purchase_core_bettime_passes.py` and
+`scripts/purchase_alt_ladder_pilot.py` exactly, restated here as binding
+requirements rather than left implicit:
+
+1. **Dry-run is the default.** No network call without `--execute`, and
+   `--execute` additionally requires `--max-credits` to be passed explicitly
+   (never assumed from `REGISTERED_MAX_CREDITS` silently) -- the runner must
+   state the cap it intends to honor on every executing invocation, exactly as
+   the two mirrored scripts already require.
+2. **The plan is built entirely from the cached events-list envelopes** under
+   `data/raw/betting_lines/cache/` (`events_date=*.json`), NEVER from
+   `data/betting.db` -- reused verbatim from both mirrored scripts' own
+   standing rule (17.6 item 2 / 18.4 / 19.6 item 2, restated as binding here).
+3. **Worst-case per-event credit is reserved BEFORE dispatch, not after** --
+   the identical "may have billed even if the connection dies" reasoning
+   `purchase_core_bettime_passes.py.execute()` already implements, reused
+   verbatim.
+4. **A previously-recorded signature (any complete response, 200 or non-200) is
+   never re-requested.** The signature is a SHA-256 hex digest of the request's
+   own parameters (event id, market, anchor timestamp, book list), the
+   identical construction `request_signature()` already implements in
+   `purchase_core_bettime_passes.py`; a cache hit on a matching signature is
+   treated as already spent regardless of which invocation produced it.
+5. **The buy set is frozen to the plan artifact (`plan_saves_fill_2526.json`)
+   on first invocation** and every later invocation loads that frozen file
+   rather than recomputing the buy set from scratch -- so the buy set can never
+   be reordered or resized after this registration is filed, mirroring
+   `purchase_alt_ladder_pilot.py`'s own build-or-load-plan mechanism (19.3)
+   exactly. The ONE exception to "recompute" is the `EXPECTED_BUYSET_SIZE`
+   fail-loud check (20.2/20.3), which runs once, at first-build time only,
+   before the plan is frozen -- never on a later invocation that is loading an
+   already-frozen plan.
+6. **The API key is loaded from the `API_KEY`/`THE_ODDS_API_KEY` env var or
+   `.env`**, exactly as the existing scripts already do; it is never printed,
+   logged, or written into any cache record, run-log line, or plan artifact.
+7. **Resumable by construction.** Because the cache is append-only and keyed by
+   signature, a crash mid-run simply means the next invocation skips
+   already-cached signatures and continues under the SAME frozen plan,
+   `--max-credits`, and `--credit-floor` -- a structural property of the
+   append-only cache design, not a special exception, and it does not permit
+   redrawing the buy set (20.2) or raising the cap (20.3) on resume. This is
+   the identical crash-rerun property this document family established for its
+   first real-money purchase script (section 19.6 item 10, purchase-script
+   half).
+
+### 20.5 Audit plan (mandatory before any downstream ingestion)
+
+An independent, read-only audit script
+(`scripts/audit_2526_bettime_saves_fill.py`, a new dedicated script,
+mirroring `scripts/audit_core_bettime_passes.py` and
+`scripts/audit_alt_ladder_pilot.py`) MUST run and its integrity checks MUST be
+clean -- or every violation individually reconciled and disclosed -- before any
+downstream ingestion (into `clean_training_data.parquet`, any training
+pipeline, or any future model) consumes a single record from this purchase.
+This mirrors the STOP-AND-INVESTIGATE discipline this document family has
+enforced since section 18.3a and restated in section 19.3/19.6 item 9. The
+audit recomputes everything from the raw records in
+`data/raw/betting_lines/passes/saves_fill_2526_202607/` only -- it never trusts
+the purchase script's own run-log summary. Specifically, read-only from the raw
+records:
+
+1. **Signature reproduction.** Every stored record's filename-embedded
+   signature is recomputed from the record's own request parameters and must
+   match exactly.
+2. **Billing identity.** `x-requests-last == 10 * distinct markets actually
+   returned` on every call, checked individually on every single record -- not
+   just in aggregate.
+3. **Balance chain, via a CONSTRUCTIVE/SEQUENTIAL check using response/sequence
+   order** -- NOT by sorting on `fetched_at`. This is registered explicitly as
+   a known pitfall, disclosed because it already produced a false-positive
+   audit failure in this exact document family: `audit_alt_ladder_pilot.py`'s
+   first draft ordered by `fetched_at` (1-second timestamp granularity) and
+   reported 22 of 66 balance-chain steps as broken purely from same-second
+   collisions reordering records that were actually dispatched and billed in
+   the correct sequence (section 19.9's disclosed audit correction). The
+   constructive/sequential chain check that replaced it is the one registered
+   here from the start, not discovered after a false alarm this time.
+4. **Zero `apiKey` leakage** in any stored record, checked as a raw-text
+   substring search across every cached file, not merely the parsed JSON
+   structure.
+5. **On-disk event set exactly equals the frozen plan's buy set** -- no more,
+   no fewer, no substituted event ids -- checked as an exact set-equality
+   comparison against `plan_saves_fill_2526.json`, not a count-only check.
+6. **Per-event `alignment_gap_seconds`** between the returned envelope's own
+   observed timestamp and `compute_bettime_ts(commence_time)`, independently
+   recomputed from the raw records for every purchased event -- the same
+   anchor-gap quantity 20.2 uses to define correct anchoring, now verified
+   end-to-end on what was actually captured rather than merely what was
+   requested.
+
+### 20.6 Forbidden
+
+1. No re-request of a previously-recorded signature (20.4 item 4).
+2. `--max-credits` may not exceed 5,000 and `--credit-floor` may not be set
+   below 6,055 under this registration; raising either requires a new
+   registration, not a flag change under this one (20.3).
+3. The frozen buy set (20.2/20.4 item 5) is never redrawn, reordered, or
+   resized after this registration is filed, on any invocation, for any reason
+   including a partial or crashed run.
+4. No reads or writes to `data/betting.db` anywhere in this purchase or its
+   audit (17.6 item 2 / 18.4 / 19.6 item 2, restated as binding).
+5. The audit (20.5) must pass -- or have every violation individually
+   reconciled and disclosed -- before any ingestion consumes these records. An
+   audit failure is a STOP pending investigation, never a warning to note and
+   proceed past.
+6. On any non-200 response (other than a cached, free `EVENT_NOT_FOUND` 404) or
+   any post-dispatch network exception, the run aborts without retry -- a
+   dispatched request may already have billed, and a blind retry risks
+   double-billing an event that in fact succeeded server-side but failed to
+   acknowledge client-side. This is the identical "may have billed even if the
+   connection dies" caution already governing 20.4 item 3, extended here to the
+   abort-without-retry consequence explicitly.
+7. No modification of `src/betting/predictor.py`, any file under
+   `models/trained/`, or any file under `.github/workflows/`.
+8. No treating this purchase's completion, by itself, as authorization for any
+   downstream modeling, ingestion, or walk-forward validation attempt -- 20.1
+   item 1 is binding: this section registers the buy only, not any use of what
+   it buys.
+
+### 20.7 Consequence mapping (fixed in advance)
+
+Because this is not a hypothesis test, there is no PASS/FAIL verdict to map.
+The consequence mapping here is a completion/audit-clean gate, not a
+statistical one:
+
+- **Purchase completes the full 481-event buy set (worst case 4,810 credits,
+  within the 5,000-credit `REGISTERED_MAX_CREDITS` cap), and the audit (20.5)
+  is clean** -> the 2025-26 bet-time saves archive is complete and uniformly
+  anchored alongside the existing 2023-24 and 2024-25 coverage. This does NOT
+  itself authorize any ingestion, modeling, or walk-forward-validation attempt
+  against the completed archive -- that remains a separate future decision
+  requiring its own registration, exactly as section 19.7 held the
+  ladder-pilot's own PASS did not itself authorize the further full-season
+  purchase it would have unlocked. It also does not retroactively resolve the
+  20.1 item 3 follow-on (2023-24 ingestion), which remains a distinct,
+  separate task.
+- **Purchase stops early at the credit floor (6,055) before completing the full
+  481-event buy set** -> reported exactly as it landed: however many events
+  were actually purchased, at whatever partial coverage that produces, with no
+  re-draw and no opportunistic resizing of the buy set to "finish" under a
+  different registration's authority. A genuine partial-completion outcome is a
+  legitimate, disclosed result of this registration's own credit-floor safety
+  design, not a failure to be hidden or quietly re-attempted outside this
+  document's discipline. Completing the remainder, if desired, requires a new
+  registration.
+- **Audit (20.5) finds one or more violations** -> STOP pending investigation.
+  No ingestion proceeds from any record until every violation is individually
+  reconciled and disclosed, mirroring 20.6 item 5. A clean re-audit after a
+  disclosed, reconciled correction (the same shape as section 19.9's own
+  `--force` re-audit after its disclosed `fetched_at`-ordering artifact) is
+  permitted; a re-audit that simply reruns without disclosing what was found or
+  fixed is not.
+- **The Odds API balance expires (2026-07-31) before this purchase executes or
+  completes** -> the unspent portion of the 5,000-credit cap is simply lost
+  with the rest of the expiring balance; this registration does not extend,
+  renew, or reallocate credits, and a purchase that never executes under this
+  registration produces no archive change and no consequence beyond the honesty
+  note already disclosed in 20.1 item 5.
+
+### 20.8 Data inventory (verified 2026-07-24, read-only Python; no purchase, dry-run, or network call was made in producing any count below)
+
+**Universe.** `_season_events(load_cached_events(CANONICAL_EVENTS_CACHE),
+"2025-10-07", "2026-04-19")`, reproduced by importing the unmodified helpers
+directly from `scripts/purchase_core_bettime_passes.py`: **1,232 events**,
+matching section 19.8's own count for the identical window exactly.
+
+**Owned 2025-26 bettime coverage.**
+`data/processed/saves_lines_snapshots.parquet` filtered to `snapshot_pass ==
+"bettime"` and `event_id` in the universe above: **781 distinct events**
+(`nunique()` on `event_id`), matching this registration's stated 781/1,232
+(~63.4%) figure exactly and consistent with section 19.8's own 63.7% figure for
+the same underlying quantity computed slightly differently there (781/1,224,
+the pool size after excluding 8 already-probed events, versus 781/1,232 here
+with no such exclusion -- both describe the same 781-event owned set).
+
+**Truly-missing events.** Universe events with NO bettime row at all: **451**,
+verified directly (1,232 universe events minus 781 owned events with any
+bettime row, cross-checked by explicit set difference rather than arithmetic
+alone).
+
+**Closing-line overlap on truly-missing events.** Of the 451 truly-missing
+events, **431** (95.6%) already carry at least one `closing`-pass row in the
+same archive for that `event_id` -- direct, already-owned evidence the market
+existed for that game, the basis for 20.1 item 2's yield disclosure.
+
+**Cache-vs-snapshot `commence_time` disagreement (the basis for 20.2's
+cache-anchoring correction; provided by the lead reviewer's corrected
+resolution, not independently re-derived in this drafting pass).** Of the 781
+owned 2025-26 bettime events, 85 carry a `commence_time` in
+`saves_lines_snapshots.parquet` that disagrees with that same event's
+`commence_time` in the cached events-list envelope
+(`data/raw/betting_lines/cache/`) by a nonzero amount, up to 30 minutes. Of
+those 85, 36 events flip their correctly-anchored/mis-anchored classification
+depending on which `commence_time` (cache vs. snapshot) the anchor is computed
+from -- confirming this is not a cosmetic discrepancy but one that materially
+changes which events this purchase buys. 20.2's rule anchors from the cache's
+`commence_time` exclusively, since that is the value the purchase script itself
+anchors its live requests against; anchoring the exclusion test against a
+different, possibly-stale `commence_time` would test the wrong thing.
+
+**Mis-anchored count, correctly-anchored count, and buy-set size -- RESOLVED,
+not an open ambiguity.** An earlier draft of this section computed the
+correctly-anchored/mis-anchored split via a single-representative-row dedup of
+each event's owned bettime snapshots (19.2's max-`resolved_ts` rule, applied
+outside its original purpose) and anchored against the snapshot parquet's own
+`commence_time` column. That approach was the WRONG TOOL for an "already own a
+correctly-anchored snapshot for this event?" test, for two independent reasons,
+both caught and corrected before any purchase: (1) which single row a dedup
+convention keeps is an arbitrary implementation choice when an event carries
+multiple owned snapshots at different `requested_ts` values (68 of the 781
+owned events do); the right question is whether ANY owned snapshot qualifies,
+not which one a dedup rule happens to surface -- quick checks under a couple of
+plausible dedup orderings during initial drafting landed anywhere from roughly
+683 to 751 correctly-anchored events depending purely on dedup-ordering choice,
+which is exactly the symptom of using the wrong tool, not a genuine data
+ambiguity; (2) anchoring against the snapshot parquet's own `commence_time`
+rather than the cache's `commence_time` (the actual anchor the purchase itself
+buys at) is independently wrong regardless of dedup, since the two disagree by
+up to 30 minutes on 85 in-window events and that disagreement flips the
+correctly-anchored/mis-anchored classification on 36 of them (above). The
+AUTHORITATIVE rule, now locked (20.2): for each event, take the MINIMUM
+`gap_seconds` over ALL of that event's owned bettime snapshots, computed
+against `compute_bettime_ts` of the CACHE's own `commence_time`; the event is
+correctly-anchored iff that minimum is `<= 300`. This rule is order-independent
+by construction -- it does not dedup anything, so there is no ordering choice
+left to make, and the earlier 683-751 spread cannot recur under it. Applied to
+the 781 owned events: **751 correctly-anchored, 30 mis-anchored** (`751 + 30 =
+781`, `1,232 - 751 = 481`, `451 + 30 = 481` -- all three identities hold
+exactly), yielding buy set size **481** and `EXPECTED_BUYSET_SIZE = 481`. This
+corrected rule and its resulting counts (751/30/481, and the 85/36
+cache-vs-snapshot disagreement above) were independently reproduced and
+verified deterministic by the lead reviewer, not separately re-derived by this
+drafting pass: the sha256 digest of the buy set's `(commence_time,
+event_id)`-sorted event-id list is `96163617c977a9c5`, fixed in the frozen plan
+artifact (`plan_saves_fill_2526.json`) as the reproducibility check any future
+recomputation must match. The universe (1,232), owned-event count (781),
+truly-missing count (451), and closing-line-overlap count (431) were
+independently reproduced directly against the live parquet and cache by this
+drafting pass itself and are unaffected by this correction; only the
+correctly-anchored/mis-anchored SPLIT of the 781 owned events, and the
+resulting buy-set size, changed.
+
+**2023-24 event-level bettime coverage, for context (20.1's ~86% figure).**
+`saves_lines_snapshots.parquet` filtered to `snapshot_pass == "bettime"` and
+`event_id` in `_season_events(load_cached_events(CANONICAL_EVENTS_CACHE),
+"2023-10-10", "2024-04-18")` (1,313 in-window events, matching this
+registration's own reproduction of `audit_core_bettime_passes.py`'s
+`expected_events=1313`): **1,125 distinct events** carry a 2023-24 bettime row,
+85.68% -- confirming the ~86% figure cited in 20.1. **2024-25 event-level saves
+coverage (20.1's ~95% figure).** Cited, not independently rerun in this pass,
+from docs/CURRENT_HISTORICAL_DATA.md section 4.2's own already-verified count:
+1,244 of 1,313 events carry a saves quote in
+`core_bettime_202607_snapshots.parquet`, 94.75%.
+
+**Row-level bettime counts, for reference (not re-verified in this pass, cited
+from docs/CURRENT_HISTORICAL_DATA.md section 4.2 and section 19.8, which
+already independently verified the underlying
+`saves_lines_snapshots.parquet` row counts by pass and season: `bettime` rows
+2023-24 15,682 / 2024-25 258 / 2025-26 12,811).** 2024-25's low RAW bettime row
+count (258) alongside its cited ~95% event-level coverage reflects that
+2024-25's bettime saves data comes primarily from the separate
+`core_bettime_202607_snapshots.parquet` archive (section 5/19.8), not from
+`saves_lines_snapshots.parquet`'s own `bettime` rows -- a structural difference
+from 2025-26, whose bettime saves data lives in `saves_lines_snapshots.parquet`
+directly, exactly where this purchase's new records will also land.
+
+No contradiction of any established fact in this document family was found
+while drafting this registration.
+
+### 20.9 Implemented result (2026-07-24)
+
+Executed and audited the same day the registration was filed. This is a data
+acquisition, so the 20.7 gate is completion + audit-clean, not a
+calibration/edge verdict.
+
+Command run (after explicit user authorization, following an explicit pause
+before the dry-run AND the standard pre-execute pause):
+`python scripts/purchase_2526_bettime_saves_fill.py --execute --max-credits
+4810 --credit-floor 6055`.
+
+Frozen plan: `plan_saves_fill_2526.json`, 481 events, sha256 of the
+sorted-order event-id list `96163617c977a9c5` -- created at dry-run, verified
+by the lead against an independent recomputation, and confirmed byte-stable on
+a second dry-run (reload, not recompute). The 481 figure is the
+cache-anchored min-gap-over-all-snapshots result of 20.2 (an earlier
+snapshot-anchored / drop-first estimate had given 500; see 20.8).
+
+Purchase actuals:
+- 481 / 481 calls attempted and completed; `aborted_reason` None.
+- **4,390 credits billed** (below the 4,810 worst case): 439 events returned
+  the `player_total_saves` market and billed 10 each; 41 returned zero markets
+  (free); 1 was a free HTTP 404 EVENT_NOT_FOUND (CBJ vs LAK, 2026-01-27).
+- Balance **11,055 -> 6,665**; the 6,055 floor was never approached.
+- 481 append-only `savesfill_event=*.json` records written; 0 non-200s other
+  than the single free 404.
+
+Audit (`scripts/audit_2526_bettime_saves_fill.py`): **VERDICT CLEAN** on all
+four checks -- record integrity (481 records, 0 parse/signature/filename/param
+failures, 0 apiKey leakage, on-disk event set == frozen plan buy set exactly),
+billing arithmetic (billing identity `x-requests-last == 10 x distinct markets
+returned` holds on every call; constructive balance-chain 0 breaks; the naive
+`fetched_at`-order check logged 19 diagnostic-only inversions across 57
+same-second groups, correctly ignored), non-200s (the 1 404 is zero-cost), and
+alignment (all 480 resolved events at `alignment_gap_seconds` 0.0). The lead
+independently recomputed every figure from the raw records: sum of
+`x-requests-last` = 4,390; all 481 signatures reproduce; 0 apiKey leaks;
+on-disk == plan; and the balance chain closes exactly (6,665 + 4,390 = 11,055,
+matching the expected starting balance).
+
+Consequence (20.7): completion gate PASSED. The 439 obtained saves lines are
+the payoff -- once ingested into `saves_lines_snapshots.parquet`, 2025-26
+bet-time saves coverage rises from ~60% (781 / 1,232) toward ~95%, uniformly
+anchored across all three owned seasons and fixing the mis-anchored subset in
+the same pass. Ingestion is a separate, zero-credit follow-on (not yet done at
+the time of writing). **6,665 credits remain, expiring 2026-07-31, with no
+further planned use.**
+
+Artifacts (all under `data/raw/betting_lines/passes/saves_fill_2526_202607/`,
+gitignored / local-only per `.gitignore`): 481 `savesfill_event=*.json`
+records, `plan_saves_fill_2526.json`, `run_log.jsonl`, `audit_summary.json`.
+Scripts: `scripts/purchase_2526_bettime_saves_fill.py`,
+`scripts/audit_2526_bettime_saves_fill.py`.
+
+### 20.10 Ingestion implemented (2026-07-24)
+
+The zero-credit ingestion follow-on 20.9 flagged as not-yet-done is now
+complete. `scripts/build_saves_fill_2526_snapshots.py` (a pure parser
+mirroring `scripts/build_core_bettime_pass_snapshots.py`, importing
+`scripts/build_odds_snapshots.py`'s canonical goalie-matching / snapshot-
+classification helpers and reusing its 15-column `OUTPUT_COLUMNS` directly)
+parsed the 481 raw records into
+`data/processed/saves_fill_2526_202607_snapshots.parquet` -- **7,357 rows x 15
+columns, schema and dtypes byte-identical to
+`data/processed/saves_lines_snapshots.parquet`** (a drop-in `pd.concat`,
+verified 79,884 + 7,357 = 87,241 combined rows with no dtype coercion). The
+existing archive was NOT mutated -- this is a SIBLING parquet, exactly as the
+core pass produced `core_bettime_202607_snapshots.parquet` (both are
+`*.parquet`, gitignored / local-only per `.gitignore` line 14). The build did
+NO analysis, grading, EV, or outcome join (a pure parser, 20.1 item 1).
+
+Rows come from the 439 saves-market events only (41 zero-bookmaker + 1 free
+404 produce no rows). Verification (the lead independently recomputed every
+figure below from the raw records, not the build's own summary): all 7,357
+rows classify as `bettime`; anchor alignment `|requested_ts -
+compute_bettime_ts(cache commence)|` is 0.0s on every resolved event; goalie
+match rate 97.39%; 0 null lines, 0 null prices, 0 rows with a side outside
+{Over, Under}; 439 distinct events. Duplicate / conflicting-price rows in the
+raw data (20 rows across 10 groups, all `prizepicks` or `bovada`) are
+documented, not dropped, matching `build_odds_snapshots.py`'s keep-and-
+document convention. `includeMultipliers=true` was requested but 0 outcomes
+carried a non-null multiplier, so the 15-column schema's omission of that
+field loses nothing here.
+
+Coverage jump (registered 20.2 cache-anchored, min-gap-over-all-snapshots,
+300s-tolerance test, independently reproduced by the lead directly from the
+raw records): 2025-26 bet-time saves correctly-anchored events rise from **751
+/ 1,232 (60.96%)** -- reproducing the registered 751 exactly -- to **1,190 /
+1,232 (96.59%)** on the union, delta +439. That is above the ~95% target and
+now the HIGHEST of the three owned seasons (2023-24 ~86%, 2024-25 ~95%).
+
+Honesty refinement on 20.9's "fixing the mis-anchored subset in the same
+pass": of the 30 previously mis-anchored owned events (all part of the buy
+set), 24 received a new correctly-anchored bettime row and are now correct;
+the other **6 returned zero bookmakers on the re-buy and remain mis-anchored**
+(event ids `4c4565dff6298c0a63737d6d06135f30`,
+`589e8e7f45909b6c4b71110f0aa61d3b`, `784eb5fb32a5372dd14e963999989b61`,
+`9dbcbdb73b68acce76356cae763f2e8c`, `c3a3f59b3617c326c0ae314afa582a30`,
+`f2bdb7d7350b912047bec931086476bd`). So the buy fixed 24 of 30 mis-anchored
+events, not all 30 -- a disclosed data outcome (those 6 games simply had no
+bet-time saves quote available at re-buy), not a script defect. Per 20.2's own
+note, a downstream consumer must still apply the same min-gap selection to
+pick a usable snapshot per event; the 6 remain flagged by that same test.
+
+Artifacts: `scripts/build_saves_fill_2526_snapshots.py`,
+`data/processed/saves_fill_2526_202607_snapshots.parquet` (gitignored),
+`data/processed/saves_fill_2526_202607_snapshots_summary.json`. This ingestion
+completes the archive substrate only; it does NOT itself run walk-forward
+validation, train any model, or fold anything into a training-facing parquet
+(20.1 item 3 / 20.6 item 8 -- that remains a separate future decision).
