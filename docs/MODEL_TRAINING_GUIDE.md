@@ -357,6 +357,8 @@ Reads `data/processed/classification_training_data.parquet` (see the reproducibi
 
 Output: `data/processed/multibook_classification_training_data.parquet` (137 columns).
 
+> **Update (2026-07-24)**: this parquet has since been extended to **three seasons**. The owned 2023-24 bet-time saves lines were folded in as a new season (13,192 -> 20,799 rows; `classification_training_data.parquet` 4,755 -> 6,714), strictly additively (existing 2024-25/2025-26 rows byte-identical, backup in `data/processed/backup_20260724/`). Details and method (append-only, because the multibook build is no longer reproducible from current code): `CURRENT_HISTORICAL_DATA.md` section 4.4. **The production model in this guide was NOT retrained** — it remains the 2-season `tuned_v1_20260201_155204`. A walk-forward evaluation of the recipe on the new three-season data is preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21 (not yet run); note 2023-24 is sportsbook-only (no DFS books). If you retrain on the three-season data, re-read §14 (reproducibility gaps) and §8 (the frozen split logic) first.
+
 | Bookmaker key | Name |
 |---|---|
 | `draftkings` | DraftKings |

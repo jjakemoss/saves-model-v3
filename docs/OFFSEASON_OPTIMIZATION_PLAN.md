@@ -2603,3 +2603,35 @@ that forgets them:
   2025-26 bet-time saves coverage toward ~95%. **6,665 credits remain,
   expiring 2026-07-31, with no further planned use.** See section 20.9 and
   `CURRENT_HISTORICAL_DATA.md` section 4.3.
+- **2026-07-24 (ingestion + 2023-24 training fold + walk-forward registration;
+  all zero-credit, no model retrained).** Follow-on to the buy above, in one
+  session:
+  1. **Ingested the 439 new 2025-26 bet-time saves** into a sibling parquet
+     `data/processed/saves_fill_2526_202607_snapshots.parquet` (7,357 rows;
+     `scripts/build_saves_fill_2526_snapshots.py`, a pure parser mirroring the
+     core-pass build, existing archive not mutated). On the union, the registered
+     min-gap test moves 2025-26 bet-time saves coverage 751/1,232 (60.96%) ->
+     1,190/1,232 (96.59%) -- now the best-anchored of the three seasons. 24 of 30
+     previously mis-anchored events fixed; 6 remained (zero bookmakers on re-buy).
+     Independently re-verified by the lead. See section 20.10 /
+     `CURRENT_HISTORICAL_DATA.md` 4.3.
+  2. **Folded the owned 2023-24 bet-time saves into the training parquets** as a
+     new third season (user-authorized; 2023-24 only, bet-time, all sportsbooks,
+     strictly additive, no retrain). A Stage-1 reproducibility test found
+     `build_multibook_training_data.py` no longer reproduces the 2026-07-07
+     multibook parquet from current code (cache grew, dropping tracker-sourced
+     `underdog`/`betonline` rows on a rerun), so the fold was append-only, not a
+     rerun. Result: `classification_training_data.parquet` 4,755 -> 6,714;
+     `multibook_classification_training_data.parquet` 13,192 -> 20,799. Verified
+     from disk: existing rows byte-identical to `backup_20260724/`, only 2023-24
+     added, zero new nulls. **Usable labeled data is now three seasons.** See
+     `CURRENT_HISTORICAL_DATA.md` section 4.4.
+  3. **Registered the walk-forward evaluation** of the frozen production
+     classifier recipe (114 features, Random #30 hyperparameters, 12% EV) as
+     preregistration **section 21** -- expanding-window rolling origins (train
+     2023-24 -> test 2024-25; train 2023-24+2024-25 -> test 2025-26), game-level
+     bootstrap CIs, PASS/FAIL bar (pooled OOS ROI CI lower bound > 0 AND positive
+     point estimate in each origin) fixed in advance. **Not yet run.** Sobering
+     prior: the pace_shots rolling-origin (this section's own "Rolling-origin
+     confirmation") found market-parity, not edge, so a market-parity result for
+     the classifier is a live possibility and a legitimate outcome.

@@ -375,9 +375,12 @@ on season 1, test on season 2; train on seasons 1-2, test on season 3; etc.)
 and average the results. **As of 2026-07-24 the training parquets carry three
 seasons** (2023-24 was folded in, section 4.4), so a walk-forward evaluation is
 now runnable for the first time — train 2023-24 -> test 2024-25 -> test 2025-26.
-It has not been run yet (no retrain/re-eval was done as part of the fold), and
-the per-window test folds remain thin (section 5's sampling-uncertainty caveat
-still applies to each individual cut); but the two-season blocker is resolved.
+It is now **preregistered as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21**
+(frozen production recipe, retrained per fold; game-level bootstrap CIs; PASS/FAIL
+bar fixed in advance) but **not yet run**. The per-window test folds remain thin
+(section 5's sampling-uncertainty caveat applies to each individual cut), which
+is why the registered bar leans on a pooled bootstrap CI plus per-fold
+positivity; but the two-season blocker is resolved.
 
 ## 7. Open follow-ups
 
@@ -390,8 +393,8 @@ still applies to each individual cut); but the two-season blocker is resolved.
   `merge_betting_lines.py` → `add_market_features.py` →
   `build_multibook_training_data.py`) to keep growing the labeled dataset.
 - Three seasons of betting-line data now exist (2023-24 folded in 2026-07-24,
-  section 4.4), so the deferred step is now actionable: revisit the
-  train/val/test split strategy in `config/config.yaml` to set up real
-  walk-forward validation instead of a single chronological cut. Mind that the
-  2023-24 season is sportsbook-only (no DFS books) when interpreting per-book or
-  DFS-specific results across the walk-forward windows.
+  section 4.4), so the deferred step is now actionable and **has been registered
+  as `PREREGISTRATION_NO_CREDIT_ABLATIONS.md` section 21** (walk-forward
+  validation of the frozen production classifier recipe; not yet run). Mind that
+  the 2023-24 season is sportsbook-only (no DFS books) when interpreting per-book
+  or DFS-specific results across the walk-forward windows.

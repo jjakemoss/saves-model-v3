@@ -5411,3 +5411,171 @@ Artifacts: `scripts/build_saves_fill_2526_snapshots.py`,
 completes the archive substrate only; it does NOT itself run walk-forward
 validation, train any model, or fold anything into a training-facing parquet
 (20.1 item 3 / 20.6 item 8 -- that remains a separate future decision).
+
+## 21. Walk-forward (rolling-origin) validation of the production classifier recipe (2026-07-24)
+
+Registered 2026-07-24, before running any fold, training any per-fold model, or
+computing any test-set metric. This registers a MODELING EVALUATION -- the
+"separate future decision requiring its own registration" that section 20.1
+item 1 / 20.6 item 8 explicitly deferred once the 2023-24 saves were folded into
+the training parquets (docs/CURRENT_HISTORICAL_DATA.md section 4.4, done
+2026-07-24). It evaluates whether the production classifier RECIPE's backtested
+edge survives an honest out-of-sample, forward-in-time test across the
+now-three-season labeled dataset. It does NOT retrain, replace, or re-tune the
+deployed production model (`models/trained/tuned_v1_20260201_155204/`).
+
+### 21.1 Hypothesis and honesty notes
+
+**H1:** the production classifier recipe -- 114 features, the "Random #30"
+hyperparameters, and the 12% EV bet-selection threshold, all frozen from
+`tuned_v1_20260201_155204` -- retains a positive, durable betting edge when
+retrained on a past window and evaluated on the immediately following season it
+has never seen, across more than one such split.
+
+**H0 (null):** the recipe's out-of-sample edge is indistinguishable from
+market-parity (ROI CI straddling or below zero once evaluated forward-in-time);
+i.e. the single-cut +23.31% backtest does not generalize.
+
+Honesty notes (CLAUDE.md real-money standard):
+1. The single-cut 60/20/20 backtest ROI (+23.31%, 441 bets; MODEL_TRAINING_GUIDE
+   section 1) is NOT evidence for H1 -- it is the number this test exists to
+   stress. A sibling rolling-origin experiment on the DIFFERENT pace_shots recipe
+   (`scripts/experiment_rolling_origin.py`, OFFSEASON 3.15) already found
+   MARKET-PARITY, not edge, on unseen seasons; a market-parity result here is a
+   fully legitimate, disclosed outcome, not a failure to re-run away.
+2. Each test fold is one season of bets -- thin (section 5). ROI point estimates
+   carry wide uncertainty, so the PASS bar (21.4) is stated on a bootstrap CI,
+   not a point estimate, and calibration/discrimination (more stable) are
+   reported alongside.
+3. 2023-24 is sportsbook-only (no DFS books existed then, section 4.4); Origin 1
+   therefore trains on a DFS-free book mix and tests on a season that has DFS
+   books. Disclosed, not corrected. Note also the test-fold base rates differ
+   (OVER rate 2024-25 = 45.8%, 2025-26 = 52.0%), so per-fold ROI must be read
+   against a shifting scoring/line environment.
+4. This evaluation runs EXACTLY ONCE under this registration. No threshold
+   re-sweep, no fold re-carving, no recipe change after seeing any test-fold
+   result. A second run to "check" a disappointing fold is forbidden (21.6).
+
+### 21.2 Registered definitions (folds, recipe, data -- all frozen)
+
+**Data.** `data/processed/multibook_classification_training_data.parquet` as of
+the 2026-07-24 three-season fold (20,799 rows: 2023-24 = 7,607, 2024-25 = 7,463,
+2025-26 = 5,729; section 4.4). Season by `game_date`: 2023-24 =
+2023-08-01..2024-07-31, 2024-25 = 2024-08-01..2025-07-31, 2025-26 =
+2025-08-01..2026-07-31.
+
+**Folds (expanding window, each test season touched exactly once):**
+- **Origin 1:** train = 2023-24 (7,607 rows / 1,123 games), test = 2024-25 (7,463
+  rows / 1,291 games).
+- **Origin 2:** train = 2023-24 + 2024-25 (15,070 rows), test = 2025-26 (5,729
+  rows / 1,107 games).
+
+**Recipe (frozen, verbatim from
+`tuned_v1_20260201_155204/classifier_metadata.json`; retrained per origin on
+that origin's training window, NEVER re-tuned):**
+- Features: the 114 in `classifier_feature_names.json`. Excluded columns: the
+  byte-identical `excluded_cols` + market-derived list from
+  `tune_hyperparameters.py` (MODEL_TRAINING_GUIDE section 8).
+- Hyperparameters: `max_depth 6, learning_rate 0.05, min_child_weight 30,
+  gamma 2.0, reg_alpha 20, reg_lambda 60, n_estimators 600, subsample 0.7,
+  colsample_bytree 0.8`, `objective binary:logistic`.
+- Bet selection: `ClassifierTrainer.evaluate_profitability()` (the single live
+  eval method, MODEL_TRAINING_GUIDE section 11) at `ev_threshold = 0.12`, using
+  each row's real historical American odds; ROI = total_profit /
+  total_units_wagered.
+- No validation holdout / early stopping: `n_estimators` is fixed and the frozen
+  recipe requires no per-fold selection, so the ENTIRE training window is used to
+  fit (no data carved off for a val sweep).
+
+### 21.3 Metrics and bootstrap
+
+Per test fold AND pooled across both test folds:
+- **PRIMARY (money):** simulated ROI and bets-placed (count and % of available
+  lines) via `evaluate_profitability()` at 0.12.
+- **Uncertainty:** 95% bootstrap CI on ROI resampled at the **GAME level**
+  (resample `game_id`s with replacement, carrying ALL of a resampled game's bet
+  rows together), NOT the row level -- the multibook data has many correlated
+  rows per goalie-game (avg ~4 book-lines each), and row-level resampling would
+  understate the CI (the pseudo-replication trap this project has hit before).
+  >= 2,000 iterations, fixed seed recorded in metadata.
+- **SECONDARY (diagnostic, reported not gating):** AUC, log-loss, Brier score,
+  and a calibration summary (predicted vs realized OVER rate by probability bin)
+  per fold; plus a degeneracy flag if a fold bets < 5% or > 50% of available
+  lines.
+
+### 21.4 PASS / FAIL bar (fixed in advance)
+
+**PASS (edge is durable) requires BOTH:**
+(a) pooled out-of-sample ROI across both test folds has a game-level bootstrap
+95% CI **lower bound > 0**; AND
+(b) the ROI **point estimate is positive in EACH origin individually** (not
+carried by a single season).
+Calibration is reported and must not be materially worse than the market's
+implied probabilities; a well-calibrated model meeting (a)+(b) is the full PASS.
+
+**MARKET-PARITY / FAIL:** pooled CI lower bound <= 0, OR a negative
+point-estimate ROI in either origin. Reported plainly as "does not generalize
+out-of-sample," with the single-cut backtest explicitly flagged as not
+reproducing forward-in-time. No re-run, no threshold search to rescue it.
+
+**INCONCLUSIVE:** allowed only for a disclosed infrastructure failure (e.g. a
+fold with pathological bet volume traced to a data defect), reported as such and
+re-run ONLY after the defect is fixed and disclosed -- mirroring section 20.7's
+infra-failure clause.
+
+### 21.5 Script and discipline
+
+- New dedicated script `scripts/experiment_walk_forward_classifier.py`. It
+  REUSES existing modeling code by import --
+  `ClassifierTrainer.evaluate_profitability`, the excluded-cols / feature
+  conventions, and the rolling-origin date-carving + bootstrap conventions from
+  `scripts/experiment_rolling_origin.py` -- rather than reimplementing training,
+  bet grading, or CIs.
+- Outputs to a NEW dir `models/trained/experiment_walk_forward_classifier_{
+  timestamp}/` (`metadata.json`, `run_log.txt`, per-fold + pooled results,
+  `input_checksums.json`), matching the experiment-15/16 artifact convention. The
+  PRODUCTION model dir `tuned_v1_20260201_155204/` is NEVER modified.
+- No reads/writes to `data/betting.db`. No modification of
+  `src/betting/predictor.py`, `.github/workflows/`, or any pre-existing
+  `models/trained/` model.
+- Deterministic: fixed seeds (XGBoost + bootstrap) recorded in metadata; input
+  parquet sha256 recorded in `input_checksums.json`.
+
+### 21.6 Forbidden
+
+1. Re-tuning hyperparameters, changing the feature set, or moving the EV
+   threshold within this registration (a different, separately-registered
+   question).
+2. Re-carving folds, or re-running any fold, after seeing that fold's test result
+   (except the disclosed-infra-failure clause, 21.4).
+3. Row-level (rather than game-level) bootstrap for the CI.
+4. Treating the single-cut +23.31% backtest as corroborating evidence.
+5. Any modification of the deployed production model, `predictor.py`,
+   `betting.db`, or workflows.
+6. Reporting a market-parity result as anything other than market-parity.
+
+### 21.7 Consequence mapping (fixed in advance)
+
+- **PASS (21.4)** -> the recipe's edge is out-of-sample durable across the
+  available seasons; this warrants (separately, under its own decision)
+  revisiting whether to retrain production on all three seasons and/or stand up
+  walk-forward as each new season arrives. This registration does NOT itself
+  retrain or deploy anything.
+- **MARKET-PARITY / FAIL** -> the single-cut backtest overstated real-world edge;
+  recorded plainly in `docs/HISTORICAL_DATA_ANALYSIS.md` as the authoritative OOS
+  read, and the production model's headline ROI is annotated accordingly. No
+  silent re-run.
+- **INCONCLUSIVE (disclosed infra failure only)** -> fix, disclose, re-run.
+
+### 21.8 Feasibility (verified read-only 2026-07-24, no model trained)
+
+Candidate lines per test fold (= multibook rows, each a potential bet before the
+0.12 EV filter): Origin 1 test (2024-25) = 7,463 across 1,291 games / 2,510
+goalie-games; Origin 2 test (2025-26) = 5,729 across 1,107 games / 2,070
+goalie-games. Training-window sizes: Origin 1 = 7,607 rows, Origin 2 = 15,070
+rows -- both ample for XGBoost at `n_estimators=600` (Origin 1's 2023-24-only
+train pool, 7,607 rows, is the smallest and still fine). The game-level bootstrap
+resamples from 1,291 (Origin 1) / 1,107 (Origin 2) distinct games -- enough for a
+stable 95% CI at 2,000 iterations. Actual bet counts per fold are not computable
+pre-run (they depend on the trained model's EV at 0.12) and are reported as
+found.
